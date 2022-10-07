@@ -8,9 +8,9 @@
 
 # build folder
 build
-server.key
-server.crt
-secret.key
+server-freenetworkmonitor.key
+server-freenetworkmonitor.crt
+secret
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
