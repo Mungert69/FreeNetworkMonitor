@@ -1,0 +1,8 @@
+git pull https://mungert69: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@github.com/Mungert69/NetworkMonitorReact
+cp ./src/appsettings.json ./src/appsettings-bak.json
+cp ./src/appsettings-dev.json ./src/appsettings.json
+npm install --force
+npm run build
+cp ./src/appsettings-bak.json ./src/appsettings.json
+docker build --rm  -t mungert/apache2-dev:0.1.5 .
+

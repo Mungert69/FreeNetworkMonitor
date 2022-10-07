@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  using-volumes:
+    image: mungert/networkmonitorreact-local:0.1.12
+    build:
+      context: .
+      dockerfile: ./Dockerfile-local
+

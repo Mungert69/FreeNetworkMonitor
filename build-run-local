@@ -1,0 +1,5 @@
+git pull https://mungert69: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@github.com/Mungert69/NetworkMonitorReact
+npm install --force
+npm run build
+docker compose -f docker-compose-local.yml build
+docker push mungert/networkmonitorreact-local:0.1.12 

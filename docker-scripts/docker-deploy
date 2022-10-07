@@ -1,0 +1,6 @@
+git pull https://mungert69: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@github.com/Mungert69/NetworkMonitorReact
+npm install --force
+npm run build
+docker build --rm  -t mungert/apache2:0.1.5 .
+docker push mungert/apache2:0.1.5
+

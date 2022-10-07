@@ -1,0 +1,2 @@
+User-Agents : *
+Sitemap: https://www.freenetworkmonitor.click/sitemap.xml
