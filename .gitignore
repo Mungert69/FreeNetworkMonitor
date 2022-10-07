@@ -10,6 +10,7 @@
 build
 server.key
 server.crt
+secret.key
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml

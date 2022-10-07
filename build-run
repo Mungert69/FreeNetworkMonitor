@@ -1,5 +1,5 @@
 #!/bin/sh
-value=`cat ../secret`
+value=`cat ./secret.key`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
 npm install --force
 npm run build
