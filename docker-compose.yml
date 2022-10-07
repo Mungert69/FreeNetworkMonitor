@@ -6,9 +6,4 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    volumes:
-      - ~/code/securefiles/default-ssl.conf:/etc/apache2/sites-enabled/default-ssl.conf
-      - ~/code/securefiles/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
-      - ~/code/securefile/server-freenetworkmonitor.crt:/etc/apache2/server.crt
-      - ~/code/securefiles/server-freenetworkmonitor.key:/etc/apache2/server.key
 
