@@ -8,7 +8,8 @@
 
 # build folder
 build
-
+server.key
+server.crt
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
