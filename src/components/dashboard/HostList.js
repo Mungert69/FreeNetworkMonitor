@@ -8,25 +8,13 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/ErrorOutlineTwoTone';
-import useClasses from "./useClasses";
-import useTheme from "@mui/material/styles/useTheme";
 
 import Title from './Title';
 
 
-function preventDefault(event) {
-  event.preventDefault();
-}
-
-const styleObject = (theme) => {
-  return {
-  seeMore: {
-    marginTop: theme.spacing(0),
-  }}};
-
 export default function HostList({ data, clickViewChart, resetHostAlert }) {
 
-    const classes = useClasses(styleObject(useTheme()))
+
   return (
     <React.Fragment>
       <Title>Monitored Hosts</Title>

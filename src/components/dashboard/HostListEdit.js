@@ -92,8 +92,9 @@ const HostListEdit = ({ siteId, token }) => {
         customBodyRender: (value, tableMeta, updateValue) => {
           updateData(tableMeta, data, setData, value, 'address');
           return (<FormControlLabel
+            
             value={value}
-            control={<TextField value={value} />}
+            control={<TextField value={value}   style={{ width: '300px' }}/>}
             onChange={event => updateValue(event.target.value)}
           />);
         }
@@ -107,7 +108,7 @@ const HostListEdit = ({ siteId, token }) => {
         customBodyRender: (value, tableMeta, updateValue) => {
           updateData(tableMeta, data, setData, value, 'endPointType');
           return (
-            <FormControl >
+            
               <Select
                 value={value}
                 onChange={event => updateValue(event.target.value)}
@@ -115,7 +116,7 @@ const HostListEdit = ({ siteId, token }) => {
                 <MenuItem value={'http'}>Http (website)</MenuItem>
                 <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
               </Select>
-            </FormControl>);
+            );
         }
       }
     }, {
@@ -129,7 +130,7 @@ const HostListEdit = ({ siteId, token }) => {
             <FormControlLabel
               label=""
               value={value}
-              control={<TextField value={value} />}
+              control={<TextField value={value}  style={{ width: '80px' }}/>}
               onChange={event => updateValue(event.target.value)}
             />
           );
@@ -161,9 +162,10 @@ const HostListEdit = ({ siteId, token }) => {
   const options = {
     filter: true,
     filterType: 'dropdown',
-    responsive: 'standard',
+    responsive: 'stacked',
     customToolbar: () => (<HeaderElements />),
-    selectableRows: false
+    selectableRows: false,
+    draggableColumns: true
   };
 
   const HeaderElements = () => (
@@ -233,7 +235,7 @@ const HostListEdit = ({ siteId, token }) => {
     <>
       {showMessage ? <Message setShow={setShowMessage} message={message} /> : null}
       <MUIDataTable
-        title={"Edit Host List"}
+        title={""}
         data={data}
         columns={columns}
         options={options}
