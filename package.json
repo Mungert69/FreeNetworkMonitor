@@ -38,6 +38,7 @@
     "styled-components": "^5.3.6"
   },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "start": "cross-env PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
