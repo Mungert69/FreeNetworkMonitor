@@ -24,7 +24,8 @@ import Chart from './Chart';
 import HostDetail from './HostDetail';
 import HostList from './HostList';
 import HostListPag from './HostListPag';
-import HostListEdit from './HostListEdit';
+//import HostListEdit from './HostListEdit';
+import HostListTest from './HostListTest';
 import Loading from '../loading';
 import Image from '../../img/ping.svg';
 import MiniProfile from './MiniProfile';
@@ -324,7 +325,7 @@ export default function Dashboard() {
                 {toggleTable ?
                   <HostListPag  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} />
                   :
-                  <HostListEdit siteId={siteId} token={token} />
+                  <HostListTest siteId={siteId} token={token} />
                 }
               </Paper>
             </Grid>
