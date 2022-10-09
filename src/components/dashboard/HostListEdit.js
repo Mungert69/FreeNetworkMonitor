@@ -38,7 +38,7 @@ const updateData = (tableMeta, data, setData, value, colName) => {
 }
 
 
-const HostListTest = ({ siteId, token }) => {
+const HostListEdit = ({ siteId, token }) => {
   const { user } = useAuth0();
   const [selectedId, setSelectedId] = React.useState(null);
   const [data, setData] = React.useState([]);
@@ -60,20 +60,25 @@ const HostListTest = ({ siteId, token }) => {
 
   const columns = [
     {
-      name: "Delete",
+      name: "",
       options: {
         filter: false,
         sort: false,
         empty: true,
         customBodyRenderLite: (tableMeta) => {
           return (
-            <button onClick={() => {
-              var temp = data;
-              const id = data[tableMeta].id;
-              delHost(id);
-            }}>
-              Delete
-            </button>
+
+            <IconButton color="inherit" size="large">
+              <Badge color="secondary">
+                <Tooltip title="Delete Host">
+                  <DeleteIcon onClick={() => {
+                    var temp = data;
+                    const id = data[tableMeta].id;
+                    delHost(id);
+                  }} />
+                </Tooltip>
+              </Badge>
+            </IconButton>
           );
         }
       }
@@ -157,7 +162,8 @@ const HostListTest = ({ siteId, token }) => {
     filter: true,
     filterType: 'dropdown',
     responsive: 'standard',
-    customToolbar: () => (<HeaderElements />)
+    customToolbar: () => (<HeaderElements />),
+    selectableRows: false
   };
 
   const HeaderElements = () => (
@@ -238,4 +244,4 @@ const HostListTest = ({ siteId, token }) => {
 
 }
 
-export default HostListTest;
+export default HostListEdit;
