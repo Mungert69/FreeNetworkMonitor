@@ -41,6 +41,7 @@ import { Helmet } from 'react-helmet'
 import ReactGA4 from 'react-ga4';
 
 import { useAuth0 } from "@auth0/auth0-react";
+import { trackPromise} from 'react-promise-tracker';
 
 //const useStyles = makeStyles((theme) => (styleObject(theme, null)));
 
@@ -273,7 +274,7 @@ export default function Dashboard() {
           </IconButton>
           {defaultUser ? null : <MiniProfile apiUser={apiUser} token={token} siteId={siteId}/>}
         </Toolbar>
-        {isLoading && <Loading/>}
+       <Loading/>
       </AppBar>
 
       <Drawer

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import moment from "moment";
+import { trackPromise} from 'react-promise-tracker';
 
 const defaultUser = "default";
 
@@ -54,7 +55,7 @@ export const fetchLoadServer = async (user, token) => {
     var sentData = { User: user };
     var data = null;
 
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiLoadBalancerUrl + '/Load/GetLoadServer' + extUrlStr,
@@ -67,7 +68,7 @@ export const fetchLoadServer = async (user, token) => {
     ).catch(function (error) {
         console.log('ServiceAPI.fetchLoadServer Axios Error was : ' + error);
         return;
-    });
+    }));
     try {
         data = result.data.data;
         console.log('ServiceAPI.fetchLoadServer got load server : ' + data);
@@ -101,7 +102,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId };
     var data = [];
 
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/Monitor/GetPingInfosByMonitorPingInfoID' + extUrlStr,
@@ -113,7 +114,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchChartData Axios Error was : ' + error);
-    });
+    }));
     try {
         result.data.data.map((row) => {
             data.push({ 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.roundTripTime, 'status': row.status })
@@ -150,7 +151,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
 
     var sentData = { user, DataSetId: dataSetId };
     var alertCount = 0;
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/monitor/GetMonitorPingInfosByDataSetID' + extUrlStr,
@@ -163,7 +164,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
         .catch(function (error) {
             console.log('ServiceAPI.fetchListData Axios Error was : ' + error);
             return;
-        });
+        }));
     try {
         result.data.data.map((row) => {
             if (row.monitorStatus.alertFlag) { alertCount++ }
@@ -199,7 +200,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     dateEnd = moment(dateEnd).endOf('day');
     dateStart = moment(dateStart).startOf('day');
     var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format() };
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/monitor/GetDataSetsByDate',
@@ -208,7 +209,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     ).catch(function (error) {
         console.log('ServiceAPI.fetchEditHostData Axios Error was : ' + error);
         return;
-    });
+    }));
     try {
         result.data.data.map((row) => {
             var dateObj = convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm');
@@ -235,10 +236,10 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
 
 export const fetchDataSets = async (baseUrlId, setDataSets) => {
     var data = [];
-    const result = await axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetDataSets')).catch(function (error) {
+    const result = await trackPromise(axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetDataSets')).catch(function (error) {
         console.log('ServiceAPI.fetchDataSets Axios Error was : ' + error);
         return;
-    });
+    }));
     try {
         result.data.data.map((row) => {
             var dateObj = convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm');
@@ -265,7 +266,7 @@ export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload,
         return;
     }
     const sentData = { User: user, MonitorPingInfoId: monitorPingInfoId };
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/Monitor/ResetAlert/',
@@ -278,7 +279,7 @@ export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload,
     ).catch(function (error) {
         console.log('ServiceAPI.resetAlertApicall Axios Error was : ' + error);
         return;
-    });
+    }));
 
     console.log('ServiceAPI.resetAlertApicall reset alert of monitorPingInfoId ' + monitorPingInfoId + " for user " + user.name);
 
@@ -291,7 +292,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
         return;
     }
     var data = [];
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/edit/GetMonitorIPsFromUserID',
@@ -304,7 +305,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
     ).catch(function (error) {
         console.log('ServiceAPI.fetchEditHostData Axios Error was : ' + error);
         return;
-    });
+    }));
     try {
         result.data.data.map((row) => {
             const obj = row;
@@ -329,7 +330,7 @@ export const addUserApi = async (baseUrlId, user, token) => {
         console.log('ServiceAPI.addUserApi Error missing token for user ' + user.name);
         return;
     }
-    const result = await axios(
+    const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/edit/AddUserApi',
@@ -342,7 +343,7 @@ export const addUserApi = async (baseUrlId, user, token) => {
     ).catch(function (error) {
         console.log('ServiceAPI.addHostApi Axios Error was : ' + error);
         return;
-    });
+    }));
     var apiUser = result.data.data;
     apiUser.picture = user.picture
     apiUser.logonServer=apiBaseUrls[baseUrlId];
