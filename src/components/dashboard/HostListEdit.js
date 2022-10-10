@@ -60,32 +60,8 @@ const HostListEdit = ({ siteId, token }) => {
 
   const columns = [
     {
-      name: "",
-      options: {
-        filter: false,
-        sort: false,
-        empty: true,
-        customBodyRenderLite: (tableMeta) => {
-          return (
-
-            <IconButton color="inherit" size="large">
-              <Badge color="secondary">
-                <Tooltip title="Delete Host">
-                  <DeleteIcon onClick={() => {
-                    var temp = data;
-                    const id = data[tableMeta].id;
-                    delHost(id);
-                  }} />
-                </Tooltip>
-              </Badge>
-            </IconButton>
-          );
-        }
-      }
-    },
-    {
       name: 'address',
-      label: 'Address',
+      label: 'Host Address',
       options: {
         filter: true,
         sort: true,
@@ -154,8 +130,32 @@ const HostListEdit = ({ siteId, token }) => {
             />);
         }
       }
+    },
+    {
+      name: "",
+      options: {
+        filter: false,
+        sort: false,
+        empty: true,
+        customBodyRenderLite: (tableMeta) => {
+          return (
 
-    }];
+            <IconButton color="inherit" size="large">
+              <Badge color="secondary">
+                <Tooltip title="Delete Host">
+                  <DeleteIcon onClick={() => {
+                    var temp = data;
+                    const id = data[tableMeta].id;
+                    delHost(id);
+                  }} />
+                </Tooltip>
+              </Badge>
+            </IconButton>
+          );
+        }
+      }
+    }
+  ];
 
 
 
@@ -235,7 +235,7 @@ const HostListEdit = ({ siteId, token }) => {
     <>
       {showMessage ? <Message setShow={setShowMessage} message={message} /> : null}
       <MUIDataTable
-        title={""}
+        title={"Edit Hosts"}
         data={data}
         columns={columns}
         options={options}
