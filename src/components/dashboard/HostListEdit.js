@@ -25,16 +25,12 @@ import Message from './Message';
 import HelpDialog from './HelpDialog';
 
 const updateData = (tableMeta, data, setData, value, colName) => {
-  var temp = data;
-  const id = data[tableMeta.rowIndex].id;
-  const index = temp.findIndex(object => {
-    return object.id === id;
-  });
-  if (temp[index][colName] != value) {
-    temp[index][colName] = value;
-    setData(temp);
-  }
-
+  if (tableMeta.rowData !== 0) return;
+	const id = tableMeta.currentTableData[tableMeta.rowIndex].data[0];
+	const temp=data.map( row => 
+	row.id=id ? {...row , [colName]: value} : {...row} 
+	)
+  setData(temp);
 }
 
 
@@ -60,6 +56,9 @@ const HostListEdit = ({ siteId, token }) => {
 
   const columns = [
     {
+      name: 'id'
+    },
+    {
       name: 'address',
       label: 'Host Address',
       options: {
@@ -68,9 +67,8 @@ const HostListEdit = ({ siteId, token }) => {
         customBodyRender: (value, tableMeta, updateValue) => {
           updateData(tableMeta, data, setData, value, 'address');
           return (<FormControlLabel
-            
             value={value}
-            control={<TextField value={value}   style={{ width: '300px' }}/>}
+            control={<TextField value={value} style={{ width: '300px' }} />}
             onChange={event => updateValue(event.target.value)}
           />);
         }
@@ -84,15 +82,15 @@ const HostListEdit = ({ siteId, token }) => {
         customBodyRender: (value, tableMeta, updateValue) => {
           updateData(tableMeta, data, setData, value, 'endPointType');
           return (
-            
-              <Select
-                value={value}
-                onChange={event => updateValue(event.target.value)}
-              >
-                <MenuItem value={'http'}>Http (website)</MenuItem>
-                <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
-              </Select>
-            );
+
+            <Select
+              value={value}
+              onChange={event => updateValue(event.target.value)}
+            >
+              <MenuItem value={'http'}>Http (website)</MenuItem>
+              <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
+            </Select>
+          );
         }
       }
     }, {
@@ -106,7 +104,7 @@ const HostListEdit = ({ siteId, token }) => {
             <FormControlLabel
               label=""
               value={value}
-              control={<TextField value={value}  style={{ width: '80px' }}/>}
+              control={<TextField value={value} style={{ width: '80px' }} />}
               onChange={event => updateValue(event.target.value)}
             />
           );
@@ -157,8 +155,6 @@ const HostListEdit = ({ siteId, token }) => {
     }
   ];
 
-
-
   const options = {
     filter: true,
     filterType: 'dropdown',
@@ -183,6 +179,15 @@ const HostListEdit = ({ siteId, token }) => {
         <Badge color="secondary" >
           <Tooltip title="Add new Host">
             <AddIcon onClick={() => addHost()} />
+          </Tooltip>
+
+        </Badge>
+      </IconButton>
+
+      <IconButton color="inherit" size="large">
+        <Badge color="secondary">
+          <Tooltip title="Click for help">
+            <HelpIcon onClick={() => setOpenHelp(true)} />
           </Tooltip>
 
         </Badge>
@@ -233,6 +238,7 @@ const HostListEdit = ({ siteId, token }) => {
 
   return (
     <>
+      {openHelp ? <HelpDialog setOpen={setOpenHelp} /> : null}
       {showMessage ? <Message setShow={setShowMessage} message={message} /> : null}
       <MUIDataTable
         title={"Edit Hosts"}
@@ -242,8 +248,6 @@ const HostListEdit = ({ siteId, token }) => {
       />
     </>
   );
-
-
 }
 
 export default HostListEdit;
