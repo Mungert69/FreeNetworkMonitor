@@ -74,7 +74,6 @@ export default function Dashboard() {
   reloadListDataRef.current = reloadListData;
   const dataSetIdRef = useRef(dataSetId);
   dataSetIdRef.current = dataSetId;
-
   const handleSetDataSetId = (id, date) => {
     // change the data set id
     setDataSetId(id);
