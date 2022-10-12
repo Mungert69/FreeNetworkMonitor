@@ -11,6 +11,7 @@ build
 server-freenetworkmonitor.key
 server-freenetworkmonitor.crt
 secret
+.swp
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
