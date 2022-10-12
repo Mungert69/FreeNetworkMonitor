@@ -136,14 +136,21 @@ const HostListEdit = ({ siteId, token }) => {
         customBodyRender: (value, tableMeta, updateValue) => {
           updateData(tableMeta, data, setData, value, 'endPointType');
           return (
-
-            <Select
+            <FormControlLabel
+              label=""
+              value={value}
+						control={
+						<Select
               value={value}
               onChange={event => updateValue(event.target.value)}
             >
               <MenuItem value={'http'}>Http (website)</MenuItem>
               <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
             </Select>
+						}
+            />
+ 
+            
           );
         }
       }
