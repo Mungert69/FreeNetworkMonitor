@@ -23,6 +23,14 @@ import Tooltip from '@mui/material/Tooltip';
 import { useAuth0 } from '@auth0/auth0-react';
 import Message from './Message';
 import HelpDialog from './HelpDialog';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+
+const muiCache = createCache({
+	"key": "mui",
+	"prepend": true
+});
 
 const updateData = (tableMeta, data, setData, value, colName) => {
   if (tableMeta.rowData !== 0) return;
@@ -45,6 +53,49 @@ const HostListEdit = ({ siteId, token }) => {
   const [openHelp, setOpenHelp] = React.useState(false);
   const [displayEdit, setDisplayEdit] = React.useState(true);
 
+  const getMuiTheme = () => createTheme({
+		components: {
+			MuiSvgIcon: {
+        styleOverrides:{
+					root: {
+						color: '#607466'
+          }
+        }
+			},
+      MuiDataTableBodyCell: {
+        styleOverrides:{
+          root: {
+						padding : "0px",
+						paddingLeft: "16px",
+						bottomMargin: "0px"
+          }
+        }
+			},
+			MuiDataTable: {
+        styleOverrides:{
+          root: {
+          }
+        }
+			},
+			MuiDataTableCell: {
+        styleOverrides:{
+          root: {
+						padding : "8px",
+						paddingLeft: "32px",
+          }
+        }
+			},
+			MuiFormControlLabel: {
+        styleOverrides:{
+          root: {
+						marginBottom: 0
+          }
+        }
+			},
+
+    }
+  })
+
   React.useEffect(() => {
     (async () => {
       const returndata = await fetchEditHostData(siteId, user, token);
@@ -56,7 +107,10 @@ const HostListEdit = ({ siteId, token }) => {
 
   const columns = [
     {
-      name: 'id'
+			name: 'id',
+			options: {
+				display: false}
+
     },
     {
       name: 'address',
@@ -240,12 +294,16 @@ const HostListEdit = ({ siteId, token }) => {
     <>
       {openHelp ? <HelpDialog setOpen={setOpenHelp} /> : null}
       {showMessage ? <Message setShow={setShowMessage} message={message} /> : null}
-      <MUIDataTable
-        title={"Edit Hosts"}
-        data={data}
-        columns={columns}
-        options={options}
-      />
+			<CacheProvider value={muiCache}>
+				<ThemeProvider theme={getMuiTheme()}>
+					<MUIDataTable
+      			  title={"Edit Hosts"}
+      		  data={data}
+      		  columns={columns}
+      		  options={options}
+	  			/>
+  			</ThemeProvider>
+			</CacheProvider>
     </>
   );
 }
