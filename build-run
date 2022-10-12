@@ -2,6 +2,7 @@
 value=`cat ../secret`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
 npm install --force
+npm audit
 npm run build
 docker compose build
 docker push mungert/networkmonitorreact:0.1.12 
