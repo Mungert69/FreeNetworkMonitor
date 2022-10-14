@@ -224,7 +224,6 @@ export default function Dashboard() {
 
   }, [siteId, dateStart, dateEnd]);
 
-
   return (
     <div className={classes.root}>
       <CssBaseline />
