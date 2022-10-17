@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch} from "react-router-dom";
+import { Route, Switch, Redirect} from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import {  Loading } from "./components";
@@ -58,6 +58,7 @@ const App = () => {
           <Route path="/" exact component={Landing} />
           <Route path="/dashboard" exact component={DashboardView} />
           <Route path="/faq" exact component={FaqView} />
+          <Redirect to="/" />
         </Switch>
       </div>
     </div>
