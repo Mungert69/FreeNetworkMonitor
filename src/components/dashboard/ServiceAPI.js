@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from "moment";
 import { trackPromise} from 'react-promise-tracker';
+import axiosRetry from 'axios-retry';
 
 const defaultUser = "default";
 
@@ -55,6 +56,7 @@ export const fetchLoadServer = async (user, token) => {
     var sentData = { User: user };
     var data = null;
 
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
@@ -102,6 +104,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId };
     var data = [];
 
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
@@ -151,6 +154,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
 
     var sentData = { user, DataSetId: dataSetId };
     var alertCount = 0;
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
@@ -200,6 +204,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     dateEnd = moment(dateEnd).endOf('day');
     dateStart = moment(dateStart).startOf('day');
     var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format() };
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
@@ -236,6 +241,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
 
 export const fetchDataSets = async (baseUrlId, setDataSets) => {
     var data = [];
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetDataSets')).catch(function (error) {
         console.log('ServiceAPI.fetchDataSets Axios Error was : ' + error);
         return;
@@ -266,6 +272,7 @@ export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload,
         return;
     }
     const sentData = { User: user, MonitorPingInfoId: monitorPingInfoId };
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
@@ -292,6 +299,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
         return;
     }
     var data = [];
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
@@ -330,6 +338,7 @@ export const addUserApi = async (baseUrlId, user, token) => {
         console.log('ServiceAPI.addUserApi Error missing token for user ' + user.name);
         return;
     }
+    axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
