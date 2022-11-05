@@ -33,7 +33,7 @@ const muiCache = createCache({
 });
 
 const updateData = (tableMeta, data, setData, value, colName) => {
-  if (tableMeta.rowData !== 0) return;
+  if (!Number. isInteger(tableMeta.rowData)) return;
 	const id = tableMeta.currentTableData[tableMeta.rowIndex].data[0];
 	const temp=data.map( row => 
 	row.id=id ? {...row , [colName]: value} : {...row} 
