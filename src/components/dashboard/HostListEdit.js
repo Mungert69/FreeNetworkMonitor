@@ -18,7 +18,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
-import RotateLeftIcon from '@mui/icons-material/RotateLeft';
 import Tooltip from '@mui/material/Tooltip';
 import { useAuth0 } from '@auth0/auth0-react';
 import Message from './Message';
@@ -34,7 +33,7 @@ const muiCache = createCache({
 
 const updateData = (tableMeta, data, setData, value, colName) => {
   if (!Number.isInteger(tableMeta.rowData)) return;
-	const id = tableMeta.currentTableData[tableMeta.rowIndex].data[0];
+	const id = tableMeta.currentTableData[tableMeta.rowIndex].data[tableMeta.rowData];
 	const temp=data.map( row => 
 	row.id=id ? {...row , [colName]: value} : {...row} 
 	)
@@ -119,11 +118,17 @@ const HostListEdit = ({ siteId, token }) => {
         filter: true,
         sort: true,
         customBodyRender: (value, tableMeta, updateValue) => {
-          updateData(tableMeta, data, setData, value, 'address');
+          //updateData(tableMeta, data, setData, value, 'address');
           return (<FormControlLabel
             value={value}
             control={<TextField value={value} style={{ width: '300px' }} />}
-            onChange={event => updateValue(event.target.value)}
+            onChange={event => {
+              const row=tableMeta.rowIndex;
+              var tempData=data;           
+              tempData[row]["address"]=event.target.value;       
+              setData(tempData);
+              updateValue(event.target.value);}
+            }
           />);
         }
       }
@@ -134,7 +139,7 @@ const HostListEdit = ({ siteId, token }) => {
         filter: true,
         sort: true,
         customBodyRender: (value, tableMeta, updateValue) => {
-          updateData(tableMeta, data, setData, value, 'endPointType');
+          //updateData(tableMeta, data, setData, value, 'endPointType');
           return (
             <FormControlLabel
               label=""
@@ -142,7 +147,12 @@ const HostListEdit = ({ siteId, token }) => {
 						control={
 						<Select
               value={value}
-              onChange={event => updateValue(event.target.value)}
+              onChange={event => {
+                const row=tableMeta.rowIndex;
+                var tempData=data;           
+                tempData[row]["endPointType"]=event.target.value;       
+                setData(tempData);
+                updateValue(event.target.value);}}
             >
               <MenuItem value={'http'}>Http (website)</MenuItem>
               <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
@@ -160,13 +170,18 @@ const HostListEdit = ({ siteId, token }) => {
       options: {
         filter: true,
         customBodyRender: (value, tableMeta, updateValue) => {
-          updateData(tableMeta, data, setData, value, 'timeout');
+          //updateData(tableMeta, data, setData, value, 'timeout');
           return (
             <FormControlLabel
               label=""
               value={value}
               control={<TextField value={value} style={{ width: '80px' }} />}
-              onChange={event => updateValue(event.target.value)}
+              onChange={event => {
+                const row=tableMeta.rowIndex;
+                var tempData=data;           
+                tempData[row]["timeout"]=event.target.value;       
+                setData(tempData);
+                updateValue(event.target.value);}}
             />
           );
         }
@@ -179,12 +194,17 @@ const HostListEdit = ({ siteId, token }) => {
         filter: true,
         sort: true,
         customBodyRender: (value, tableMeta, updateValue) => {
-          updateData(tableMeta, data, setData, value, 'enabled');
+          //updateData(tableMeta, data, setData, value, 'enabled');
           return (
             <FormControlLabel
               align='center'
               control={
-                <Checkbox checked={value} onChange={event => updateValue(event.target.checked)} />
+                <Checkbox checked={value} onChange={event => {
+                  const row=tableMeta.rowIndex;
+                  var tempData=data;           
+                  tempData[row]["enabled"]=event.target.value;       
+                  setData(tempData);
+                  updateValue(event.target.value);}} />
               }
             />);
         }
@@ -219,10 +239,10 @@ const HostListEdit = ({ siteId, token }) => {
   const options = {
     filter: true,
     filterType: 'dropdown',
-    responsive: 'stacked',
     customToolbar: () => (<HeaderElements />),
     selectableRows: false,
     draggableColumns: true
+    
   };
 
   const HeaderElements = () => (
