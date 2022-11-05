@@ -202,9 +202,9 @@ const HostListEdit = ({ siteId, token }) => {
                 <Checkbox checked={value} onChange={event => {
                   const row=tableMeta.rowIndex;
                   var tempData=data;           
-                  tempData[row]["enabled"]=event.target.value;       
+                  tempData[row]["enabled"]=!tempData[row]["enabled"];       
                   setData(tempData);
-                  updateValue(event.target.value);}} />
+                  updateValue(tempData[row]["enabled"]);}} />
               }
             />);
         }
