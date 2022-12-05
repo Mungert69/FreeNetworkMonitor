@@ -403,6 +403,51 @@ export const updateApiUser = async (baseUrlId, user, token) => {
 
 }
 
+
+
+export const resendVerifyEmail = async (baseUrlId, user, token) => {
+    var message = { text: '', success: false };
+    if (token == null || token == undefined) {
+        console.log('ServiceAPI.resendVerifyEmail Error missing token for user ' + user.name);
+        return;
+    }
+    try {
+        const result = await axios(
+            {
+                method: 'post',
+                url: apiBaseUrls[baseUrlId] + '/edit/resendVerifyEmail',
+                data: user,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+
+                },
+            }
+        ).catch(function (error) {
+            console.log('ServiceAPI.resendVerifyEmail Axios Error was : ' + error);
+            message.text = 'ServiceAPI.resendVerifyEmail Axios Error was : ' + error;
+            console.log(message.text);
+            message.success = false;
+            return message;
+
+        });
+        message.text = result.data.message;
+        message.success = result.data.success;
+    }
+    catch (error) {
+        message.text = 'ServiceAPI.resendVerifyEmail Error was : ' + error;
+        console.log(message.text);
+        message.success = false;
+        return message;
+    }
+
+    if (message.text != null)
+        console.log('ServiceAPI.resendVerifyEmail Send Verifcation email message was ' + message.text);
+        if (message.success) message.text='Success send verification email.'
+    return message;
+
+}
+
+
 export const testEditApi = async (baseUrlId, user, token) => {
     if (token == null || token == undefined) {
         console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);

@@ -21,7 +21,7 @@ import {
   colors
 } from "@mui/material";
 
-import { updateApiUser } from './ServiceAPI';
+import { updateApiUser,resendVerifyEmail } from './ServiceAPI';
 import Message from './Message';
 
 
@@ -46,6 +46,18 @@ const Profile = ({ apiUser, token, siteId }) => {
     await setMessage(message);
     await setShowMessage(true);
     message = await updateApiUser(siteId, user, token);
+    await setMessage(message);
+    await setShowMessage(true);
+
+  }
+
+  const handleSubmitVerifyEmail = async () => {
+    const user = apiUser;
+    user.nickname = name;
+    var message = { text: 'Verfication email sent please check you inbox.', info: false };
+    await setMessage(message);
+    await setShowMessage(true);
+    message = await resendVerifyEmail(siteId, user, token);
     await setMessage(message);
     await setShowMessage(true);
 
@@ -84,14 +96,23 @@ const Profile = ({ apiUser, token, siteId }) => {
               </Grid>
 
               <Grid item md={6} xs={12}>
-                <FormControlLabel sx={{ display: 'flex', alignItems: 'center' }}
+                { apiUser.email_verified ? <FormControlLabel sx={{ display: 'flex', alignItems: 'center' }}
                 align='center'
                   control={
                     <Checkbox  icon={<NotificationsActiveIcon />}
                     checkedIcon={<NotificationsOffIcon />} checked={disableEmail} onChange={handleChangeBool} />
                   }
                   label="Send email notifications"
-                />
+               
+                /> :   <Button
+                type="submit"
+                variant="contained"
+                onClick={handleSubmitVerifyEmail}
+              >
+                Resend verification email
+              </Button>}
+                
+               
 
               </Grid>
 
