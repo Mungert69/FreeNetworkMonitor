@@ -415,7 +415,7 @@ export const resendVerifyEmail = async (baseUrlId, user, token) => {
         const result = await axios(
             {
                 method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit/resendVerifyEmail',
+                url: apiBaseUrls[baseUrlId] + '/email/SendVerifyEmail',
                 data: user,
                 headers: {
                     Authorization: `Bearer ${token}`,
