@@ -148,7 +148,7 @@ export default function Dashboard() {
         if (dataSetIdRef.current == 0) {
           console.log('Auto reload data');
           let currReloadListData = reloadListDataRef.current;
-          setReloadListData(!currReloadListData);
+          setReloadListData(currentVal => !currentVal);
         }
       }, 60000);
     } else {
@@ -195,7 +195,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       await setIsLoading(true);
-      await fetchChartData(hostData, dataSetId, siteId, setChartData, user, token);
+      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, token);
       setIsLoading(false);
     };
     fetchData();
