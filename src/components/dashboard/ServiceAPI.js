@@ -81,7 +81,7 @@ export const fetchLoadServer = async (user, token) => {
         console.log('ServiceAPI.fetchLoadServer unable to set load server : ' + error);
         if ( result!=undefined &&   result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
-        return null;
+        return ;
     }
 }
 

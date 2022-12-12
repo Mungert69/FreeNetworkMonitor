@@ -160,7 +160,7 @@ export default function Dashboard() {
   useEffect(() => {
     // Set hostData to monitorIPID  found in listData.
     const item = listData.find(item => item.monitorIPID === hostData.monitorIPID);
-    // If item not null then set hostData to item.
+    // If item not undefined then set hostData to item.
     if (item != undefined) {
       setHostData(item);
     }

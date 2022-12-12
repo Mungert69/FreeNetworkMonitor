@@ -29,7 +29,7 @@ export default function MiniProfile({apiUser,token,siteId}) {
 
           );
      }
-     else { return null; }
+     else { return ; }
 
 }
 
