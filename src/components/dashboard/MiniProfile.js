@@ -8,7 +8,7 @@ import { Style } from '@mui/icons-material';
 
 export default function MiniProfile({apiUser,token,siteId}) {
       const [openProfile, setOpenProfile] = React.useState(false);
-     if (apiUser!=undefined && apiUser!=null) {
+     if (apiUser!==undefined && apiUser!==null) {
           return (
                <div>
                     {openProfile ? <ProfileDialog apiUser={apiUser} token={token} siteId={siteId} setOpen={setOpenProfile} /> : null}

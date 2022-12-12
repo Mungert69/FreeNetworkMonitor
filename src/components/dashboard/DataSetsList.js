@@ -27,7 +27,7 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
     setEndDate(newValue);
     setDateEnd(newValue);
   };
-  var filteredDataSets=null;
+  //var filteredDataSets=undefined;
   /*if (startDate === undefined || endDate === undefined) {
     filteredDataSets =  dataSets;
 

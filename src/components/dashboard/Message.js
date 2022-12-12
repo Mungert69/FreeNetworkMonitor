@@ -16,7 +16,7 @@ const Message = ({ message, setShow }) => {
   }, []);
 
   if (message===null || message===undefined) {
-    message={info : null, success : false, text : "Interal Error"}
+    message={info : undefined, success : false, text : "Interal Error"}
   }
 
   var severity = 'info';
