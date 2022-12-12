@@ -70,7 +70,7 @@ const CustomizedDot = (props) => {
 export default function Chart({data,selectedDate, hostname}) {
   const theme = useTheme();
   var dateString;
-  if (selectedDate===null || selectedDate===undefined) { 
+  if ( selectedDate===undefined) { 
     dateString="Current";
   }
   else {

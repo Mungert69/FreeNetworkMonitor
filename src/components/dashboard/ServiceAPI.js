@@ -41,14 +41,14 @@ export const getSiteIdfromUrl = (url) => {
 
 export const fetchLoadServer = async (user, token) => {
     var extUrlStr = 'Auth';
-    if (user === null || user === undefined) {
+    if ( user === undefined) {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
         token = '';
     } else {
-        if (token === null || token === undefined) {
+        if ( token === undefined) {
             console.log('ServiceAPI.fetcLoadServer Error missing token for user ' + user.name);
             return;
         }
@@ -79,7 +79,7 @@ export const fetchLoadServer = async (user, token) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchLoadServer unable to set load server : ' + error);
-        if (result.data.message !== null && result.data.message !== undefined)
+        if ( result!=undefined &&   result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return null;
     }
@@ -88,15 +88,15 @@ export const fetchLoadServer = async (user, token) => {
 export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, token) => {
     const monitorPingInfoId = hostData.id;
     var extUrlStr = 'Auth';
-    if (user === null || user === undefined) {
-        if (token !== null || token !== undefined) return;
+    if ( user === undefined) {
+        if (token !== undefined) return;
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
         token = '';
     } else {
-        if (token === null || token === undefined) {
+        if ( token === undefined) {
             console.log('ServiceAPI.fetcListData Error missing token for user ' + user.name);
             return;
         }
@@ -127,7 +127,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     }
     catch (error) {
         console.log('ServiceAPI.fetchChartData Mapping Data Error was : ' + error);
-        if (result.data.message !== null && result.data.message !==undefined)
+        if ( result!=undefined &&   result.data.message !==undefined)
             console.log('Api Result.Message was ' + result.data.message);
         data.push({ 'time': convertDate(moment(), 'HH:mm:ss'), 'response': -1, 'status': 'No Data' })
 
@@ -137,16 +137,15 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
 
 export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, token) => {
     var data = [];
-    var extUrlStr = 'Auth';
-    if (user === null || user === undefined) {
-        if (token !== null || token !==undefined) return;
+    var extUrlStr = 'Auth';    if (user === undefined) {
+        if (token !==undefined) return;
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
         token = '';
     } else {
-        if (token === null || token === undefined) {
+        if (token === undefined) {
             console.log('ServiceAPI.fetcListData Error missing token for user ' + user.name);
             return;
         }
@@ -178,7 +177,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     }
     catch (error) {
         console.log('ServiceAPI.fetchListData Mapping Data Error was : ' + error);
-        if (result.data.message !== null && result.data.message !== undefined)
+        if (result!=undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return;
     }
@@ -194,11 +193,11 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     // No auth for now.
     var token = '';
     // Set dateEnd to current date if not set.
-    if (dateEnd === null || dateEnd === undefined) {
+    if ( dateEnd === undefined) {
         dateEnd = moment();
     }
     // Set dateStart to current date minus one month if not set.
-    if (dateStart === null || dateStart === undefined) {
+    if ( dateStart === undefined) {
         dateStart = moment().subtract(14, 'days');
     }
     dateEnd = moment(dateEnd).endOf('day');
@@ -227,7 +226,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     }
     catch (error) {
         console.log('ServiceAPI.fetchDataSetsByDate Mapping Data Error was : ' + error);
-        if (result.data.message != null)
+        if (result!=undefined && result.data.message !== undefined)
 
             console.log('Api Result.Message was ' + result.data.message);
         return;
@@ -257,7 +256,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchDataSets Mapping Data Error was : ' + error);
-        if (result.data.message != null)
+        if (result!=undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return;
     }
@@ -267,7 +266,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
 };
 
 export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload, reload, user, token) => {
-    if (token === null || token === undefined) {
+    if (token === undefined) {
         console.log('ServiceAPI.resetAlertApiCall Error missing token for user ' + user.name);
         return;
     }
@@ -294,7 +293,7 @@ export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload,
 };
 
 export const fetchEditHostData = async (baseUrlId, user, token) => {
-    if (token === null || token === undefined) {
+    if (token === undefined) {
         console.log('ServiceAPI.fetchEditHostData Error missing token for user ' + user.name);
         return;
     }
@@ -322,7 +321,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchEditHostData Mapping Data Error was : ' + error);
-        if (result.data.message != null && result.data.message != undefined)
+        if ( result!=undefined &&   result.data.message != undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return undefined;
     }
@@ -334,7 +333,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
 }
 
 export const addUserApi = async (baseUrlId, user, token) => {
-    if (token === null || token === undefined) {
+    if ( token === undefined) {
         console.log('ServiceAPI.addUserApi Error missing token for user ' + user.name);
         return;
     }
@@ -363,7 +362,7 @@ export const addUserApi = async (baseUrlId, user, token) => {
 
 export const updateApiUser = async (baseUrlId, user, token) => {
     var message = { text: '', success: false };
-    if (token === null || token === undefined) {
+    if ( token === undefined) {
         console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);
         return;
     }
@@ -396,7 +395,7 @@ export const updateApiUser = async (baseUrlId, user, token) => {
         return message;
     }
 
-    if (message.text !== null && message.text !== undefined)
+    if (  message.text !== undefined)
         console.log('ServiceAPI.updateApiUser Updated user message was ' + message.text);
         if (message.success) message.text='Success updated user Profile'
     return message;
@@ -407,7 +406,7 @@ export const updateApiUser = async (baseUrlId, user, token) => {
 
 export const resendVerifyEmail = async (baseUrlId, user, token) => {
     var message = { text: '', success: false };
-    if (token === null || token === undefined) {
+    if ( token === undefined) {
         console.log('ServiceAPI.resendVerifyEmail Error missing token for user ' + user.name);
         return;
     }
@@ -440,7 +439,7 @@ export const resendVerifyEmail = async (baseUrlId, user, token) => {
         return message;
     }
 
-    if (message.text !== null && message.text !== undefined)
+    if (  message.text !== undefined)
         console.log('ServiceAPI.resendVerifyEmail Send Verifcation email message was ' + message.text);
         if (message.success) message.text='Success send verification email.'
     return message;
@@ -449,7 +448,7 @@ export const resendVerifyEmail = async (baseUrlId, user, token) => {
 
 
 export const testEditApi = async (baseUrlId, user, token) => {
-    if (token === null || token === undefined) {
+    if (token === undefined) {
         console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);
         return;
     }
@@ -486,7 +485,7 @@ export const testEditApi = async (baseUrlId, user, token) => {
 
 export const addHostApi = async (baseUrlId, user, token,data) => {
     var message = { text: '', success: false };
-    if (token === null || token === undefined) {
+    if ( token === undefined) {
         console.log('ServiceAPI.addHostApi Error missing token for user ' + user.name);
         return;
     }
@@ -540,7 +539,7 @@ export const addHostApi = async (baseUrlId, user, token,data) => {
 
 export const delHostApi = async (baseUrlId, user, index, token) => {
     var message = { text: '', success: false };
-    if (token === null || token === undefined) {
+    if ( token === undefined) {
         console.log('ServiceAPI.delHostApi Error missing token for user ' + user.name);
         return;
     }
@@ -582,7 +581,7 @@ export const delHostApi = async (baseUrlId, user, index, token) => {
 export const saveHostData = async (baseUrlId, data, token) => {
 
     var message = { text: '', success: false };
-    if (token === null || token === undefined) {
+    if ( token === undefined) {
         console.log('ServiceAPI.saveHostData Error missing token ');
         return;
     }
@@ -613,7 +612,7 @@ export const saveHostData = async (baseUrlId, data, token) => {
         return message;
     }
 
-    if (message.text !== null && message.text !== undefined)
+    if ( message.text !== undefined)
         console.log('ServiceAPI.saveData Saved data api message was ' + message.text);
     if (message.success) message.text='Success save host data. Wait 2 mins for change to go live';
     return message;

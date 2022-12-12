@@ -33,7 +33,7 @@ export default function () {
     var token = undefined;
 
     var extUrlStr = 'Auth';
-    if (user === null || user === undefined) {
+    if ( user === undefined) {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;

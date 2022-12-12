@@ -15,12 +15,12 @@ const Message = ({ message, setShow }) => {
     }
   }, []);
 
-  if (message===null || message===undefined) {
+  if (message===undefined) {
     message={info : undefined, success : false, text : "Interal Error"}
   }
 
   var severity = 'info';
-  if (message.info===null || message.info===undefined){
+  if ( message.info===undefined){
     if(message.success===false){
       severity = 'error';
     }

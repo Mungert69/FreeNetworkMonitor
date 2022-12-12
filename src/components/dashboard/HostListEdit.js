@@ -98,7 +98,7 @@ const HostListEdit = ({ siteId, token }) => {
   React.useEffect(() => {
     (async () => {
       const returndata = await fetchEditHostData(siteId, user, token);
-      if (returndata !== null && returndata !==undefined) {
+      if (returndata !==undefined) {
         setData(returndata);
       }
     })();
@@ -302,7 +302,7 @@ const HostListEdit = ({ siteId, token }) => {
     setReset(!reset);
   }
   const delHost = async (selectedId) => {
-    if (selectedId === null || selectedId===undefined) return;
+    if ( selectedId===undefined) return;
     var message = { text: 'Please wait..', info: true };
     await setMessage(message);
     await setShowMessage(true);
