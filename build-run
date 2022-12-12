@@ -5,4 +5,4 @@ npm install --force
 npm audit
 npm run build
 docker compose build
-docker push mungert/networkmonitorreact:0.1.13 
+docker push mungert/networkmonitorreact:0.1.14 

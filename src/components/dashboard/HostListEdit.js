@@ -43,7 +43,7 @@ const updateData = (tableMeta, data, setData, value, colName) => {
 
 const HostListEdit = ({ siteId, token }) => {
   const { user } = useAuth0();
-  const [selectedId, setSelectedId] = React.useState(null);
+  const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
   const [reset, setReset] = React.useState(true);
   const [skipPageReset, setSkipPageReset] = React.useState(false);

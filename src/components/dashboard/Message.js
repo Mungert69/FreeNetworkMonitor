@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import {  useEffect } from 'react'
 import Alert from '@mui/material/Alert';
 
 const Message = ({ message, setShow }) => {
@@ -8,16 +8,20 @@ const Message = ({ message, setShow }) => {
     const timeId = setTimeout(() => {
       // After 3 seconds set the show value to false
       setShow(false)
-    }, 3000)
+    }, 4000)
 
     return () => {
       clearTimeout(timeId)
     }
   }, []);
 
+  if (message===null || message===undefined) {
+    message={info : null, success : false, text : "Interal Error"}
+  }
+
   var severity = 'info';
-  if (message.info==null){
-    if(message.success==false){
+  if (message.info===null || message.info===undefined){
+    if(message.success===false){
       severity = 'error';
     }
     else{

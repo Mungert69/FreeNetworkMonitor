@@ -59,16 +59,16 @@ export default function Dashboard() {
   const [hostData, setHostData] = React.useState(defaultHost);
   const [dataSetId, setDataSetId] = React.useState(0);
   const [siteId, setSiteId] = React.useState(getStartSiteId());
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [selectedDate, setSelectedDate] = React.useState();
   const [alertCount, setAlertCount] = React.useState(0);
   const [toggleTable, setToggleTable] = React.useState(true);
   const [reloadListData, setReloadListData] = React.useState(true);
   const [reloadChart, setReloadChart] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(true);
   const [realTime, setRealTime] = React.useState(true);
-  const [token, setToken] = React.useState(null);
-  const [dateStart, setDateStart] = React.useState(null);
-  const [dateEnd, setDateEnd] = React.useState(null);
+  const [token, setToken] = React.useState();
+  const [dateStart, setDateStart] = React.useState();
+  const [dateEnd, setDateEnd] = React.useState();
 
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -145,7 +145,7 @@ export default function Dashboard() {
     if (realTime) {
       interval = setInterval(() => {
 
-        if (dataSetIdRef.current == 0) {
+        if (dataSetIdRef.current === 0) {
           console.log('Auto reload data');
           let currReloadListData = reloadListDataRef.current;
           setReloadListData(currentVal => !currentVal);
@@ -180,8 +180,8 @@ export default function Dashboard() {
       }
       else {
         await setDefaultUser(true);
-        await setApiUser(null);
-        await setToken(null);
+        await setApiUser(undefined);
+        await setToken(undefined);
       }
       await setIsLoading(false);
   

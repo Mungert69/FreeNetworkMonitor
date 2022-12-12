@@ -84,7 +84,7 @@ const theme = createTheme();
 
 export default function Blog() {
 
-  let [content, setContent] = useState([{ md: 'test', href: '#test' }]);
+  const [content, setContent] = useState([{ md: 'test', href: '#test' }]);
 
   useEffect(() => {
     const main = async () => {

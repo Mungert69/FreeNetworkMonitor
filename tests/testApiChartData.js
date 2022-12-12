@@ -29,11 +29,11 @@ export default function () {
 
     const defaultUser = "default";
     const dataSetId = 1;
-    var user = null;
-    var token = null;
+    var user = undefined;
+    var token = undefined;
 
     var extUrlStr = 'Auth';
-    if (user == null || user == undefined) {
+    if (user === null || user === undefined) {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;

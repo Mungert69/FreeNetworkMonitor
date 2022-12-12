@@ -29,7 +29,7 @@ const customTooltip = ({ active, payload, label }) => {
   
     var showResponse=true;
     // if responce is -1 then set showResponce to false
-    if (response == -1) {
+    if (response === -1) {
       showResponse = false;
     }
 
@@ -70,7 +70,7 @@ const CustomizedDot = (props) => {
 export default function Chart({data,selectedDate, hostname}) {
   const theme = useTheme();
   var dateString;
-  if (selectedDate==null) { 
+  if (selectedDate===null || selectedDate===undefined) { 
     dateString="Current";
   }
   else {

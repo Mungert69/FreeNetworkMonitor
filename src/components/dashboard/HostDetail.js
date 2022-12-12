@@ -22,7 +22,7 @@ const styleObject = (theme) => {
 
 export default function HostDetail({hostData}) {
   const classes = useClasses(styleObject(useTheme()))
-  if (hostData.address==undefined) return null;
+  if (hostData.address===undefined) return null;
   return (
     <React.Fragment>
       <Typography align="center" color="testPrimary" className={classes.depositContext}  >

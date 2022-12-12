@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -11,11 +11,12 @@ import TextField from '@mui/material/TextField';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { convertDate } from './ServiceAPI';
+import { useState } from 'react';
 
 
 export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd }) {
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
  
 
   const handleChangeStartDate = (newValue) => {
@@ -27,7 +28,7 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
     setDateEnd(newValue);
   };
   var filteredDataSets=null;
-  /*if (startDate === null || endDate === null) {
+  /*if (startDate === undefined || endDate === undefined) {
     filteredDataSets =  dataSets;
 
   }
@@ -70,7 +71,7 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
         (data) =>
           <ListItem key={data.id} button onClick={() => handleSetDataSetId(data.id, data.date)}>
 
-            <Tooltip title={data.id == 0 ? 'Current' : data.date
+            <Tooltip title={data.id === 0 ? 'Current' : data.date
             }>
               <ListItemIcon>
                 <AssignmentIcon fontSize='small' />
@@ -78,7 +79,7 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
             </Tooltip>
             <Tooltip title="View Data Set">
               <span>
-                {data.id == 0 ? <ListItemText secondary='Current' /> : <ListItemText secondary={data.date} />}
+                {data.id === 0 ? <ListItemText secondary='Current' /> : <ListItemText secondary={data.date} />}
               </span>
             </Tooltip>
           </ListItem>

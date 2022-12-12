@@ -41,7 +41,7 @@ export const getSiteIdfromUrl = (url) => {
 
 export const fetchLoadServer = async (user, token) => {
     var extUrlStr = 'Auth';
-    if (user == null || user == undefined) {
+    if (user === null || user === undefined) {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
@@ -54,7 +54,7 @@ export const fetchLoadServer = async (user, token) => {
         }
     }
     var sentData = { User: user };
-    var data = null;
+    var data = undefined;
 
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -81,14 +81,14 @@ export const fetchLoadServer = async (user, token) => {
         console.log('ServiceAPI.fetchLoadServer unable to set load server : ' + error);
         if (result.data.message != null)
             console.log('Api Result.Message was ' + result.data.message);
-        return;
+        return null;
     }
 }
 
 export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, token) => {
     const monitorPingInfoId = hostData.id;
     var extUrlStr = 'Auth';
-    if (user == null || user == undefined) {
+    if (user === null || user === undefined) {
         if (token != null) return;
         user = {};
         user.userID = defaultUser;
@@ -96,7 +96,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
         extUrlStr = 'Default';
         token = '';
     } else {
-        if (token == null || token == undefined) {
+        if (token === null || token === undefined) {
             console.log('ServiceAPI.fetcListData Error missing token for user ' + user.name);
             return;
         }
@@ -138,7 +138,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
 export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, token) => {
     var data = [];
     var extUrlStr = 'Auth';
-    if (user == null || user == undefined) {
+    if (user === null || user === undefined) {
         if (token != null) return;
         user = {};
         user.userID = defaultUser;
@@ -146,7 +146,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
         extUrlStr = 'Default';
         token = '';
     } else {
-        if (token == null || token == undefined) {
+        if (token === null || token === undefined) {
             console.log('ServiceAPI.fetcListData Error missing token for user ' + user.name);
             return;
         }
@@ -194,11 +194,11 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     // No auth for now.
     var token = '';
     // Set dateEnd to current date if not set.
-    if (dateEnd == null || dateEnd == undefined) {
+    if (dateEnd === null || dateEnd === undefined) {
         dateEnd = moment();
     }
     // Set dateStart to current date minus one month if not set.
-    if (dateStart == null || dateStart == undefined) {
+    if (dateStart === null || dateStart === undefined) {
         dateStart = moment().subtract(14, 'days');
     }
     dateEnd = moment(dateEnd).endOf('day');
@@ -219,7 +219,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
         result.data.data.map((row) => {
             var dateObj = convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm');
 
-            if (row.dataSetId == 0) { dateObj = null };
+            if (row.dataSetId === 0) { dateObj = null };
             const obj = { 'id': row.dataSetId, 'date': dateObj };
             data.push(obj)
         }
@@ -250,7 +250,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
         result.data.data.map((row) => {
             var dateObj = convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm');
 
-            if (row.dataSetId == 0) { dateObj = null };
+            if (row.dataSetId === 0) { dateObj = null };
             const obj = { 'id': row.dataSetId, 'date': dateObj };
             data.push(obj)
         });
@@ -267,7 +267,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
 };
 
 export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload, reload, user, token) => {
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.resetAlertApiCall Error missing token for user ' + user.name);
         return;
     }
@@ -294,7 +294,7 @@ export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload,
 };
 
 export const fetchEditHostData = async (baseUrlId, user, token) => {
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.fetchEditHostData Error missing token for user ' + user.name);
         return;
     }
@@ -334,7 +334,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
 }
 
 export const addUserApi = async (baseUrlId, user, token) => {
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.addUserApi Error missing token for user ' + user.name);
         return;
     }
@@ -363,7 +363,7 @@ export const addUserApi = async (baseUrlId, user, token) => {
 
 export const updateApiUser = async (baseUrlId, user, token) => {
     var message = { text: '', success: false };
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);
         return;
     }
@@ -407,7 +407,7 @@ export const updateApiUser = async (baseUrlId, user, token) => {
 
 export const resendVerifyEmail = async (baseUrlId, user, token) => {
     var message = { text: '', success: false };
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.resendVerifyEmail Error missing token for user ' + user.name);
         return;
     }
@@ -449,7 +449,7 @@ export const resendVerifyEmail = async (baseUrlId, user, token) => {
 
 
 export const testEditApi = async (baseUrlId, user, token) => {
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);
         return;
     }
@@ -486,7 +486,7 @@ export const testEditApi = async (baseUrlId, user, token) => {
 
 export const addHostApi = async (baseUrlId, user, token,data) => {
     var message = { text: '', success: false };
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.addHostApi Error missing token for user ' + user.name);
         return;
     }
@@ -540,7 +540,7 @@ export const addHostApi = async (baseUrlId, user, token,data) => {
 
 export const delHostApi = async (baseUrlId, user, index, token) => {
     var message = { text: '', success: false };
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.delHostApi Error missing token for user ' + user.name);
         return;
     }
@@ -582,7 +582,7 @@ export const delHostApi = async (baseUrlId, user, index, token) => {
 export const saveHostData = async (baseUrlId, data, token) => {
 
     var message = { text: '', success: false };
-    if (token == null || token == undefined) {
+    if (token === null || token === undefined) {
         console.log('ServiceAPI.saveHostData Error missing token ');
         return;
     }
