@@ -31,8 +31,9 @@ export const getSiteIdfromUrl = (url) => {
 
     try {
         siteId = apiBaseUrls.indexOf(url);
+        console.log('ServiceAPI.getSiteIdfromUrl got SiteID = ' + siteId);
     } catch (e) {
-        // do nothing
+        console.log('ServiceAPI.getSiteIdfromUrl failed to get SiteID. Error was : ' + e);
     }
 
     return siteId;
