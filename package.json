@@ -10,14 +10,14 @@
     "d3-color": "3.1.0"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^1.11.0",
+    "@auth0/auth0-react": "^1.12.1",
     "@emotion/css": "^11.10.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.8",
     "@mui/x-date-pickers": "^5.0.4",
-    "auth0": "^2.42.0",
+    "auth0": "^3.1.1",
     "axios": "^1.1.2",
     "axios-retry": "^3.3.1",
     "bootstrap": "^5.2.2",
