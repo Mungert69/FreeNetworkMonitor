@@ -135,7 +135,7 @@ export default function CustomPaginationActionsTable({data, clickViewChart, rese
               </Tooltip>
               <Tooltip title="Reset Alert">
                 <span>
-                <Button hidden={!row.monitorStatus.alertFlag} onClick={() => resetHostAlert(row.id)} key={row.id}>
+                <Button hidden={!row.monitorStatus.alertFlag} onClick={() => resetHostAlert(row.monitorIPID)} key={row.id}>
                   <ErrorIcon color='error' />
                 </Button>
                 </span>
