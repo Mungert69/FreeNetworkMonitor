@@ -266,12 +266,12 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
     setDataSets(data);
 };
 
-export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload, reload, user, token) => {
+export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user, token) => {
     if (token === undefined) {
         console.log('ServiceAPI.resetAlertApiCall Error missing token for user ' + user.name);
         return;
     }
-    const sentData = { User: user, MonitorPingInfoId: monitorPingInfoId };
+    const sentData = { User: user, MonitorIPID: monitorIPID };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -288,7 +288,7 @@ export const resetAlertApiCall = async (monitorPingInfoId, baseUrlId, setReload,
         return;
     }));
 
-    console.log('ServiceAPI.resetAlertApicall reset alert of monitorPingInfoId ' + monitorPingInfoId + " for user " + user.name);
+    console.log('ServiceAPI.resetAlertApicall reset alert of monitorPingInfoId ' + monitorIPID + " for user " + user.name);
 
     setReload(!reload);
 };
