@@ -82,7 +82,7 @@ function TablePaginationActions(props) {
 
 
 
-export default function CustomPaginationActionsTable({data, clickViewChart, resetHostAlert}) {
+export default function CustomPaginationActionsTable({ data, clickViewChart, resetHostAlert, processorList }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -107,7 +107,7 @@ export default function CustomPaginationActionsTable({data, clickViewChart, rese
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 500 }} aria-label="Host List" size="small" >
-      <TableHead>
+        <TableHead>
           <TableRow >
             <TableCell>View Chart</TableCell>
             <TableCell>Address</TableCell>
@@ -115,42 +115,48 @@ export default function CustomPaginationActionsTable({data, clickViewChart, rese
             <TableCell>Packets Sent</TableCell>
             <TableCell>Packets Lost</TableCell>
             <TableCell>% Packets Lost</TableCell>
-            <TableCell align="right">Average Round Trip</TableCell>
+            <TableCell >Average Response Time</TableCell>
+            <TableCell align="right">Monitor Location</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-        
+
           {(rowsPerPage > 0
             ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : data
           ).map((row) => (
             <TableRow key={row.id} >
-            <TableCell >
-              <Tooltip title="View Chart">
-                <span>
-                <Button onClick={() => clickViewChart(row)} key={row.id}>
-                  <BarChartIcon colour='action' />
-                </Button>
-                </span>
-              </Tooltip>
-              <Tooltip title="Reset Alert">
-                <span>
-                <Button hidden={!row.monitorStatus.alertFlag} onClick={() => resetHostAlert(row.monitorIPID)} key={row.id}>
-                  <ErrorIcon color='error' />
-                </Button>
-                </span>
-              </Tooltip>
+              <TableCell >
+                <Tooltip title="View Chart">
+                  <span>
+                    <Button onClick={() => clickViewChart(row)} key={row.id}>
+                      <BarChartIcon colour='action' />
+                    </Button>
+                  </span>
+                </Tooltip>
+                <Tooltip title="Reset Alert">
+                  <span>
+                    <Button hidden={!row.monitorStatus.alertFlag} onClick={() => resetHostAlert(row.monitorIPID)} key={row.id}>
+                      <ErrorIcon color='error' />
+                    </Button>
+                  </span>
+                </Tooltip>
 
 
 
-            </TableCell>
-            <TableCell>{row.address}</TableCell>
-            <TableCell>{row.monitorStatus.message}</TableCell>
-            <TableCell>{row.packetsSent}</TableCell>
-            <TableCell>{row.packetsLost}</TableCell>
-            <TableCell>{row.percentageLost}</TableCell>
-            <TableCell align="right">{row.roundTripAverage}</TableCell>
-          </TableRow>
+              </TableCell>
+              <TableCell>{row.address}</TableCell>
+              <TableCell>{row.monitorStatus.message}</TableCell>
+              <TableCell>{row.packetsSent}</TableCell>
+              <TableCell>{row.packetsLost}</TableCell>
+              <TableCell>{row.percentageLost}</TableCell>
+              <TableCell >{row.roundTripAverage}</TableCell>
+              <TableCell align="right">{
+                processorList == null ? null : processorList.map(m => {
+                  if (m.appID==row.appID) return m.location;
+                  })}
+              </TableCell>
+            </TableRow>
           ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>

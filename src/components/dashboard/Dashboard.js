@@ -30,7 +30,7 @@ import Loading from '../loading';
 import Image from '../../img/ping.svg';
 import MiniProfile from './MiniProfile';
 
-import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';
+import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate,fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';
 import DataSetsList from './DataSetsList';
 import AuthNav from '../auth-nav';
 
@@ -69,6 +69,7 @@ export default function Dashboard() {
   const [token, setToken] = React.useState();
   const [dateStart, setDateStart] = React.useState();
   const [dateEnd, setDateEnd] = React.useState();
+  const [processorList, setProcessorList] = React.useState([]);
 
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -218,6 +219,7 @@ export default function Dashboard() {
     const fetchData = async () => {
       await setIsLoading(true);
       await fetchDataSetsByDate(siteId, setDataSets,dateStart,dateEnd);
+      await fetchProcessorList(siteId, setProcessorList);
       setIsLoading(false);
     };
     fetchData();
@@ -322,9 +324,9 @@ export default function Dashboard() {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {toggleTable ?
-                  <HostListPag  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} />
+                  <HostListPag  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList}/>
                   :
-                  <HostListEdit siteId={siteId} token={token} />
+                  <HostListEdit siteId={siteId} token={token} processorList={processorList} />
                 }
               </Paper>
             </Grid>

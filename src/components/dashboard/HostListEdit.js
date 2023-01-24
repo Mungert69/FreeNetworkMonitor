@@ -25,12 +25,10 @@ import HelpDialog from './HelpDialog';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-
 const muiCache = createCache({
 	"key": "mui",
 	"prepend": true
 });
-
 const updateData = (tableMeta, data, setData, value, colName) => {
   if (!Number.isInteger(tableMeta.rowData)) return;
 	const id = tableMeta.currentTableData[tableMeta.rowIndex].data[tableMeta.rowData];
@@ -39,9 +37,7 @@ const updateData = (tableMeta, data, setData, value, colName) => {
 	)
   setData(temp);
 }
-
-
-const HostListEdit = ({ siteId, token }) => {
+const HostListEdit = ({ siteId, token, processorList }) => {
   const { user } = useAuth0();
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
@@ -51,7 +47,6 @@ const HostListEdit = ({ siteId, token }) => {
   const [message, setMessage] = React.useState('');
   const [openHelp, setOpenHelp] = React.useState(false);
   const [displayEdit, setDisplayEdit] = React.useState(true);
-
   const getMuiTheme = () => createTheme({
 		components: {
 			MuiSvgIcon: {
@@ -91,10 +86,8 @@ const HostListEdit = ({ siteId, token }) => {
           }
         }
 			},
-
     }
   })
-
   React.useEffect(() => {
     (async () => {
       const returndata = await fetchEditHostData(siteId, user, token);
@@ -103,13 +96,11 @@ const HostListEdit = ({ siteId, token }) => {
       }
     })();
   }, [reset]);
-
   const columns = [
     {
 			name: 'id',
 			options: {
 				display: false}
-
     },
     {
       name: 'address',
@@ -159,8 +150,6 @@ const HostListEdit = ({ siteId, token }) => {
             </Select>
 						}
             />
- 
-            
           );
         }
       }
@@ -212,7 +201,7 @@ const HostListEdit = ({ siteId, token }) => {
     },
      {
       name: 'appID',
-      label: 'Proccesor ID',
+      label: 'Monitor Location',
       options: {
         filter: true,
         sort: true,
@@ -232,15 +221,12 @@ const HostListEdit = ({ siteId, token }) => {
                 setData(tempData);
                 updateValue(event.target.value);}}
             >
-              <MenuItem value={'1'}>Frankfurt-Germany</MenuItem>
-              <MenuItem value={'2'}>Warsaw-Poland</MenuItem>
-              <MenuItem value={'3'}>Beauharnois-Canada</MenuItem>
-              <MenuItem value={'4'}>Frankfurt-Germany-2</MenuItem>
+              {processorList.map(row => 
+                <MenuItem value={row.appID}>{row.location}</MenuItem>
+              )}
             </Select>
 						}
             />
- 
-            
           );
         }
       }
@@ -253,7 +239,6 @@ const HostListEdit = ({ siteId, token }) => {
         empty: true,
         customBodyRenderLite: (tableMeta) => {
           return (
-
             <IconButton color="inherit" size="large">
               <Badge color="secondary">
                 <Tooltip title="Delete Host">
@@ -270,16 +255,13 @@ const HostListEdit = ({ siteId, token }) => {
       }
     }
   ];
-
   const options = {
     filter: true,
     filterType: 'dropdown',
     customToolbar: () => (<HeaderElements />),
     selectableRows: false,
     draggableColumns: true
-    
   };
-
   const HeaderElements = () => (
     <>
       <IconButton color="inherit" size="large">
@@ -287,30 +269,24 @@ const HostListEdit = ({ siteId, token }) => {
           <Tooltip title="Save Host List">
             <SaveIcon onClick={() => saveData(data)} />
           </Tooltip>
-
         </Badge>
       </IconButton>
-
       <IconButton color="inherit" size="large" 	>
         <Badge color="secondary" >
           <Tooltip title="Add new Host">
             <AddIcon onClick={() => addHost()} />
           </Tooltip>
-
         </Badge>
       </IconButton>
-
       <IconButton color="inherit" size="large">
         <Badge color="secondary">
           <Tooltip title="Click for help">
             <HelpIcon onClick={() => setOpenHelp(true)} />
           </Tooltip>
-
         </Badge>
       </IconButton>
     </>
   );
-
   const saveData = async (data) => {
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     await setMessage(message);
@@ -320,7 +296,6 @@ const HostListEdit = ({ siteId, token }) => {
     await setShowMessage(true);
     await setDisplayEdit(true);
   }
-
   const addHost = async () => {
     if (!displayEdit) {
       var message = { text: 'Please save before adding another host.', success: false };
@@ -348,10 +323,7 @@ const HostListEdit = ({ siteId, token }) => {
     setDisplayEdit(true);
     setReset(!reset);
   }
-
-
   const resetData = () => setReset(!reset)
-
   return (
     <>
       {openHelp ? <HelpDialog setOpen={setOpenHelp} /> : null}
@@ -369,5 +341,4 @@ const HostListEdit = ({ siteId, token }) => {
     </>
   );
 }
-
 export default HostListEdit;

@@ -11,13 +11,9 @@ import TextField from '@mui/material/TextField';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { convertDate } from './ServiceAPI';
-
-
 export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd }) {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
- 
-
   const handleChangeStartDate = (newValue) => {
     setStartDate(newValue);
     setDateStart(newValue);
@@ -29,24 +25,19 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
   //var filteredDataSets=undefined;
   /*if (startDate === undefined || endDate === undefined) {
     filteredDataSets =  dataSets;
-
   }
   else{
     const startDateConverted=convertDate(startDate, 'YYYY-MM-DD HH:mm');
     const endDateConverted=convertDate(endDate, 'YYYY-MM-DD HH:mm');
     // FilterDataSets for .date >= startDate && .date <= endDate
     filteredDataSets = dataSets.filter(dataSet => {
-     
       return dataSet.date >= startDateConverted && dataSet.date <= endDateConverted;
     } );
    }*/
     return (
-
     <React.Fragment>
-
        <LocalizationProvider dateAdapter={AdapterMoment}>
        <Stack spacing={3}>
-       
        <MobileDatePicker
           label="Start Date"
           inputFormat="YYYY-MM-DD "
@@ -63,15 +54,11 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
         />
         </Stack>
        </LocalizationProvider>
-
-
     <List >
       { dataSets.map(
         (data) =>
           <ListItem key={data.id} button onClick={() => handleSetDataSetId(data.id, data.date)}>
-
-            <Tooltip title={data.id === 0 ? 'Current' : data.date
-            }>
+            <Tooltip title={data.id === 0 ? 'Current' : data.date}>
               <ListItemIcon>
                 <AssignmentIcon fontSize='small' />
               </ListItemIcon>
@@ -86,6 +73,4 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
     </List>
 </React.Fragment>
   );
-
-
 }

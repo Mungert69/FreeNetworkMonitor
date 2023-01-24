@@ -188,6 +188,32 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     setAlertCount(alertCount);
 }
 
+export const fetchProcessorList = async (baseUrlId, setProcessorList) => {
+    var data = [];
+    axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetProcessorList')).catch(function (error) {
+        console.log('ServiceAPI.fetchProcessorList Axios Error was : ' + error);
+        return;
+    }));
+    try {
+        result.data.data.map((row) => {
+            const obj = { 'appID': row.appID, 'location': row.location };
+            console.log('Processor.AppID= '+row.appID+' Location=' + row.location);
+            data.push(obj)
+        });
+    }
+    catch (error) {
+        console.log('ServiceAPI.fetchProcessorList Mapping Data Error was : ' + error);
+        if (result!=undefined && result.data.message !== undefined)
+            console.log('Api Result.Message was ' + result.data.message);
+        return;
+    }
+    setProcessorList(data);
+    console.log('ServiceAPI.fetchProcessorlist Got Processor List');
+}
+
+
+
 // Fetch DataSets between two dates. given 
 export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dateEnd) => {
     var data = [];
