@@ -210,6 +210,41 @@ const HostListEdit = ({ siteId, token }) => {
         }
       }
     },
+     {
+      name: 'appID',
+      label: 'Proccesor ID',
+      options: {
+        filter: true,
+        sort: true,
+        customBodyRender: (value, tableMeta, updateValue) => {
+          //updateData(tableMeta, data, setData, value, 'endPointType');
+          return (
+            <FormControlLabel
+              label=""
+              value={value}
+						control={
+						<Select
+              value={value}
+              onChange={event => {
+                const row=tableMeta.rowIndex;
+                var tempData=data;           
+                tempData[row]["appID"]=event.target.value;       
+                setData(tempData);
+                updateValue(event.target.value);}}
+            >
+              <MenuItem value={'1'}>Frankfurt-Germany</MenuItem>
+              <MenuItem value={'2'}>Warsaw-Poland</MenuItem>
+              <MenuItem value={'3'}>Beauharnois-Canada</MenuItem>
+              <MenuItem value={'4'}>Frankfurt-Germany-2</MenuItem>
+            </Select>
+						}
+            />
+ 
+            
+          );
+        }
+      }
+    },
     {
       name: "",
       options: {
