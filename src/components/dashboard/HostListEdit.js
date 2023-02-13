@@ -147,6 +147,8 @@ const HostListEdit = ({ siteId, token, processorList }) => {
             >
               <MenuItem value={'http'}>Http (website)</MenuItem>
               <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
+              <MenuItem value={'dns'}>Http (website)</MenuItem>
+              <MenuItem value={'smtp'}>ICMP (Ping)</MenuItem>
             </Select>
 						}
             />
