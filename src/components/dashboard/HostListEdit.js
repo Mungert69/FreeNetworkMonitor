@@ -145,10 +145,10 @@ const HostListEdit = ({ siteId, token, processorList }) => {
                 setData(tempData);
                 updateValue(event.target.value);}}
             >
-              <MenuItem value={'http'}>Http (website)</MenuItem>
+              <MenuItem value={'http'}>HTTP (website)</MenuItem>
               <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
-              <MenuItem value={'dns'}>Http (website)</MenuItem>
-              <MenuItem value={'smtp'}>ICMP (Ping)</MenuItem>
+              <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
+              <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
             </Select>
 						}
             />
