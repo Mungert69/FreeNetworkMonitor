@@ -149,6 +149,7 @@ const HostListEdit = ({ siteId, token, processorList }) => {
               <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
               <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
               <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
+                <MenuItem value={'quantum'}>QUANTUM (Quantum Ready)</MenuItem>
             </Select>
 						}
             />
