@@ -121,7 +121,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     }));
     try {
         result.data.data.map((row) => {
-            data.push({ 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.roundTripTime, 'status': row.status })
+            data.push({ 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.roundTripTimeInt, 'status': row.status })
         });
         console.log('ServiceAPI.fetchChartData Got chart data for MonitorPingInfo with ID  : ' + monitorPingInfoId);
 
