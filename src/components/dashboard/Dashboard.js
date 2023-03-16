@@ -27,7 +27,7 @@ import HostListPag from './HostListPag';
 //import HostListEdit from './HostListEdit';
 import HostListEdit from './HostListEdit';
 import Loading from '../loading';
-import Image from '../../img/ping.svg';
+import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
 
 import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate,fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';
@@ -247,6 +247,7 @@ export default function Dashboard() {
             size="large">
             <MenuIcon />
           </IconButton>
+          <LogoLink/>
           <Typography sx={{ display: { xs: 'none', sm: 'block' } }} component="h1" color="inherit" noWrap className={classes.title}>
             Network Monitor Dashboard
           </Typography>
