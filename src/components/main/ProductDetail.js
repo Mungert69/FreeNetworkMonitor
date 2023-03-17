@@ -32,6 +32,7 @@ import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
+import LogoLink from './LogoLink';
 
 const ProductDetail = () => {
     const classes = useClasses(styleObject(useTheme(), PingImage));
@@ -66,7 +67,8 @@ const ProductDetail = () => {
                         size="large">
                         <MenuIcon />
                     </IconButton>
-                    <Typography component="h1" color="inherit" noWrap className={classes.title}>
+                    <LogoLink/>
+                    <Typography sx={{  paddingLeft:4 }}  component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
                     <AuthNav />

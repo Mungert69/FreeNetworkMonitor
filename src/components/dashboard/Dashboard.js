@@ -237,7 +237,7 @@ export default function Dashboard() {
       </Helmet>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-
+      
           <IconButton
             edge="start"
             color="inherit"
@@ -248,13 +248,13 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <LogoLink/>
-          <Typography sx={{ display: { xs: 'none', sm: 'block' } }} component="h1" color="inherit" noWrap className={classes.title}>
-            Network Monitor Dashboard
+          <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft:4 }} component="h1" color="inherit" noWrap className={classes.title}>
+           Network Monitor Dashboard
           </Typography>
           <Typography sx={{ display: { xs: 'block', sm: 'none' } }} component="h1" color="inherit" noWrap className={classes.title}>
             Dashboard
           </Typography>
-         
+ 
           {
             defaultUser ? null :
               <IconButton color="inherit">

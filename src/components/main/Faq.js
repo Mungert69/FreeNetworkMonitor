@@ -22,6 +22,7 @@ import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import FaqList from "react-faq-component";
+import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 
 
@@ -108,7 +109,8 @@ const Faq = () => {
                         size="large">
                         <MenuIcon />
                     </IconButton>
-                    <Typography component="h1" color="inherit" noWrap className={classes.title}>
+                    <LogoLink/>
+                    <Typography sx={{  paddingLeft:4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
 

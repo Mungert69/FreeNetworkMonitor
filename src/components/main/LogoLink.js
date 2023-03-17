@@ -6,24 +6,18 @@ import Box from '@mui/material/Box';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import React from "react";
-import Logo from '../../img/logo.png';
+import Logo from '../../img/logo.jpg';
 
 
 const LogoLink = () => {
     return (
-      <Link href="https://mega.nz/aff=G-n66OpvAgo">
+      <Link href="https://www.freenetworkmonitor.click">
            
-                <Card sx={{ display: 'flex' , backgroundColor: 'transparent', shadowOpacity: 100  }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <CardContent sx={{ flex: '1 0 auto' }}>
-                            <Typography variant="body2" color="textSecondary" >
-                                {'Storage provided by Mega.nz'}
-                            </Typography>
-                        </CardContent>
-                    </Box>
+                <Card >
+                  
                     <CardMedia
                         component="img"
-                        sx={{ width: 58, height: 58 }}
+                        sx={{ width: 48, height: 32 }}
                         image={Logo}
                         alt="Free Network Monitor Logo"
                     />
