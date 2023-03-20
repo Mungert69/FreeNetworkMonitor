@@ -633,7 +633,7 @@ export const saveHostData = async (baseUrlId, data, token) => {
         message.success = result.data.success;
     }
     catch (error) {
-        message.text = 'ServiceAPI.addHostApi Error was : ' + error;
+        message.text = 'ServiceAPI.saveHostData  Error was : ' + error;
         console.log(message.text);
         message.success = false;
         return message;

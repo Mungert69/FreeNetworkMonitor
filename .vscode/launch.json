@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "name": "Launch localhost",
+            "url": "http://dev.com:3000/index.html",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "name": "Attach Firefox in debug mode",
             "type": "firefox",
             "request": "attach"

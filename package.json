@@ -3,9 +3,7 @@
   "homepage": "https://www.freenetworkmonitor.click/",
   "version": "0.1.17",
   "private": true,
-  "resolutions": {
-   
-  },
+  "resolutions": {},
   "dependencies": {
     "@auth0/auth0-react": "^1.12.1",
     "@babel/core": "^7.21.3",
