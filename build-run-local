@@ -1,9 +1,8 @@
 #!/bin/sh
 value=`cat ../secret`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
-
-npm install --force
+npm update
 npm audit
 npm run build
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:0.1.16 
+docker push mungert/networkmonitorreact-local:0.1.17 
