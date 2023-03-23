@@ -40,12 +40,12 @@ export default function MainListItems()  {
         <ListItemText primary="Faq" />
       </ListItem>
     </Link>
-    <Link href="/Profile"  	sx={{ display: displayVal }}>
-      <ListItem button key="profile">
+    <Link href="/Payment"  >
+      <ListItem button key="payment">
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
-        <ListItemText primary="Profile" />
+        <ListItemText primary="Payment" />
       </ListItem>
     </Link>
 
