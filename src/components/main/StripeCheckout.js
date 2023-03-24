@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { updateApiUser,resendVerifyEmail } from '../dashboard/ServiceAPI';
 
 
-const ProductDisplay = () => (
-  <React.Fragment>
+const ProductDisplay = (userId) => {
+  const checkoutUrl='http://localhost:2058/CreateCheckoutSession/'+userId.userId;
+  return <React.Fragment>
     <section>
-      <form action="http://localhost:2058/CreateCheckoutSession/google-oauth2|118403118408200494081" method="POST">
+      <form action={checkoutUrl} method="POST">
         <input type="hidden" id="basicPrice" name="priceId" value="price_1MmoEnD5M5d8AAHNeTLVHOma" />
         <img
           src="/img/starter.png"
@@ -18,7 +20,7 @@ const ProductDisplay = () => (
       </form>
     </section>
     <section>
-      <form action="http://localhost:2058/CreateCheckoutSession/google-oauth2|118403118408200494081" method="POST">
+      <form action={checkoutUrl} method="POST">
         <input type="hidden" id="proPrice" name="priceId" value="price_1MmoHiD5M5d8AAHNuM1pMwtI" />
         <img
           src="/img/professional.png"
@@ -31,10 +33,11 @@ const ProductDisplay = () => (
         <button id="pro-plan-btn">Select</button>
       </form>
     </section>
-  </React.Fragment>
-);
+  </React.Fragment>;
+ 
+};
 
-const SuccessDisplay = ({ sessionId }) => {
+const SuccessDisplay = ({ sessionId,customerId }) => {
   return (
     <section>
       <div className="product Box-root">
@@ -54,6 +57,17 @@ const SuccessDisplay = ({ sessionId }) => {
           Manage your billing information
         </button>
       </form>
+      <form action="http://localhost:2058/customer-portal" method="POST">
+        <input
+          type="hidden"
+          id="customer-id"
+          name="customer_id"
+          value={customerId}
+        />
+        <button id="checkout-and-portal-button" type="submit">
+          Manage your billing information from CustomerID
+        </button>
+      </form>
     </section>
   );
 };
@@ -64,11 +78,14 @@ const Message = ({ message }) => (
   </section>
 );
 
-export default function StripeCheckout() {
+export default function StripeCheckout({ apiUser, token, siteId }) {
   let [message, setMessage] = useState('');
   let [success, setSuccess] = useState(false);
   let [sessionId, setSessionId] = useState('');
+ 
 
+
+  
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
@@ -87,9 +104,9 @@ export default function StripeCheckout() {
   }, [sessionId]);
 
   if (!success && message === '') {
-    return <ProductDisplay />;
+    return <ProductDisplay userId={apiUser.userID}/>;
   } else if (success && sessionId !== '') {
-    return <SuccessDisplay sessionId={sessionId} />;
+    return <SuccessDisplay sessionId={sessionId} customerId={apiUser.customerId}/>;
   } else {
     return <Message message={message} />;
   }

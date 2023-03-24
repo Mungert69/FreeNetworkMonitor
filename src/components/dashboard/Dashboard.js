@@ -70,6 +70,7 @@ export default function Dashboard() {
   const [dateStart, setDateStart] = React.useState();
   const [dateEnd, setDateEnd] = React.useState();
   const [processorList, setProcessorList] = React.useState([]);
+  const [initViewSub, setInitViewSub]=React.useState(false);
 
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -140,6 +141,13 @@ export default function Dashboard() {
   }
 
 
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('initViewSub')) {
+      setInitViewSub(true);
+    }
+  }, []);
 
   useEffect(() => {
     let interval;
@@ -273,7 +281,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {defaultUser ? null : <MiniProfile apiUser={apiUser} token={token} siteId={siteId}/>}
+          {defaultUser ? null : <MiniProfile apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub}/>}
         </Toolbar>
        <Loading/>
       </AppBar>
