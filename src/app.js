@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import {  Loading } from "./components";
 import { DashboardView,FaqView ,PaymentView} from "./views";
-import Test from "./views/paymentview";
+import Pricing from "./views/pricingview";
 import  Landing  from "./views/landing";
 import CookieConsent, { Cookies } from "react-cookie-consent";
 import { createBrowserHistory } from 'history'
@@ -59,7 +59,7 @@ const App = () => {
           <Route path="/" exact component={Landing} />
           <Route path="/dashboard" exact component={DashboardView} />
           <Route path="/faq" exact component={FaqView} />
-          <Route path="/payment" exact component={Test} />
+          <Route path="/pricing" exact component={Pricing} />
           <Redirect to="/" />
         </Switch>
       </div>

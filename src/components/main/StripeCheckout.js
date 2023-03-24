@@ -13,7 +13,7 @@ const ProductDisplay = (userId) => {
           width="120"
           height="120"
         />
-        <div class="name">Starter</div>
+        <div class="name">Standard Plan</div>
         <div class="price">£1</div>
         <div class="duration">per month</div>
         <button id="basic-plan-btn">Select</button>
@@ -27,7 +27,7 @@ const ProductDisplay = (userId) => {
           width="120"
           height="120"
         />
-        <div class="name">Professional</div>
+        <div class="name">Professional Plan</div>
         <div class="price">£2</div>
         <div class="duration">per month</div>
         <button id="pro-plan-btn">Select</button>
@@ -37,35 +37,25 @@ const ProductDisplay = (userId) => {
  
 };
 
-const SuccessDisplay = ({ sessionId,customerId }) => {
+const SuccessDisplay = ({ sessionId,userApi }) => {
   return (
     <section>
       <div className="product Box-root">
         <Logo />
         <div className="description Box-root">
-          <h3>Subscription to starter plan successful!</h3>
+          <h3>You are Subscribed to the {userApi.accountType} Plan</h3>
         </div>
       </div>
-      <form action="http://localhost:2058/customer-portal" method="POST">
-        <input
-          type="hidden"
-          id="session-id"
-          name="session_id"
-          value={sessionId}
-        />
-        <button id="checkout-and-portal-button" type="submit">
-          Manage your billing information
-        </button>
-      </form>
+      
       <form action="http://localhost:2058/customer-portal" method="POST">
         <input
           type="hidden"
           id="customer-id"
           name="customer_id"
-          value={customerId}
+          value={userApi.customerId}
         />
         <button id="checkout-and-portal-button" type="submit">
-          Manage your billing information from CustomerID
+          Manage your Subcription
         </button>
       </form>
     </section>
@@ -98,15 +88,15 @@ export default function StripeCheckout({ apiUser, token, siteId }) {
     if (query.get('canceled')) {
       setSuccess(false);
       setMessage(
-        "Order canceled -- continue to shop around and checkout when you're ready."
+        "Order canceled -- continue to use Free Network Monitor and subcribe when you're ready."
       );
     }
   }, [sessionId]);
 
-  if (!success && message === '') {
+  if (apiUser.accountType=='Free' ) {
     return <ProductDisplay userId={apiUser.userID}/>;
-  } else if (success && sessionId !== '') {
-    return <SuccessDisplay sessionId={sessionId} customerId={apiUser.customerId}/>;
+  } else if (apiUser.accountType!='Free' ) {
+    return <SuccessDisplay sessionId={sessionId} userApi={apiUser}/>;
   } else {
     return <Message message={message} />;
   }
