@@ -18,6 +18,7 @@ const appsettings = require('../../' + appsettingsFile);
 const startSiteId = appsettings.startSiteId;
 const apiLoadBalancerUrl = appsettings.apiLoadBalancerUrl;
 const apiBaseUrls = appsettings.apiBaseUrls;
+const apiSubBaseUrls = appsettings.apiSubBaseUrls;
 
 export const convertDate = (date, format) => {
     var dateObj = new Date(date);
@@ -563,6 +564,45 @@ export const addHostApi = async (baseUrlId, user, token,data) => {
     return message;
 
 }
+
+export const subscribeApi = async (baseSubUrlId, user, token, productName) => {
+    var message = { text: '', success: false };
+    if ( token === undefined) {
+        console.log('ServiceAPI.subscribeApi Error missing token for user ' + user.name);
+        return;
+    }
+    try {
+        const result = await axios(
+            {
+                method: 'post',
+                url: apiSubBaseUrls[baseSubUrlId] + '/CreateCheckoutSession/'+user.sub+'/'+productName,
+                data: user,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+
+                },
+            }
+        ).catch(function (error) {
+            message.text = 'ServiceAPI.subscribeApi Axios Error was : ' + error;
+            console.log(message.text);
+            message.success = false;
+            return message;
+        });
+        message.text =  "Result was : "+result.data.message;
+        message.success =  result.data.success;
+    }
+    catch (error) {
+        message.text = 'ServiceAPI.subscribeApi Error was : ' + error;
+        console.log(message.text);
+        message.success = false;
+        return message;
+    }
+    console.log('ServiceAPI.subscribeApi for user  : ' + user.name + " Message from Api : "+message.text);
+    if (message.success) message.text='Success Subsription';
+    return message;
+
+}
+
 
 export const delHostApi = async (baseUrlId, user, index, token) => {
     var message = { text: '', success: false };

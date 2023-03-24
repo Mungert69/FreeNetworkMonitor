@@ -18,6 +18,8 @@ import Container from '@mui/material/Container';
 import Logo from '../../img/logo.png';
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "../login-button";
+import { subscribeApi } from '../dashboard/ServiceAPI';
+
 
 const tiers = [
   {
@@ -58,7 +60,11 @@ const tiers = [
 
 
 function PricingContent() {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated,user } = useAuth0();
+
+const handleClick= (tier) => {
+    subscribeApi(0,user,'',tier.title);
+}
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -128,8 +134,8 @@ function PricingContent() {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  {isAuthenticated ?     <Button fullWidth variant={tier.buttonVariant}>
-                    <Link href="/Dashboard?initViewSub=true">{tier.buttonText}</Link>
+                  {isAuthenticated ?     <Button href={'http://localhost:2058/CreateCheckoutSession/'+user.sub+'/'+tier.title} fullWidth variant={tier.buttonVariant}>
+                    {tier.buttonText}
                   </Button> : <LoginButton loginText={'Login First'} /> }
                 
                 </CardActions>
