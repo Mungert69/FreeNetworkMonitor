@@ -16,7 +16,8 @@ import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import Logo from '../../img/logo.png';
-
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "../login-button";
 
 const tiers = [
   {
@@ -57,6 +58,7 @@ const tiers = [
 
 
 function PricingContent() {
+  const { isAuthenticated } = useAuth0();
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -126,9 +128,10 @@ function PricingContent() {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <Button fullWidth variant={tier.buttonVariant}>
-                    {tier.buttonText}
-                  </Button>
+                  {isAuthenticated ?     <Button fullWidth variant={tier.buttonVariant}>
+                    <Link href="/Dashboard?initViewSub=true">{tier.buttonText}</Link>
+                  </Button> : <LoginButton loginText={'Login First'} /> }
+                
                 </CardActions>
               </Card>
             </Grid>

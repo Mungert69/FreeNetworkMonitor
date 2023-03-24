@@ -4,7 +4,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import { useAuth0 } from "@auth0/auth0-react";
 import ReactGA4 from 'react-ga4';
 
-const LoginButton = () => {
+const LoginButton = ({loginText, fullLength}) => {
   const { loginWithRedirect } = useAuth0();
   const login = async () =>{
     var path=window.location.pathname;
@@ -21,12 +21,9 @@ const LoginButton = () => {
       
   }
   return (
-    <Button variant="contained" color="primary" endIcon={ <LoginIcon />}
+    <Button fullLength variant="contained" color="primary" endIcon={ <LoginIcon />}
       onClick={() => login()}
-    >
-     
-       Login
-    </Button>
+    >{loginText}</Button>
   );
 };
 

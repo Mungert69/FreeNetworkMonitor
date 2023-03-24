@@ -25,10 +25,7 @@ import MainListItems from '../dashboard/MainListItems';
 import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../loading';
-import MonitorScreenGif from '../../img/monitor-screen.gif';
 import { Helmet } from 'react-helmet'
-import Blog from './Blog';
-import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
@@ -36,6 +33,7 @@ import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
 
 const Pricing = () => {
+
     const classes = useClasses(styleObject(useTheme(), PingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
