@@ -10,10 +10,10 @@ import StripeCheckOut from '../main/StripeCheckout';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
+    padding: theme.spacing(5),
   },
   '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
   },
 }));
 
@@ -61,11 +61,13 @@ export default function ProfileDialog({ setOpen, apiUser, token,siteId, initView
           }
         </DialogContent>
         <DialogActions>
+         
+          <Button  onClick={handleSubscription}>
+            {initViewSub ? <span>View Profile</span>:<span>View Subscription</span>}
+          </Button>
+
           <Button autoFocus onClick={handleClose}>
             Close
-          </Button>
-          <Button  onClick={handleSubscription}>
-            Subscription
           </Button>
 
         </DialogActions>
