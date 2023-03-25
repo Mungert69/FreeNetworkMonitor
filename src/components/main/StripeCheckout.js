@@ -61,7 +61,7 @@ export default function StripeCheckout({ apiUser, token, siteId }) {
   }, [sessionId]);
 
   if (apiUser.accountType=='Free' ) {
-    return <PricingContent/>;
+    return <PricingContent noRedirect={false}/>;
   } else if (apiUser.accountType!='Free' ) {
     return <SuccessDisplay sessionId={sessionId} userApi={apiUser}/>;
   } else {

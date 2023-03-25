@@ -4,14 +4,14 @@ import LoginIcon from '@mui/icons-material/Login';
 import { useAuth0 } from "@auth0/auth0-react";
 import ReactGA4 from 'react-ga4';
 
-const LoginButton = ({loginText, fullLength}) => {
+const LoginButton = ({loginText, fullLength, redirectUrl}) => {
   const { loginWithRedirect } = useAuth0();
   const login = async () =>{
     var path=window.location.pathname;
 
       await loginWithRedirect({
         appState: {
-          returnTo: '/Dashboard'
+          returnTo: redirectUrl
         }
       });
       ReactGA4.event({

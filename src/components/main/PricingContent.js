@@ -59,11 +59,17 @@ const tiers = [
 ];
 
 
-function PricingContent() {
+function PricingContent({noRedirect}) {
   const { isAuthenticated,user } = useAuth0();
 
 const handleClick= (tier) => {
     subscribeApi(0,user,'',tier.title);
+}
+
+const url= (tier, userId) =>{
+  if (noRedirect) return '/Dashboard?initViewSub=true';
+  else
+  return 'http://localhost:2058/CreateCheckoutSession/'+userId+'/'+tier.title;
 }
   return (
     <React.Fragment>
@@ -134,9 +140,9 @@ const handleClick= (tier) => {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  {isAuthenticated ?     <Button href={'http://localhost:2058/CreateCheckoutSession/'+user.sub+'/'+tier.title} fullWidth variant={tier.buttonVariant}>
+                  {isAuthenticated ?     <Button href={url(tier, user.sub)} fullWidth variant={tier.buttonVariant}>
                     {tier.buttonText}
-                  </Button> : <LoginButton loginText={'Login First'} /> }
+                  </Button> : <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} /> }
                 
                 </CardActions>
               </Card>

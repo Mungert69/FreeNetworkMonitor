@@ -59,7 +59,7 @@ const App = () => {
           <Route path="/" exact component={Landing} />
           <Route path="/dashboard" exact component={DashboardView} />
           <Route path="/faq" exact component={FaqView} />
-          <Route path="/pricing" exact component={Pricing} />
+          <Route path="/subscription" exact component={Pricing} />
           <Redirect to="/" />
         </Switch>
       </div>

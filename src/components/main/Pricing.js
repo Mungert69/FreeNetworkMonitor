@@ -98,7 +98,7 @@ const Pricing = () => {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-           <PricingContent/>
+           <PricingContent noRedirect={true}/>
            </Container>
    
         </main>

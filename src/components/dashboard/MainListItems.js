@@ -40,8 +40,8 @@ export default function MainListItems()  {
         <ListItemText primary="Faq" />
       </ListItem>
     </Link>
-    <Link href="/Pricing"  >
-      <ListItem button key="pricing">
+    <Link href="/Subscription"  >
+      <ListItem button key="subscription">
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
