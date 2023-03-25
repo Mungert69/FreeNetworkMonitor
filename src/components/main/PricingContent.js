@@ -99,7 +99,7 @@ const url= (tier, userId) =>{
                   title={tier.title}
                   subheader={tier.subheader}
                   titleTypographyProps={{ align: 'center' }}
-                  action={tier.title === 'Pro' ? <StarIcon /> : null}
+                  action={tier.title === 'Standard' ? <StarIcon /> : null}
                   subheaderTypographyProps={{
                     align: 'center',
                   }}

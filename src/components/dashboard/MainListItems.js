@@ -5,6 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Link from '@mui/material/Link';
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -43,7 +44,7 @@ export default function MainListItems()  {
     <Link href="/Subscription"  >
       <ListItem button key="subscription">
         <ListItemIcon>
-          <DashboardIcon />
+          <LoyaltyIcon />
         </ListItemIcon>
         <ListItemText primary="Subscription" />
       </ListItem>
