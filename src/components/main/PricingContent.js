@@ -59,29 +59,58 @@ const tiers = [
 ];
 
 
-function PricingContent({noRedirect}) {
-  const { isAuthenticated,user } = useAuth0();
+function PricingContent({ noRedirect, apiUser }) {
+  const { isAuthenticated } = useAuth0();
 
-const handleClick= (tier) => {
-    subscribeApi(0,user,'',tier.title);
-}
+  const url = (title, userId, customerId) => {
+    if (noRedirect) return '/Dashboard?initViewSub=true';
 
-const url= (tier, userId) =>{
-  if (noRedirect) return '/Dashboard?initViewSub=true';
-  else
-  return 'http://localhost:2058/CreateCheckoutSession/'+userId+'/'+tier.title;
-}
+    if (customerId != '') return 'http://localhost:2058/customer-portal/' + customerId;
+
+    if (title == 'Free') {
+      return '';
+    }
+    return 'http://localhost:2058/CreateCheckoutSession/' + userId + '/' + title;
+
+  }
+  const buttonText = (tier, accountType, customerId) => {
+
+    if (noRedirect) return 'View Subcription';
+    if (customerId != ''){
+      if (tier.title == accountType) {
+        return 'Current Plan';
+      }
+      return 'Change Subscription';
+    }
+    if (tier.title == accountType) {
+        return 'Current Plan';
+    }
+    return tier.buttonText;
+   
+  }
+
+  const descriptionText =(accountType,cancelAt) => {
+    if (noRedirect) return 'Keep Your Business Online with 24/7 Network Monitoring. Subscribe Now.';
+    if (accountType == 'Free') return 'You are subcribed to the Free Plan. Choose a new Plan to access more features';
+    var cancelStr='';
+    if (cancelAt!=null){
+      cancelStr=' Cancels on '+cancelAt;
+    }
+    return 'You are subcribed to the ' + accountType + ' plan .'+cancelStr;
+  }
+
+
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
       <CssBaseline />
-  
+
       <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-      <Typography variant="h2" align="center" >
-      <img src={Logo} alt="Free Network Monitor Logo" height="96px" /></Typography>
-    
+        <Typography variant="h2" align="center" >
+          <img src={Logo} alt="Free Network Monitor Logo" height="96px" /></Typography>
+
         <Typography variant="h5" align="center" color="text.secondary" component="p">
-          Keep Your Business Online with 24/7 Network Monitoring. Subscribe Now.</Typography>
+          {descriptionText(apiUser.accountType, apiUser.cancelAt)}</Typography>
       </Container>
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
@@ -140,10 +169,10 @@ const url= (tier, userId) =>{
                   </ul>
                 </CardContent>
                 <CardActions>
-                  {isAuthenticated ?     <Button href={url(tier, user.sub)} fullWidth variant={tier.buttonVariant}>
-                    {tier.buttonText}
-                  </Button> : <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} /> }
-                
+                  {isAuthenticated ? <Button href={url(tier.title, apiUser.userID, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
+                    {buttonText(tier, apiUser.accountType,apiUser.customerId)}
+                  </Button> : <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} />}
+
                 </CardActions>
               </Card>
             </Grid>

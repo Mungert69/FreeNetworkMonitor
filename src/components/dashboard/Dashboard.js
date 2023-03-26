@@ -45,9 +45,8 @@ import { trackPromise} from 'react-promise-tracker';
 
 //const useStyles = makeStyles((theme) => (styleObject(theme, null)));
 
-export default function Dashboard() {
+export default function Dashboard({apiUser, setApiUser}) {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [apiUser, setApiUser]=useState();
   const classes = useClasses(styleObject(useTheme(), null));
   const defaultHost = { 'id': 1 };
   const [viewInfo, setViewInfo] = useState(false);

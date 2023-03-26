@@ -32,8 +32,8 @@ import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
 
-const Pricing = () => {
-
+const Pricing = ({apiUser}) => {
+ 
     const classes = useClasses(styleObject(useTheme(), PingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -98,7 +98,7 @@ const Pricing = () => {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-           <PricingContent noRedirect={true}/>
+           <PricingContent noRedirect={true} apiUser={apiUser}/>
            </Container>
    
         </main>

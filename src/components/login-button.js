@@ -21,7 +21,7 @@ const LoginButton = ({loginText, fullLength, redirectUrl}) => {
       
   }
   return (
-    <Button fullLength variant="contained" color="primary" endIcon={ <LoginIcon />}
+    <Button  variant="contained" color="primary" endIcon={ <LoginIcon />}
       onClick={() => login()}
     >{loginText}</Button>
   );
