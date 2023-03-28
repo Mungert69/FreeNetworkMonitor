@@ -8,7 +8,7 @@ import Pricing from "./components/main/Pricing";
 import Faq from "./components/main/Faq";
 import ProductDetail from "./components/main/ProductDetail";
 import CookieConsent, { Cookies } from "react-cookie-consent";
-/*import { createBrowserHistory } from 'history'
+import { createBrowserHistory } from 'history'
 import ReactGA4 from 'react-ga4';
 
 const TRACKING_ID = "G-QZ49HV7DS2"; // OUR_TRACKING_ID
@@ -24,7 +24,7 @@ browserHistory.listen((location, action) => {
 
 })
 
-*/
+
 
 const App = () => {
   const { isLoading } = useAuth0();
