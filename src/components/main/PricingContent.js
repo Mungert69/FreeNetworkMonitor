@@ -18,7 +18,7 @@ import Container from '@mui/material/Container';
 import Logo from '../../img/logo.png';
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "../login-button";
-import { subscribeApi } from '../dashboard/ServiceAPI';
+import { subscribeApi,getSubBaseUrlFromId } from '../dashboard/ServiceAPI';
 
 
 const tiers = [
@@ -59,18 +59,18 @@ const tiers = [
 ];
 
 
-function PricingContent({ noRedirect, apiUser }) {
+function PricingContent({ noRedirect, apiUser, siteId }) {
   const { isAuthenticated } = useAuth0();
 
   const url = (title, userId, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
 
-    if (customerId != '') return 'http://localhost:2058/customer-portal/' + customerId;
+    if (customerId != '') return getSubBaseUrlFromId(siteId)+'/customer-portal/' + customerId;
 
     if (title == 'Free') {
       return '';
     }
-    return 'http://localhost:2058/CreateCheckoutSession/' + userId + '/' + title;
+    return getSubBaseUrlFromId(siteId)+'/CreateCheckoutSession/' + userId + '/' + title;
 
   }
   const buttonText = (tier, accountType, customerId) => {

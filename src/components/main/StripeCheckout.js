@@ -4,30 +4,6 @@ import PricingContent  from '../main/PricingContent';
 
 
 
-const SuccessDisplay = ({ sessionId,userApi }) => {
-  return (
-    <section>
-      <div className="product Box-root">
-
-        <div className="description Box-root">
-          <h3>You are Subscribed to the {userApi.accountType} Plan</h3>
-        </div>
-      </div>
-      
-      <form action="http://localhost:2058/customer-portal" method="POST">
-        <input
-          type="hidden"
-          id="customer-id"
-          name="customer_id"
-          value={userApi.customerId}
-        />
-        <button id="checkout-and-portal-button" type="submit">
-          Manage your Subcription
-        </button>
-      </form>
-    </section>
-  );
-};
 
 const Message = ({ message }) => (
   <section>
@@ -61,9 +37,9 @@ export default function StripeCheckout({ apiUser, token, siteId }) {
   }, [sessionId]);
 
   if (apiUser.accountType=='Free' ) {
-    return <PricingContent noRedirect={false} apiUser={apiUser}/>;
+    return <PricingContent token={token} siteId={siteId} noRedirect={false} apiUser={apiUser}/>;
   } else if (apiUser.accountType!='Free' ) {
-    return <PricingContent noRedirect={false} apiUser={apiUser}/>;
+    return <PricingContent token={token} siteId={siteId} noRedirect={false} apiUser={apiUser}/>;
   } else {
     return <Message message={message} />;
   }

@@ -9,6 +9,13 @@ export const getStartSiteId = () => { return startSiteId; }
 export const getServerLabel = () => {
     return serverLabel;
 }
+export const getServerUrlFromSiteId = (siteId) => {
+    return apiBaseUrls[siteId];
+}
+
+export const getSubBaseUrlFromId = (siteId) => {
+    return apiSubBaseUrls[siteId];
+}
 
 const { appsettingsFile } = window['runConfig'];
 const { serverLabel } = window['serverLabel'];
