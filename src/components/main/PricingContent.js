@@ -65,7 +65,7 @@ function PricingContent({ noRedirect, apiUser, siteId }) {
   const url = (title, userId, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
 
-    if (customerId != '') return getSubBaseUrlFromId(siteId)+'/customer-portal/' + customerId;
+    if (customerId != '') return getApiSubscriptionUrl()+'/customer-portal/' + customerId;
 
     if (title == 'Free') {
       return '';
