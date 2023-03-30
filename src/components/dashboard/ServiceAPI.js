@@ -13,8 +13,8 @@ export const getServerUrlFromSiteId = (siteId) => {
     return apiBaseUrls[siteId];
 }
 
-export const getSubBaseUrlFromId = (siteId) => {
-    return apiSubBaseUrls[siteId];
+export const getApiSubscriptionUrl = () => {
+    return apiSubscriptionUrl;
 }
 
 const { appsettingsFile } = window['runConfig'];
@@ -25,7 +25,7 @@ const appsettings = require('../../' + appsettingsFile);
 const startSiteId = appsettings.startSiteId;
 const apiLoadBalancerUrl = appsettings.apiLoadBalancerUrl;
 const apiBaseUrls = appsettings.apiBaseUrls;
-const apiSubBaseUrls = appsettings.apiSubBaseUrls;
+const apiSubscriptionUrl = appsettings.apiSubscriptionUrl;
 
 export const convertDate = (date, format) => {
     var dateObj = new Date(date);
@@ -582,7 +582,7 @@ export const subscribeApi = async (baseSubUrlId, user, token, productName) => {
         const result = await axios(
             {
                 method: 'post',
-                url: apiSubBaseUrls[baseSubUrlId] + '/CreateCheckoutSession/'+user.sub+'/'+productName,
+                url: apiSubscriptionUrl+ '/CreateCheckoutSession/'+user.sub+'/'+productName,
                 data: user,
                 headers: {
                     Authorization: `Bearer ${token}`,
