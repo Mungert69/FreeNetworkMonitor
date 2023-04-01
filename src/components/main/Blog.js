@@ -12,18 +12,12 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import { NoBackpackRounded } from '@mui/icons-material';
-
-
-
 const importAll = (r) => r.keys().map(r);
 const markdownFiles = importAll(require.context('./posts', false, /\.md$/))
   .sort();
 const nameFile = markdownFiles.map(file => file.split('/')[1].split('.')[0]);
-
 const sections = [
-
 ];
-
 const mainFeaturedPost = {
   title: 'Monitor your Website and Services',
   description: 'Website downtime is a serious threat to businesses today. It is detrimental to a company as it leads to customer dissatisfaction, tarnished brand image, poor search engine ranking, and loss of potential business and clients.',
@@ -31,9 +25,7 @@ const mainFeaturedPost = {
   imageText: 'View of Free Network Monitor',
   linkText: 'Continue reading…',
   href: '#blog-post3',
-
 };
-
 const featuredPosts = [
   {
     title: 'Setup a Free Network Monitor',
@@ -54,8 +46,6 @@ const featuredPosts = [
     href: '#blog-post1',
   },
 ];
-
-
 const sidebar = {
   title: 'About',
   description:
@@ -79,40 +69,13 @@ const sidebar = {
     { name: 'Facebook', icon: FacebookIcon },
   ],
 };
-
 const theme = createTheme();
-
 export default function Blog() {
-
-  const [content, setContent] = useState([{ md: 'test', href: '#test' }]);
-
-  useEffect(() => {
-    const main = async () => {
-      let posts = [];
-      const texts = await Promise.all(markdownFiles.map((file) => fetch(file).then((res) => res.text())))
-        .catch((err) => console.error(err));
-      texts.map((text, index) => {
-        const middle = markdownFiles[index].slice(
-          markdownFiles[index].lastIndexOf('/')+1 ,
-          markdownFiles[index].indexOf('.'),
-        );
-        posts.push({ md: text, href:  middle });
-      });
-      // write markdown files name to console
-      markdownFiles.map((file) => console.log(file));
-      setContent(posts);
-    }
-    main();
-
-  }, [setContent]);
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="lg">
-
-<main>
-
+        <main>
           <MainFeaturedPost post={mainFeaturedPost} />
           <hr></hr>
           <Grid container spacing={4}>
@@ -121,8 +84,7 @@ export default function Blog() {
             ))}
           </Grid>
           <Grid container spacing={5} sx={{ mt: 3 }}>
-            <Main title="Free Network Monitor Blog" content={content} />
-           
+            <Main title="Free Network Monitor Blog" />
           </Grid>
         </main>
       </Container>

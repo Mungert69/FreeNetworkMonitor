@@ -5,10 +5,21 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Markdown from './Markdown';
 import { Element } from 'react-scroll'
+import { fetchBlogs } from '../dashboard/ServiceAPI';
 
 
-function Main(props) {
-  const {content, title } = props;
+function BlogList({title}) {
+  const [posts, setPosts] = useState([]);
+
+ useEffect(() => {
+  fetchBlogs().then((data) => { 
+    
+    setPosts(data);
+
+  });
+ 
+}, []);
+
 
   return (
     <Grid
@@ -25,7 +36,7 @@ function Main(props) {
         {title}
       </Typography>
       <Divider />
-      {content.map((post) => (
+      {  posts.map((post) => (
           <Element id={post.href} name={post.href}>
           <Markdown className="markdown" key={post.href}>
           {post.md}
@@ -36,9 +47,6 @@ function Main(props) {
   );
 }
 
-Main.propTypes = {
-  posts: PropTypes.arrayOf(PropTypes.string).isRequired,
-  title: PropTypes.string.isRequired,
-};
 
-export default Main;
+
+export default BlogList;

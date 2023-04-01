@@ -367,6 +367,38 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
 
 }
 
+
+export const fetchBlogs= async () => {
+    var data = [];
+    axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios(
+        {
+            method: 'post',
+            url: apiLoadBalancerUrl + '/Blog/Blogs'
+        }
+    ).catch(function (error) {
+        console.log('ServiceAPI.fetchBlogs Axios Error was : ' + error);
+        return;
+    }));
+    try {
+        result.data.data.map((row) => {
+            const obj = row;
+            data.push(obj)
+        });
+    }
+    catch (error) {
+        console.log('ServiceAPI.fetchBlogs Mapping Data Error was : ' + error);
+        if ( result!=undefined &&   result.data.message != undefined)
+            console.log('Api Result.Message was ' + result.data.message);
+        return undefined;
+    }
+
+    console.log('ServiceAPI.fetchBlogs Got ' + data.length + ' lines of blog data ' );
+
+    return data;
+
+}
+
 export const addUserApi = async (baseUrlId, user, token) => {
     if ( token === undefined) {
         console.log('ServiceAPI.addUserApi Error missing token for user ' + user.name);
