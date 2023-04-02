@@ -8,19 +8,22 @@ import { Element } from 'react-scroll'
 import { fetchBlogs } from '../dashboard/ServiceAPI';
 
 
-function BlogList({title}) {
-  const [posts, setPosts] = useState([]);
+function BlogList({title, archiveDate}) {
+  const [posts, setPosts] = useState();
 
  useEffect(() => {
-  fetchBlogs().then((data) => { 
+  fetchBlogs(archiveDate).then((data) => { 
     
     setPosts(data);
 
   });
  
-}, []);
+}, [archiveDate]);
 
-
+if (posts==undefined) {
+  return null;
+}
+else {
   return (
     <Grid
       item
@@ -45,6 +48,7 @@ function BlogList({title}) {
       ))} 
     </Grid>
   );
+      }
 }
 
 

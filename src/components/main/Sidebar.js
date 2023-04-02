@@ -6,8 +6,10 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 
-function Sidebar({sidebar}) {
+function Sidebar({sidebar, setArchiveDate}) {
   const { archives, description, social, title } = sidebar;
+  // functoin to set archive date from onclick event
+  
 
   return (
     <Grid item xs={12} md={4}>
@@ -21,7 +23,7 @@ function Sidebar({sidebar}) {
         Archives
       </Typography>
       {archives.map((archive) => (
-        <Link display="block" variant="body1" href={archive.url} key={archive.title}>
+        <Link onClick={() => setArchiveDate(archive.date)} display="block" variant="body1" href={'#'+archive.date} key={archive.title}>
           {archive.title}
         </Link>
       ))}

@@ -368,13 +368,14 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
 }
 
 
-export const fetchBlogs= async () => {
+export const fetchBlogs= async (archiveDate) => {
     var data = [];
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiLoadBalancerUrl + '/Blog/Blogs'
+            data: archiveDate,
+            url: apiLoadBalancerUrl + '/Blog/BlogsForMonth'
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchBlogs Axios Error was : ' + error);

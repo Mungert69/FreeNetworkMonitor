@@ -9,9 +9,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Header from './Header';
 import MainFeaturedPost from './MainFeaturedPost';
 import FeaturedPost from './FeaturedPost';
-import Main from './Main';
+import BlogList from './BlogList';
 import Sidebar from './Sidebar';
 import { NoBackpackRounded } from '@mui/icons-material';
+
 const importAll = (r) => r.keys().map(r);
 const markdownFiles = importAll(require.context('./posts', false, /\.md$/))
   .sort();
@@ -46,31 +47,49 @@ const featuredPosts = [
     href: '#blog-post1',
   },
 ];
-const sidebar = {
+
+// function to create sidebar variable using todays date as seed for archives
+const getArchives = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const day = today.getDate();
+  const archives = [];
+  const date = new Date();
+  const title = 'Latest';
+  archives.push({ title, date });
+ 
+  for (let i = 0; i < 12; i++) {
+    const date = new Date(year, month - i, day);
+    const title = date.toLocaleString('default', { month: 'long' }) + ' ' + date.getFullYear();
+    archives.push({ title, date });
+  }
+  return archives;
+}
+
+
+const getSidebar= () => {
+  return {
   title: 'About',
   description:
-    'Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.',
-  archives: [
-    { title: 'March 2020', url: '#' },
-    { title: 'February 2020', url: '#' },
-    { title: 'January 2020', url: '#' },
-    { title: 'November 1999', url: '#' },
-    { title: 'October 1999', url: '#' },
-    { title: 'September 1999', url: '#' },
-    { title: 'August 1999', url: '#' },
-    { title: 'July 1999', url: '#' },
-    { title: 'June 1999', url: '#' },
-    { title: 'May 1999', url: '#' },
-    { title: 'April 1999', url: '#' },
-  ],
+    'Welcome to our blog on network monitoring, security, and quantum readiness. Stay up-to-date on the latest trends and best practices in network monitoring, security, and the implications of quantum computing. With expert insights, practical tips, and real-world examples, our blog is your go-to resource for all things related to these important topics.',
+  archives: getArchives(),
   social: [
     { name: 'GitHub', icon: GitHubIcon },
     { name: 'Twitter', icon: TwitterIcon },
     { name: 'Facebook', icon: FacebookIcon },
-  ],
+  ]};
 };
 const theme = createTheme();
 export default function Blog() {
+  const [archiveDate, setArchiveDate] = useState(new Date());
+  // function to set archive date
+  const setArchiveDateFunc = (date) => {
+    setArchiveDate(date);
+  }
+
+
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -84,9 +103,10 @@ export default function Blog() {
             ))}
           </Grid>
           <Grid container spacing={5} sx={{ mt: 3 }}>
-            <Main title="Free Network Monitor Blog" />
+            <BlogList title="Free Network Monitor Blog" archiveDate={archiveDate} />
+            <Sidebar sidebar={getSidebar()} setArchiveDate={setArchiveDateFunc}/>
           </Grid>
-          <Sidebar sidebar={sidebar}/>
+         
         </main>
       </Container>
     </ThemeProvider>
