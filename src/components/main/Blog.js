@@ -86,6 +86,7 @@ export default function Blog() {
           <Grid container spacing={5} sx={{ mt: 3 }}>
             <Main title="Free Network Monitor Blog" />
           </Grid>
+          <Sidebar sidebar={sidebar}/>
         </main>
       </Container>
     </ThemeProvider>
