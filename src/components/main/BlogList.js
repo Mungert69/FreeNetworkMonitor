@@ -5,20 +5,9 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Markdown from './Markdown';
 import { Element } from 'react-scroll'
-import { fetchBlogs } from '../dashboard/ServiceAPI';
 
+function BlogList({title, posts}) {
 
-function BlogList({title, archiveDate}) {
-  const [posts, setPosts] = useState();
-
- useEffect(() => {
-  fetchBlogs(archiveDate).then((data) => { 
-    
-    setPosts(data);
-
-  });
- 
-}, [archiveDate]);
 
 if (posts==undefined) {
   return null;
@@ -50,7 +39,5 @@ else {
   );
       }
 }
-
-
 
 export default BlogList;

@@ -11,8 +11,8 @@ import MainFeaturedPost from './MainFeaturedPost';
 import FeaturedPost from './FeaturedPost';
 import BlogList from './BlogList';
 import Sidebar from './Sidebar';
-import { NoBackpackRounded } from '@mui/icons-material';
-
+import { fetchBlogs } from '../dashboard/ServiceAPI';
+import { Element } from 'react-scroll'
 const importAll = (r) => r.keys().map(r);
 const markdownFiles = importAll(require.context('./posts', false, /\.md$/))
   .sort();
@@ -47,7 +47,6 @@ const featuredPosts = [
     href: '#blog-post1',
   },
 ];
-
 // function to create sidebar variable using todays date as seed for archives
 const getArchives = () => {
   const today = new Date();
@@ -57,58 +56,76 @@ const getArchives = () => {
   const archives = [];
   const date = new Date();
   const title = 'Latest';
-  archives.push({ title, date });
- 
+  archives.push({ title, date, open: true });
   for (let i = 0; i < 12; i++) {
     const date = new Date(year, month - i, day);
     const title = date.toLocaleString('default', { month: 'long' }) + ' ' + date.getFullYear();
-    archives.push({ title, date });
+    archives.push({ title, date, open: false });
   }
   return archives;
 }
-
-
-const getSidebar= () => {
+const getSidebar = (archives) => {
   return {
-  title: 'About',
-  description:
-    'Welcome to our blog on network monitoring, security, and quantum readiness. Stay up-to-date on the latest trends and best practices in network monitoring, security, and the implications of quantum computing. With expert insights, practical tips, and real-world examples, our blog is your go-to resource for all things related to these important topics.',
-  archives: getArchives(),
-  social: [
-    { name: 'GitHub', icon: GitHubIcon },
-    { name: 'Twitter', icon: TwitterIcon },
-    { name: 'Facebook', icon: FacebookIcon },
-  ]};
+    title: 'About',
+    description:
+      'Welcome to our blog on network monitoring, security, and quantum readiness. Stay up-to-date on the latest trends and best practices in network monitoring, security, and the implications of quantum computing. With expert insights, practical tips, and real-world examples, our blog is your go-to resource for all things related to these important topics.',
+    archives,
+    social: [
+      { name: 'GitHub', icon: GitHubIcon },
+      { name: 'Twitter', icon: TwitterIcon },
+      { name: 'Facebook', icon: FacebookIcon },
+    ]
+  };
 };
 const theme = createTheme();
 export default function Blog() {
   const [archiveDate, setArchiveDate] = useState(new Date());
-  // function to set archive date
-  const setArchiveDateFunc = (date) => {
+  const [archives, setArchives] = useState(getArchives());
+  const [posts, setPosts] = useState();
+  const [blogTitles, setBlogTitles] = useState();
+  // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
+  const handleArchiveClick = (date) => {
     setArchiveDate(date);
+    const newArchives = archives.map(archive => {
+      if (archive.date.getTime() === date.getTime()) {
+        archive.open = true;
+      } else {
+        archive.open = false;
+      }
+      return archive;
+    });
+    setArchives(newArchives);
+
   }
+  useEffect(() => {
+    fetchBlogs(archiveDate).then((data) => {
+      setPosts(data);
+      // Create new component from data titles.
+      const newSections = data.map((post) => {
+        return { title: post.title, url: '#' + post.title };
+      });
+    }, [archiveDate]);
+  });
 
-
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Container maxWidth="lg">
-        <main>
-          <MainFeaturedPost post={mainFeaturedPost} />
-          <hr></hr>
-          <Grid container spacing={4}>
-            {featuredPosts.map((post) => (
-              <FeaturedPost key={post.title} post={post} />
-            ))}
-          </Grid>
-          <Grid container spacing={5} sx={{ mt: 3 }}>
-            <BlogList title="Free Network Monitor Blog" archiveDate={archiveDate} />
-            <Sidebar sidebar={getSidebar()} setArchiveDate={setArchiveDateFunc}/>
-          </Grid>
-         
-        </main>
-      </Container>
-    </ThemeProvider>
-  );
-}
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Container maxWidth="lg">
+          <main>
+            <MainFeaturedPost post={mainFeaturedPost} />
+            <hr></hr>
+            <Grid container spacing={4}>
+              {featuredPosts.map((post) => (
+                <FeaturedPost key={post.title} post={post} />
+              ))}
+            </Grid>
+            <Grid container spacing={5} sx={{ mt: 3 }}>
+              <Element id={'#blog'} name={'#blog'} />
+              <BlogList title="Free Network Monitor Blog" posts={posts} />
+              <Sidebar sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles}/>
+            </Grid>
+          </main>
+        </Container>
+      </ThemeProvider>
+    );
+  }

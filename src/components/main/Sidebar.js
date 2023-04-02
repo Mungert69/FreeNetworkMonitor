@@ -5,8 +5,9 @@ import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
+import BlogTitles from './BlogTitles' ;
 
-function Sidebar({sidebar, setArchiveDate}) {
+function Sidebar({sidebar, setArchiveDate, blogTitles}) {
   const { archives, description, social, title } = sidebar;
   // functoin to set archive date from onclick event
   
@@ -23,9 +24,13 @@ function Sidebar({sidebar, setArchiveDate}) {
         Archives
       </Typography>
       {archives.map((archive) => (
-        <Link onClick={() => setArchiveDate(archive.date)} display="block" variant="body1" href={'#'+archive.date} key={archive.title}>
+        <React.Fragment>
+        <Link onClick={() => setArchiveDate(archive.date)} display="block" variant="body1" href={'#blog'} key={archive.title}>
           {archive.title}
+         
         </Link>
+        {archive.open ? <BlogTitles blogTitles={blogTitles}/> : null}
+        </React.Fragment>
       ))}
 
       <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
@@ -49,21 +54,5 @@ function Sidebar({sidebar, setArchiveDate}) {
   );
 }
 
-Sidebar.propTypes = {
-  archives: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      url: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-  description: PropTypes.string.isRequired,
-  social: PropTypes.arrayOf(
-    PropTypes.shape({
-      icon: PropTypes.elementType.isRequired,
-      name: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-  title: PropTypes.string.isRequired,
-};
 
 export default Sidebar;
