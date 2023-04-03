@@ -101,11 +101,12 @@ export default function Blog() {
     fetchBlogs(archiveDate).then((data) => {
       setPosts(data);
       // Create new component from data titles.
-      const newSections = data.map((post) => {
+      var titles=[];
+       data.map((post) => {
         if (post.isFeatured === false && post.isMainFeatured === false)
-        return { title: post.href, url: '#' + post.href };
+       titles.push({ title: post.href, url: '#' + post.href }) ;
       });
-      setBlogTitles(newSections);
+      setBlogTitles(titles);
     });
 }, [archiveDate]);
 
