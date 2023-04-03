@@ -102,6 +102,7 @@ export default function Blog() {
       setPosts(data);
       // Create new component from data titles.
       const newSections = data.map((post) => {
+        if (post.isFeatured === false && post.isMainFeatured === false)
         return { title: post.href, url: '#' + post.href };
       });
       setBlogTitles(newSections);
