@@ -24,7 +24,7 @@ else {
         },
       }}
     >
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" gutterBottom color='secondary'>
         {title}
       </Typography>
       <Divider />

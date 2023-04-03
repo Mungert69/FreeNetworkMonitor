@@ -77,7 +77,6 @@ const getSidebar = (archives) => {
     ]
   };
 };
-const theme = createTheme();
 export default function Blog() {
   const [archiveDate, setArchiveDate] = useState(new Date());
   const [archives, setArchives] = useState(getArchives());
@@ -111,8 +110,7 @@ export default function Blog() {
 }, [archiveDate]);
 
     return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+   
         <Container maxWidth="lg">
           <main>
             <MainFeaturedPost post={mainFeaturedPost} />
@@ -129,6 +127,6 @@ export default function Blog() {
             </Grid>
           </main>
         </Container>
-      </ThemeProvider>
+
     );
   }

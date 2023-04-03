@@ -97,7 +97,13 @@ const styleObject = (theme, Image) => {
         link:{
             margin: '1rem',
             textDecoration: 'none',
-            color:  theme.palette.primary.dark
+            color:  theme.palette.primary.dark,
+            color: "#6239AB",
+                "&:hover": {
+                    color: "#607466",
+                    textDecoration: "underline #607466"
+                }
+            
         }
     }
 }
