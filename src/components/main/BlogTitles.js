@@ -1,15 +1,15 @@
 import React from 'react';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-function BlogTitles({ titles }) {
+function BlogTitles({ titles,classes }) {
     if (titles == null || titles.length == 0) {
         return null;
     }
     else {
         return (
             titles.map((item) =>
-                <Link underline='false' display="block" variant="body1" href={item.url} key={item.url}>
-                    <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }} color="text.secondary" noWrap >
+                <Link  display="block"  className={classes.link} href={item.url} key={item.url}>
+                    <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }} color="text.secondary.light" noWrap >
                         {item.title}
                     </Typography>
 

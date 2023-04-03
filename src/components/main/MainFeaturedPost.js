@@ -57,7 +57,12 @@ function MainFeaturedPost(props) {
               {post.description}
             </Typography>
             
-            <Link variant="h5" color="inherit" href={post.href} >
+            <Link variant="h5" color="inherit" href={post.href} sx ={{color: "#FFFFFF",
+            textDecoration: "none",
+                "&:hover": {
+                    color: "#000000",
+                    textDecoration: "underline #000000"
+                }}} >
               {post.linkText}
             </Link>
           </Box>

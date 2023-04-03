@@ -13,6 +13,7 @@ import BlogList from './BlogList';
 import Sidebar from './Sidebar';
 import { fetchBlogs } from '../dashboard/ServiceAPI';
 import { Element } from 'react-scroll'
+
 const importAll = (r) => r.keys().map(r);
 const markdownFiles = importAll(require.context('./posts', false, /\.md$/))
   .sort();
@@ -77,7 +78,7 @@ const getSidebar = (archives) => {
     ]
   };
 };
-export default function Blog() {
+export default function Blog({classes}) {
   const [archiveDate, setArchiveDate] = useState(new Date());
   const [archives, setArchives] = useState(getArchives());
   const [posts, setPosts] = useState([]);
@@ -117,13 +118,13 @@ export default function Blog() {
             <hr></hr>
             <Grid container spacing={4}>
               {featuredPosts.map((post) => (
-                <FeaturedPost key={post.title} post={post} />
+                <FeaturedPost  key={post.title} post={post} />
               ))}
             </Grid>
             <Grid container spacing={5} sx={{ mt: 3 }}>
               <Element id={'#blog'} name={'#blog'} />
               <BlogList title="Free Network Monitor Blog" posts={posts} />
-              <Sidebar sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles}/>
+              <Sidebar classes={classes} sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles}/>
             </Grid>
           </main>
         </Container>

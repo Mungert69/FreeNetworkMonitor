@@ -8,7 +8,7 @@ import Link from '@mui/material/Link';
 import BlogTitles from './BlogTitles' ;
 
 
-function Sidebar({sidebar, setArchiveDate, blogTitles}) {
+function Sidebar({classes,sidebar, setArchiveDate, blogTitles}) {
   const { archives, description, social, title } = sidebar;
   // functoin to set archive date from onclick event
   
@@ -16,8 +16,8 @@ function Sidebar({sidebar, setArchiveDate, blogTitles}) {
   return (
 
     <Grid item xs={12} md={4}>
-      <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.200' }}>
-        <Typography   variant="h6" gutterBottom color="#607466">
+      <Paper elevation={1} sx={{ p: 2, bgcolor: 'grey.200' }}>
+        <Typography   variant="h6" gutterBottom >
           {title}
         </Typography>
         <Typography>{description}</Typography>
@@ -27,12 +27,11 @@ function Sidebar({sidebar, setArchiveDate, blogTitles}) {
       </Typography>
       {archives.map((archive) => (
         <React.Fragment>
-        <Link onClick={() => setArchiveDate(archive.date)}  display="block" variant="inherit" href={'#blog'} key={archive.title}>
-        <Typography  align="center" variant="h7"  color="text.secondary"  >
-        {archive.title}</Typography> 
+        <Link onClick={() => setArchiveDate(archive.date)} display="block"  className={classes.link} href={'#blog'} key={archive.title}>
+        {archive.title}
          
         </Link>
-        {archive.open ? <BlogTitles titles={blogTitles}/> : null}
+        {archive.open ? <BlogTitles classes={classes} titles={blogTitles}/> : null}
         </React.Fragment>
       ))}
 

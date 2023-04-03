@@ -101,7 +101,7 @@ const styleObject = (theme, Image) => {
             color: "#6239AB",
                 "&:hover": {
                     color: "#607466",
-                    textDecoration: "underline #607466"
+                    textDecoration: "none"
                 }
             
         }

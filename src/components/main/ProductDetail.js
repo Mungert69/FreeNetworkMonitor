@@ -229,7 +229,7 @@ const ProductDetail = () => {
                 <hr></hr>
                 <hr></hr>
 
-                <Blog />
+                <Blog classes={classes}/>
                 <Footer /> 
             
             </Container>
