@@ -81,8 +81,8 @@ const theme = createTheme();
 export default function Blog() {
   const [archiveDate, setArchiveDate] = useState(new Date());
   const [archives, setArchives] = useState(getArchives());
-  const [posts, setPosts] = useState();
-  const [blogTitles, setBlogTitles] = useState();
+  const [posts, setPosts] = useState([]);
+  const [blogTitles, setBlogTitles] = useState([]);
   // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
   const handleArchiveClick = (date) => {
     setArchiveDate(date);
@@ -102,10 +102,11 @@ export default function Blog() {
       setPosts(data);
       // Create new component from data titles.
       const newSections = data.map((post) => {
-        return { title: post.title, url: '#' + post.title };
+        return { title: post.href, url: '#' + post.href };
       });
-    }, [archiveDate]);
-  });
+      setBlogTitles(newSections);
+    });
+}, [archiveDate]);
 
     return (
       <ThemeProvider theme={theme}>

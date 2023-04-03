@@ -29,7 +29,7 @@ function Sidebar({sidebar, setArchiveDate, blogTitles}) {
           {archive.title}
          
         </Link>
-        {archive.open ? <BlogTitles blogTitles={blogTitles}/> : null}
+        {archive.open ? <BlogTitles titles={blogTitles}/> : null}
         </React.Fragment>
       ))}
 
