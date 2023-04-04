@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
@@ -13,7 +13,6 @@ import BlogList from './BlogList';
 import Sidebar from './Sidebar';
 import { fetchBlogs, getBlogDateFromHash } from '../dashboard/ServiceAPI';
 import { Element } from 'react-scroll'
-
 const importAll = (r) => r.keys().map(r);
 const markdownFiles = importAll(require.context('./posts', false, /\.md$/))
   .sort();
@@ -84,8 +83,6 @@ export default function Blog({ classes }) {
   const [posts, setPosts] = useState([]);
   const [blogTitles, setBlogTitles] = useState([]);
 
-
-
   useEffect(() => {
     var hash = window.location.hash;
     console.log('Hash is' + hash);
@@ -94,22 +91,32 @@ export default function Blog({ classes }) {
     if (hash.charAt(0) === "#") {
       hash = hash.substring(1);
     }
-    let encodedHash = encodeURIComponent(hash);
-
-
+    //let encodedHash = encodeURIComponent(hash);
     async function getBlogDate() {
-      var blogDate = await getBlogDateFromHash(encodedHash);
+      var blogDate = await getBlogDateFromHash(hash);
       // check is blogDate is a valid date
       if (blogDate == null || blogDate == undefined) {
         return;
       }
-      setArchiveDate(blogDate);
+      await setArchiveDate(blogDate);
     };
     getBlogDate();
-
   }, []);
-  // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
 
+
+
+ const scrollToHash = (hash) => {
+  console.log('Scrolling to Hash ' + hash);
+    // After rendering, scroll to the section with the hash value
+    if (hash==undefined || hash==null || hash.length==0) { return; }
+    const section = document.querySelector(hash);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+
+  }
+
+  // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
   const setArchiveOpen = (blogDate) => {
     try {
       const newArchives = archives.map(archive => {
@@ -126,29 +133,34 @@ export default function Blog({ classes }) {
       console.log(e);
     }
   }
-
   const handleArchiveClick = (date) => {
     setArchiveDate(date);
     setArchiveOpen(date);
   }
   useEffect(() => {
-    fetchBlogs(archiveDate).then((data) => {
-      setPosts(data);
-      // Create new component from data titles.
-      var titles = [];
-      if (data != null && data.length > 0) {
-        data.map((post) => {
-          if (post.isFeatured === false && post.isMainFeatured === false)
-            titles.push({ title: post.href, url: '#' + post.href });
-        });
-        setBlogTitles(titles);
-      }
-
-    });
+    async function getBlogs() {
+      await fetchBlogs(archiveDate).then((data) => {
+        setPosts(data);
+        // Create new component from data titles.
+        var titles = [];
+        if (data != null && data.length > 0) {
+          data.map((post) => {
+            if (post.isFeatured === false && post.isMainFeatured === false)
+              titles.push({ title: post.title, url: '#' + post.hash });
+          });
+          setBlogTitles(titles);
+        }
+      });
+    }
+    getBlogs();
+  
   }, [archiveDate]);
 
-  return (
+  useLayoutEffect(() => {
+    scrollToHash(window.location.hash);
+  }, [posts]);
 
+  return (
     <Container maxWidth="lg">
       <main>
         <MainFeaturedPost post={mainFeaturedPost} />
@@ -165,6 +177,5 @@ export default function Blog({ classes }) {
         </Grid>
       </main>
     </Container>
-
   );
 }

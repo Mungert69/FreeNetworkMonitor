@@ -9,7 +9,7 @@ function BlogTitles({ titles,classes }) {
         return (
             titles.map((item) =>
                 <Link  display="block"  className={classes.link} href={item.url} key={item.url}>
-                    <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }} color="text.secondary.light" noWrap >
+                    <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 2 }} color="text.secondary.light" noWrap key={item.url} >
                         {item.title}
                     </Typography>
 

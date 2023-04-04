@@ -29,9 +29,9 @@ else {
       </Typography>
       <Divider />
       {  posts.map((post) => (
-          <Element id={post.href} name={post.href}>
-          <Markdown className="markdown" key={post.href}>
-          {post.md}
+          <Element id={post.hash} name={post.hash} key={post.hash}>
+          <Markdown className="markdown" key={post.hash}>
+          {post.markdown}
         </Markdown>
         </Element>      
       ))} 
