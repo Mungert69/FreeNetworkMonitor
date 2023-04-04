@@ -368,6 +368,29 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
 }
 
 
+export const getBlogDateFromHash= async (hash) => {
+    var data = '';
+    axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios.get(apiLoadBalancerUrl + '/Blog/BlogDateFromHash/'+hash).catch(function (error) {
+        console.log('ServiceAPI.getBlogDateFromHash Axios Error was : ' + error);
+        return new Date();
+    }));
+    try {
+        data=result.data.data;
+    }
+    catch (error) {
+        console.log('ServiceAPI.getBlogDateFromHash Mapping Data Error was : ' + error);
+        if ( result!=undefined &&   result.data.message != undefined)
+            console.log('Api Result.Message was ' + result.data.message);
+        return new Date();
+    }
+
+    console.log('ServiceAPI.getBlogDateFromHash Got date ' + data  );
+    const dateObject = new Date(data);
+    return dateObject;
+
+}
+
 export const fetchBlogs= async (archiveDate) => {
     var data = [];
     axiosRetry(axios, { retries: 3 });

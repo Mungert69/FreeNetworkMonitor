@@ -11,7 +11,7 @@ import MainFeaturedPost from './MainFeaturedPost';
 import FeaturedPost from './FeaturedPost';
 import BlogList from './BlogList';
 import Sidebar from './Sidebar';
-import { fetchBlogs } from '../dashboard/ServiceAPI';
+import { fetchBlogs, getBlogDateFromHash } from '../dashboard/ServiceAPI';
 import { Element } from 'react-scroll'
 
 const importAll = (r) => r.keys().map(r);
@@ -73,68 +73,98 @@ const getSidebar = (archives) => {
     archives,
     social: [
       { name: 'GitHub', icon: GitHubIcon, url: 'https://github.com/Mungert69/FreeNetworkMonitor' },
-      { name: 'Twitter', icon: TwitterIcon , url : 'https://twitter.com/freenetmonitor'},
-      { name: 'LinkedIn', icon: LinkedInIcon, url : 'https://www.linkedin.com/products/mahadevaprojects-free-network-monitor-online/' },
+      { name: 'Twitter', icon: TwitterIcon, url: 'https://twitter.com/freenetmonitor' },
+      { name: 'LinkedIn', icon: LinkedInIcon, url: 'https://www.linkedin.com/products/mahadevaprojects-free-network-monitor-online/' },
     ]
   };
 };
-export default function Blog({classes}) {
+export default function Blog({ classes }) {
   const [archiveDate, setArchiveDate] = useState(new Date());
   const [archives, setArchives] = useState(getArchives());
   const [posts, setPosts] = useState([]);
   const [blogTitles, setBlogTitles] = useState([]);
-  const [hashValue, setHashValue] = useState('');
-  
-  
-  
-    useEffect(() => {
-      setHashValue(window.location.hash);
-    }, []);
+
+
+
+  useEffect(() => {
+    var hash = window.location.hash;
+    console.log('Hash is' + hash);
+    if (hash == null || hash.length == 0) { return; }
+    // encode hash to be sent via url paramter
+    if (hash.charAt(0) === "#") {
+      hash = hash.substring(1);
+    }
+    let encodedHash = encodeURIComponent(hash);
+
+
+    async function getBlogDate() {
+      var blogDate = await getBlogDateFromHash(encodedHash);
+      // check is blogDate is a valid date
+      if (blogDate == null || blogDate == undefined) {
+        return;
+      }
+      setArchiveDate(blogDate);
+    };
+    getBlogDate();
+
+  }, []);
   // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
+
+  const setArchiveOpen = (blogDate) => {
+    try {
+      const newArchives = archives.map(archive => {
+        if (archive.date.getTime() === blogDate.getTime()) {
+          archive.open = true;
+        } else {
+          archive.open = false;
+        }
+        return archive;
+      });
+      setArchives(newArchives);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
   const handleArchiveClick = (date) => {
     setArchiveDate(date);
-    const newArchives = archives.map(archive => {
-      if (archive.date.getTime() === date.getTime()) {
-        archive.open = true;
-      } else {
-        archive.open = false;
-      }
-      return archive;
-    });
-    setArchives(newArchives);
-
+    setArchiveOpen(date);
   }
   useEffect(() => {
     fetchBlogs(archiveDate).then((data) => {
       setPosts(data);
       // Create new component from data titles.
-      var titles=[];
-       data.map((post) => {
-        if (post.isFeatured === false && post.isMainFeatured === false)
-       titles.push({ title: post.href, url: '#' + post.href }) ;
-      });
-      setBlogTitles(titles);
+      var titles = [];
+      if (data != null && data.length > 0) {
+        data.map((post) => {
+          if (post.isFeatured === false && post.isMainFeatured === false)
+            titles.push({ title: post.href, url: '#' + post.href });
+        });
+        setBlogTitles(titles);
+      }
+
     });
-}, [archiveDate]);
+  }, [archiveDate]);
 
-    return (
-   
-        <Container maxWidth="lg">
-          <main>
-            <MainFeaturedPost post={mainFeaturedPost} />
-            <hr></hr>
-            <Grid container spacing={4}>
-              {featuredPosts.map((post) => (
-                <FeaturedPost  key={post.title} post={post} />
-              ))}
-            </Grid>
-            <Grid container spacing={5} sx={{ mt: 3 }}>
-              <Element id={'#blog'} name={'#blog'} />
-              <BlogList title="Free Network Monitor Blog" posts={posts} />
-              <Sidebar classes={classes} sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles}/>
-            </Grid>
-          </main>
-        </Container>
+  return (
 
-    );
-  }
+    <Container maxWidth="lg">
+      <main>
+        <MainFeaturedPost post={mainFeaturedPost} />
+        <hr></hr>
+        <Grid container spacing={4}>
+          {featuredPosts.map((post) => (
+            <FeaturedPost key={post.title} post={post} />
+          ))}
+        </Grid>
+        <Grid container spacing={5} sx={{ mt: 3 }}>
+          <Element id={'#blog'} name={'#blog'} />
+          <BlogList title="Free Network Monitor Blog" posts={posts} />
+          <Sidebar classes={classes} sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles} />
+        </Grid>
+      </main>
+    </Container>
+
+  );
+}
