@@ -3,8 +3,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Header from './Header';
 import MainFeaturedPost from './MainFeaturedPost';
@@ -72,9 +72,9 @@ const getSidebar = (archives) => {
       'Welcome to our blog on network monitoring, security, and quantum readiness. Stay up-to-date on the latest trends and best practices in network monitoring, security, and the implications of quantum computing. With expert insights, practical tips, and real-world examples, our blog is your go-to resource for all things related to these important topics.',
     archives,
     social: [
-      { name: 'GitHub', icon: GitHubIcon },
-      { name: 'Twitter', icon: TwitterIcon },
-      { name: 'Facebook', icon: FacebookIcon },
+      { name: 'GitHub', icon: GitHubIcon, url: 'https://github.com/Mungert69/FreeNetworkMonitor' },
+      { name: 'Twitter', icon: TwitterIcon , url : 'https://twitter.com/freenetmonitor'},
+      { name: 'LinkedIn', icon: LinkedInIcon, url : 'https://www.linkedin.com/products/mahadevaprojects-free-network-monitor-online/' },
     ]
   };
 };
@@ -83,6 +83,13 @@ export default function Blog({classes}) {
   const [archives, setArchives] = useState(getArchives());
   const [posts, setPosts] = useState([]);
   const [blogTitles, setBlogTitles] = useState([]);
+  const [hashValue, setHashValue] = useState('');
+  
+  
+  
+    useEffect(() => {
+      setHashValue(window.location.hash);
+    }, []);
   // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
   const handleArchiveClick = (date) => {
     setArchiveDate(date);

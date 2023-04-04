@@ -42,9 +42,10 @@ function Sidebar({classes,sidebar, setArchiveDate, blogTitles}) {
         <Link
           display="block"
           variant="body1"
-          href="#"
+          href={network.url}
           key={network.name}
           sx={{ mb: 0.5 }}
+          className={classes.link}
         >
           <Stack direction="row" spacing={1} alignItems="center">
             <network.icon />
