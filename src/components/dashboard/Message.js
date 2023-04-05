@@ -31,7 +31,8 @@ const Message = ({ message, setShow }) => {
   }
     
   return (
-    <Snackbar open={true} autoHideDuration={10000} >
+    <Snackbar open={true} autoHideDuration={10000} anchorOrigin={{ vertical: 'bottom',
+    horizontal: 'center', }}>
   <Alert severity={severity}>{message.text}</Alert> 
 </Snackbar>
       

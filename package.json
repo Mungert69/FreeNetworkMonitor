@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "private": true,
   "resolutions": {
-    "nth-check" : "^2.1.1"
+    "nth-check": "^2.1.1"
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.12.1",
@@ -39,10 +39,13 @@
     "styled-components": "^5.3.9",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+      "cross-env": "7.0.3"
+    },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
-    "start": "react-scripts start",
-    "startssl": "HTTPS=true react-scripts start",
+    "start": "cross-env PORT=80 GENERATE_SOURCEMAP=false react-scripts start",
+    "startssl": "HTTPS=true cross-env PORT=443 GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
