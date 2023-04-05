@@ -1,5 +1,6 @@
 import {  useEffect } from 'react'
 import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 const Message = ({ message, setShow }) => {
 
@@ -30,7 +31,10 @@ const Message = ({ message, setShow }) => {
   }
     
   return (
-      <Alert severity={severity}>{message.text}</Alert> 
+    <Snackbar open={true} autoHideDuration={10000} >
+  <Alert severity={severity}>{message.text}</Alert> 
+</Snackbar>
+      
   )
 }
 

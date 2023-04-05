@@ -262,8 +262,7 @@ const HostListEdit = ({ siteId, token, processorList }) => {
     filter: true,
     filterType: 'dropdown',
     customToolbar: () => (<HeaderElements />),
-    selectableRows: false,
-    draggableColumns: true
+    selectableRows: false
   };
   const HeaderElements = () => (
     <>
