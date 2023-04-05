@@ -20,7 +20,7 @@ import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import { useAuth0 } from '@auth0/auth0-react';
-import Message from './Message';
+
 import HelpDialog from './HelpDialog';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
@@ -29,22 +29,14 @@ const muiCache = createCache({
 	"key": "mui",
 	"prepend": true
 });
-const updateData = (tableMeta, data, setData, value, colName) => {
-  if (!Number.isInteger(tableMeta.rowData)) return;
-	const id = tableMeta.currentTableData[tableMeta.rowIndex].data[tableMeta.rowData];
-	const temp=data.map( row => 
-	row.id=id ? {...row , [colName]: value} : {...row} 
-	)
-  setData(temp);
-}
-const HostListEdit = ({ siteId, token, processorList }) => {
+
+const HostListEdit = ({ siteId, token, processorList, setMessage }) => {
   const { user } = useAuth0();
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
   const [reset, setReset] = React.useState(true);
   const [skipPageReset, setSkipPageReset] = React.useState(false);
   const [showMessage, setShowMessage] = React.useState(false);
-  const [message, setMessage] = React.useState('');
   const [openHelp, setOpenHelp] = React.useState(false);
   const [displayEdit, setDisplayEdit] = React.useState(true);
   const getMuiTheme = () => createTheme({
@@ -96,6 +88,7 @@ const HostListEdit = ({ siteId, token, processorList }) => {
       }
     })();
   }, [reset]);
+
   const columns = [
     {
 			name: 'id',
@@ -292,10 +285,8 @@ const HostListEdit = ({ siteId, token, processorList }) => {
   const saveData = async (data) => {
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     await setMessage(message);
-    await setShowMessage(true);
     message = await saveHostData(siteId, data, token);
     await setMessage(message);
-    await setShowMessage(true);
     await setDisplayEdit(true);
   }
   const addHost = async () => {
@@ -307,29 +298,26 @@ const HostListEdit = ({ siteId, token, processorList }) => {
     }
     var message = { text: 'Plesae wait..', info: true };
     await setMessage(message);
-    await setShowMessage(true);
     message = await addHostApi(siteId, user, token, data);
     await setMessage(message);
-    await setShowMessage(true);
     setReset(!reset);
   }
   const delHost = async (selectedId) => {
     if ( selectedId===undefined) return;
     var message = { text: 'Please wait..', info: true };
     await setMessage(message);
-    await setShowMessage(true);
     message = await delHostApi(siteId, user, selectedId, token);
     await setSelectedId(undefined);
     await setMessage(message);
-    await setShowMessage(true);
     setDisplayEdit(true);
     setReset(!reset);
   }
   const resetData = () => setReset(!reset)
+
   return (
     <>
       {openHelp ? <HelpDialog setOpen={setOpenHelp} /> : null}
-      {showMessage ? <Message setShow={setShowMessage} message={message} /> : null}
+
 			<CacheProvider value={muiCache}>
 				<ThemeProvider theme={getMuiTheme()}>
 					<MUIDataTable

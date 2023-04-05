@@ -6,14 +6,20 @@ import ProfileDialog from './ProfileDialog';
 import { useAuth0 } from "@auth0/auth0-react";
 import { Style } from '@mui/icons-material';
 
-export default function MiniProfile({apiUser,token,siteId, initViewSub, setInitViewSub}) {
+export default function MiniProfile({apiUser,token,siteId, initViewSub, setInitViewSub, resetEditMessage}) {
       const [openProfile, setOpenProfile] = React.useState(false);
       useEffect(() => {
           if (initViewSub) {
-               setOpenProfile(true);
+               setOpen();
              }
          
         }, []);
+
+        const setOpen= () => {
+          setOpenProfile(true);
+          resetEditMessage({ info: 'init' });
+            }
+
 
      if (apiUser!==undefined ) {
           return (
@@ -29,7 +35,7 @@ export default function MiniProfile({apiUser,token,siteId, initViewSub, setInitV
                               src={apiUser.picture}
                               alt="Profile Picture"
                               className="rounded-circle"
-                              onClick={() => setOpenProfile(true)}
+                              onClick={() => setOpen()}
                          />
                     </Tooltip>
                </div>

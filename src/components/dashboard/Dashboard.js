@@ -41,6 +41,7 @@ import { Helmet } from 'react-helmet'
 import ReactGA4 from 'react-ga4';
 
 import { useAuth0 } from "@auth0/auth0-react";
+import Message from './Message';
 import { trackPromise} from 'react-promise-tracker';
 
 //const useStyles = makeStyles((theme) => (styleObject(theme, null)));
@@ -70,6 +71,8 @@ export default function Dashboard({apiUser, setApiUser}) {
   const [dateEnd, setDateEnd] = React.useState();
   const [processorList, setProcessorList] = React.useState([]);
   const [initViewSub, setInitViewSub]=React.useState(false);
+  const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
+ 
 
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -85,6 +88,10 @@ export default function Dashboard({apiUser, setApiUser}) {
     resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser, token);
   };
 
+const setEditMode = async () => {
+    await setMessage({ info: 'init', success: false, text: "Interal Error" });
+    await setToggleTable(!toggleTable);
+  };
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -94,7 +101,7 @@ export default function Dashboard({apiUser, setApiUser}) {
 
   const editIconClick = async () => {
     await setRealTime(!realTime);
-    await setToggleTable(!toggleTable);
+    await setEditMode();
     // Reload ListData if clicking into view mode. Hide view mode if clicking into edit mode.
     if (toggleTable) {
       await setViewInfo(false);
@@ -236,6 +243,7 @@ export default function Dashboard({apiUser, setApiUser}) {
   return (
     <div className={classes.root}>
       <CssBaseline />
+
       <Helmet>
         <title>Dashboard For Free Network Monitor</title>
         <meta name="description" content="This is the dashboard for Free Network Monitor. It provides a free online network monitoring service.
@@ -280,7 +288,7 @@ export default function Dashboard({apiUser, setApiUser}) {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {defaultUser ? null : <MiniProfile apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub}/>}
+          {defaultUser ? null : <MiniProfile resetEditMessage={setMessage} apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub}/>}
         </Toolbar>
        <Loading/>
       </AppBar>
@@ -334,7 +342,10 @@ export default function Dashboard({apiUser, setApiUser}) {
                 {toggleTable ?
                   <HostListPag  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList}/>
                   :
-                  <HostListEdit siteId={siteId} token={token} processorList={processorList} />
+                  <React.Fragment>
+                  <Message  message={message} /> 
+                  <HostListEdit setMessage={setMessage} siteId={siteId} token={token} processorList={processorList} />
+                  </React.Fragment>
                 }
               </Paper>
             </Grid>

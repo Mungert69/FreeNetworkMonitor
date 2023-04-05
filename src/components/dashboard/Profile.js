@@ -22,18 +22,16 @@ import {
 } from "@mui/material";
 
 import { updateApiUser,resendVerifyEmail } from './ServiceAPI';
-import Message from './Message';
 
 
-const Profile = ({ apiUser, token, siteId }) => {
+
+const Profile = ({ apiUser, token, siteId, setMessage }) => {
 
   const [state, setState] = React.useState({
-    
     name: apiUser.nickname,
   });
   const [disableEmail, setDisableEmail]=React.useState(apiUser.disableEmail);
-  const [showMessage, setShowMessage] = React.useState(false);
-  const [message, setMessage] = React.useState('');
+
 
   const { name } = state;
 
@@ -44,10 +42,8 @@ const Profile = ({ apiUser, token, siteId }) => {
     user.disableEmail = disableEmail;
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     await setMessage(message);
-    await setShowMessage(true);
     message = await updateApiUser(siteId, user, token);
     await setMessage(message);
-    await setShowMessage(true);
 
   }
 
@@ -56,10 +52,8 @@ const Profile = ({ apiUser, token, siteId }) => {
     user.nickname = name;
     var message = { text: 'Verfication email sent please check you inbox.', info: false };
     await setMessage(message);
-    await setShowMessage(true);
     message = await resendVerifyEmail(siteId, user, token);
     await setMessage(message);
-    await setShowMessage(true);
 
   }
 
@@ -74,7 +68,8 @@ const Profile = ({ apiUser, token, siteId }) => {
   };
   return (
     <>
-      {showMessage ? <Message setShow={setShowMessage} message={message} /> : <FormLabel component="legend">View and update your profile</FormLabel>}
+
+       <FormLabel component="legend">View and update your profile</FormLabel>
     
         <Card >
 

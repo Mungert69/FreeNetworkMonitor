@@ -24,6 +24,7 @@
     "moment": "^2.29.4",
     "mui-datatables": "^4.3.0",
     "mui-image": "^1.0.7",
+    "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-cookie-consent": "^8.0.1",
     "react-dom": "^18.2.0",
@@ -40,12 +41,12 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-      "cross-env": "7.0.3"
-    },
+    "cross-env": "7.0.3"
+  },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
-    "start": "cross-env PORT=80 GENERATE_SOURCEMAP=false react-scripts start",
-    "startssl": "HTTPS=true cross-env PORT=443 GENERATE_SOURCEMAP=false react-scripts start",
+    "start": "cross-env PORT=3000 GENERATE_SOURCEMAP=false react-scripts start",
+    "startssl": "HTTPS=true cross-env PORT=3000 GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
