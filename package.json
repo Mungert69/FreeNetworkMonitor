@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@auth0/auth0-react": "^2.0.1",
+    "@auth0/auth0-react": "^1.12.1",
     "@emotion/css": "^11.10.6",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -37,6 +37,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "startssl": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
