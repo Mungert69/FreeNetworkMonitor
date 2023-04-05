@@ -1,7 +1,9 @@
 {
-  "name": "freenetworkmonitor",
+  "name": "network-monitor-react",
+  "homepage": "https://www.freenetworkmonitor.click/",
   "version": "0.2.0",
   "private": true,
+  "resolutions": {"nth-check" : "2.0.2"},
   "dependencies": {
     "@auth0/auth0-react": "^1.12.1",
     "@emotion/css": "^11.10.6",
