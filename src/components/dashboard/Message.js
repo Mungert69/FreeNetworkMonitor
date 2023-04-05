@@ -1,9 +1,15 @@
 import {  useEffect } from 'react'
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import Slide from '@mui/material/Slide';
+
+function TransitionUp(props) {
+  return <Slide {...props} direction="up" />;
+}
 
 const Message = ({ message, setShow }) => {
 
+  
   // On componentDidMount set the timer
   useEffect(() => {
     const timeId = setTimeout(() => {
@@ -32,7 +38,7 @@ const Message = ({ message, setShow }) => {
     
   return (
     <Snackbar open={true} autoHideDuration={10000} anchorOrigin={{ vertical: 'bottom',
-    horizontal: 'center', }}>
+    horizontal: 'center', }} TransitionComponent={TransitionUp}  >
   <Alert severity={severity}>{message.text}</Alert> 
 </Snackbar>
       
