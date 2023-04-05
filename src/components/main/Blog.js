@@ -86,7 +86,9 @@ export default function Blog({ classes }) {
   useEffect(() => {
     var hash = window.location.hash;
     console.log('Hash is' + hash);
-    if (hash == null || hash.length == 0) { return; }
+    if (hash==undefined || hash == null || hash.length == 0) { 
+     return;
+     }
     // encode hash to be sent via url paramter
     if (hash.charAt(0) === "#") {
       hash = hash.substring(1);
@@ -99,6 +101,7 @@ export default function Blog({ classes }) {
         return;
       }
       await setArchiveDate(blogDate);
+      await setArchiveOpen(blogDate);
     };
     getBlogDate();
   }, []);
@@ -106,9 +109,10 @@ export default function Blog({ classes }) {
 
 
  const scrollToHash = (hash) => {
-  console.log('Scrolling to Hash ' + hash);
+
     // After rendering, scroll to the section with the hash value
     if (hash==undefined || hash==null || hash.length==0) { return; }
+    console.log('Scrolling to Hash ' + hash);
     const section = document.querySelector(hash);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
@@ -118,6 +122,7 @@ export default function Blog({ classes }) {
 
   // onClick set archiveDate to date of archive clicked. Also set open to true for that archive and false for all others
   const setArchiveOpen = (blogDate) => {
+    console.log('Setting Archive Open for blogDate ' + blogDate)
     try {
       const newArchives = archives.map(archive => {
         if (archive.date.getTime() === blogDate.getTime()) {
@@ -130,7 +135,7 @@ export default function Blog({ classes }) {
       setArchives(newArchives);
     }
     catch (e) {
-      console.log(e);
+      console.log('Error could not set Archive Open. Error was : '+e);
     }
   }
   const handleArchiveClick = (date) => {
