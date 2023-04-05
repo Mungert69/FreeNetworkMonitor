@@ -200,7 +200,7 @@ const ProductDetail = () => {
 
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Choose an email address to have email alerts sent to. Receive alerts 24/7 365 days a year. Helping to ensure your servies stay online.
+                                        Choose an email address to have email alerts sent to. Receive alerts 24/7 365 days a year. Helping to ensure your services stay online.
                                     </Paper>
 
                                 </Grid>
