@@ -1,28 +1,18 @@
 import React from "react";
 import clsx from 'clsx';
-import CssBaseline from '@mui/material/CssBaseline';
-import Drawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import Grow from '@mui/material/Grow';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
+//combine all the @mui/material imports into one line not including icons
+import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
+
 import Image from 'mui-image';
-import Link from '@mui/material/Link';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 import EmailIcon from '@mui/icons-material/Email';
 import LanguageIcon from '@mui/icons-material/Language';
 import ApiTwoToneIcon from '@mui/icons-material/ApiTwoTone';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+
 import MainListItems from '../dashboard/MainListItems';
-//import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../loading';
 import { Helmet } from 'react-helmet'
@@ -130,8 +120,13 @@ const ProductDetail = () => {
                                             height: 230,
                                         }}
                                     >
-                                        <Image src='/img/monitor-screen.gif' alt="Free Network Monitor Online image of the user interface"/>
-                                    </Box>
+                                         <CardMedia  component='video'
+            className={classes.media}
+            image={"/img/monitor-screen.webm"}
+            loop
+            autoPlay/>
+                               
+                                        </Box>
                                 </Grid>
 
                             </Grid>

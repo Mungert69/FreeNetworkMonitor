@@ -1,12 +1,8 @@
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
-import { LineChart, Line, XAxis, YAxis, Label,ReferenceArea, ResponsiveContainer, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Title from './Title';
 import Paper from '@mui/material/Paper';
-
-function tooltipContent (tooltipProps) {
-  return <div>items: {tooltipProps.payload.status}</div>
-}
 
 const customTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -46,9 +42,7 @@ const customTooltip = ({ active, payload, label }) => {
 
   return null
 }
-const tooltipStyle = {
 
-};
 const CustomizedDot = (props) => {
   const { cx, cy, stroke, payload, value } = props;
 

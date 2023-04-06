@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
+import React from 'react';
+import {Grid,Typography,Divider, CardMedia} from '@mui/material';
+
 import Markdown from './Markdown';
 import { Element } from 'react-scroll'
 
 function BlogList({title, posts}) {
 
 
-if (posts==undefined) {
+if (posts===undefined) {
   return null;
 }
 else {
@@ -30,9 +28,17 @@ else {
       <Divider />
       {  posts.map((post) => (
           <Element id={post.hash} name={post.hash} key={post.hash}>
+            <React.Fragment key={post.hash}>
           <Markdown className="markdown" key={post.hash}>
           {post.markdown}
         </Markdown>
+        {post.isImage && <img src={post.imageUrl} alt={post.imageTitle} />}
+        {post.isVideo &&  <CardMedia  component='video'
+            title={post.videoTitle}
+            image={post.videoUrl}
+            controls
+            loop/>}
+        </React.Fragment>
         </Element>      
       ))} 
     </Grid>
