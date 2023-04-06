@@ -55,7 +55,7 @@ const tiers = [
 ];
 
 
-function PricingContent({ noRedirect, apiUser, siteId }) {
+function PricingContent({ noRedirect, apiUser}) {
   const { isAuthenticated } = useAuth0();
 
   const url = (title, userId, customerId) => {

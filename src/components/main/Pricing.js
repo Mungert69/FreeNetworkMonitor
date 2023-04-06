@@ -32,7 +32,7 @@ import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
 
-const Pricing = ({apiUser}) => {
+const Pricing = () => {
  
     const classes = useClasses(styleObject(useTheme(),  process.env.PUBLIC_URL+'/ping.svg'));
     const [open, setOpen] = React.useState(false);
@@ -43,7 +43,7 @@ const Pricing = ({apiUser}) => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -98,7 +98,7 @@ const Pricing = ({apiUser}) => {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-           <PricingContent noRedirect={true} apiUser={apiUser}/>
+           <PricingContent noRedirect={true} apiUser={{}}/>
            </Container>
    
         </main>

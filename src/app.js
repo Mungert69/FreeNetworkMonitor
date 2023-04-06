@@ -1,6 +1,5 @@
-import React, {  useState, lazy } from "react";
+import React, { lazy } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 import { Loading } from "./components/loading";
 
@@ -30,21 +29,16 @@ browserHistory.listen((location, action) => {
 
 
 const App = () => {
-  const { isLoading } = useAuth0();
-  const [apiUser, setRootApiUser] = useState({});
-  const [apiUserP, setApiUserP] = useState({});
+
+
 
   /*useEffect(() => {
     ReactGA4.send({ hitType: "pageview", page: window.location.pathname });
   }, []);*/
 
 
-  const setApiUser =(apiUser) => {
-    console.log('App setting root apiUser ');
-    setRootApiUser(apiUser);
-  }
 
-  if (isLoading) {
+  if (false) {
     return <Loading small={true} />;
   }
 
@@ -70,13 +64,13 @@ const App = () => {
             <ProductDetail />
           </Route>
           <Route exact path="/dashboard"  >
-            <Dashboard apiUser={apiUser} setApiUser={setApiUser} />
+            <Dashboard />
           </Route>
           <Route exact path="/faq"  >
             <Faq/>
           </Route>
           <Route exact path="/subscription"  >
-            <Pricing apiUser={apiUserP} />
+            <Pricing />
           </Route>
           <Redirect to="/" />
         </Switch>

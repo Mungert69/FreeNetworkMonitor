@@ -40,9 +40,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 
 
-export default function Dashboard({ apiUser, setApiUser }) {
+export default function Dashboard() {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const defaultHost = { 'id': 1 };
+  const [apiUser , setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
   const [defaultUser, setDefaultUser] = React.useState(true);
   const [open, setOpen] = React.useState(true);
