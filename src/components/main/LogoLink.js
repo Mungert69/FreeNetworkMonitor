@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import React from "react";
-import Logo from '../../img/logo.jpg';
 
 
 const LogoLink = () => {
@@ -18,7 +17,7 @@ const LogoLink = () => {
                     <CardMedia
                         component="img"
                         sx={{ width: 48, height: 32 }}
-                        image={Logo}
+                        image='/img/logo.jpg'
                         alt="Free Network Monitor Logo"
                     />
                 </Card>

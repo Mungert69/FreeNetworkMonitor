@@ -22,7 +22,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
-import PingImage from '../../img/ping.svg';
+//import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../loading';
 import { Helmet } from 'react-helmet'
@@ -34,7 +34,7 @@ import PricingContent from './PricingContent';
 
 const Pricing = ({apiUser}) => {
  
-    const classes = useClasses(styleObject(useTheme(), PingImage));
+    const classes = useClasses(styleObject(useTheme(),  process.env.PUBLIC_URL+'/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const handleDrawerOpen = () => {

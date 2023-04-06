@@ -1,9 +1,9 @@
 const drawerWidth = 240;
-const styleObject = (theme, Image) => {
+const styleObject = (theme, imageUrl) => {
     return {
         root: {
             display: 'flex',
-            backgroundImage: `url(${Image})`,
+            backgroundImage: `url(${imageUrl})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center',

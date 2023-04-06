@@ -14,7 +14,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
-import PingImage from '../../img/ping.svg';
+//import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../loading';
 import { Helmet } from 'react-helmet'
@@ -65,7 +65,7 @@ const data = {
 
 const Faq = () => {
     const theme = useTheme();
-    const classes = useClasses(styleObject(theme, PingImage));
+    const classes = useClasses(styleObject(theme,  process.env.PUBLIC_URL+'/ping.svg'));
     const test = theme.palette.secondary.main;
    
     const styles = {

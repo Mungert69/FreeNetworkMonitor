@@ -2,12 +2,9 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 import Card from '@mui/material/Card';
-import Box from '@mui/material/Box';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import React from "react";
-import MegaIcon from '../../img/mega.png';
-import BuyMeACoffeeIcon from '../../img/buymeacoffee.png';
 
 const ByMeACoffeeLink = () => {
     return (
@@ -24,7 +21,7 @@ const ByMeACoffeeLink = () => {
                     <CardMedia
                         component="img"
                         sx={{ width: 40, height: 40, padding:1 }}
-                        image={BuyMeACoffeeIcon}
+                        image='/img/buymeacoffee.png'
                         alt="Buy me a coffee"
                     />
                 </Card>

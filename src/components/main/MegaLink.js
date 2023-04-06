@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import React from "react";
-import MegaIcon from '../../img/mega.png';
 
 
 const MegaLink = () => {
@@ -32,7 +31,7 @@ const MegaLink = () => {
                     <CardMedia
                         component="img"
                         sx={{ width: 58, height: 58 }}
-                        image={MegaIcon}
+                        image='/img/mega.png'
                         alt="Mega.nz"
                     />
                 </Card>

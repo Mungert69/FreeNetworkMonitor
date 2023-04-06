@@ -22,10 +22,9 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
-import PingImage from '../../img/ping.svg';
+//import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../loading';
-import MonitorScreenGif from '../../img/monitor-screen.gif';
 import { Helmet } from 'react-helmet'
 import Blog from './Blog';
 import Footer from './Footer';
@@ -35,7 +34,7 @@ import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 
 const ProductDetail = () => {
-    const classes = useClasses(styleObject(useTheme(), PingImage));
+    const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL+'/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const handleDrawerOpen = () => {
@@ -127,11 +126,11 @@ const ProductDetail = () => {
                                 <Grid item xs={12} sm={6} align="center" >
                                     <Box
                                         sx={{
-                                            width: 237,
+                                            width: 270,
                                             height: 230,
                                         }}
                                     >
-                                        <Image src={MonitorScreenGif} alt="Free Network Monitor Online image of the user interface"/>
+                                        <Image src='/img/monitor-screen.gif' alt="Free Network Monitor Online image of the user interface"/>
                                     </Box>
                                 </Grid>
 

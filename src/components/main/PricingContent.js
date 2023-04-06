@@ -7,18 +7,14 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import CssBaseline from '@mui/material/CssBaseline';
-import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import StarIcon from '@mui/icons-material/StarBorder';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import Logo from '../../img/logo.png';
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "../login-button";
-import { subscribeApi,getApiSubscriptionUrl } from '../dashboard/ServiceAPI';
+import { getApiSubscriptionUrl } from '../dashboard/ServiceAPI';
 
 
 const tiers = [
@@ -65,9 +61,9 @@ function PricingContent({ noRedirect, apiUser, siteId }) {
   const url = (title, userId, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
 
-    if (customerId != '') return getApiSubscriptionUrl()+'/customer-portal/' + customerId;
+    if (customerId !== '') return getApiSubscriptionUrl()+'/customer-portal/' + customerId;
 
-    if (title == 'Free') {
+    if (title === 'Free') {
       return '';
     }
     return getApiSubscriptionUrl()+'/CreateCheckoutSession/' + userId + '/' + title;
@@ -76,13 +72,13 @@ function PricingContent({ noRedirect, apiUser, siteId }) {
   const buttonText = (tier, accountType, customerId) => {
 
     if (noRedirect) return 'View Subcription';
-    if (customerId != ''){
-      if (tier.title == accountType) {
+    if (customerId !== ''){
+      if (tier.title === accountType) {
         return 'Current Plan';
       }
       return 'Change Subscription';
     }
-    if (tier.title == accountType) {
+    if (tier.title === accountType) {
         return 'Current Plan';
     }
     return tier.buttonText;
@@ -91,7 +87,7 @@ function PricingContent({ noRedirect, apiUser, siteId }) {
 
   const descriptionText =(accountType,cancelAt) => {
     if (noRedirect) return 'Keep Your Business Online with 24/7 Network Monitoring. Subscribe Now.';
-    if (accountType == 'Free') return 'You are subcribed to the Free Plan. Choose a new Plan to access more features';
+    if (accountType === 'Free') return 'You are subcribed to the Free Plan. Choose a new Plan to access more features';
     var cancelStr='';
     if (cancelAt!=null){
       cancelStr=' Cancels on '+cancelAt;
@@ -107,7 +103,7 @@ function PricingContent({ noRedirect, apiUser, siteId }) {
 
       <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
         <Typography variant="h2" align="center" >
-          <img src={Logo} alt="Free Network Monitor Logo" height="96px" /></Typography>
+          <img src='/img/logo.png' alt="Free Network Monitor Logo" height="96px" /></Typography>
 
         <Typography variant="h5" align="center" color="text.secondary" component="p">
           {descriptionText(apiUser.accountType, apiUser.cancelAt)}</Typography>
