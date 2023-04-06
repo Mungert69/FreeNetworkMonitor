@@ -1,18 +1,13 @@
-import React, { lazy } from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-
 import { Loading } from "./components/loading";
-
 import CookieConsent from "react-cookie-consent";
 import { createBrowserHistory } from 'history'
 import ReactGA4 from 'react-ga4';
-
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const Pricing = lazy(() => import('./components/main/Pricing'));
 const Faq = lazy(() => import('./components/main/Faq'));
 const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
-
-
 const TRACKING_ID = "G-QZ49HV7DS2"; // OUR_TRACKING_ID
 ReactGA4.initialize(TRACKING_ID, {
   gaOptions: {
@@ -23,27 +18,15 @@ ReactGA4.initialize(TRACKING_ID, {
 const browserHistory = createBrowserHistory()
 browserHistory.listen((location, action) => {
   ReactGA4.send({ hitType: "pageview", page: window.location.pathname });
-
 })
-
-
-
 const App = () => {
-
-
-
   /*useEffect(() => {
     ReactGA4.send({ hitType: "pageview", page: window.location.pathname });
   }, []);*/
-
-
-
   if (false) {
     return <Loading small={true} />;
   }
-
-
-
+  const renderLoader = () => <p>Loading</p>;
   return (
     <div >
       <div >
@@ -61,16 +44,28 @@ const App = () => {
         </CookieConsent>
         <Switch>
           <Route exact path="/" >
-            <ProductDetail />
+            <Suspense fallback={renderLoader()}>
+              <ProductDetail />
+            </Suspense>
+
           </Route>
           <Route exact path="/dashboard"  >
-            <Dashboard />
+             <Suspense fallback={renderLoader()}>
+             <Dashboard />
+            </Suspense>
+  
           </Route>
           <Route exact path="/faq"  >
-            <Faq/>
+          <Suspense fallback={renderLoader()}>
+          <Faq />
+            </Suspense>
+           
           </Route>
           <Route exact path="/subscription"  >
-            <Pricing />
+          <Suspense fallback={renderLoader()}>
+          <Pricing />
+            </Suspense>
+         
           </Route>
           <Redirect to="/" />
         </Switch>
@@ -78,5 +73,4 @@ const App = () => {
     </div>
   );
 };
-
-export default  App;
+export default App;
