@@ -7,14 +7,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
-import { useAuth0 } from "@auth0/auth0-react";
 
+export  function MainListItems()  {
 
-
-export default function MainListItems()  {
-  const { isAuthenticated } = useAuth0();
-  //var displayVal = isAuthenticated ? 'block' : 'none';
-  var displayVal = 'none';
   return (
     <div>
     <Link href="/">
@@ -55,4 +50,4 @@ export default function MainListItems()  {
   );
 }
  
-  
+export default React.memo(MainListItems); 

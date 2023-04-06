@@ -17,4 +17,4 @@ const SignupButton = () => {
   );
 };
 
-export default SignupButton;
+export default React.memo(SignupButton);

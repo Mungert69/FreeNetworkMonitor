@@ -11,4 +11,4 @@ const AuthenticationButton = ({setUserId}) => {
   return isAuthenticated ? <LogoutButton  /> : <LoginButton loginText={'Login'} redirectUrl={'/Dashboard'}/>;
 };
 
-export default AuthenticationButton;
+export default React.memo(AuthenticationButton);

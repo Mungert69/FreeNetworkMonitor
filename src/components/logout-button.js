@@ -22,4 +22,4 @@ const LogoutButton = ({ setUserId }) => {
   );
 };
 
-export default LogoutButton;
+export default React.memo(LogoutButton);

@@ -27,4 +27,4 @@ const LoginButton = ({loginText, fullLength, redirectUrl}) => {
   );
 };
 
-export default LoginButton;
+export default React.memo(LoginButton);

@@ -12,7 +12,7 @@ import ErrorIcon from '@mui/icons-material/ErrorOutlineTwoTone';
 import Title from './Title';
 
 
-export default function HostList({ data, clickViewChart, resetHostAlert }) {
+export function HostList({ data, clickViewChart, resetHostAlert }) {
 
 
   return (
@@ -67,3 +67,5 @@ export default function HostList({ data, clickViewChart, resetHostAlert }) {
     </React.Fragment>
   );
 }
+
+export default React.memo(HostList);

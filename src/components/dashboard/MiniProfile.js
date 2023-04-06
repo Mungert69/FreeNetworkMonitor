@@ -3,24 +3,14 @@ import Box from '@mui/material/Box';
 import Zoom from '@mui/material/Zoom';
 import Tooltip from '@mui/material/Tooltip';
 import ProfileDialog from './ProfileDialog';
-import { useAuth0 } from "@auth0/auth0-react";
-import { Style } from '@mui/icons-material';
 
-export default function MiniProfile({apiUser,token,siteId, initViewSub, setInitViewSub, resetEditMessage}) {
+export  function MiniProfile({apiUser,token,siteId, initViewSub, setInitViewSub}) {
       const [openProfile, setOpenProfile] = React.useState(false);
       useEffect(() => {
           if (initViewSub) {
-               setOpen();
+               setOpenProfile(true);
              }
-         
         }, []);
-
-        const setOpen= () => {
-          setOpenProfile(true);
-          resetEditMessage({ info: 'init' });
-            }
-
-
      if (apiUser!==undefined ) {
           return (
                <div>
@@ -35,15 +25,12 @@ export default function MiniProfile({apiUser,token,siteId, initViewSub, setInitV
                               src={apiUser.picture}
                               alt="Profile Picture"
                               className="rounded-circle"
-                              onClick={() => setOpen()}
+                              onClick={() => setOpenProfile(true)}
                          />
                     </Tooltip>
                </div>
-
           );
      }
      else { return ; }
-
 }
-
-
+export default React.memo(MiniProfile);

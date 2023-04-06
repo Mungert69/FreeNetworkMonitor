@@ -82,4 +82,4 @@ MainFeaturedPost.propTypes = {
   }).isRequired,
 };
 
-export default MainFeaturedPost;
+export default React.memo(MainFeaturedPost);

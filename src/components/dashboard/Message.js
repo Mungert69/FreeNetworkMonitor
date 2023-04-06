@@ -22,7 +22,7 @@ const MessageBar = ({ message}) => {
   }
   enqueueSnackbar(message.text, { variant: severity, autoHideDuration: 5000, anchorOrigin: { vertical: 'bottom', horizontal: 'center' } });
 }
-export default function Message({message}) {
+export function Message({message}) {
   if (message === undefined || message.info === 'init'  ) {
     return;
    }
@@ -33,3 +33,5 @@ export default function Message({message}) {
     </SnackbarProvider>
   );
 }
+
+export default React.memo(Message);

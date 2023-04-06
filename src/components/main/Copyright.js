@@ -16,4 +16,4 @@ const Copyright = () => {
     );
 }
 
-export default Copyright;
+export default React.memo(Copyright);

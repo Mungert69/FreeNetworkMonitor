@@ -22,33 +22,26 @@ import ListSubheader from '@mui/material/ListSubheader';
 import MainListItems from './MainListItems';
 import Chart from './Chart';
 import HostDetail from './HostDetail';
-import HostList from './HostList';
 import HostListPag from './HostListPag';
 //import HostListEdit from './HostListEdit';
 import HostListEdit from './HostListEdit';
 import Loading from '../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-
-import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate,fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';
+import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';
 import DataSetsList from './DataSetsList';
 import AuthNav from '../auth-nav';
-
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
-import  useTheme  from '@mui/material/styles/useTheme';
+import useTheme from '@mui/material/styles/useTheme';
 import { Helmet } from 'react-helmet'
 import ReactGA4 from 'react-ga4';
-
 import { useAuth0 } from "@auth0/auth0-react";
-import Message from './Message';
-import { trackPromise} from 'react-promise-tracker';
 
-//const useStyles = makeStyles((theme) => (styleObject(theme, null)));
 
-export default function Dashboard({apiUser, setApiUser}) {
+
+export default function Dashboard({ apiUser, setApiUser }) {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const classes = useClasses(styleObject(useTheme(), null));
   const defaultHost = { 'id': 1 };
   const [viewInfo, setViewInfo] = useState(false);
   const [defaultUser, setDefaultUser] = React.useState(true);
@@ -70,27 +63,24 @@ export default function Dashboard({apiUser, setApiUser}) {
   const [dateStart, setDateStart] = React.useState();
   const [dateEnd, setDateEnd] = React.useState();
   const [processorList, setProcessorList] = React.useState([]);
-  const [initViewSub, setInitViewSub]=React.useState(false);
-  const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
- 
-
+  const [initViewSub, setInitViewSub] = React.useState(false);
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
   const dataSetIdRef = useRef(dataSetId);
   dataSetIdRef.current = dataSetId;
+  const classes = useClasses(styleObject(useTheme(), null));
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const fixedHeightTallPaper = clsx(classes.paper, classes.fixedHeightTall);
   const handleSetDataSetId = (id, date) => {
     // change the data set id
     setDataSetId(id);
     setSelectedDate(date);
   };
-
-  const resetHostAlert = (id) => {
-    resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser, token);
+  const resetHostAlert = async (id) => {
+    await resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser, token);
   };
-
-const setEditMode = async () => {
-    await setMessage({ info: 'init', success: false, text: "Interal Error" });
-    await setToggleTable(!toggleTable);
+  const setEditMode = async () => {
+    setToggleTable(toggleTable => !toggleTable);
   };
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -98,71 +88,74 @@ const setEditMode = async () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
   const editIconClick = async () => {
-    await setRealTime(!realTime);
+    setRealTime(realTime => !realTime);
     await setEditMode();
     // Reload ListData if clicking into view mode. Hide view mode if clicking into edit mode.
     if (toggleTable) {
-      await setViewInfo(false);
+      setViewInfo(false);
     }
     else {
-      setReloadListData(!reloadListData);
+      setReloadListData(reloadListData => !reloadListData);
     }
   }
-
   const clickViewChart = (hostData) => {
     // Set hostData to the selected host
     setHostData(hostData);
     // Set viewInfo to true to show the chart.
     setViewInfo(true);
   };
-
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const fixedHeightTallPaper = clsx(classes.paper, classes.fixedHeightTall);
-
-  const getAccessToken = async () => {
-    var siteId=0;
-    try {
-    
-      const token = await getAccessTokenSilently({
-      });
-      console.log("Got Auth0 token in Dashboard : " + token);
-     
-
-     var loadServer = await fetchLoadServer(user, token);
-      siteId = await getSiteIdfromUrl(loadServer);          
-      const apiUser= await  addUserApi(siteId, user, token);
-
-      await setSiteId(siteId);
-      await setToken(token);
-      await setApiUser(apiUser);
-
-
-      // TODO Are we are going to need to get a new token if load server is changed.
-    
-    } catch (e) {
-      console.log("Error in Dashboard failed to get token error was" + e + " : user was " + user.sub);
+ 
+  
+  useEffect(() => {
+    const getAccessToken = async () => {
+      var siteId = 0;
+      try {
+        const token = await getAccessTokenSilently({
+        });
+        console.log("Got Auth0 token in Dashboard : " + token);
+        var loadServer = await fetchLoadServer(user, token);
+        siteId = await getSiteIdfromUrl(loadServer);
+        const apiUser = await addUserApi(siteId, user, token);
+        setSiteId(siteId);
+        setToken(token);
+        await setApiUser(apiUser);
+        // TODO Are we are going to need to get a new token if load server is changed.
+      } catch (e) {
+        console.log("Error in Dashboard failed to get token error was" + e + " : user was " + user.sub);
+      }
     }
-  }
-
-
-
+    const checkAuth = async () => {
+      setIsLoading(true);
+      if (isAuthenticated) {
+        setDefaultUser(false);
+        await getAccessToken();
+        ReactGA4.event({
+          category: 'User',
+          action: 'User Logged In'
+        });
+      }
+      else {
+        setDefaultUser(true);
+        await setApiUser(undefined);
+        setToken(undefined);
+      }
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, [isAuthenticated]);
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     if (query.get('initViewSub')) {
       setInitViewSub(true);
     }
   }, []);
-
   useEffect(() => {
     let interval;
     if (realTime) {
       interval = setInterval(() => {
-
         if (dataSetIdRef.current === 0) {
           console.log('Auto reload data');
-          let currReloadListData = reloadListDataRef.current;
           setReloadListData(currentVal => !currentVal);
         }
       }, 60000);
@@ -171,79 +164,44 @@ const setEditMode = async () => {
     }
     return () => clearInterval(interval);
   }, [realTime]);
-
   useEffect(() => {
     // Set hostData to monitorIPID  found in listData.
     const item = listData.find(item => item.monitorIPID === hostData.monitorIPID);
     // If item not undefined then set hostData to item.
-    if (item != undefined) {
+    if (item !== undefined) {
       setHostData(item);
     }
-
   }, [listData]);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      await setIsLoading(true);
-      if (isAuthenticated) {
-        await setDefaultUser(false);
-        await getAccessToken();
-        ReactGA4.event({
-          category: 'User',
-          action: 'User Logged In'
-        });
-      }
-      else {
-        await setDefaultUser(true);
-        await setApiUser(undefined);
-        await setToken(undefined);
-      }
-      await setIsLoading(false);
-  
-    };
-
-    checkAuth();
-
-   
-  }, [isAuthenticated]);
-
   useEffect(() => {
     const fetchData = async () => {
-      await setIsLoading(true);
+      setIsLoading(true);
       await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, token);
       setIsLoading(false);
     };
     fetchData();
-
     // Fetch chart data when hostData or datasetId changes.
     //setIsLoading(false);
   }, [hostData, reloadChart]);
-
   useEffect(() => {
-
     const fetchData = async () => {
-      await setIsLoading(true);
+      setIsLoading(true);
       await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, token);
       setIsLoading(false);
     };
     fetchData();
-  }, [reloadListData, dataSetId,siteId,token]);
-
+  }, [reloadListData, dataSetId, siteId, token]);
   useEffect(() => {
     const fetchData = async () => {
-      await setIsLoading(true);
-      await fetchDataSetsByDate(siteId, setDataSets,dateStart,dateEnd);
+      setIsLoading(true);
+      await fetchDataSetsByDate(siteId, setDataSets, dateStart, dateEnd);
       await fetchProcessorList(siteId, setProcessorList);
       setIsLoading(false);
     };
     fetchData();
-
   }, [siteId, dateStart, dateEnd]);
-
   return (
     <div className={classes.root}>
       <CssBaseline />
-
       <Helmet>
         <title>Dashboard For Free Network Monitor</title>
         <meta name="description" content="This is the dashboard for Free Network Monitor. It provides a free online network monitoring service.
@@ -252,7 +210,6 @@ const setEditMode = async () => {
       </Helmet>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-      
           <IconButton
             edge="start"
             color="inherit"
@@ -262,14 +219,13 @@ const setEditMode = async () => {
             size="large">
             <MenuIcon />
           </IconButton>
-          <LogoLink/>
-          <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft:4 }} component="h1" color="inherit" noWrap className={classes.title}>
-           Network Monitor Dashboard
+          <LogoLink />
+          <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
+            Network Monitor Dashboard
           </Typography>
           <Typography sx={{ display: { xs: 'block', sm: 'none' } }} component="h1" color="inherit" noWrap className={classes.title}>
             Dashboard
           </Typography>
- 
           {
             defaultUser ? null :
               <IconButton color="inherit">
@@ -281,18 +237,16 @@ const setEditMode = async () => {
                 </Badge>
               </IconButton>
           }
-
           <AuthNav />
           <IconButton color="inherit" >
             <Badge badgeContent={alertCount} color="error">
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {defaultUser ? null : <MiniProfile resetEditMessage={setMessage} apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub}/>}
+          {defaultUser ? null : <MiniProfile  apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
         </Toolbar>
-       <Loading/>
+        <Loading />
       </AppBar>
-
       <Drawer
         variant="permanent"
         classes={{
@@ -301,23 +255,17 @@ const setEditMode = async () => {
         open={open}
       >
         <div className={classes.toolbarIcon}>
-
           <IconButton onClick={handleDrawerClose} size="large">
-
             <ChevronLeftIcon />
           </IconButton>
         </div>
-
         <Divider />
         <List><MainListItems /></List>
         <Divider />
         <ListSubheader>Select a Dataset</ListSubheader>
         <Paper className={fixedHeightTallPaper}>
-
-          <DataSetsList dataSets={dataSets} handleSetDataSetId={handleSetDataSetId} setDateStart={setDateStart} setDateEnd={setDateEnd}/>
+          <DataSetsList dataSets={dataSets} handleSetDataSetId={handleSetDataSetId} setDateStart={setDateStart} setDateEnd={setDateEnd} />
         </Paper>
-
-
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -340,17 +288,16 @@ const setEditMode = async () => {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {toggleTable ?
-                  <HostListPag  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList}/>
+                  <HostListPag data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList} />
                   :
                   <React.Fragment>
-                  <Message  message={message} /> 
-                  <HostListEdit setMessage={setMessage} siteId={siteId} token={token} processorList={processorList} />
+
+                    <HostListEdit siteId={siteId} token={token} processorList={processorList} />
                   </React.Fragment>
                 }
               </Paper>
             </Grid>
           </Grid>
-
         </Container>
       </main>
     </div>

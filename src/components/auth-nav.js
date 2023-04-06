@@ -7,4 +7,4 @@ const AuthNav = ({setUserId}) => (
   </div>
 );
 
-export default AuthNav;
+export default React.memo(AuthNav);

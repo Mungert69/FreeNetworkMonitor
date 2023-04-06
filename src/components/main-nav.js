@@ -30,4 +30,4 @@ const MainNav = () => (
   </div>
 );
 
-export default MainNav;
+export default React.memo(MainNav);

@@ -43,4 +43,4 @@ const MegaLink = () => {
     );
 }
 
-export default MegaLink;
+export default React.memo(MegaLink);

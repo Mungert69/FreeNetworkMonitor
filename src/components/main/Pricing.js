@@ -107,4 +107,4 @@ const Pricing = ({apiUser}) => {
     );
 }
 
-export default Pricing;
+export default React.memo(Pricing);

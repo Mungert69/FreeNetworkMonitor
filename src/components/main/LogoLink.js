@@ -28,4 +28,4 @@ const LogoLink = () => {
     );
 }
 
-export default LogoLink;
+export default React.memo(LogoLink);

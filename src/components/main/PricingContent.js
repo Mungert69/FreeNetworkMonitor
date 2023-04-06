@@ -183,4 +183,4 @@ function PricingContent({ noRedirect, apiUser, siteId }) {
   );
 }
 
-export default PricingContent;
+export default React.memo(PricingContent);

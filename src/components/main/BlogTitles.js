@@ -18,4 +18,4 @@ function BlogTitles({ titles,classes }) {
         );
     }
 }
-export default BlogTitles;
+export default React.memo(BlogTitles);

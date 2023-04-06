@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { convertDate } from './ServiceAPI';
-export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd }) {
+export  function DateSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd }) {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const handleChangeStartDate = (newValue) => {
@@ -74,3 +74,5 @@ export default function DateSetsList({ dataSets, handleSetDataSetId, setDateStar
 </React.Fragment>
   );
 }
+
+export default React.memo(DateSetsList);

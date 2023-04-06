@@ -40,4 +40,4 @@ else {
       }
 }
 
-export default BlogList;
+export default React.memo(BlogList);

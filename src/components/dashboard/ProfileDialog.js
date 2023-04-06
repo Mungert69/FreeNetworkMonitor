@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Profile from './Profile'; 
 import StripeCheckOut from '../main/StripeCheckout'; 
-import Message from './Message';
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -31,18 +31,18 @@ const BootstrapDialogTitle = (props) => {
   );
 };
 
-export default function ProfileDialog({ setOpen, apiUser, token,siteId, initViewSub, setInitViewSub }) {
+export  function ProfileDialog({ setOpen, apiUser, token,siteId, initViewSub, setInitViewSub }) {
   const open = true;
-  const [message, setMessage] = React.useState({ info: 'init' });
+  
 
 
   const handleSubscription = () => {
-    setMessage({ info: 'init' });
+
     setInitViewSub(!initViewSub);
   };
 
   const handleClose = () => {
-    setMessage({ info: 'init' });
+
     setOpen(false);
   };
 
@@ -56,11 +56,11 @@ export default function ProfileDialog({ setOpen, apiUser, token,siteId, initView
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
         </BootstrapDialogTitle>
         <DialogContent >
-        <Message  message={message} /> 
+
           {initViewSub ?
           <StripeCheckOut apiUser={apiUser} token={token} siteId={siteId}/>
           :
-           <Profile setMessage={setMessage} apiUser={apiUser} token={token} siteId={siteId}/>
+           <Profile  apiUser={apiUser} token={token} siteId={siteId}/>
        
           }
         </DialogContent>
@@ -79,3 +79,4 @@ export default function ProfileDialog({ setOpen, apiUser, token,siteId, initView
     </div>
   );
 }
+export default React.memo(ProfileDialog);

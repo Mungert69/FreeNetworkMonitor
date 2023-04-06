@@ -67,7 +67,7 @@ const CustomizedDot = (props) => {
   );
 };
 
-export default function Chart({data,selectedDate, hostname}) {
+export function Chart({data,selectedDate, hostname}) {
   const theme = useTheme();
   var dateString;
   if ( selectedDate===undefined) { 
@@ -117,3 +117,5 @@ export default function Chart({data,selectedDate, hostname}) {
     </React.Fragment>
   );
 }
+
+export default React.memo(Chart);

@@ -20,7 +20,7 @@ const styleObject = (theme) => {
     },
   }};
 
-export default function HostDetail({hostData}) {
+export  function HostDetail({hostData}) {
   const classes = useClasses(styleObject(useTheme()))
   if (hostData.address===undefined) return;
   return (
@@ -43,3 +43,4 @@ export default function HostDetail({hostData}) {
      </React.Fragment>
   );
 }
+export default React.memo(HostDetail);

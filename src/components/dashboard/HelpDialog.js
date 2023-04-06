@@ -24,7 +24,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 
-
 const BootstrapDialogTitle = (props) => {
   const { children, onClose, ...other } = props;
 
@@ -49,7 +48,7 @@ const BootstrapDialogTitle = (props) => {
   );
 };
 
-export default function HelpDialog({ setOpen }) {
+export  function HelpDialog({ setOpen }) {
   const open = true;
 
 
@@ -118,3 +117,5 @@ export default function HelpDialog({ setOpen }) {
     </div>
   );
 }
+
+export default React.memo(HelpDialog);

@@ -11,7 +11,7 @@ const Message = ({ message }) => (
   </section>
 );
 
-export default function StripeCheckout({ apiUser, token, siteId }) {
+export function StripeCheckout({ apiUser, token, siteId }) {
   let [message, setMessage] = useState('');
   let [success, setSuccess] = useState(false);
   let [sessionId, setSessionId] = useState('');
@@ -44,4 +44,4 @@ export default function StripeCheckout({ apiUser, token, siteId }) {
     return <Message message={message} />;
   }
 }
-
+export default React.memo(StripeCheckout);

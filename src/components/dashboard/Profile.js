@@ -20,17 +20,18 @@ import {
   Typography,
   colors
 } from "@mui/material";
-
+import Message from './Message';
 import { updateApiUser,resendVerifyEmail } from './ServiceAPI';
 
 
 
-const Profile = ({ apiUser, token, siteId, setMessage }) => {
+const Profile = ({ apiUser, token, siteId }) => {
 
   const [state, setState] = React.useState({
     name: apiUser.nickname,
   });
   const [disableEmail, setDisableEmail]=React.useState(apiUser.disableEmail);
+  const [message, setMessage] = React.useState({ info: 'init' });
 
 
   const { name } = state;
@@ -68,7 +69,7 @@ const Profile = ({ apiUser, token, siteId, setMessage }) => {
   };
   return (
     <>
-
+        <Message  message={message} /> 
        <FormLabel component="legend">View and update your profile</FormLabel>
     
         <Card >
@@ -190,4 +191,4 @@ Profile.propTypes = {
   apiUser: PropTypes.object.isRequired
 };
 
-export default Profile;
+export default React.memo(Profile);

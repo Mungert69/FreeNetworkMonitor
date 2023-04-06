@@ -59,4 +59,4 @@ function Sidebar({classes,sidebar, setArchiveDate, blogTitles}) {
 }
 
 
-export default Sidebar;
+export default React.memo(Sidebar);

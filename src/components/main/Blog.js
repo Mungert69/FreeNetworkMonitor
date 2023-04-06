@@ -13,12 +13,7 @@ import BlogList from './BlogList';
 import Sidebar from './Sidebar';
 import { fetchBlogs, getBlogDateFromHash } from '../dashboard/ServiceAPI';
 import { Element } from 'react-scroll'
-const importAll = (r) => r.keys().map(r);
-const markdownFiles = importAll(require.context('./posts', false, /\.md$/))
-  .sort();
-const nameFile = markdownFiles.map(file => file.split('/')[1].split('.')[0]);
-const sections = [
-];
+
 const mainFeaturedPost = {
   title: 'Monitor your Website and Services',
   description: 'Website downtime is a serious threat to businesses today. It is detrimental to a company as it leads to customer dissatisfaction, tarnished brand image, poor search engine ranking, and loss of potential business and clients.',
@@ -77,7 +72,7 @@ const getSidebar = (archives) => {
     ]
   };
 };
-export default function Blog({ classes }) {
+export function Blog({ classes }) {
   const [archiveDate, setArchiveDate] = useState(new Date());
   const [archives, setArchives] = useState(getArchives());
   const [posts, setPosts] = useState([]);
@@ -86,7 +81,7 @@ export default function Blog({ classes }) {
   useEffect(() => {
     var hash = window.location.hash;
     console.log('Hash is' + hash);
-    if (hash==undefined || hash == null || hash.length == 0) { 
+    if (hash===undefined || hash == null || hash.length === 0) { 
      return;
      }
     // encode hash to be sent via url paramter
@@ -97,11 +92,11 @@ export default function Blog({ classes }) {
     async function getBlogDate() {
       var blogDate = await getBlogDateFromHash(hash);
       // check is blogDate is a valid date
-      if (blogDate == null || blogDate == undefined) {
+      if (blogDate == null || blogDate === undefined) {
         return;
       }
-      await setArchiveDate(blogDate);
-      await setArchiveOpen(blogDate);
+      setArchiveDate(blogDate);
+      setArchives(setArchiveOpen(blogDate));
     };
     getBlogDate();
   }, []);
@@ -111,7 +106,7 @@ export default function Blog({ classes }) {
  const scrollToHash = (hash) => {
 
     // After rendering, scroll to the section with the hash value
-    if (hash==undefined || hash==null || hash.length==0) { return; }
+    if (hash===undefined || hash==null || hash.length===0) { return; }
     console.log('Scrolling to Hash ' + hash);
     const section = document.querySelector(hash);
     if (section) {
@@ -132,7 +127,7 @@ export default function Blog({ classes }) {
         }
         return archive;
       });
-      setArchives(newArchives);
+      return newArchives;
     }
     catch (e) {
       console.log('Error could not set Archive Open. Error was : '+e);
@@ -184,3 +179,5 @@ export default function Blog({ classes }) {
     </Container>
   );
 }
+
+export default React.memo(Blog);
