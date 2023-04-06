@@ -5,4 +5,4 @@ npm install --production
 npm audit
 npm run build
 docker compose build
-docker push mungert/networkmonitorreact:0.2.1
+docker push mungert/networkmonitorreact:0.2.2

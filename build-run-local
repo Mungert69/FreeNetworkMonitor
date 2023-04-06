@@ -5,4 +5,4 @@ npm update
 npm audit
 npm run build
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:0.2.1 
+docker push mungert/networkmonitorreact-local:0.2.2
