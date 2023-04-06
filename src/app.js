@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Route, Switch, Redirect, Router } from "react-router-dom";
+import React, {  useState, lazy } from "react";
+import { Route, Switch, Redirect } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { Loading } from "./components";
-import Dashboard from "./components/dashboard/Dashboard";
-import Pricing from "./components/main/Pricing";
-import Faq from "./components/main/Faq";
-import ProductDetail from "./components/main/ProductDetail";
-import CookieConsent, { Cookies } from "react-cookie-consent";
+import { Loading } from "./components/loading";
+
+import CookieConsent from "react-cookie-consent";
 import { createBrowserHistory } from 'history'
 import ReactGA4 from 'react-ga4';
+
+const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
+const Pricing = lazy(() => import('./components/main/Pricing'));
+const Faq = lazy(() => import('./components/main/Faq'));
+const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
+
 
 const TRACKING_ID = "G-QZ49HV7DS2"; // OUR_TRACKING_ID
 ReactGA4.initialize(TRACKING_ID, {

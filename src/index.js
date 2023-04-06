@@ -4,7 +4,7 @@ import App from "./app";
 import { BrowserRouter as Router } from "react-router-dom";
 import Auth0ProviderWithHistory from "./auth/auth0-provider-with-history";
 import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
-import { purple } from '@mui/material/colors';
+
 
 const theme = createTheme(
   {

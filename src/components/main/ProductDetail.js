@@ -3,8 +3,6 @@ import clsx from 'clsx';
 //combine all the @mui/material imports into one line not including icons
 import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
 
-import Image from 'mui-image';
-
 import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 import EmailIcon from '@mui/icons-material/Email';
