@@ -4,6 +4,7 @@ import App from "./app";
 import { BrowserRouter as Router } from "react-router-dom";
 import Auth0ProviderWithHistory from "./auth/auth0-provider-with-history";
 import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
+import reportWebVitals from './reportWebVitals';
 
 
 const theme = createTheme(
@@ -36,3 +37,4 @@ root.render(
     </Auth0ProviderWithHistory>
   </Router>
 );
+reportWebVitals();

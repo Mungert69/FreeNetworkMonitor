@@ -20,6 +20,19 @@ import useClasses from "../dashboard/useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
+import reportWebVitals from '../../reportWebVitals';
+import ReactGA4 from 'react-ga4';
+function sendToAnalytics({ id, name, value }) {
+    ReactGA4.event({
+        eventCategory: 'Web Vitals',
+        eventAction: name,
+        eventValue: Math.round(name === 'CLS' ? value * 1000 : value), // values must be integers
+        eventLabel: id, // id unique to current page load
+        nonInteraction: true, // avoids affecting bounce rate
+         // Use `sendBeacon()` if the browser supports it.
+        transport: 'beacon',
+      }); 
+  }
 
 const ProductDetail = () => {
     const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL+'/ping.svg'));
@@ -31,7 +44,9 @@ const ProductDetail = () => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+   
+      
+      reportWebVitals(sendToAnalytics);
     return (
         <div className={classes.root}>
             <CssBaseline />
