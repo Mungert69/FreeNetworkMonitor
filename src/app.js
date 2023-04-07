@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { Loading } from "./components/loading";
+import { LoadingCircle } from "./loading-circle";
 import CookieConsent from "react-cookie-consent";
 import { createBrowserHistory } from 'history'
 import ReactGA4 from 'react-ga4';
@@ -24,9 +24,9 @@ const App = () => {
     ReactGA4.send({ hitType: "pageview", page: window.location.pathname });
   }, []);*/
   if (false) {
-    return <Loading small={true} />;
+    return <LoadingCircle small={true} />;
   }
-  const renderLoader = () => <p>Loading</p>;
+  const renderLoader = () => <LoadingCircle indicatorSize={100} thickness={2} />;
   return (
     <div >
       <div >

@@ -25,7 +25,7 @@ import HostDetail from './HostDetail';
 import HostListPag from './HostListPag';
 //import HostListEdit from './HostListEdit';
 import HostListEdit from './HostListEdit';
-import Loading from '../loading';
+import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
 import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';

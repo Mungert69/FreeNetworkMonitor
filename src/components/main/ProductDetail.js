@@ -12,7 +12,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
-import Loading from '../loading';
+import Loading from '../../loading';
 import { Helmet } from 'react-helmet'
 import Blog from './Blog';
 import Footer from './Footer';

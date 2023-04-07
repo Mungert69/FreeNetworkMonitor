@@ -16,7 +16,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
 //import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
-import Loading from '../loading';
+import Loading from '../../loading-circle';
 import { Helmet } from 'react-helmet'
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
