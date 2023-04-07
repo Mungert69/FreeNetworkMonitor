@@ -42,9 +42,10 @@
   },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "cross-env PORT=3000 react-scripts start",
     "startssl": "HTTPS=true cross-env PORT=3000 react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false  react-scripts build && compress-cra",
+    "build": "react-scripts build ",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
