@@ -1,17 +1,13 @@
 import MUIDataTable from "mui-datatables";
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import {
-  FormControl,
   FormControlLabel,
   TextField,
-  Switch,
   Select,
   MenuItem,
   Checkbox
 } from '@mui/material';
-import styled from 'styled-components'
-import { fetchEditHostData, saveHostData, addUserApi, addHostApi, delHostApi } from './ServiceAPI';
-import Button from '@mui/material/Button';
+import { fetchEditHostData, saveHostData, addHostApi, delHostApi } from './ServiceAPI';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import SaveIcon from '@mui/icons-material/Save';
@@ -36,7 +32,6 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
   const [reset, setReset] = React.useState(true);
-  const [skipPageReset, setSkipPageReset] = React.useState(false);
   const [openHelp, setOpenHelp] = React.useState(false);
   const [displayEdit, setDisplayEdit] = React.useState(true);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
