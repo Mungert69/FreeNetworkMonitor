@@ -47,7 +47,7 @@
     "preinstall": "npx npm-force-resolutions",
     "start": "cross-env PORT=3000 GENERATE_SOURCEMAP=false react-scripts start",
     "startssl": "HTTPS=true cross-env PORT=3000 GENERATE_SOURCEMAP=false react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false  react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
