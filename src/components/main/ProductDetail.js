@@ -23,6 +23,7 @@ import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
 function sendToAnalytics({ id, name, value }) {
+    
     ReactGA4.event({
         eventCategory: 'Web Vitals',
         eventAction: name,

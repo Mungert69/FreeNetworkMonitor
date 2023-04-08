@@ -310,7 +310,7 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/Monitor/ResetAlert/',
+            url: apiBaseUrls[baseUrlId] + '/Monitor/ResetAlert',
             data: sentData,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -356,7 +356,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchEditHostData Mapping Data Error was : ' + error);
-        if ( result!=undefined &&   result.data.message != undefined)
+        if ( result!==undefined &&   result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return undefined;
     }

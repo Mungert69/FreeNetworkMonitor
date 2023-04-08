@@ -136,9 +136,12 @@ export default function CustomPaginationActionsTable({ data, clickViewChart, res
                 </Tooltip>
                 <Tooltip title="Reset Alert">
                   <span>
-                    <Button hidden={!row.monitorStatus.alertFlag} onClick={() => resetHostAlert(row.monitorIPID)} key={row.id}>
-                      <ErrorIcon color='error' />
-                    </Button>
+                    {row.monitorStatus.alertFlag ?
+                      <Button  onClick={() => resetHostAlert(row.monitorIPID)} key={row.id}>
+                        <ErrorIcon color='error' />
+                      </Button>
+                      : null}
+
                   </span>
                 </Tooltip>
 
@@ -153,8 +156,8 @@ export default function CustomPaginationActionsTable({ data, clickViewChart, res
               <TableCell >{row.roundTripAverage}</TableCell>
               <TableCell align="right">{
                 processorList == null ? null : processorList.map(m => {
-                  if (m.appID==row.appID) return m.location;
-                  })}
+                  if (m.appID == row.appID) return m.location;
+                })}
               </TableCell>
             </TableRow>
           ))}
