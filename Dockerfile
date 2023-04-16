@@ -9,7 +9,6 @@ COPY htaccess /var/www/html/.htaccess
 COPY htaccess-blank /var/www/html/blog/.htaccess
 COPY default-ssl.conf /etc/apache2/sites-enabled
 COPY 000-default.conf /etc/apache2/sites-enabled
-COPY security.conf /etc/apache2/conf-enabled
 COPY apache2.conf /etc/apache2/
 EXPOSE 443
 CMD apachectl -D FOREGROUND
