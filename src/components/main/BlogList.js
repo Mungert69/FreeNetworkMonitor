@@ -32,7 +32,9 @@ else {
           <Markdown className="markdown" key={post.hash}>
           {post.header+post.markdown}
         </Markdown>
-        {post.isImage && <img src={post.imageUrl} alt={post.imageTitle} />}
+        {post.isImage &&  <CardMedia component="img"
+                        image={post.imageUrl}
+                        alt={post.imageTitle}  />}
         {post.isVideo &&  <CardMedia  component='video'
             title={post.videoTitle}
             image={post.videoUrl}
