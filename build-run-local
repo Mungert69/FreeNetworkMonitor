@@ -1,12 +1,12 @@
 #!/bin/sh
 value=`cat ../secret`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
-git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitorBlog
 npm install --omit=dev
 npm audit
 npm run build
 rm -r ./out
 cd ../FreeNetworkMonitorBlog
+git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitorBlog
 npm run export
 cp -r ./out ../FreeNetworkMonitor/
 cd ../FreeNetworkMonitor
