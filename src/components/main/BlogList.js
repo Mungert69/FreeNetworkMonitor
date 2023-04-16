@@ -30,7 +30,7 @@ else {
           <Element id={post.hash} name={post.hash} key={post.hash}>
             <React.Fragment key={post.hash}>
           <Markdown className="markdown" key={post.hash}>
-          {post.markdown}
+          {post.header+post.markdown}
         </Markdown>
         {post.isImage && <img src={post.imageUrl} alt={post.imageTitle} />}
         {post.isVideo &&  <CardMedia  component='video'
