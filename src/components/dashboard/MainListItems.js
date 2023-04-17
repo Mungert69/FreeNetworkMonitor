@@ -45,7 +45,7 @@ export  function MainListItems()  {
         <ListItemText primary="Subscription" />
       </ListItem>
     </Link>
-    <Link href="https://freenetworkmonitor.click/Blog"  >
+    <Link href="/blog"  >
       <ListItem button key="blog">
         <ListItemIcon>
           <BlogIcon />
