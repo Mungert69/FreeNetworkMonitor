@@ -7,6 +7,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
+import BlogIcon from '@mui/icons-material/BlogIcon';
 
 export  function MainListItems()  {
 
@@ -42,6 +43,14 @@ export  function MainListItems()  {
           <LoyaltyIcon />
         </ListItemIcon>
         <ListItemText primary="Subscription" />
+      </ListItem>
+    </Link>
+    <Link href="/Blog"  >
+      <ListItem button key="blog">
+        <ListItemIcon>
+          <BlogIcon />
+        </ListItemIcon>
+        <ListItemText primary="Blog" />
       </ListItem>
     </Link>
 
