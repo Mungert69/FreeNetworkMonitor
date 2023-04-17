@@ -172,7 +172,7 @@ export function Blog({ classes }) {
         </Grid>
         <Grid container spacing={5} sx={{ mt: 3 }}>
           <Element id={'#blog'} name={'#blog'} />
-          <BlogList title="Free Network Monitor Blog" posts={posts} />
+          <BlogList classes={classes} title="Free Network Monitor Blog" posts={posts} />
           <Sidebar classes={classes} sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles} />
         </Grid>
       </main>

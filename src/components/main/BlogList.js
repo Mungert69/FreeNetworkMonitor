@@ -1,10 +1,10 @@
 import React from 'react';
-import {Grid,Typography,Divider, CardMedia} from '@mui/material';
+import {Grid,Typography,Divider, CardMedia,Link} from '@mui/material';
 
 import Markdown from './Markdown';
 import { Element } from 'react-scroll'
 
-function BlogList({title, posts}) {
+function BlogList({title, posts,classes}) {
 
 
 if (posts===undefined) {
@@ -23,7 +23,9 @@ else {
       }}
     >
       <Typography variant="h5" gutterBottom color='secondary'>
-        {title}
+      <Link  display="block"  className={classes.link} href={'/blog'}>
+               {title}
+               </Link>
       </Typography>
       <Divider />
       {  posts.map((post) => (
