@@ -7,7 +7,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
-import BlogIcon from '@mui/icons-material/BlogIcon';
+import BlogIcon from '@mui/icons-material/Book';
 
 export  function MainListItems()  {
 
