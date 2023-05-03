@@ -43,6 +43,7 @@ const App = () => {
           <span style={{ fontAweight: 'bold' }}>By clicking agree or continuing to use this site you agree to the use of cookies. For full cookie policy click <a href="https://www.freenetworkmonitor.click/cookiepolicy.html"> Cookie Policy</a>. To view our privacy policy click <a href="https://www.freenetworkmonitor.click/privacypolicy.html">Privacy Policy</a></span>
         </CookieConsent>
         <Switch>
+        <Route exact path="/blog" render={() => {window.location.href="/blog/index.html"}} />
           <Route exact path="/" >
             <Suspense fallback={renderLoader()}>
               <ProductDetail />
