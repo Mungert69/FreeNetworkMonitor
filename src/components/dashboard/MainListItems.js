@@ -45,14 +45,14 @@ export  function MainListItems()  {
         <ListItemText primary="Subscription" />
       </ListItem>
     </Link>
-    <Link href="/blog"  >
+    <a href="/blog">
       <ListItem button key="blog">
         <ListItemIcon>
           <BlogIcon />
         </ListItemIcon>
         <ListItemText primary="Blog" />
       </ListItem>
-    </Link>
+    </a>
 
   </div>
 
