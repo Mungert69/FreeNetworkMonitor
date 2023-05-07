@@ -23,8 +23,8 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import Message from './Message';
 const muiCache = createCache({
-	"key": "mui",
-	"prepend": true
+  "key": "mui",
+  "prepend": true
 });
 
 export const HostListEdit = ({ siteId, token, processorList }) => {
@@ -35,52 +35,52 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
   const [openHelp, setOpenHelp] = React.useState(false);
   const [displayEdit, setDisplayEdit] = React.useState(true);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
-  
+
   const getMuiTheme = () => createTheme({
-		components: {
-			MuiSvgIcon: {
-        styleOverrides:{
-					root: {
-						color: '#607466'
+    components: {
+      MuiSvgIcon: {
+        styleOverrides: {
+          root: {
+            color: '#607466'
           }
         }
-			},
+      },
       MuiDataTableBodyCell: {
-        styleOverrides:{
+        styleOverrides: {
           root: {
-						padding : "0px",
-						paddingLeft: "16px",
-						bottomMargin: "0px"
+            padding: "0px",
+            paddingLeft: "16px",
+            bottomMargin: "0px"
           }
         }
-			},
-			MuiDataTable: {
-        styleOverrides:{
+      },
+      MuiDataTable: {
+        styleOverrides: {
           root: {
           }
         }
-			},
-			MuiDataTableCell: {
-        styleOverrides:{
+      },
+      MuiDataTableCell: {
+        styleOverrides: {
           root: {
-						padding : "8px",
-						paddingLeft: "32px",
+            padding: "8px",
+            paddingLeft: "32px",
           }
         }
-			},
-			MuiFormControlLabel: {
-        styleOverrides:{
+      },
+      MuiFormControlLabel: {
+        styleOverrides: {
           root: {
-						marginBottom: 0
+            marginBottom: 0
           }
         }
-			},
+      },
     }
   })
   React.useEffect(() => {
     (async () => {
       const returndata = await fetchEditHostData(siteId, user, token);
-      if (returndata !==undefined) {
+      if (returndata !== undefined) {
         setData(returndata);
       }
     })();
@@ -88,9 +88,10 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
 
   const columns = [
     {
-			name: 'id',
-			options: {
-				display: false}
+      name: 'id',
+      options: {
+        display: false
+      }
     },
     {
       name: 'address',
@@ -104,11 +105,12 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
             value={value}
             control={<TextField value={value} style={{ width: '300px' }} />}
             onChange={event => {
-              const row=tableMeta.rowIndex;
-              var tempData=data;           
-              tempData[row]["address"]=event.target.value;       
+              const row = tableMeta.rowIndex;
+              var tempData = data;
+              tempData[row]["address"] = event.target.value;
               setData(tempData);
-              updateValue(event.target.value);}
+              updateValue(event.target.value);
+            }
             }
           />);
         }
@@ -125,23 +127,25 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
             <FormControlLabel
               label=""
               value={value}
-						control={
-						<Select
-              value={value}
-              onChange={event => {
-                const row=tableMeta.rowIndex;
-                var tempData=data;           
-                tempData[row]["endPointType"]=event.target.value;       
-                setData(tempData);
-                updateValue(event.target.value);}}
-            >
-              <MenuItem value={'http'}>HTTP (website)</MenuItem>
-              <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
-              <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
-              <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
-                <MenuItem value={'quantum'}>QUANTUM (Quantum Ready)</MenuItem>
-            </Select>
-						}
+              control={
+                <Select
+                  value={value}
+                  onChange={event => {
+                    const row = tableMeta.rowIndex;
+                    var tempData = data;
+                    tempData[row]["endPointType"] = event.target.value;
+                    setData(tempData);
+                    updateValue(event.target.value);
+                  }}
+                >
+                  <MenuItem value={'http'}>HTTP Ping (website)</MenuItem>
+                  <MenuItem value={'httpfull'}>HTTP Full(website)</MenuItem>
+                  <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
+                  <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
+                  <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
+                  <MenuItem value={'quantum'}>QUANTUM (Quantum Ready)</MenuItem>
+                </Select>
+              }
             />
           );
         }
@@ -159,11 +163,35 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
               value={value}
               control={<TextField value={value} style={{ width: '80px' }} />}
               onChange={event => {
-                const row=tableMeta.rowIndex;
-                var tempData=data;           
-                tempData[row]["timeout"]=event.target.value;       
+                const row = tableMeta.rowIndex;
+                var tempData = data;
+                tempData[row]["timeout"] = event.target.value;
                 setData(tempData);
-                updateValue(event.target.value);}}
+                updateValue(event.target.value);
+              }}
+            />
+          );
+        }
+      }
+    }, {
+      name: 'port',
+      label: 'Port',
+      options: {
+        filter: true,
+        customBodyRender: (value, tableMeta, updateValue) => {
+          //updateData(tableMeta, data, setData, value, 'timeout');
+          return (
+            <FormControlLabel
+              label=""
+              value={value}
+              control={<TextField value={value} style={{ width: '60px' }} />}
+              onChange={event => {
+                const row = tableMeta.rowIndex;
+                var tempData = data;
+                tempData[row]["port"] = event.target.value;
+                setData(tempData);
+                updateValue(event.target.value);
+              }}
             />
           );
         }
@@ -182,17 +210,18 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
               align='center'
               control={
                 <Checkbox checked={value} onChange={event => {
-                  const row=tableMeta.rowIndex;
-                  var tempData=data;           
-                  tempData[row]["enabled"]=!tempData[row]["enabled"];       
+                  const row = tableMeta.rowIndex;
+                  var tempData = data;
+                  tempData[row]["enabled"] = !tempData[row]["enabled"];
                   setData(tempData);
-                  updateValue(tempData[row]["enabled"]);}} />
+                  updateValue(tempData[row]["enabled"]);
+                }} />
               }
             />);
         }
       }
     },
-     {
+    {
       name: 'appID',
       label: 'Monitor Location',
       options: {
@@ -204,21 +233,25 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
             <FormControlLabel
               label=""
               value={value}
-						control={
-						<Select
-              value={value}
-              onChange={event => {
-                const row=tableMeta.rowIndex;
-                var tempData=data;           
-                tempData[row]["appID"]=event.target.value;       
-                setData(tempData);
-                updateValue(event.target.value);}}
-            >
-              {processorList.map(row => 
-                <MenuItem value={row.appID}>{row.location}</MenuItem>
-              )}
-            </Select>
-						}
+              control={
+                <Select
+                  value={value}
+                  onChange={event => {
+                    const row = tableMeta.rowIndex;
+                    var tempData = data;
+                    tempData[row]["appID"] = event.target.value;
+                    setData(tempData);
+                    updateValue(event.target.value);
+                  }}
+                >
+                  {
+                    processorList
+                      .filter(row => !row.isAtMaxLoad)
+                      .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
+                  }
+
+                </Select>
+              }
             />
           );
         }
@@ -302,7 +335,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
     setReset(!reset);
   }
   const delHost = async (selectedId) => {
-    if ( selectedId===undefined) return;
+    if (selectedId === undefined) return;
     setDisplayEdit(false);
     var message = { text: 'Please wait..', info: true };
     await setMessage(message);
@@ -317,16 +350,16 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
     <>
       {openHelp ? <HelpDialog setOpen={setOpenHelp} /> : null}
       <Message message={message} />
-			<CacheProvider value={muiCache}>
-				<ThemeProvider theme={getMuiTheme()}>
-					<MUIDataTable
-      			  title={"Edit Hosts"}
-      		  data={data}
-      		  columns={columns}
-      		  options={options}
-	  			/>
-  			</ThemeProvider>
-			</CacheProvider>
+      <CacheProvider value={muiCache}>
+        <ThemeProvider theme={getMuiTheme()}>
+          <MUIDataTable
+            title={"Edit Hosts"}
+            data={data}
+            columns={columns}
+            options={options}
+          />
+        </ThemeProvider>
+      </CacheProvider>
     </>
   );
 }
