@@ -246,7 +246,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
             data: sentData,
         }
     ).catch(function (error) {
-        console.log('ServiceAPI.fetchEditHostData Axios Error was : ' + error);
+        console.log('ServiceAPI.fetchDataSetsByDate Axios Error was : ' + error);
         return;
     }));
     try {
