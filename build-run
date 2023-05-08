@@ -11,5 +11,5 @@ npm run export
 cp -r ./out ../FreeNetworkMonitor/
 cd ../FreeNetworkMonitor
 docker compose -f docker-compose.yml build
-docker push mungert/networkmonitorreact:0.3.0
+docker push mungert/networkmonitorreact:0.3.1
 
