@@ -92,7 +92,7 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
                 </Tooltip>
                 <Tooltip title="Reset Alert">
                   <span>
-                    {row.monitorStatus.alertFlag ?
+                    {row.alertFlag ?
                       <Button  onClick={() => resetHostAlert(row.monitorIPID)} >
                         <ErrorIcon color='error' />
                       </Button>
