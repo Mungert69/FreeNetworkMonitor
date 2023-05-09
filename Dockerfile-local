@@ -1,6 +1,6 @@
 FROM ubuntu/apache2
 MAINTAINER mungert@gmail.com
-RUN apt-get update;\apt-get upgrade;\a2enmod rewrite;\a2enmod ssl; apt-get clean
+RUN apt-get update;\apt-get upgrade;\a2enmod rewrite;\a2enmod ssl; \a2enmod headers ;  apt-get clean
 COPY ./build/ /var/www/html/
 COPY ./out/ /var/www/html/blog
 COPY ./out/images/ /var/www/html/images
