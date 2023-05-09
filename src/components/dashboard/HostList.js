@@ -176,7 +176,7 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
     },
     {
       name: 'roundTripAverage',
-      label: 'Round Trip Average',
+      label: 'Round Trip Average ms',
       options: {
         filter: true,
         sort: true,
