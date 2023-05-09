@@ -94,7 +94,7 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
                   <span>
                     {row.alertFlag ?
                       <Button  onClick={() => resetHostAlert(row.monitorIPID)} >
-                        <ErrorIcon color='error' />
+                        <ErrorIcon sx={{ color: '#eb5160' }} />
                       </Button>
                       : null}
 

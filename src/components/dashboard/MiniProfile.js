@@ -21,10 +21,10 @@ export  function MiniProfile({apiUser,token,siteId, initViewSub, setInitViewSub}
                               sx={{
                                    height: 35,
                                    width: 35,
+                                   borderRadius: "50%",  // Add this
                               }}
                               src={apiUser.picture}
                               alt="Profile Picture"
-                              className="rounded-circle"
                               onClick={() => setOpenProfile(true)}
                          />
                     </Tooltip>
