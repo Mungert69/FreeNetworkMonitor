@@ -1,5 +1,6 @@
 import MUIDataTable from "mui-datatables";
-import React from 'react'
+import { TablePagination, Grid } from '@mui/material';
+import React, {useRef} from 'react'
 import {
   FormControlLabel,
   TextField,
@@ -9,6 +10,8 @@ import {
 } from '@mui/material';
 import { fetchEditHostData, saveHostData, addHostApi, delHostApi } from './ServiceAPI';
 import IconButton from '@mui/material/IconButton';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import Badge from '@mui/material/Badge';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
@@ -35,7 +38,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
   const [openHelp, setOpenHelp] = React.useState(false);
   const [displayEdit, setDisplayEdit] = React.useState(true);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
-
+  const paginationRef = useRef(null);
   const getMuiTheme = () => createTheme({
     components: {
       MuiSvgIcon: {
@@ -75,6 +78,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
           }
         }
       },
+     
     }
   })
   React.useEffect(() => {
@@ -184,7 +188,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
             <FormControlLabel
               label=""
               value={value}
-              control={<TextField value={value} style={{ width: '60px' }} />}
+              control={<TextField value={value} style={{ width: '80px' }} />}
               onChange={event => {
                 const row = tableMeta.rowIndex;
                 var tempData = data;
@@ -282,11 +286,18 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
     }
   ];
   const options = {
+
     filter: true,
     filterType: 'dropdown',
     customToolbar: () => (<HeaderElements />),
-    selectableRows: false
+    jumpToPage: true,
+    selectableRows: false,
+
   };
+
+
+
+  
   const HeaderElements = () => (
     <>
       <IconButton color="inherit" size="large">
@@ -312,6 +323,8 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
       </IconButton>
     </>
   );
+
+ 
   const saveData = async (data) => {
     setDisplayEdit(false);
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };

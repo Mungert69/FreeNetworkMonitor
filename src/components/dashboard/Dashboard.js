@@ -22,7 +22,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import MainListItems from './MainListItems';
 import Chart from './Chart';
 import HostDetail from './HostDetail';
-import HostListPag from './HostListPag';
+import HostList from './HostList';
 //import HostListEdit from './HostListEdit';
 import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
@@ -289,7 +289,7 @@ export default function Dashboard() {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {toggleTable ?
-                  <HostListPag data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList} />
+                  <HostList data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList} />
                   :
                   <React.Fragment>
 
