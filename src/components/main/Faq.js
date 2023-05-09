@@ -133,7 +133,7 @@ const Faq = () => {
                 </div>
 
                 <Divider />
-                <List><MainListItems /></List>
+                <List><MainListItems classes={classes} /></List>
                 <Divider />
 
             </Drawer>

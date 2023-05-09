@@ -91,7 +91,7 @@ const Pricing = () => {
                 </div>
 
                 <Divider />
-                <List><MainListItems /></List>
+                <List><MainListItems classes={classes} /></List>
                 <Divider />
 
             </Drawer>

@@ -261,7 +261,7 @@ export default function Dashboard() {
           </IconButton>
         </div>
         <Divider />
-        <List><MainListItems /></List>
+        <List><MainListItems  classes={classes}/></List>
         <Divider />
         <ListSubheader>Select a Dataset</ListSubheader>
         <Paper className={fixedHeightTallPaper}>

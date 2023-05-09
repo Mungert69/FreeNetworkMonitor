@@ -104,6 +104,16 @@ const styleObject = (theme, imageUrl) => {
                     textDecoration: "none"
                 }
             
+        },
+        linkCompact:{
+            textDecoration: 'none',
+            color:  theme.palette.primary.dark,
+            color: "#6239AB",
+                "&:hover": {
+                    color: "#607466",
+                    textDecoration: "none"
+                }
+            
         }
     }
 }

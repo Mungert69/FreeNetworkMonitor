@@ -9,11 +9,11 @@ import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
 import BlogIcon from '@mui/icons-material/Book';
 
-export  function MainListItems()  {
+export  function MainListItems({classes})  {
 
   return (
     <div>
-    <Link href="/">
+    <Link className={classes.linkCompact} href="/">
       <ListItem button key="main">
         <ListItemIcon>
           <HomeIcon />
@@ -21,7 +21,7 @@ export  function MainListItems()  {
         <ListItemText primary="Main" />
       </ListItem>
     </Link>
-    <Link href="/Dashboard">
+    <Link className={classes.linkCompact} href="/Dashboard">
       <ListItem button key="dashboard">
         <ListItemIcon>
           <DashboardIcon />
@@ -29,7 +29,7 @@ export  function MainListItems()  {
         <ListItemText primary="Dashboard" />
       </ListItem>
     </Link>
-    <Link href="/Faq">
+    <Link className={classes.linkCompact} href="/Faq">
       <ListItem button key="faq">
         <ListItemIcon>
           <FaqIcon />
@@ -37,7 +37,7 @@ export  function MainListItems()  {
         <ListItemText primary="Faq" />
       </ListItem>
     </Link>
-    <Link href="/Subscription"  >
+    <Link className={classes.linkCompact} href="/Subscription"  >
       <ListItem button key="subscription">
         <ListItemIcon>
           <LoyaltyIcon />
@@ -45,7 +45,15 @@ export  function MainListItems()  {
         <ListItemText primary="Subscription" />
       </ListItem>
     </Link>
-    <a href="/blog">
+    <a href="/blog" style={{
+    margin: '0rem',
+    textDecoration: 'none',
+    color: "#6239AB",
+    "&:hover": {
+        color: "#607466",
+        textDecoration: "none"
+    }
+}}>
       <ListItem button key="blog">
         <ListItemIcon>
           <BlogIcon />
