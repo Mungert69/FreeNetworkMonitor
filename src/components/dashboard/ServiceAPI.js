@@ -205,9 +205,9 @@ export const fetchProcessorList = async (baseUrlId, setProcessorList) => {
     }));
     try {
         result.data.data.map((row) => {
-            const obj = { 'appID': row.appID, 'location': row.location };
+           // const obj = { 'appID': row.appID, 'location': row.location };
             console.log('Processor.AppID= '+row.appID+' Location=' + row.location);
-            data.push(obj)
+            data.push(row)
         });
     }
     catch (error) {

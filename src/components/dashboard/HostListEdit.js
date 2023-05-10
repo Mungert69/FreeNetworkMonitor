@@ -249,9 +249,9 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
                   }}
                 >
                   {
-                    processorList
-                      .filter(row => !row.isAtMaxLoad)
-                      .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
+                     processorList
+                     .filter(row => !row.isAtMaxLoad && (row.isQuantum || data[tableMeta.rowIndex].endPointType !== 'quantum'))
+                     .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
                   }
 
                 </Select>
