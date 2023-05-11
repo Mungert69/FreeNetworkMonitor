@@ -23,20 +23,20 @@ import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
 function sendToAnalytics({ id, name, value }) {
-    
+
     ReactGA4.event({
         eventCategory: 'Web Vitals',
         eventAction: name,
         eventValue: Math.round(name === 'CLS' ? value * 1000 : value), // values must be integers
         eventLabel: id, // id unique to current page load
         nonInteraction: true, // avoids affecting bounce rate
-         // Use `sendBeacon()` if the browser supports it.
+        // Use `sendBeacon()` if the browser supports it.
         transport: 'beacon',
-      }); 
-  }
+    });
+}
 
 const ProductDetail = () => {
-    const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL+'/ping.svg'));
+    const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL + '/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const handleDrawerOpen = () => {
@@ -45,17 +45,15 @@ const ProductDetail = () => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-   
-      
-      reportWebVitals(sendToAnalytics);
+
+
+    reportWebVitals(sendToAnalytics);
     return (
         <div className={classes.root}>
             <CssBaseline />
             <Helmet>
                 <title>Free Network Monitor Online Website Monitoring</title>
-                <meta name="description" content="This website provides a free network monitor online service.
-     Providing realtime monitoring, charts and alerts
-     for all your websites and network hosts. Setup is easy and simple. It is free to use."></meta>
+                <meta name="description" content="Discover our innovative network monitoring tool, equipped with an advanced quantum readiness feature to ensure your website's preparedness for the quantum computing era. Our free, user-friendly monitor offers comprehensive network host availability checks, including HTTP, ICMP, DNS, and SMTP services. Embrace future technology today with our leading-edge quantum-ready network monitor."></meta>
             </Helmet>
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
@@ -70,8 +68,8 @@ const ProductDetail = () => {
                         size="large">
                         <MenuIcon />
                     </IconButton>
-                    <LogoLink/>
-                    <Typography sx={{  paddingLeft:4 }}  component="h1" color="inherit" noWrap className={classes.title}>
+                    <LogoLink />
+                    <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
                     <AuthNav />
@@ -134,13 +132,13 @@ const ProductDetail = () => {
                                             height: 230,
                                         }}
                                     >
-                                         <CardMedia  component='video'
-            className={classes.media}
-            image={"/img/monitor-screen.webm"}
-            loop
-            autoPlay/>
-                               
-                                        </Box>
+                                        <CardMedia component='video'
+                                            className={classes.media}
+                                            image={"/img/monitor-screen.webm"}
+                                            loop
+                                            autoPlay />
+
+                                    </Box>
                                 </Grid>
 
                             </Grid>
@@ -158,11 +156,8 @@ const ProductDetail = () => {
                                         <NetworkPingIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Featuring a free network monitor online which pings the network host or website. It is an extremely simple monitor for getting a general idea of network host availability
+                                        Presenting a cutting-edge network monitor that not only monitors your network services and websites but is now quantum-ready! This pioneering feature ushers in advanced readiness checks for the quantum computing age. This revolutionary leap forward ensures that your network is primed for the future. Regardless of its sophisticated capabilities, our tool remains remarkably user-friendly, offering a simple way to gain an overall understanding of your networks health.
                                     </Paper>
-
-
-
                                 </Grid>
 
                                 <Grid item xs={12} sm={6} align="center" >
@@ -176,8 +171,7 @@ const ProductDetail = () => {
                                         <LanguageIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Free real time monitoring of how much time it takes for your website to load. Charts how do load times change over time. You can monitor these parameters with Http monitor.
-
+                                    Elevating your network monitoring to the next frontier, our real-time quantum readiness monitor is here to assess your website's preparedness for the quantum computing era. By using our innovative Quantum monitor, you can ensure that your website is not only up to current standards but also ready to embrace the technological advancements of the future. Paired with our robust service monitor, you'll have all the necessary tools to keep your website at the top of its game.
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -195,9 +189,9 @@ const ProductDetail = () => {
 
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Business critical applications can be monitored with the API monitor. The monitor will send an email if the application is not responding within the timeout threshold.
+                                    In addition to quantum readiness, we have expanded monitoring capabilities to cover essential online services. Our business-critical API monitor includes HTTP for website performance, ICMP for network pinging, DNS for domain lookup, and SMTP for email service monitoring. This vigilant monitor alerts you via email if any of these services aren't responding within the set timeout threshold, ensuring efficient performance of your business-critical services.
                                     </Paper>
-                                </Grid>
+                                    </Grid>
                                 <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
@@ -208,7 +202,7 @@ const ProductDetail = () => {
 
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Choose an email address to have email alerts sent to. Receive alerts 24/7 365 days a year. Helping to ensure your services stay online.
+                                        Login with an email address to receive alerts and enjoy peace of mind with 24/7, 365-day monitoring. Our aim is to help ensure your services remain online at all times. With the introduction of our quantum readiness feature, we are more equipped than ever to support your network monitoring needs and elevate them to the next level.
                                     </Paper>
 
                                 </Grid>
@@ -227,21 +221,21 @@ const ProductDetail = () => {
 
                             <IconButton>
                                 <Link className={classes.link}
-                                href="/Dashboard">Watch how to guides below on how to setup your Free Network Monitor. Then click here to get started..
-                            </Link>
-                        </IconButton>
+                                    href="/Dashboard">Watch how to guides below on how to setup your Free Network Monitor. Then click here to get started..
+                                </Link>
+                            </IconButton>
 
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                <hr></hr>
-                <hr></hr>
+                    <hr></hr>
+                    <hr></hr>
 
-                <Blog classes={classes}/>
-                <Footer /> 
-            
-            </Container>
-        </main>
+                    <Blog classes={classes} />
+                    <Footer />
+
+                </Container>
+            </main>
         </div >
     );
 }
