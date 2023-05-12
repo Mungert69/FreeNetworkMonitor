@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 RewriteEngine On
 
->>>>>>> 8459fbc89164bc1f74f13a9884169166a264d5a8
 # Serve index.html for all URLs except /blog and existing files or directories
 RewriteCond %{REQUEST_URI} !^/blog
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -15,7 +12,4 @@ RewriteRule ^(.*)$ /blog/$1 [L]
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-<<<<<<< HEAD
-=======
 
->>>>>>> 8459fbc89164bc1f74f13a9884169166a264d5a8
