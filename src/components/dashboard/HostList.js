@@ -111,19 +111,19 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'address');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].address;
           return (<>{value} </>);
         }
       }
-    }, {
+    },  {
       name: 'endPointType',
       label: ' ',
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'endPointType');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].endPointType;
           return ( <>
             {getIconForValue(value)}
           </>);
@@ -134,8 +134,8 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
       label: 'Status',
       options: {
         filter: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'timeout');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].status;
           return (
             <>{value}</>);
         }
@@ -145,8 +145,8 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
       label: 'Data Sent',
       options: {
         filter: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'timeout');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].packetsSent;
           return (<>{value}</>);
         }
       }
@@ -156,8 +156,8 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
       label: 'Data Lost',
       options: {
         filter: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'timeout');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].packetsLost;
           return (<>{value}</>);
         }
       }
@@ -168,8 +168,8 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'enabled');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].percentageLost;
           return (<>{value}</>);
         }
       }
@@ -180,21 +180,20 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'enabled');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].roundTripAverage;
           return (<>{value}</>);
         }
       }
     },
-    
     {
       name: 'appID',
       label: 'Server Location',
       options: {
         filter: true,
         sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'endPointType');
+        customBodyRenderLite: (dataIndex) => {
+          const value = data[dataIndex].appID;
           return (<>
           {processorList == null ? null : processorList.map(m => {
                   if (m.appID == value) return m.location;

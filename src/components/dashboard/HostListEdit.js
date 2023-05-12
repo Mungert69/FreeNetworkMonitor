@@ -143,7 +143,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
                   }}
                 >
                   <MenuItem value={'http'}>HTTP Ping (website)</MenuItem>
-                  <MenuItem value={'httpfull'}>HTTP Full(website)</MenuItem>
+                  <MenuItem value={'httphtml'}>HTTP Load (website html)</MenuItem>
                   <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
                   <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
                   <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
