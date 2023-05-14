@@ -24,7 +24,7 @@ const muiCache = createCache({
   "prepend": true
 });
 
-export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) => {
+export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }) => {
 
   const getMuiTheme = () => createTheme({
     components: {
@@ -68,7 +68,7 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
 
     }
   })
- 
+
 
   const columns = [
     {
@@ -81,27 +81,27 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
           //const row = tableMeta.rowIndex;
           //var tempData = data;
           //var rowData=tempData[row];
-          var row=data[tableMeta];
+          var row = data[tableMeta];
           return (
-           <>
-            <Tooltip title="View Chart">
-                  <span>
-                    <Button onClick={() => clickViewChart(row)} >
-                      <BarChartIcon colour='action' />
+            <>
+              <Tooltip title="View Chart">
+                <span>
+                  <Button onClick={() => clickViewChart(row)} >
+                    <BarChartIcon colour='action' />
+                  </Button>
+                </span>
+              </Tooltip>
+              <Tooltip title="Reset Alert">
+                <span>
+                  {row.alertFlag ?
+                    <Button onClick={() => resetHostAlert(row.monitorIPID)} >
+                      <ErrorIcon sx={{ color: '#eb5160' }} />
                     </Button>
-                  </span>
-                </Tooltip>
-                <Tooltip title="Reset Alert">
-                  <span>
-                    {row.alertFlag ?
-                      <Button  onClick={() => resetHostAlert(row.monitorIPID)} >
-                        <ErrorIcon sx={{ color: '#eb5160' }} />
-                      </Button>
-                      : null}
+                    : null}
 
-                  </span>
-                </Tooltip>
-</>
+                </span>
+              </Tooltip>
+            </>
           );
         }
       }
@@ -117,7 +117,7 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
           return (<>{value} </>);
         }
       }
-    },  {
+    }, {
       name: 'endPointType',
       label: ' ',
       options: {
@@ -125,7 +125,7 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
         sort: true,
         customBodyRenderLite: (dataIndex) => {
           const value = data[dataIndex].endPointType;
-          return ( <>
+          return (<>
             {getIconForValue(value)}
           </>);
         }
@@ -196,16 +196,16 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
         customBodyRenderLite: (dataIndex) => {
           const value = data[dataIndex].appID;
           return (<>
-          {processorList == null ? null : processorList.map(m => {
-                  if (m.appID == value) return m.location;
-                })
-          }
+            {processorList == null ? null : processorList.map(m => {
+              if (m.appID == value) return m.location;
+            })
+            }
           </>
           );
         }
       }
     }
-    
+
   ];
   const options = {
 
@@ -234,38 +234,37 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
     console.log(title);
     return (
       <Tooltip title={title}>
-      <span>     
-         {component}     
-      </span>
-    </Tooltip>
+        <span>
+          {component}
+        </span>
+      </Tooltip>
     );
   }
- 
+
   const getIconForValue = (value) => {
     switch (value) {
       case 'http':
-        return endPointIcon('Http (Website) Ping',<HttpIcon />);
+        return endPointIcon('Http (Website) Ping', <HttpIcon />);
       case 'httphtml':
-        return endPointIcon('Http Load (Website Html)',<HtmlIcon />);
-        case 'httpfull':
-        return endPointIcon('Http Full (Website Page)',<LanguageIcon />);
-   
-        case 'icmp':
-        return endPointIcon('Icmp Ping',<PingIcon />);
+        return endPointIcon('Http Load (Website Html)', <HtmlIcon />);
+      case 'httpfull':
+        return endPointIcon('Http Full (Website Page)', <LanguageIcon />);
+      case 'icmp':
+        return endPointIcon('Icmp Ping', <PingIcon />);
       case 'dns':
-        return endPointIcon('Dns Lookup',<DnsIcon />);
-  
+        return endPointIcon('Dns Lookup', <DnsIcon />);
+
       case 'smtp':
-        return endPointIcon('Smtp (Email) Ping',<EmailIcon />);
-     
+        return endPointIcon('Smtp (Email) Ping', <EmailIcon />);
+
       case 'quantum':
-        return endPointIcon('Quantum Ready Check',<QuantumIcon />);
-       
+        return endPointIcon('Quantum Ready Check', <QuantumIcon />);
+
       default:
-        return endPointIcon('End Point Not Set',<ErrorIcon />);
+        return endPointIcon('End Point Not Set', <ErrorIcon />);
     }
   };
-  
+
 
   return (
     <>
