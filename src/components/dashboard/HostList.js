@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 
 import HttpIcon from '@mui/icons-material/Http';
+import HtmlIcon from '@mui/icons-material/Html';
 import LanguageIcon from '@mui/icons-material/Language';
 import PingIcon from '@mui/icons-material/Speed';
 import DnsIcon from '@mui/icons-material/Dns';
@@ -244,9 +245,12 @@ export const HostList = ({ data,clickViewChart,resetHostAlert,processorList }) =
     switch (value) {
       case 'http':
         return endPointIcon('Http (Website) Ping',<HttpIcon />);
-      case 'httpfull':
+      case 'httphtml':
+        return endPointIcon('Http Load (Website Html)',<HtmlIcon />);
+        case 'httpfull':
         return endPointIcon('Http Full (Website Page)',<LanguageIcon />);
-      case 'icmp':
+   
+        case 'icmp':
         return endPointIcon('Icmp Ping',<PingIcon />);
       case 'dns':
         return endPointIcon('Dns Lookup',<DnsIcon />);
