@@ -165,7 +165,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
     }
     , {
       name: 'percentageLost',
-      label: '% Data Lost',
+      label: '% Lost',
       options: {
         filter: true,
         sort: true,
@@ -177,7 +177,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
     },
     {
       name: 'roundTripAverage',
-      label: 'Round Trip Average ms',
+      label: 'Average ms',
       options: {
         filter: true,
         sort: true,
