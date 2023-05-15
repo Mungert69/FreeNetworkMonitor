@@ -189,7 +189,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
     },
     {
       name: 'appID',
-      label: 'Server Location',
+      label: 'Monitor Location',
       options: {
         filter: true,
         sort: true,
