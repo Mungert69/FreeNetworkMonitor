@@ -32,7 +32,7 @@ function BlogList({ title, posts, classes }) {
           .map((post) => (
             <Element id={post.hash} name={post.hash} key={post.hash}>
               <React.Fragment key={post.hash}>
-                {post.isImage && <CardMedia component="img"  style={{maxHeight: '10em', maxWidth: '100%'}}
+                {post.isImage && <CardMedia component="img"  style={{maxHeight: '10em', width: 'auto',display: 'block'}}
                   image={post.imageUrl}
                   alt={post.imageTitle} />}
                 {post.isVideo && <CardMedia component='video'
