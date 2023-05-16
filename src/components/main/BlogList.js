@@ -1,8 +1,19 @@
 import React from 'react';
-import { Grid, Typography, Divider, CardMedia, Link } from '@mui/material';
+import { Grid, Typography, Divider, CardMedia, Link,Card } from '@mui/material';
 
 import Markdown from './Markdown';
 import { Element } from 'react-scroll'
+
+const styles = {
+  card: {
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    borderRadius: '4px',
+  },
+  imageContainer: {
+    maxHeight: '10em',
+    width: 'auto',
+  },
+};
 
 function BlogList({ title, posts, classes }) {
 
@@ -32,9 +43,14 @@ function BlogList({ title, posts, classes }) {
           .map((post) => (
             <Element id={post.hash} name={post.hash} key={post.hash}>
               <React.Fragment key={post.hash}>
-                {post.isImage && <CardMedia component="img"  style={{maxHeight: '10em', width: 'auto',display: 'block'}}
-                  image={post.imageUrl}
-                  alt={post.imageTitle} />}
+                {post.isImage &&  <Card style={styles.card}>
+          <CardMedia
+            component="img"
+            src={post.imageUrl}
+            alt={post.imageTitle}
+            style={styles.imageContainer}
+          />
+        </Card>}
                 {post.isVideo && <CardMedia component='video'
                   title={post.videoTitle}
                   image={post.videoUrl}
