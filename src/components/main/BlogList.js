@@ -1,23 +1,12 @@
 import React from 'react';
-import { Grid, Typography, Divider, CardMedia, Link,Card } from '@mui/material';
-
+import { Grid, Typography, Divider, CardMedia, CardActions, Box, Link, Card, CardContent, Collapse, IconButton } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Markdown from './Markdown';
 import { Element } from 'react-scroll'
 
-const styles = {
-  card: {
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    borderRadius: '4px',
-  },
-  imageContainer: {
-    maxHeight: '10em',
-    width: 'auto',
-  },
-};
-
 function BlogList({ title, posts, classes }) {
-
-
+  const theme = useTheme();
   if (posts === undefined) {
     return null;
   }
@@ -43,23 +32,63 @@ function BlogList({ title, posts, classes }) {
           .map((post) => (
             <Element id={post.hash} name={post.hash} key={post.hash}>
               <React.Fragment key={post.hash}>
-                {post.isImage &&  <Card style={styles.card}>
-          <CardMedia
-            component="img"
-            src={post.imageUrl}
-            alt={post.imageTitle}
-            style={styles.imageContainer}
-          />
-        </Card>}
-                {post.isVideo && <CardMedia component='video'
-                  title={post.videoTitle}
-                  image={post.videoUrl}
-                  controls
-                  loop />}
-                <Markdown className="markdown" key={post.hash}>
-                  {post.header + post.markdown}
-                </Markdown>
-
+                {post.isImage && (
+                  <Card >
+                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 } }>
+                      
+                      <CardContent>
+                        <Typography variant="h7" color="text.secondary">
+                          <Markdown className="markdown" key={post.hash}>
+                            {post.header}
+                          </Markdown>
+                        </Typography>
+                       
+                      </CardContent>
+                      <CardMedia
+                        component="img"
+                        src={post.imageUrl}
+                        alt={post.title + " image "}
+                      />
+                    </Box>
+                    <CardActions disableSpacing>
+                    <CardContent>
+                        <Typography variant="h7" color="text.secondary">
+                          <Markdown className="markdown" key={post.hash}>
+                            {post.markdown.split('\n')[0]}
+                          </Markdown>
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          <Link display="block" className={classes.link} href={'/blog/posts/' + post.hash}>
+                            Read more...
+                          </Link>
+                        </Typography>
+                      </CardContent>
+                   
+                    </CardActions>
+                  </Card>
+                )}
+                {post.isVideo && (
+                  <Card >
+                    
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        <Markdown>{post.header}</Markdown>
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        <Markdown className="markdown" key={post.hash}>
+                          {post.markdown}
+                        </Markdown>
+                      </Typography>
+                    </CardContent>
+                    <CardMedia
+                      component="video"
+                      title={post.videoTitle}
+                      image={post.videoUrl}
+                      controls
+                      loop
+                    />
+                  </Card>
+                )}
               </React.Fragment>
             </Element>
           ))}
@@ -67,5 +96,4 @@ function BlogList({ title, posts, classes }) {
     );
   }
 }
-
 export default React.memo(BlogList);
