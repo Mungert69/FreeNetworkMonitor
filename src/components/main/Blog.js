@@ -15,22 +15,24 @@ import { fetchBlogs, getBlogDateFromHash } from '../dashboard/ServiceAPI';
 import { Element } from 'react-scroll'
 
 const mainFeaturedPost = {
-  title: 'Monitor your Website and Services',
-  description: 'Website downtime is a serious threat to businesses today. It is detrimental to a company as it leads to customer dissatisfaction, tarnished brand image, poor search engine ranking, and loss of potential business and clients.',
+  title: 'Setup a Quantum Readiness Monitor',
+  date: 'Jul 02',
+  description:
+   'How to Set Up Your Quantum Readiness Monitor. Are your websites and services safe from quantum cryptographic attacks? Read this guide to test your servers for quantum readiness',
   image: '/img/ping.jpg',
-  imageText: 'View of Free Network Monitor',
   linkText: 'Continue reading…',
-  href: '#blog-post3',
+  imageText: 'View of Free Network Monitor',
+  href: '#blog-post2',
+
+  
 };
 const featuredPosts = [
   {
-    title: 'Setup a Free Network Monitor',
-    date: 'Jul 02',
-    description:
-      'How To Setup Your Own Free Network Monitor. This is a guide to setup your own free network monitor.',
+    title: 'Monitor your Website and Services',
+    description: 'Website downtime is a serious threat to businesses today. It is detrimental to a company as it leads to customer dissatisfaction, tarnished brand image, poor search engine ranking, and loss of potential business and clients.',
     image: '/img/blog-2-network-cables.jpg',
     imageLabel: 'Picture of network cables plugged into a switch',
-    href: '#blog-post2',
+    href: '#blog-post3'
   },
   {
     title: 'Network monitor charts',
