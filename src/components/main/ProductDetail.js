@@ -120,7 +120,7 @@ const ProductDetail = () => {
                                         </Grid>
                                         <Grid item >
                                             <Typography color='secondary' variant="h4">
-                                                Are You Ready For Quantum.
+                                                Are You Ready For Quantum...
                                             </Typography>
                                         </Grid>
                                     </Grid>
