@@ -6,7 +6,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule (.*) /index.html [L]
 # Rewrite image URLs to include the /blog subdirectory
-RewriteCond %{REQUEST_URI} ^/blog/(.*)\.(jpg|jpeg|png|gif)$ [NC]
+RewriteCond %{REQUEST_URI} ^/blog/(.*)\.(jpg|jpeg|png|gif|webp)$ [NC]
 RewriteRule ^(.*)$ /blog/$1 [L]
 # Don't rewrite files or directories
 RewriteCond %{REQUEST_FILENAME} -f [OR]
