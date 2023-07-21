@@ -19,7 +19,7 @@ import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import { useAuth0 } from '@auth0/auth0-react';
-
+import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
@@ -307,6 +307,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
           </Tooltip>
         </Badge>
       </IconButton>
+      <FadeWrapper toggle={data.length===0}>
       <IconButton color="inherit" size="large" 	>
         <Badge color="secondary" >
           <Tooltip title="Add new Host">
@@ -314,6 +315,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
           </Tooltip>
         </Badge>
       </IconButton>
+      </FadeWrapper>
       <IconButton color="inherit" size="large">
         <Badge color="secondary">
           <Tooltip title="Click for help">

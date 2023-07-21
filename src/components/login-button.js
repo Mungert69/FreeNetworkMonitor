@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import LoginIcon from '@mui/icons-material/Login';
 import { useAuth0 } from "@auth0/auth0-react";
 import ReactGA4 from 'react-ga4';
+import FadeWrapper from './dashboard/FadeWrapper';
 
 const LoginButton = ({loginText, fullLength, redirectUrl}) => {
   const { loginWithRedirect } = useAuth0();
@@ -21,9 +22,11 @@ const LoginButton = ({loginText, fullLength, redirectUrl}) => {
       
   }
   return (
+    <FadeWrapper toggle={true}>
     <Button  variant="contained" color="primary" endIcon={ <LoginIcon />}
       onClick={() => login()}
     >{loginText}</Button>
+    </FadeWrapper>
   );
 };
 
