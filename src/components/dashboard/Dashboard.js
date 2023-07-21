@@ -35,6 +35,7 @@ import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import { Helmet } from 'react-helmet'
+import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -43,7 +44,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 export default function Dashboard() {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const defaultHost = { 'id': 1 };
-  const [apiUser , setApiUser] = useState({});
+  const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
   const [defaultUser, setDefaultUser] = React.useState(true);
   const [open, setOpen] = React.useState(true);
@@ -65,6 +66,7 @@ export default function Dashboard() {
   const [dateEnd, setDateEnd] = React.useState();
   const [processorList, setProcessorList] = React.useState([]);
   const [initViewSub, setInitViewSub] = React.useState(false);
+  const [hostListIconText, setHostListIconText] = React.useState("Add Hosts");
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
   const dataSetIdRef = useRef(dataSetId);
@@ -82,6 +84,7 @@ export default function Dashboard() {
   };
   const setEditMode = async () => {
     setToggleTable(toggleTable => !toggleTable);
+
   };
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -95,9 +98,11 @@ export default function Dashboard() {
     // Reload ListData if clicking into view mode. Hide view mode if clicking into edit mode.
     if (toggleTable) {
       setViewInfo(false);
+      setHostListIconText("View Hosts");
     }
     else {
       setReloadListData(reloadListData => !reloadListData);
+      setHostListIconText("Add Hosts");
     }
   }
   const clickViewChart = (hostData) => {
@@ -106,8 +111,8 @@ export default function Dashboard() {
     // Set viewInfo to true to show the chart.
     setViewInfo(true);
   };
- 
-  
+
+
   useEffect(() => {
     const getAccessToken = async () => {
       var siteId = 0;
@@ -229,14 +234,19 @@ export default function Dashboard() {
           </Typography>
           {
             defaultUser ? null :
-              <IconButton color="inherit">
-                <Badge color="secondary">
-                  <Tooltip title="Edit Host List"
-                    TransitionComponent={Zoom}>
-                    <EditIcon onClick={() => editIconClick()} />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
+              <FadeWrapper toggle={toggleTable && listData.length===0}>
+                <IconButton color="inherit">
+                  <Badge color="secondary">
+                    <Tooltip title={hostListIconText}
+                      TransitionComponent={Zoom}>
+
+                      <EditIcon onClick={() => editIconClick()} />
+
+
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+              </FadeWrapper>
           }
           <AuthNav />
           <IconButton color="inherit" >
@@ -244,7 +254,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {defaultUser ? null : <MiniProfile  apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
+          {defaultUser ? null : <MiniProfile apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
         </Toolbar>
         <Loading />
       </AppBar>
@@ -261,7 +271,7 @@ export default function Dashboard() {
           </IconButton>
         </div>
         <Divider />
-        <List><MainListItems  classes={classes}/></List>
+        <List><MainListItems classes={classes} /></List>
         <Divider />
         <ListSubheader>Select a Dataset</ListSubheader>
         <Paper className={fixedHeightTallPaper}>
@@ -289,7 +299,7 @@ export default function Dashboard() {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {toggleTable ?
-                  <HostList data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList} />
+                  <HostList  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList} />
                   :
                   <React.Fragment>
 
