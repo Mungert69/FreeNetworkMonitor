@@ -12,9 +12,9 @@ import StarIcon from '@mui/icons-material/StarBorder';
 import Typography from '@mui/material/Typography';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "../login-button";
 import { getApiSubscriptionUrl } from '../dashboard/ServiceAPI';
+import {useFusionAuth} from '@fusionauth/react-sdk';
 
 
 const tiers = [
@@ -56,7 +56,7 @@ const tiers = [
 
 
 function PricingContent({ noRedirect, apiUser}) {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated } = useFusionAuth();
 
   const url = (title, userId, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';

@@ -18,20 +18,20 @@ import AddIcon from '@mui/icons-material/Add';
 import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
-import { useAuth0 } from '@auth0/auth0-react';
 import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import Message from './Message';
+import {useFusionAuth} from '@fusionauth/react-sdk';
 const muiCache = createCache({
   "key": "mui",
   "prepend": true
 });
 
 export const HostListEdit = ({ siteId, processorList }) => {
-  const { user } = useAuth0();
+  const { user } = useFusionAuth();
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
   const [reset, setReset] = React.useState(true);
