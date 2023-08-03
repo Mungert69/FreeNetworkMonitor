@@ -1,10 +1,10 @@
 import React,{useEffect} from "react";
 import Button from "@mui/material/Button";
-import { useAuth0 } from "@auth0/auth0-react";
+import {useFusionAuth} from '@fusionauth/react-sdk';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const LogoutButton = ({ setUserId }) => {
-  const { logout } = useAuth0();
+  const { logout } = useFusionAuth();
   
 
   return (

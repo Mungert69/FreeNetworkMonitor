@@ -31,7 +31,7 @@ const BootstrapDialogTitle = (props) => {
   );
 };
 
-export  function ProfileDialog({ setOpen, apiUser, token,siteId, initViewSub, setInitViewSub }) {
+export  function ProfileDialog({ setOpen, apiUser,siteId, initViewSub, setInitViewSub }) {
   const open = true;
   
 
@@ -58,9 +58,9 @@ export  function ProfileDialog({ setOpen, apiUser, token,siteId, initViewSub, se
         <DialogContent >
 
           {initViewSub ?
-          <StripeCheckOut apiUser={apiUser} token={token} siteId={siteId}/>
+          <StripeCheckOut apiUser={apiUser}  siteId={siteId}/>
           :
-           <Profile  apiUser={apiUser} token={token} siteId={siteId}/>
+           <Profile  apiUser={apiUser}  siteId={siteId}/>
        
           }
         </DialogContent>

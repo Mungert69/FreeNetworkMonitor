@@ -37,12 +37,12 @@ import useTheme from '@mui/material/styles/useTheme';
 import { Helmet } from 'react-helmet'
 import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';
-import { useAuth0 } from "@auth0/auth0-react";
+import {useFusionAuth} from '@fusionauth/react-sdk';
 
 
 
 export default function Dashboard() {
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, user } = useFusionAuth();
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
@@ -61,7 +61,6 @@ export default function Dashboard() {
   const [reloadChart, setReloadChart] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(true);
   const [realTime, setRealTime] = React.useState(true);
-  const [token, setToken] = React.useState();
   const [dateStart, setDateStart] = React.useState();
   const [dateEnd, setDateEnd] = React.useState();
   const [processorList, setProcessorList] = React.useState([]);
@@ -80,7 +79,7 @@ export default function Dashboard() {
     setSelectedDate(date);
   };
   const resetHostAlert = async (id) => {
-    await resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser, token);
+    await resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
   };
   const setEditMode = async () => {
     setToggleTable(toggleTable => !toggleTable);
@@ -114,28 +113,25 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    const getAccessToken = async () => {
+    const getAccess = async () => {
       var siteId = 0;
       try {
-        const token = await getAccessTokenSilently({
-        });
-        console.log("Got Auth0 token in Dashboard : " + token);
-        var loadServer = await fetchLoadServer(user, token);
+        
+        var loadServer = await fetchLoadServer(user);
         siteId = await getSiteIdfromUrl(loadServer);
-        const apiUser = await addUserApi(siteId, user, token);
+        const apiUser = await addUserApi(siteId, user);
         setSiteId(siteId);
-        setToken(token);
         await setApiUser(apiUser);
-        // TODO Are we are going to need to get a new token if load server is changed.
+        // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
-        console.log("Error in Dashboard failed to get token error was" + e + " : user was " + user.sub);
+        console.log("Error in Dashboard failed to get access error was" + e + " : user was " + user.sub);
       }
     }
     const checkAuth = async () => {
       setIsLoading(true);
       if (isAuthenticated) {
         setDefaultUser(false);
-        await getAccessToken();
+        await getAccess();
         ReactGA4.event({
           category: 'User',
           action: 'User Logged In'
@@ -144,7 +140,6 @@ export default function Dashboard() {
       else {
         setDefaultUser(true);
         await setApiUser(undefined);
-        setToken(undefined);
       }
       setIsLoading(false);
     };
@@ -181,7 +176,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, token);
+      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user);
       setIsLoading(false);
     };
     fetchData();
@@ -191,11 +186,11 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, token);
+      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user);
       setIsLoading(false);
     };
     fetchData();
-  }, [reloadListData, dataSetId, siteId, token]);
+  }, [reloadListData, dataSetId, siteId]);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -254,7 +249,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {defaultUser ? null : <MiniProfile apiUser={apiUser} token={token} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
+          {defaultUser ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
         </Toolbar>
         <Loading />
       </AppBar>
@@ -303,7 +298,7 @@ export default function Dashboard() {
                   :
                   <React.Fragment>
 
-                    <HostListEdit siteId={siteId} token={token} processorList={processorList} />
+                    <HostListEdit siteId={siteId}  processorList={processorList} />
                   </React.Fragment>
                 }
               </Paper>

@@ -1,26 +1,13 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import LoginIcon from '@mui/icons-material/Login';
-import { useAuth0 } from "@auth0/auth0-react";
+import {useFusionAuth} from '@fusionauth/react-sdk';
 import ReactGA4 from 'react-ga4';
 import FadeWrapper from './dashboard/FadeWrapper';
 
 const LoginButton = ({loginText, fullLength, redirectUrl}) => {
-  const { loginWithRedirect } = useAuth0();
-  const login = async () =>{
-    var path=window.location.pathname;
-
-      await loginWithRedirect({
-        appState: {
-          returnTo: redirectUrl
-        }
-      });
-      ReactGA4.event({
-        category: 'User',
-        action: 'Login Clicked'
-      });
-      
-  }
+  const { login } = useFusionAuth();
+ 
   return (
     <FadeWrapper toggle={true}>
     <Button  variant="contained" color="primary" endIcon={ <LoginIcon />}

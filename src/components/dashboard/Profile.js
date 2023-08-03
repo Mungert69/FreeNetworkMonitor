@@ -25,7 +25,7 @@ import { updateApiUser,resendVerifyEmail } from './ServiceAPI';
 
 
 
-const Profile = ({ apiUser, token, siteId }) => {
+const Profile = ({ apiUser, siteId }) => {
 
   const [state, setState] = React.useState({
     name: apiUser.nickname,
@@ -43,7 +43,7 @@ const Profile = ({ apiUser, token, siteId }) => {
     user.disableEmail = disableEmail;
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     await setMessage(message);
-    message = await updateApiUser(siteId, user, token);
+    message = await updateApiUser(siteId, user);
     await setMessage(message);
 
   }
@@ -53,7 +53,7 @@ const Profile = ({ apiUser, token, siteId }) => {
     user.nickname = name;
     var message = { text: 'Verfication email sent please check you inbox.', info: false };
     await setMessage(message);
-    message = await resendVerifyEmail(siteId, user, token);
+    message = await resendVerifyEmail(siteId, user);
     await setMessage(message);
 
   }

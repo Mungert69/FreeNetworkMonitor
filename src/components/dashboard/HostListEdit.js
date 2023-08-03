@@ -30,7 +30,7 @@ const muiCache = createCache({
   "prepend": true
 });
 
-export const HostListEdit = ({ siteId, token, processorList }) => {
+export const HostListEdit = ({ siteId, processorList }) => {
   const { user } = useAuth0();
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
@@ -83,7 +83,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
   })
   React.useEffect(() => {
     (async () => {
-      const returndata = await fetchEditHostData(siteId, user, token);
+      const returndata = await fetchEditHostData(siteId, user);
       if (returndata !== undefined) {
         setData(returndata);
       }
@@ -331,7 +331,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
     setDisplayEdit(false);
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     setMessage(message);
-    message = await saveHostData(siteId, data, token);
+    message = await saveHostData(siteId, data);
     setMessage(message);
     setDisplayEdit(true);
   }
@@ -344,7 +344,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
     setDisplayEdit(false);
     var message = { text: 'Plesae wait..', info: true };
     await setMessage(message);
-    message = await addHostApi(siteId, user, token, data);
+    message = await addHostApi(siteId, user, data);
     await setMessage(message);
     setDisplayEdit(true);
     setReset(!reset);
@@ -354,7 +354,7 @@ export const HostListEdit = ({ siteId, token, processorList }) => {
     setDisplayEdit(false);
     var message = { text: 'Please wait..', info: true };
     await setMessage(message);
-    message = await delHostApi(siteId, user, selectedId, token);
+    message = await delHostApi(siteId, user, selectedId);
     await setSelectedId(undefined);
     await setMessage(message);
     setDisplayEdit(true);

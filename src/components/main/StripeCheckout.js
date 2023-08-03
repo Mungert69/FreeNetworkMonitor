@@ -11,7 +11,7 @@ const Message = ({ message }) => (
   </section>
 );
 
-export function StripeCheckout({ apiUser, token, siteId }) {
+export function StripeCheckout({ apiUser, siteId }) {
   let [message, setMessage] = useState('');
   let [success, setSuccess] = useState(false);
   let [sessionId, setSessionId] = useState('');
@@ -37,9 +37,9 @@ export function StripeCheckout({ apiUser, token, siteId }) {
   }, [sessionId]);
 
   if (apiUser.accountType=='Free' ) {
-    return <PricingContent token={token} siteId={siteId} noRedirect={false} apiUser={apiUser}/>;
+    return <PricingContent  siteId={siteId} noRedirect={false} apiUser={apiUser}/>;
   } else if (apiUser.accountType!='Free' ) {
-    return <PricingContent token={token} siteId={siteId} noRedirect={false} apiUser={apiUser}/>;
+    return <PricingContent  siteId={siteId} noRedirect={false} apiUser={apiUser}/>;
   } else {
     return <Message message={message} />;
   }

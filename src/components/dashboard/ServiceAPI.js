@@ -48,20 +48,15 @@ export const getSiteIdfromUrl = (url) => {
 }
 
 
-export const fetchLoadServer = async (user, token) => {
+export const fetchLoadServer = async (user) => {
     var extUrlStr = 'Auth';
     if ( user === undefined) {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
-        token = '';
-    } else {
-        if ( token === undefined) {
-            console.log('ServiceAPI.fetcLoadServer Error missing token for user ' + user.name);
-            return;
-        }
-    }
+
+    } 
     var sentData = { User: user };
     var data = undefined;
 
@@ -71,10 +66,7 @@ export const fetchLoadServer = async (user, token) => {
             method: 'post',
             url: apiLoadBalancerUrl + '/Load/GetLoadServer' + extUrlStr,
             data: sentData,
-            headers: {
-                Authorization: `Bearer ${token}`,
-
-            },
+            withCredentials: true,
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchLoadServer Axios Error was : ' + error);
@@ -94,22 +86,17 @@ export const fetchLoadServer = async (user, token) => {
     }
 }
 
-export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, token) => {
+export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user) => {
     const monitorPingInfoId = hostData.id;
     var extUrlStr = 'Auth';
     if ( user === undefined) {
-        if (token !== undefined) return;
+       
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
-        token = '';
-    } else {
-        if ( token === undefined) {
-            console.log('ServiceAPI.fetcListData Error missing token for user ' + user.name);
-            return;
-        }
-    }
+
+    } 
     var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId };
     var data = [];
 
@@ -119,10 +106,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/Monitor/GetPingInfosByMonitorPingInfoID' + extUrlStr,
             data: sentData,
-            headers: {
-                Authorization: `Bearer ${token}`,
-
-            },
+            withCredentials: true,
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchChartData Axios Error was : ' + error);
@@ -144,21 +128,15 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     setChartData(data);
 }
 
-export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, token) => {
+export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user) => {
     var data = [];
     var extUrlStr = 'Auth';    if (user === undefined) {
-        if (token !==undefined) return;
+       
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
-        token = '';
-    } else {
-        if (token === undefined) {
-            console.log('ServiceAPI.fetcListData Error missing token for user ' + user.name);
-            return;
-        }
-    }
+    } 
 
     var sentData = { user, DataSetId: dataSetId };
     var alertCount = 0;
@@ -168,9 +146,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/monitor/GetMonitorPingInfosByDataSetID' + extUrlStr,
             data: sentData,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true,
         }
     )
         .catch(function (error) {
@@ -226,7 +202,6 @@ export const fetchProcessorList = async (baseUrlId, setProcessorList) => {
 export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dateEnd) => {
     var data = [];
     // No auth for now.
-    var token = '';
     // Set dateEnd to current date if not set.
     if ( dateEnd === undefined) {
         dateEnd = moment();
@@ -300,11 +275,8 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
     setDataSets(data);
 };
 
-export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user, token) => {
-    if (token === undefined) {
-        console.log('ServiceAPI.resetAlertApiCall Error missing token for user ' + user.name);
-        return;
-    }
+export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user) => {
+   
     const sentData = { User: user, MonitorIPID: monitorIPID };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -312,10 +284,7 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/Monitor/ResetAlert',
             data: sentData,
-            headers: {
-                Authorization: `Bearer ${token}`,
-
-            },
+            withCredentials: true,
         }
     ).catch(function (error) {
         console.log('ServiceAPI.resetAlertApicall Axios Error was : ' + error);
@@ -327,11 +296,8 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
     setReload(!reload);
 };
 
-export const fetchEditHostData = async (baseUrlId, user, token) => {
-    if (token === undefined) {
-        console.log('ServiceAPI.fetchEditHostData Error missing token for user ' + user.name);
-        return;
-    }
+export const fetchEditHostData = async (baseUrlId, user) => {
+    
     var data = [];
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -339,10 +305,7 @@ export const fetchEditHostData = async (baseUrlId, user, token) => {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/edit/GetMonitorIPsFromUserID',
             data: user,
-            headers: {
-                Authorization: `Bearer ${token}`,
-
-            },
+            withCredentials: true,
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchEditHostData Axios Error was : ' + error);
@@ -423,21 +386,15 @@ export const fetchBlogs= async (archiveDate) => {
 
 }
 
-export const addUserApi = async (baseUrlId, user, token) => {
-    if ( token === undefined) {
-        console.log('ServiceAPI.addUserApi Error missing token for user ' + user.name);
-        return;
-    }
+export const addUserApi = async (baseUrlId, user) => {
+   
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/edit/AddUserApi',
             data: user,
-            headers: {
-                Authorization: `Bearer ${token}`,
-
-            },
+            withCredentials: true,
         }
     ).catch(function (error) {
         console.log('ServiceAPI.addHostApi Axios Error was : ' + error);
@@ -451,22 +408,16 @@ export const addUserApi = async (baseUrlId, user, token) => {
 
 }
 
-export const updateApiUser = async (baseUrlId, user, token) => {
+export const updateApiUser = async (baseUrlId, user) => {
     var message = { text: '', success: false };
-    if ( token === undefined) {
-        console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);
-        return;
-    }
+   
     try {
         const result = await axios(
             {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/edit/UpdateApiUser',
                 data: user,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
             }
         ).catch(function (error) {
             console.log('ServiceAPI.updateApiUser Axios Error was : ' + error);
@@ -495,22 +446,16 @@ export const updateApiUser = async (baseUrlId, user, token) => {
 
 
 
-export const resendVerifyEmail = async (baseUrlId, user, token) => {
+export const resendVerifyEmail = async (baseUrlId, user) => {
     var message = { text: '', success: false };
-    if ( token === undefined) {
-        console.log('ServiceAPI.resendVerifyEmail Error missing token for user ' + user.name);
-        return;
-    }
+  
     try {
         const result = await axios(
             {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/email/SendVerifyEmail',
                 data: user,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
             }
         ).catch(function (error) {
             console.log('ServiceAPI.resendVerifyEmail Axios Error was : ' + error);
@@ -538,11 +483,8 @@ export const resendVerifyEmail = async (baseUrlId, user, token) => {
 }
 
 
-export const testEditApi = async (baseUrlId, user, token) => {
-    if (token === undefined) {
-        console.log('ServiceAPI.updateApiUser Error missing token for user ' + user.name);
-        return;
-    }
+export const testEditApi = async (baseUrlId, user) => {
+   
     var message = '';
     try {
 
@@ -551,10 +493,7 @@ export const testEditApi = async (baseUrlId, user, token) => {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/edit',
                 data: user,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
 
             }
         ).catch(function (error) {
@@ -570,26 +509,20 @@ export const testEditApi = async (baseUrlId, user, token) => {
         return;
     }
 
-    console.log('ServiceAPI.testEditApi sent token for ' + user.name + ' token was : ' + token);
+    console.log('ServiceAPI.testEditApi sent token for ' + user.name );
     return message;
 }
 
-export const addHostApi = async (baseUrlId, user, token,data) => {
+export const addHostApi = async (baseUrlId, user,data) => {
     var message = { text: '', success: false };
-    if ( token === undefined) {
-        console.log('ServiceAPI.addHostApi Error missing token for user ' + user.name);
-        return;
-    }
+  
     try {
         const resultSave = await axios(
             {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/edit/SaveHostDataWithUserID',
                 data: data,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.addHostApi PreSave Axios Error was : ' + error;
@@ -602,10 +535,7 @@ export const addHostApi = async (baseUrlId, user, token,data) => {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/edit/AddHostApi',
                 data: user,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.addHostApi Add host Axios Error was : ' + error;
@@ -628,22 +558,16 @@ export const addHostApi = async (baseUrlId, user, token,data) => {
 
 }
 
-export const subscribeApi = async (baseSubUrlId, user, token, productName) => {
+export const subscribeApi = async (baseSubUrlId, user, productName) => {
     var message = { text: '', success: false };
-    if ( token === undefined) {
-        console.log('ServiceAPI.subscribeApi Error missing token for user ' + user.name);
-        return;
-    }
+   
     try {
         const result = await axios(
             {
                 method: 'post',
                 url: apiSubscriptionUrl+ '/CreateCheckoutSession/'+user.sub+'/'+productName,
                 data: user,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.subscribeApi Axios Error was : ' + error;
@@ -667,12 +591,9 @@ export const subscribeApi = async (baseSubUrlId, user, token, productName) => {
 }
 
 
-export const delHostApi = async (baseUrlId, user, index, token) => {
+export const delHostApi = async (baseUrlId, user, index) => {
     var message = { text: '', success: false };
-    if ( token === undefined) {
-        console.log('ServiceAPI.delHostApi Error missing token for user ' + user.name);
-        return;
-    }
+    
     try {
         var host = user;
         host.index = index;
@@ -682,10 +603,7 @@ export const delHostApi = async (baseUrlId, user, index, token) => {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/edit/DelHostApi',
                 data: host,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.addHostApi Axios Error was : ' + error;
@@ -708,23 +626,17 @@ export const delHostApi = async (baseUrlId, user, index, token) => {
 }
 
 
-export const saveHostData = async (baseUrlId, data, token) => {
+export const saveHostData = async (baseUrlId, data) => {
 
     var message = { text: '', success: false };
-    if ( token === undefined) {
-        console.log('ServiceAPI.saveHostData Error missing token ');
-        return;
-    }
+   
     try {
         const result = await axios(
             {
                 method: 'post',
                 url: apiBaseUrls[baseUrlId] + '/edit/SaveHostDataWithUserID',
                 data: data,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-
-                },
+                withCredentials: true,
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.saveHostData Axios Error was : ' + error;
