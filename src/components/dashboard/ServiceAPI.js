@@ -16,7 +16,15 @@ export const getServerUrlFromSiteId = (siteId) => {
 export const getApiSubscriptionUrl = () => {
     return apiSubscriptionUrl;
 }
-
+export const getClientId = () => {
+    return clientId;
+}
+export const getServerUrl = () => {
+    return serverUrl;
+}
+export const getRedirectUri = () => {
+    return redirectUri;
+}
 const { appsettingsFile } = window['runConfig'];
 const { serverLabel } = window['serverLabel'];
 const appsettings = require('../../' + appsettingsFile);
@@ -26,6 +34,9 @@ const startSiteId = appsettings.startSiteId;
 const apiLoadBalancerUrl = appsettings.apiLoadBalancerUrl;
 const apiBaseUrls = appsettings.apiBaseUrls;
 const apiSubscriptionUrl = appsettings.apiSubscriptionUrl;
+const clientId= appsettings.clientId;
+const serverUrl=appsettings.serverUrl;
+const redirectUri=appsettings.redirectUri;
 
 export const convertDate = (date, format) => {
     var dateObj = new Date(date);

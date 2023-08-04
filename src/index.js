@@ -5,6 +5,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { FusionAuthProvider } from '@fusionauth/react-sdk';
 import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 import reportWebVitals from './reportWebVitals';
+import { getClientId, getServerUrl, getRedirectUri } from './components/dashboard/ServiceAPI';
+
 
 
 const theme = createTheme(
@@ -30,9 +32,9 @@ root.render(
 
   <Router>
     <FusionAuthProvider
-      clientID="e9fdb985-9173-4e01-9d73-ac2d60d1dc8e"
-      serverUrl="http://localhost:9011"
-      redirectUri="http://localhost:5173"
+      clientID={getClientId()}
+      serverUrl={getServerUrl()}
+      redirectUri={getRedirectUri()}
     >
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>      <App /></ThemeProvider>

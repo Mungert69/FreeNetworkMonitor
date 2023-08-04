@@ -33,7 +33,7 @@ const App = () => {
         <CookieConsent
           location="bottom"
           buttonText="Agree"
-          sameSite='none'
+          sameSite='lax'
           cookieName="react-cookie-consent"
           style={{ background: "#2B373B" }}
           buttonStyle={{ color: "#4e503b", fontSize: "13px" }}
