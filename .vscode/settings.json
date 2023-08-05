@@ -1,0 +1,5 @@
+{
+    "files.watcherExclude": {
+    "**~/code/FreenetworkMonitor/node_modules*": true
+    }
+}

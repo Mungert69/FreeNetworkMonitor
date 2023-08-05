@@ -116,7 +116,6 @@ export default function Dashboard() {
     const getAccess = async () => {
       var siteId = 0;
       try {
-        
         var loadServer = await fetchLoadServer(user);
         siteId = await getSiteIdfromUrl(loadServer);
         const apiUser = await addUserApi(siteId, user);
@@ -128,6 +127,7 @@ export default function Dashboard() {
       }
     }
     const checkAuth = async () => {
+
       setIsLoading(true);
       if (isAuthenticated) {
         setDefaultUser(false);
@@ -145,6 +145,7 @@ export default function Dashboard() {
     };
     checkAuth();
   }, [isAuthenticated]);
+  
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     if (query.get('initViewSub')) {
@@ -192,6 +193,7 @@ export default function Dashboard() {
     fetchData();
   }, [reloadListData, dataSetId, siteId]);
   useEffect(() => {
+    console.log(" Current User is "+JSON.stringify(user));
     const fetchData = async () => {
       setIsLoading(true);
       await fetchDataSetsByDate(siteId, setDataSets, dateStart, dateEnd);
