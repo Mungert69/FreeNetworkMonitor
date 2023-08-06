@@ -61,7 +61,7 @@ export const getSiteIdfromUrl = (url) => {
 
 export const fetchLoadServer = async (user) => {
     var extUrlStr = 'Auth';
-    if ( user === undefined) {
+    if ( user.sub === undefined ) {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
@@ -100,7 +100,7 @@ export const fetchLoadServer = async (user) => {
 export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user) => {
     const monitorPingInfoId = hostData.id;
     var extUrlStr = 'Auth';
-    if ( user === undefined) {
+    if ( user.sub === undefined ) {
        
         user = {};
         user.userID = defaultUser;
@@ -141,7 +141,8 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
 
 export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user) => {
     var data = [];
-    var extUrlStr = 'Auth';    if (user === undefined) {
+    var extUrlStr = 'Auth';
+    if (user.sub === undefined ) {
        
         user = {};
         user.userID = defaultUser;
