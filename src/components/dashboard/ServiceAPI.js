@@ -90,10 +90,10 @@ export const fetchLoadServer = async (user) => {
     }
 }
 
-export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData,user, defaultUser) => {
+export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData,user, isDefaultUser) => {
     const monitorPingInfoId = hostData.id;
     var extUrlStr = 'Auth';
-    if ( defaultUser ) {
+    if ( isDefaultUser ) {
        
         user = {};
         user.userID = defaultUser;
@@ -132,10 +132,10 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     setChartData(data);
 }
 
-export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, defaultUser) => {
+export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, isDefaultUser) => {
     var data = [];
     var extUrlStr = 'Auth';
-    if (defaultUser) {
+    if (isDefaultUser) {
        
         user = {};
         user.userID = defaultUser;
