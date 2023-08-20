@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import {useFusionAuth} from '@fusionauth/react-sdk';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-const LogoutButton = ({ setUserId }) => {
+const LogoutButton = () => {
   const { logout } = useFusionAuth();
   
 
@@ -12,7 +12,6 @@ const LogoutButton = ({ setUserId }) => {
   
       onClick={() => {
         logout({
-
           returnTo: window.location.origin,
         });
       }}
