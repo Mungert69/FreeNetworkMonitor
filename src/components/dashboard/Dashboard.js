@@ -139,6 +139,7 @@ export default function Dashboard() {
       }
       else {
         setDefaultUser(true);
+        setSiteId(getStartSiteId());
         await setApiUser(undefined);
       }
       setIsLoading(false);
@@ -177,7 +178,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user);
+      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, defaultUser);
       setIsLoading(false);
     };
     fetchData();
@@ -187,7 +188,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user);
+      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, defaultUser);
       setIsLoading(false);
     };
     fetchData();
