@@ -130,7 +130,7 @@ export default function Dashboard() {
 
       setIsLoading(true);
       if (isAuthenticated) {
-        setDefaultUser(false);
+        await setDefaultUser(false);
         await getAccess();
         ReactGA4.event({
           category: 'User',
@@ -138,8 +138,8 @@ export default function Dashboard() {
         });
       }
       else {
-        setDefaultUser(true);
-        setSiteId(getStartSiteId());
+        await setDefaultUser(true);
+        await setSiteId(getStartSiteId());
         await setApiUser(undefined);
       }
       setIsLoading(false);
@@ -192,7 +192,7 @@ export default function Dashboard() {
       setIsLoading(false);
     };
     fetchData();
-  }, [reloadListData, dataSetId, siteId]);
+  }, [reloadListData, dataSetId, siteId, defaultUser]);
   useEffect(() => {
     console.log(" Current User is "+JSON.stringify(user));
     const fetchData = async () => {
