@@ -108,7 +108,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/Monitor/GetPingInfosByMonitorPingInfoID' + extUrlStr,
+            url: apiBaseUrls[baseUrlId] + '/ResponseTime/GetPingInfosByMonitorPingInfoID' + extUrlStr,
             data: sentData,
             withCredentials: true,
         }
@@ -287,7 +287,7 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/Monitor/ResetAlert',
+            url: apiBaseUrls[baseUrlId] + '/Alerts/ResetAlert',
             data: sentData,
             withCredentials: true,
         }
