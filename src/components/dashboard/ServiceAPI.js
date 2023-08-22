@@ -149,7 +149,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/monitor/GetMonitorPingInfosByDataSetID' + extUrlStr,
+            url: apiBaseUrls[baseUrlId] + '/Summary/GetMonitorPingInfosByDataSetID' + extUrlStr,
             data: sentData,
             withCredentials: true,
         }
@@ -308,7 +308,7 @@ export const fetchEditHostData = async (baseUrlId, user) => {
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/edit/GetMonitorIPsFromUserID',
+            url: apiBaseUrls[baseUrlId] + '/HostInfo/GetMonitorIPsFromUserID',
             data: user,
             withCredentials: true,
         }
@@ -397,7 +397,7 @@ export const addUserApi = async (baseUrlId, user) => {
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/edit/AddUserApi',
+            url: apiBaseUrls[baseUrlId] + '/UserConfig/AddUserApi',
             data: user,
             withCredentials: true,
         }
@@ -420,7 +420,7 @@ export const updateApiUser = async (baseUrlId, user) => {
         const result = await axios(
             {
                 method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit/UpdateApiUser',
+                url: apiBaseUrls[baseUrlId] + '/UserConfig/UpdateApiUser',
                 data: user,
                 withCredentials: true,
             }
@@ -488,36 +488,6 @@ export const resendVerifyEmail = async (baseUrlId, user) => {
 }
 
 
-export const testEditApi = async (baseUrlId, user) => {
-   
-    var message = '';
-    try {
-
-        const result = await axios(
-            {
-                method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit',
-                data: user,
-                withCredentials: true,
-
-            }
-        ).catch(function (error) {
-            console.log('ServiceAPI.testEditApi Axios Error was : ' + error);
-            return;
-        });
-        message.text = result.data.message;
-        message.success = result.data.success;
-
-    }
-    catch (error) {
-        console.log('ServiceAPI.testEditApi Axios Error was : ' + error);
-        return;
-    }
-
-    console.log('ServiceAPI.testEditApi sent token for ' + user.name );
-    return message;
-}
-
 export const addHostApi = async (baseUrlId, user,data) => {
     var message = { text: '', success: false };
   
@@ -538,7 +508,7 @@ export const addHostApi = async (baseUrlId, user,data) => {
         const resultAdd = await axios(
             {
                 method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit/AddHostApi',
+                url: apiBaseUrls[baseUrlId] + '/HostConfig/AddHostApi',
                 data: user,
                 withCredentials: true,
             }
@@ -606,7 +576,7 @@ export const delHostApi = async (baseUrlId, user, index) => {
             {
 
                 method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit/DelHostApi',
+                url: apiBaseUrls[baseUrlId] + '/HostConfig/DelHostApi',
                 data: host,
                 withCredentials: true,
             }
@@ -639,7 +609,7 @@ export const saveHostData = async (baseUrlId, data) => {
         const result = await axios(
             {
                 method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit/SaveHostDataWithUserID',
+                url: apiBaseUrls[baseUrlId] + '/HostConfig/SaveHostDataWithUserID',
                 data: data,
                 withCredentials: true,
             }
