@@ -58,7 +58,6 @@ export default function Dashboard() {
   const [alertCount, setAlertCount] = React.useState(0);
   const [toggleTable, setToggleTable] = React.useState(true);
   const [reloadListData, setReloadListData] = React.useState(true);
-  const [reloadChart, setReloadChart] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(true);
   const [realTime, setRealTime] = React.useState(true);
   const [dateStart, setDateStart] = React.useState();
@@ -184,7 +183,7 @@ export default function Dashboard() {
     fetchData();
     // Fetch chart data when hostData or datasetId changes.
     //setIsLoading(false);
-  }, [hostData, reloadChart]);
+  }, [hostData]);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -192,7 +191,8 @@ export default function Dashboard() {
       setIsLoading(false);
     };
     fetchData();
-  }, [reloadListData, dataSetId, siteId, defaultUser]);
+  }, [reloadListData, dataSetId, siteId, user, defaultUser]);
+
   useEffect(() => {
     console.log(" Current User is "+JSON.stringify(user));
     const fetchData = async () => {
