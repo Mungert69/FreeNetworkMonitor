@@ -142,12 +142,14 @@ export const HostListEdit = ({ siteId, processorList }) => {
                     updateValue(event.target.value);
                   }}
                 >
+                  <MenuItem value={'rawconnect'}>Raw Connect (socket connection)</MenuItem>
                   <MenuItem value={'http'}>HTTP Ping (website)</MenuItem>
                   <MenuItem value={'httphtml'}>HTTP Load (website html)</MenuItem>
                   <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
                   <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
                   <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
                   <MenuItem value={'quantum'}>QUANTUM (Quantum Ready)</MenuItem>
+                  
                 </Select>
               }
             />
