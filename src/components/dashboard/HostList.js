@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 
 import HttpIcon from '@mui/icons-material/Http';
+import LinkIcon from '@mui/icons-material/Link';
 import HtmlIcon from '@mui/icons-material/Html';
 import LanguageIcon from '@mui/icons-material/Language';
 import PingIcon from '@mui/icons-material/Speed';
@@ -243,6 +244,8 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
 
   const getIconForValue = (value) => {
     switch (value) {
+        case 'rawconnect':
+        return endPointIcon('Raw Socket Connection', <LinkIcon />);
       case 'http':
         return endPointIcon('Http (Website) Ping', <HttpIcon />);
       case 'httphtml':
