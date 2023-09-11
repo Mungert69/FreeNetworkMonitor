@@ -24,34 +24,51 @@ const tiers = [
     description: [
       '10 hosts included',
       'ICMP, Http, Dns and Smtp Ping',
-      'Email support',
+      'One Month full response Data retention',
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
   },
   {
     title: 'Standard',
-    subheader: 'Most popular',
     price: '1',
     description: [
-      '100 Hosts included',
-      'ICMP, Http, Dns and Smtp Ping. Includes Quantum Ready check',
-      'Priority email support',
-    ],
-    buttonText: 'Get started',
-    buttonVariant: 'contained',
-  },
-  {
-    title: 'Professional',
-    price: '2',
-    description: [
-      '300 Hosts included',
-      'ICMP, Http, Dns and Smtp Ping. Includes Quantum Ready check',
-      'Priority email support',
+      '50 Hosts included',
+      'ICMP, Http, Dns. Raw Connect and Smtp Ping. Includes Quantum Ready check',
+      'Email support',
+      '6 Month full response Data retention',
     ],
     buttonText: 'Get started',
     buttonVariant: 'outlined',
   },
+  {
+    title: 'Professional',
+    subheader: 'Most popular',
+    price: '3',
+    description: [
+      '300 Hosts included',
+      'ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready check and Security check',
+      'Priority Email support',
+      '2 year full response Data retention',
+    ],
+    
+    buttonText: 'Get started',
+    buttonVariant: 'contained',
+  },
+  {
+    title: 'Enterprise',
+    price: '5',
+    description: [
+      '500 Hosts included',
+      'ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready and Security check',
+      'Priority email support, High priority monitor service',
+      'Unlimited full response Data retention, Data Export',
+    ],
+    
+    buttonText: 'Get started',
+    buttonVariant: 'outlined',
+  },
+  
 ];
 
 
@@ -124,7 +141,7 @@ function PricingContent({ noRedirect, apiUser}) {
                   title={tier.title}
                   subheader={tier.subheader}
                   titleTypographyProps={{ align: 'center' }}
-                  action={tier.title === 'Standard' ? <StarIcon /> : null}
+                  action={tier.title === 'Professional' ? <StarIcon /> : null}
                   subheaderTypographyProps={{
                     align: 'center',
                   }}
@@ -145,7 +162,7 @@ function PricingContent({ noRedirect, apiUser}) {
                     }}
                   >
                     <Typography component="h2" variant="h3" color="text.primary">
-                      £{tier.price}
+                      ${tier.price}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
                       /mo
