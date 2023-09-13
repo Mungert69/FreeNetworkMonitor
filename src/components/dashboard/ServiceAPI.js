@@ -402,7 +402,7 @@ export const addUserApi = async (baseUrlId, user) => {
             withCredentials: true,
         }
     ).catch(function (error) {
-        console.log('ServiceAPI.addHostApi Axios Error was : ' + error);
+        console.log('ServiceAPI.addUserApi Axios Error was : ' + error);
         return;
     }));
     var apiUser = result.data.data;
@@ -518,8 +518,18 @@ export const addHostApi = async (baseUrlId, user,data) => {
             message.success = false;
             return message;
         });
-        message.text =  "Save result was : "+resultSave.data.message+" Add result was : "+resultAdd.data.message;
-        message.success =  resultAdd.data.success;
+        var saveSuccess=false;
+        var addSuccess=false;
+        if (resultSave.data.message!==undefined){
+            message.text +=  "Save result was : "+resultSave.data.message;
+            saveSuccess=resultSave.data.success;
+        }
+        if (resultAdd.data.message !==undefined){
+            message.text +=" Add result was : "+resultAdd.data.message;
+            addSuccess=resultAdd.data.success;
+        }
+        
+        message.success =  saveSuccess && addSuccess;
     }
     catch (error) {
         message.text = 'ServiceAPI.addHostApi Error was : ' + error;
@@ -528,7 +538,7 @@ export const addHostApi = async (baseUrlId, user,data) => {
         return message;
     }
     console.log('ServiceAPI.addHostApi Got defaulthost for user  : ' + user.name + " Message from Api : "+message.text);
-    if (message.success) message.text='Success added host';
+    if (message.success) message.text+='Success added host';
     return message;
 
 }
