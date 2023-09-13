@@ -118,7 +118,7 @@ export default function Dashboard() {
         var loadServer = await fetchLoadServer(user);
         siteId = await getSiteIdfromUrl(loadServer);
         const apiUser = await addUserApi(siteId, user);
-        setSiteId(siteId);
+        await setSiteId(siteId);
         await setApiUser(apiUser);
         // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
@@ -176,9 +176,9 @@ export default function Dashboard() {
   }, [listData]);
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      await setIsLoading(true);
       await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, defaultUser);
-      setIsLoading(false);
+      await setIsLoading(false);
     };
     fetchData();
     // Fetch chart data when hostData or datasetId changes.
@@ -186,20 +186,20 @@ export default function Dashboard() {
   }, [hostData]);
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      await setIsLoading(true);
       await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, defaultUser);
-      setIsLoading(false);
+      await setIsLoading(false);
     };
     fetchData();
-  }, [reloadListData, dataSetId, siteId, user, defaultUser]);
+  }, [reloadListData, dataSetId, siteId, apiUser]);
 
   useEffect(() => {
     console.log(" Current User is "+JSON.stringify(user));
     const fetchData = async () => {
-      setIsLoading(true);
+      await setIsLoading(true);
       await fetchDataSetsByDate(siteId, setDataSets, dateStart, dateEnd);
       await fetchProcessorList(siteId, setProcessorList);
-      setIsLoading(false);
+      await setIsLoading(false);
     };
     fetchData();
   }, [siteId, dateStart, dateEnd]);
