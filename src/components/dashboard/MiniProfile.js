@@ -23,7 +23,7 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub}) {
                                    width: 35,
                                    borderRadius: "50%",  // Add this
                               }}
-                              src={apiUser.picture}
+                              src={decodeURIComponent(apiUser.picture)}
                               alt="Profile Picture"
                               onClick={() => setOpenProfile(true)}
                          />
