@@ -24,7 +24,7 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub}) {
                                    borderRadius: "50%",  // Add this
                               }}
                               src={decodeURIComponent(apiUser.picture)}
-                              alt="Profile Picture"
+                              alt="Profile"
                               onClick={() => setOpenProfile(true)}
                          />
                     </Tooltip>
