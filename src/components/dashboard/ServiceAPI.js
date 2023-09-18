@@ -495,7 +495,7 @@ export const addHostApi = async (baseUrlId, user,data) => {
         const resultSave = await axios(
             {
                 method: 'post',
-                url: apiBaseUrls[baseUrlId] + '/edit/SaveHostDataWithUserID',
+                url: apiBaseUrls[baseUrlId] + '/HostConfig/SaveHostDataWithUserID',
                 data: data,
                 withCredentials: true,
             }
