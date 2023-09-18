@@ -500,7 +500,6 @@ export const addHostApi = async (baseUrlId, user,data) => {
                 withCredentials: true,
             }
         ).catch(function (error) {
-            var message = { text: '', success: false };
             message.text = 'ServiceAPI.addHostApi PreSave Axios Error was : ' + error;
             console.log(message.text);
             message.success = false;
@@ -514,7 +513,6 @@ export const addHostApi = async (baseUrlId, user,data) => {
                 withCredentials: true,
             }
         ).catch(function (error) {
-            var message = { text: '', success: false };
             message.text = 'ServiceAPI.addHostApi Add host Axios Error was : ' + error;
             console.log(message.text);
             message.success = false;
@@ -522,13 +520,14 @@ export const addHostApi = async (baseUrlId, user,data) => {
         });
         var saveSuccess=false;
         var addSuccess=false;
-        if (resultSave.data.message!==undefined){
-            message.text =  "Save result was : "+resultSave.data.message;
-            saveSuccess=resultSave.data.success;
+        if (resultSave && resultSave.data && resultSave.data.message !== undefined) {
+            message.text = "Save result was : " + resultSave.data.message;
+            saveSuccess = resultSave.data.success;
         }
-        if (resultAdd.data.message !==undefined){
-            message.text =" Add result was : "+resultAdd.data.message;
-            addSuccess=resultAdd.data.success;
+        
+        if (resultAdd && resultAdd.data && resultAdd.data.message !== undefined) {
+            message.text = "Add result was : " + resultAdd.data.message;
+            addSuccess = resultAdd.data.success;
         }
         
         message.success =  saveSuccess && addSuccess;
