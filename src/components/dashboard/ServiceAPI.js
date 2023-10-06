@@ -61,7 +61,7 @@ export const getSiteIdfromUrl = (url) => {
 
 export const fetchLoadServer = async (user) => {
     var extUrlStr = 'Auth';
-    var sentData = { User: user, Prompt : '' };
+    var sentData = { User: user, Prompt : ""  };
     var data = undefined;
 
     axiosRetry(axios, { retries: 3 });
@@ -101,7 +101,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
         extUrlStr = 'Default';
 
     } 
-    var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId, Prompt : '' };
+    var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId, Prompt : ""  };
     var data = [];
 
     axiosRetry(axios, { retries: 3 });
@@ -143,7 +143,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
         extUrlStr = 'Default';
     } 
 
-    var sentData = { user, DataSetId: dataSetId, Prompt : '' };
+    var sentData = { user, DataSetId: dataSetId, Prompt : "" };
     var alertCount = 0;
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -217,7 +217,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     }
     dateEnd = moment(dateEnd).endOf('day');
     dateStart = moment(dateStart).startOf('day');
-    var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format(), Prompt : '' };
+    var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format(), Prompt : ""  };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -282,7 +282,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
 
 export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user) => {
    
-    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt : '' };
+    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt : ""  };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
