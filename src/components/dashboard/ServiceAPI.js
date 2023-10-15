@@ -149,7 +149,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     const result = await trackPromise(axios(
         {
             method: 'post',
-            url: apiBaseUrls[baseUrlId] + '/Summary/GetMonitorPingInfosByDataSetID' + extUrlStr,
+            url: apiBaseUrls[baseUrlId] + '/HostData/GetMonitorPingInfosByDataSetID' + extUrlStr,
             data: sentData,
             withCredentials: true,
         }
