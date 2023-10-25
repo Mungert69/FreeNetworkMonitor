@@ -254,8 +254,8 @@ export const HostListEdit = ({ siteId, processorList }) => {
                     processorList
                       .filter(row =>
                         !row.isAtMaxLoad &&
-                        (!row.DisabledEndPointTypes ||
-                          !row.DisabledEndPointTypes.includes(data[tableMeta.rowIndex].endPointType))
+                        (!row.disabledEndPointTypes ||
+                          !row.disabledEndPointTypes.includes(data[tableMeta.rowIndex].endPointType))
                       )
                       .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
                   }
