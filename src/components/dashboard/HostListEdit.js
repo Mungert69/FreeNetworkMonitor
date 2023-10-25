@@ -1,6 +1,6 @@
 import MUIDataTable from "mui-datatables";
 import { TablePagination, Grid } from '@mui/material';
-import React, {useRef} from 'react'
+import React, { useRef } from 'react'
 import {
   FormControlLabel,
   TextField,
@@ -24,7 +24,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import Message from './Message';
-import {useFusionAuth} from '@fusionauth/react-sdk';
+import { useFusionAuth } from '@fusionauth/react-sdk';
 const muiCache = createCache({
   "key": "mui",
   "prepend": true
@@ -78,7 +78,7 @@ export const HostListEdit = ({ siteId, processorList }) => {
           }
         }
       },
-     
+
     }
   })
   React.useEffect(() => {
@@ -149,7 +149,7 @@ export const HostListEdit = ({ siteId, processorList }) => {
                   <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
                   <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
                   <MenuItem value={'quantum'}>QUANTUM (Quantum Ready)</MenuItem>
-                  
+
                 </Select>
               }
             />
@@ -251,10 +251,15 @@ export const HostListEdit = ({ siteId, processorList }) => {
                   }}
                 >
                   {
-                     processorList
-                     .filter(row => !row.isAtMaxLoad && (row.isQuantum || data[tableMeta.rowIndex].endPointType !== 'quantum'))
-                     .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
+                    processorList
+                      .filter(row =>
+                        !row.isAtMaxLoad &&
+                        (!row.DisabledEndPointTypes ||
+                          !row.DisabledEndPointTypes.includes(data[tableMeta.rowIndex].endPointType))
+                      )
+                      .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
                   }
+
 
                 </Select>
               }
@@ -299,7 +304,7 @@ export const HostListEdit = ({ siteId, processorList }) => {
 
 
 
-  
+
   const HeaderElements = () => (
     <>
       <IconButton color="inherit" size="large">
@@ -309,14 +314,14 @@ export const HostListEdit = ({ siteId, processorList }) => {
           </Tooltip>
         </Badge>
       </IconButton>
-      <FadeWrapper toggle={data.length===0}>
-      <IconButton color="inherit" size="large" 	>
-        <Badge color="secondary" >
-          <Tooltip title="Add new Host">
-            <AddIcon onClick={() => addHost()} />
-          </Tooltip>
-        </Badge>
-      </IconButton>
+      <FadeWrapper toggle={data.length === 0}>
+        <IconButton color="inherit" size="large" 	>
+          <Badge color="secondary" >
+            <Tooltip title="Add new Host">
+              <AddIcon onClick={() => addHost()} />
+            </Tooltip>
+          </Badge>
+        </IconButton>
       </FadeWrapper>
       <IconButton color="inherit" size="large">
         <Badge color="secondary">
@@ -328,7 +333,7 @@ export const HostListEdit = ({ siteId, processorList }) => {
     </>
   );
 
- 
+
   const saveData = async (data) => {
     setDisplayEdit(false);
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
