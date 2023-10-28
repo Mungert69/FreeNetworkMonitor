@@ -46,7 +46,7 @@ export default function Dashboard() {
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
-  const [defaultUser, setDefaultUser] = React.useState(true);
+  //const [defaultUser, setDefaultUser] = React.useState(true);
   const [open, setOpen] = React.useState(true);
   const [chartData, setChartData] = React.useState([]);
   const [listData, setListData] = React.useState([]);
@@ -125,11 +125,12 @@ export default function Dashboard() {
         console.log("Error in Dashboard failed to get access error was" + e + " : user was " + user.sub);
       }
     }
+
     const checkAuth = async () => {
 
       setIsLoading(true);
       if (isAuthenticated) {
-        await setDefaultUser(false);
+        //await setDefaultUser(false);
         await getAccess();
         ReactGA4.event({
           category: 'User',
@@ -137,7 +138,7 @@ export default function Dashboard() {
         });
       }
       else {
-        await setDefaultUser(true);
+        //await setDefaultUser(true);
         await setSiteId(getStartSiteId());
         await setApiUser(undefined);
       }
@@ -177,7 +178,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       await setIsLoading(true);
-      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, defaultUser);
+      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, isAuthenticated);
       await setIsLoading(false);
     };
     fetchData();
@@ -187,7 +188,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       await setIsLoading(true);
-      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, defaultUser);
+      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, isAuthenticated);
       await setIsLoading(false);
     };
     fetchData();
@@ -231,7 +232,7 @@ export default function Dashboard() {
             Dashboard
           </Typography>
           {
-            defaultUser ? null :
+            isAuthenticated ? null :
               <FadeWrapper toggle={toggleTable && listData.length===0}>
                 <IconButton color="inherit">
                   <Badge color="secondary">
@@ -252,7 +253,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {defaultUser ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
+          {isAuthenticated ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
         </Toolbar>
         <Loading />
       </AppBar>
