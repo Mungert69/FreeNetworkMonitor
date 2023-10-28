@@ -1,12 +1,12 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://www.freenetworkmonitor.click/",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "private": true,
   "resolutions": {
     "nth-check": "2.1.1",
-    "@babel/traverse" : "7.23.2",
-    "postcss" : "8.4.31"
+    "@babel/traverse": "7.23.2",
+    "postcss": "8.4.31"
   },
   "dependencies": {
     "@emotion/css": "^11.10.6",
@@ -44,8 +44,8 @@
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "GENERATE_SOURCEMAP=false cross-env PORT=8080 react-scripts start",
-    "startssl": "GENERATE_SOURCEMAP=false HTTPS=true cross-env PORT=8443 react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false cross-env PORT=8080 HOST=127.0.0.1 react-scripts start",
+    "startssl": "GENERATE_SOURCEMAP=false HTTPS=true cross-env PORT=8443 HOST=127.0.0.1 react-scripts start",
     "build": " react-scripts build && compress-cra",
     "eject": "react-scripts eject"
   },

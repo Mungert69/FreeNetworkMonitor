@@ -7,8 +7,9 @@ npm run build
 rm -r ./out
 cd ../FreeNetworkMonitorBlog
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitorBlog
+npm install --omit=dev
 npm run export
 cp -r ./out ../FreeNetworkMonitor/
 cd ../FreeNetworkMonitor
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:0.6.9
+docker push mungert/networkmonitorreact-local:0.6.10
