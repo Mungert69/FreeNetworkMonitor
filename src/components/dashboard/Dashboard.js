@@ -112,6 +112,7 @@ export default function Dashboard() {
 
 
   useEffect(() => {
+
     const getAccess = async () => {
       var siteId = 0;
       try {
@@ -132,6 +133,7 @@ export default function Dashboard() {
       if (isAuthenticated) {
         //await setDefaultUser(false);
         await getAccess();
+        console.log("Is Authenticated is true")
         ReactGA4.event({
           category: 'User',
           action: 'User Logged In'
@@ -139,6 +141,7 @@ export default function Dashboard() {
       }
       else {
         //await setDefaultUser(true);
+        console.log("Is Authenticated is false")
         await setSiteId(getStartSiteId());
         await setApiUser(undefined);
       }
@@ -232,7 +235,7 @@ export default function Dashboard() {
             Dashboard
           </Typography>
           {
-            isAuthenticated ? null :
+            !isAuthenticated ? null :
               <FadeWrapper toggle={toggleTable && listData.length===0}>
                 <IconButton color="inherit">
                   <Badge color="secondary">
@@ -253,7 +256,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {isAuthenticated ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
+          {!isAuthenticated ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
         </Toolbar>
         <Loading />
       </AppBar>

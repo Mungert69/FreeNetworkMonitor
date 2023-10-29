@@ -232,7 +232,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
 
   const endPointIcon = (title, component) => {
     // Write to console for debug
-    console.log(title);
+    //console.log(title);
     return (
       <Tooltip title={title}>
         <span>

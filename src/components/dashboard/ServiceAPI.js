@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from "moment";
-import { trackPromise} from 'react-promise-tracker';
+import { trackPromise } from 'react-promise-tracker';
 import axiosRetry from 'axios-retry';
 
 const defaultUser = "default";
@@ -28,15 +28,15 @@ export const getRedirectUri = () => {
 const { appsettingsFile } = window['runConfig'];
 const { serverLabel } = window['serverLabel'];
 const appsettings = require('../../' + appsettingsFile);
-const prompt='web query';
+const prompt = 'web query';
 
 const startSiteId = appsettings.startSiteId;
 const apiLoadBalancerUrl = appsettings.apiLoadBalancerUrl;
 const apiBaseUrls = appsettings.apiBaseUrls;
 const apiSubscriptionUrl = appsettings.apiSubscriptionUrl;
-const clientId= appsettings.clientId;
-const serverUrl=appsettings.serverUrl;
-const redirectUri=appsettings.redirectUri;
+const clientId = appsettings.clientId;
+const serverUrl = appsettings.serverUrl;
+const redirectUri = appsettings.redirectUri;
 
 export const convertDate = (date, format) => {
     var dateObj = new Date(date);
@@ -61,7 +61,7 @@ export const getSiteIdfromUrl = (url) => {
 
 export const fetchLoadServer = async (user) => {
     var extUrlStr = 'Auth';
-    var sentData = { User: user, Prompt : prompt };
+    var sentData = { User: user, Prompt: prompt };
     var data = undefined;
 
     axiosRetry(axios, { retries: 3 });
@@ -84,24 +84,23 @@ export const fetchLoadServer = async (user) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchLoadServer unable to set load server : ' + error);
-        if ( result!=undefined &&   result.data.message !== undefined)
+        if (result != undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
-        return ;
+        return;
     }
 }
 
-export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData,user, isDefaultUser) => {
+export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isAuthenticated) => {
     const monitorPingInfoId = hostData.id;
-    var extUrlStr = 'Auth';
-    if ( isDefaultUser ) {
-       
+    if (isAuthenticated) { var extUrlStr = 'Auth'; }
+    else {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
 
-    } 
-    var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId, Prompt : prompt };
+    }
+    var sentData = { User: user, DataSetId: dataSetId, MonitorPingInfoId: monitorPingInfoId, Prompt: prompt };
     var data = [];
 
     axiosRetry(axios, { retries: 3 });
@@ -124,7 +123,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     }
     catch (error) {
         console.log('ServiceAPI.fetchChartData Mapping Data Error was : ' + error);
-        if ( result!=undefined &&   result.data.message !==undefined)
+        if (result != undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         data.push({ 'time': convertDate(moment(), 'HH:mm:ss'), 'response': -1, 'status': 'No Data' })
 
@@ -132,18 +131,18 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     setChartData(data);
 }
 
-export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, isDefaultUser) => {
+export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, isAuthenticated) => {
     var data = [];
-    var extUrlStr = 'Auth';
-    if (isDefaultUser) {
-       
+    console.log("Is Authenticated "+isAuthenticated)
+    if (isAuthenticated) { var extUrlStr = 'Auth'; }
+    else {
         user = {};
         user.userID = defaultUser;
         user.sub = defaultUser;
         extUrlStr = 'Default';
-    } 
+    }
 
-    var sentData = { user, DataSetId: dataSetId, Prompt : prompt};
+    var sentData = { user, DataSetId: dataSetId, Prompt: prompt };
     var alertCount = 0;
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -161,13 +160,13 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     try {
         result.data.data.map((row) => {
             if (row.monitorStatus.alertFlag) { alertCount++ }
-            const obj = { 'id': row.id, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType' : row.endPointType, 'alertFlag' : row.monitorStatus.alertFlag };
+            const obj = { 'id': row.id, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus.alertFlag };
             data.push(obj)
         });
     }
     catch (error) {
         console.log('ServiceAPI.fetchListData Mapping Data Error was : ' + error);
-        if (result!=undefined && result.data.message !== undefined)
+        if (result != undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return;
     }
@@ -186,14 +185,14 @@ export const fetchProcessorList = async (baseUrlId, setProcessorList) => {
     }));
     try {
         result.data.data.map((row) => {
-           // const obj = { 'appID': row.appID, 'location': row.location };
-            console.log('Processor.AppID= '+row.appID+' Location=' + row.location);
+            // const obj = { 'appID': row.appID, 'location': row.location };
+            console.log('Processor.AppID= ' + row.appID + ' Location=' + row.location);
             data.push(row)
         });
     }
     catch (error) {
         console.log('ServiceAPI.fetchProcessorList Mapping Data Error was : ' + error);
-        if (result!=undefined && result.data.message !== undefined)
+        if (result != undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return;
     }
@@ -208,16 +207,16 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     var data = [];
     // No auth for now.
     // Set dateEnd to current date if not set.
-    if ( dateEnd === undefined) {
+    if (dateEnd === undefined) {
         dateEnd = moment();
     }
     // Set dateStart to current date minus one month if not set.
-    if ( dateStart === undefined) {
+    if (dateStart === undefined) {
         dateStart = moment().subtract(14, 'days');
     }
     dateEnd = moment(dateEnd).endOf('day');
     dateStart = moment(dateStart).startOf('day');
-    var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format(), Prompt : prompt };
+    var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format(), Prompt: prompt };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -241,7 +240,7 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     }
     catch (error) {
         console.log('ServiceAPI.fetchDataSetsByDate Mapping Data Error was : ' + error);
-        if (result!=undefined && result.data.message !== undefined)
+        if (result != undefined && result.data.message !== undefined)
 
             console.log('Api Result.Message was ' + result.data.message);
         return;
@@ -271,7 +270,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchDataSets Mapping Data Error was : ' + error);
-        if (result!=undefined && result.data.message !== undefined)
+        if (result != undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return;
     }
@@ -281,8 +280,8 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
 };
 
 export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user) => {
-   
-    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt : prompt };
+
+    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt: prompt };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -302,7 +301,7 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
 };
 
 export const fetchEditHostData = async (baseUrlId, user) => {
-    
+
     var data = [];
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -324,7 +323,7 @@ export const fetchEditHostData = async (baseUrlId, user) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchEditHostData Mapping Data Error was : ' + error);
-        if ( result!==undefined &&   result.data.message !== undefined)
+        if (result !== undefined && result.data.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return undefined;
     }
@@ -336,30 +335,30 @@ export const fetchEditHostData = async (baseUrlId, user) => {
 }
 
 
-export const getBlogDateFromHash= async (hash) => {
+export const getBlogDateFromHash = async (hash) => {
     var data = '';
     axiosRetry(axios, { retries: 3 });
-    const result = await trackPromise(axios.get(apiLoadBalancerUrl + '/Blog/BlogDateFromHash/'+hash).catch(function (error) {
+    const result = await trackPromise(axios.get(apiLoadBalancerUrl + '/Blog/BlogDateFromHash/' + hash).catch(function (error) {
         console.log('ServiceAPI.getBlogDateFromHash Axios Error was : ' + error);
         return new Date();
     }));
     try {
-        data=result.data.data;
+        data = result.data.data;
     }
     catch (error) {
         console.log('ServiceAPI.getBlogDateFromHash Mapping Data Error was : ' + error);
-        if ( result!=undefined &&   result.data.message != undefined)
+        if (result != undefined && result.data.message != undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return new Date();
     }
 
-    console.log('ServiceAPI.getBlogDateFromHash Got date ' + data  );
+    console.log('ServiceAPI.getBlogDateFromHash Got date ' + data);
     const dateObject = new Date(data);
     return dateObject;
 
 }
 
-export const fetchBlogs= async (archiveDate) => {
+export const fetchBlogs = async (archiveDate) => {
     var data = [];
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
@@ -380,19 +379,19 @@ export const fetchBlogs= async (archiveDate) => {
     }
     catch (error) {
         console.log('ServiceAPI.fetchBlogs Mapping Data Error was : ' + error);
-        if ( result!=undefined &&   result.data.message != undefined)
+        if (result != undefined && result.data.message != undefined)
             console.log('Api Result.Message was ' + result.data.message);
         return undefined;
     }
 
-    console.log('ServiceAPI.fetchBlogs Got ' + data.length + ' lines of blog data ' );
+    console.log('ServiceAPI.fetchBlogs Got ' + data.length + ' lines of blog data ');
 
     return data;
 
 }
 
 export const addUserApi = async (baseUrlId, user) => {
-   
+
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -407,7 +406,7 @@ export const addUserApi = async (baseUrlId, user) => {
     }));
     var apiUser = result.data.data;
     apiUser.picture = user.picture
-    apiUser.logonServer=apiBaseUrls[baseUrlId];
+    apiUser.logonServer = apiBaseUrls[baseUrlId];
     console.log('ServiceAPI.addUserApi checked ' + user.name);
     return apiUser;
 
@@ -415,7 +414,7 @@ export const addUserApi = async (baseUrlId, user) => {
 
 export const updateApiUser = async (baseUrlId, user) => {
     var message = { text: '', success: false };
-   
+
     try {
         const result = await axios(
             {
@@ -442,9 +441,9 @@ export const updateApiUser = async (baseUrlId, user) => {
         return message;
     }
 
-    if (  message.text !== undefined)
+    if (message.text !== undefined)
         console.log('ServiceAPI.updateApiUser Updated user message was ' + message.text);
-        if (message.success) message.text='Success updated user Profile'
+    if (message.success) message.text = 'Success updated user Profile'
     return message;
 
 }
@@ -453,7 +452,7 @@ export const updateApiUser = async (baseUrlId, user) => {
 
 export const resendVerifyEmail = async (baseUrlId, user) => {
     var message = { text: '', success: false };
-  
+
     try {
         const result = await axios(
             {
@@ -480,17 +479,17 @@ export const resendVerifyEmail = async (baseUrlId, user) => {
         return message;
     }
 
-    if (  message.text !== undefined)
+    if (message.text !== undefined)
         console.log('ServiceAPI.resendVerifyEmail Send Verifcation email message was ' + message.text);
-        if (message.success) message.text='Success send verification email.'
+    if (message.success) message.text = 'Success send verification email.'
     return message;
 
 }
 
 
-export const addHostApi = async (baseUrlId, user,data) => {
+export const addHostApi = async (baseUrlId, user, data) => {
     var message = { text: '', success: false };
-  
+
     try {
         const resultSave = await axios(
             {
@@ -518,19 +517,19 @@ export const addHostApi = async (baseUrlId, user,data) => {
             message.success = false;
             return message;
         });
-        var saveSuccess=false;
-        var addSuccess=false;
+        var saveSuccess = false;
+        var addSuccess = false;
         if (resultSave && resultSave.data && resultSave.data.message !== undefined) {
             message.text = "Save result was : " + resultSave.data.message;
             saveSuccess = resultSave.data.success;
         }
-        
+
         if (resultAdd && resultAdd.data && resultAdd.data.message !== undefined) {
             message.text = "Add result was : " + resultAdd.data.message;
             addSuccess = resultAdd.data.success;
         }
-        
-        message.success =  saveSuccess && addSuccess;
+
+        message.success = saveSuccess && addSuccess;
     }
     catch (error) {
         message.text = 'ServiceAPI.addHostApi Error was : ' + error;
@@ -538,22 +537,22 @@ export const addHostApi = async (baseUrlId, user,data) => {
         message.success = false;
         return message;
     }
-    console.log('ServiceAPI.addHostApi Got defaulthost for user  : ' + user.name + " Message from Api : "+message.text);
-    if (message.success) message.text+='Success added host';
+    console.log('ServiceAPI.addHostApi Got defaulthost for user  : ' + user.name + " Message from Api : " + message.text);
+    if (message.success) message.text += 'Success added host';
     return message;
 
 }
 
 export const subscribeApi = async (baseSubUrlId, user, productName) => {
     var message = { text: '', success: false };
-   
+
     try {
         const result = await axios(
             {
                 method: 'post',
-                url: apiSubscriptionUrl+ '/CreateCheckoutSession/'+user.sub+'/'+productName,
+                url: apiSubscriptionUrl + '/CreateCheckoutSession/' + user.sub + '/' + productName,
                 data: user,
-                
+
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.subscribeApi Axios Error was : ' + error;
@@ -561,8 +560,8 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
             message.success = false;
             return message;
         });
-        message.text =  "Result was : "+result.data.message;
-        message.success =  result.data.success;
+        message.text = "Result was : " + result.data.message;
+        message.success = result.data.success;
     }
     catch (error) {
         message.text = 'ServiceAPI.subscribeApi Error was : ' + error;
@@ -570,8 +569,8 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
         message.success = false;
         return message;
     }
-    console.log('ServiceAPI.subscribeApi for user  : ' + user.name + " Message from Api : "+message.text);
-    if (message.success) message.text='Success Subsription';
+    console.log('ServiceAPI.subscribeApi for user  : ' + user.name + " Message from Api : " + message.text);
+    if (message.success) message.text = 'Success Subsription';
     return message;
 
 }
@@ -579,7 +578,7 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
 
 export const delHostApi = async (baseUrlId, user, index) => {
     var message = { text: '', success: false };
-    
+
     try {
         var host = user;
         host.index = index;
@@ -607,7 +606,7 @@ export const delHostApi = async (baseUrlId, user, index) => {
         return message;
     }
     console.log('ServiceAPI.addHostApi deleted host for user  : Api message : ' + message.text);
-    if (message.success) message.text="Success deleted host. Wait 2 mins for change to go live."
+    if (message.success) message.text = "Success deleted host. Wait 2 mins for change to go live."
     return message;
 }
 
@@ -615,7 +614,7 @@ export const delHostApi = async (baseUrlId, user, index) => {
 export const saveHostData = async (baseUrlId, data) => {
 
     var message = { text: '', success: false };
-   
+
     try {
         const result = await axios(
             {
@@ -640,9 +639,9 @@ export const saveHostData = async (baseUrlId, data) => {
         return message;
     }
 
-    if ( message.text !== undefined)
+    if (message.text !== undefined)
         console.log('ServiceAPI.saveData Saved data api message was ' + message.text);
-    if (message.success) message.text='Success save host data. Wait 2 mins for change to go live';
+    if (message.success) message.text = 'Success save host data. Wait 2 mins for change to go live';
     return message;
 }
 

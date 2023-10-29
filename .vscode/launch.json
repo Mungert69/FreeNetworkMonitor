@@ -9,7 +9,7 @@
             "request": "launch",
             "reAttach": true,
             "name": "Launch localhost",
-            "url": "http://dev.com:3000/index.html",
+            "url": "https://devwww.freenetworkmonitor.click",
             "webRoot": "${workspaceFolder}"
         },
         {
@@ -21,7 +21,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "https://dev.com:3000",
+            "url": "https://devwww.freenetworkmonitor.click",
             "webRoot": "${workspaceFolder}"
         }
     ]
