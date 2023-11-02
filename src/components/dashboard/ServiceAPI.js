@@ -550,7 +550,7 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
         const result = await axios(
             {
                 method: 'post',
-                url: apiSubscriptionUrl + '/CreateCheckoutSession/' + user.sub + '/' + productName,
+                url: apiSubscriptionUrl + '/CreateCheckoutSession/' + user.sub + '/' + productName + '/'+user.email,
                 data: user,
 
             }
