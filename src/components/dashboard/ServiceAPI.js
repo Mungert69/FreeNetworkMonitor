@@ -569,7 +569,7 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
         message.success = false;
         return message;
     }
-    console.log('ServiceAPI.subscribeApi for user  : ' + user.name + " Message from Api : " + message.text);
+    console.log('ServiceAPI.subscribeApi for user with email : ' + user.email + " Message from Api : " + message.text);
     if (message.success) message.text = 'Success Subsription';
     return message;
 
