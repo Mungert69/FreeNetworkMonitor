@@ -75,7 +75,7 @@ const tiers = [
 function PricingContent({ noRedirect, apiUser}) {
   const { isAuthenticated } = useFusionAuth();
 
-  const url = (title, userId, customerId) => {
+  const url = (title, userId, email, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
 
     if (customerId !== '') return getApiSubscriptionUrl()+'/customer-portal/' + customerId;
@@ -83,7 +83,7 @@ function PricingContent({ noRedirect, apiUser}) {
     if (title === 'Free') {
       return '';
     }
-    return getApiSubscriptionUrl()+'/CreateCheckoutSession/' + userId + '/' + title;
+    return getApiSubscriptionUrl()+'/CreateCheckoutSession/' + userId + '/' + title + '/' + email;
 
   }
   const buttonText = (tier, accountType, customerId) => {
@@ -182,7 +182,7 @@ function PricingContent({ noRedirect, apiUser}) {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  {isAuthenticated ? <Button href={url(tier.title, apiUser.userID, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
+                  {isAuthenticated ? <Button href={url(tier.title, apiUser.userID,apiUser.email, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
                     {buttonText(tier, apiUser.accountType,apiUser.customerId)}
                   </Button> : <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} />}
 
