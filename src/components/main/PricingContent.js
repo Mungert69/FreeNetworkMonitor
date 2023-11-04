@@ -107,7 +107,7 @@ function PricingContent({ noRedirect, apiUser}) {
     if (accountType === 'Free') return 'You are subcribed to the Free Plan. Choose a new Plan to access more features';
     var cancelStr='';
     if (cancelAt!=null){
-      cancelStr=' Cancels on '+convertDate (cancelAt,"DD/MM/YYYY");
+      cancelStr=' Cancels on '+convertDate (cancelAt,"Do MMMM YYYY");
     }
     return 'You are subcribed to the ' + accountType + ' plan .'+cancelStr;
   }
