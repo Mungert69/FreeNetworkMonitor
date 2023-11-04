@@ -407,7 +407,7 @@ export const getUserInfoApi = async (baseUrlId, user) => {
     var apiUser = result.data.data;
     apiUser.picture = user.picture
     apiUser.logonServer = apiBaseUrls[baseUrlId];
-    console.log('ServiceAPI.getUserInfoApi got userInfo ' + userApi.userID);
+    console.log('ServiceAPI.getUserInfoApi got userInfo ' + apiUser.userID);
     return apiUser;
 
 }
@@ -430,7 +430,7 @@ export const addUserApi = async (baseUrlId, user) => {
     var apiUser = result.data.data;
     apiUser.picture = user.picture
     apiUser.logonServer = apiBaseUrls[baseUrlId];
-    console.log('ServiceAPI.addUserApi checked ' + userApi.userID);
+    console.log('ServiceAPI.addUserApi checked ' + apiUser.userID);
     return apiUser;
 
 }
