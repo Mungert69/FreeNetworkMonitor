@@ -390,6 +390,29 @@ export const fetchBlogs = async (archiveDate) => {
 
 }
 
+export const getUserInfoApi = async (baseUrlId, user) => {
+
+    axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios(
+        {
+            method: 'post',
+            url: apiBaseUrls[baseUrlId] + '/UserConfig/GetUserInfo',
+            data: user,
+            withCredentials: true,
+        }
+    ).catch(function (error) {
+        console.log('ServiceAPI.getUserInfoApi Axios Error was : ' + error);
+        return;
+    }));
+    var apiUser = result.data.data;
+    apiUser.picture = user.picture
+    apiUser.logonServer = apiBaseUrls[baseUrlId];
+    console.log('ServiceAPI.getUserInfoApi got userInfo ' + user.userID);
+    return apiUser;
+
+}
+
+
 export const addUserApi = async (baseUrlId, user) => {
 
     axiosRetry(axios, { retries: 3 });
@@ -407,7 +430,7 @@ export const addUserApi = async (baseUrlId, user) => {
     var apiUser = result.data.data;
     apiUser.picture = user.picture
     apiUser.logonServer = apiBaseUrls[baseUrlId];
-    console.log('ServiceAPI.addUserApi checked ' + user.name);
+    console.log('ServiceAPI.addUserApi checked ' + user.userID);
     return apiUser;
 
 }

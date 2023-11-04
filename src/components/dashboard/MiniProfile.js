@@ -4,8 +4,12 @@ import Zoom from '@mui/material/Zoom';
 import Tooltip from '@mui/material/Tooltip';
 import ProfileDialog from './ProfileDialog';
 
-export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub}) {
+export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUserInfo}) {
       const [openProfile, setOpenProfile] = React.useState(false);
+      const updateUserInfo  =() =>{
+          setOpenProfile(true);
+          getUserInfo();
+      }
       useEffect(() => {
           if (initViewSub) {
                setOpenProfile(true);
@@ -25,7 +29,7 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub}) {
                               }}
                               src={decodeURIComponent(apiUser.picture)}
                               alt="Profile"
-                              onClick={() => setOpenProfile(true)}
+                              onClick={() => updateUserInfo()}
                          />
                     </Tooltip>
                </div>

@@ -28,7 +28,7 @@ import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi } from './ServiceAPI';
+import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import DataSetsList from './DataSetsList';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
@@ -72,6 +72,12 @@ export default function Dashboard() {
   const classes = useClasses(styleObject(useTheme(), null));
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const fixedHeightTallPaper = clsx(classes.paper, classes.fixedHeightTall);
+
+  const getUserInfo= async() => {
+    
+    const apiUser = await getUserInfoApi(siteId, user);
+    await setApiUser(apiUser);
+  }
   const handleSetDataSetId = (id, date) => {
     // change the data set id
     setDataSetId(id);
@@ -256,7 +262,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {!isAuthenticated ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} />}
+          {!isAuthenticated ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={getUserInfo} />}
         </Toolbar>
         <Loading />
       </AppBar>
