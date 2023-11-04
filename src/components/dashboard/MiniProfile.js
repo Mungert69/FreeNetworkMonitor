@@ -6,9 +6,10 @@ import ProfileDialog from './ProfileDialog';
 
 export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUserInfo}) {
       const [openProfile, setOpenProfile] = React.useState(false);
-      const updateUserInfo  =() =>{
-          setOpenProfile(true);
-          getUserInfo();
+      const updateUserInfo  = async () =>{
+          await setOpenProfile(true);
+          await getUserInfo();
+          console.log(" Current User is "+JSON.stringify(apiUser));
       }
       useEffect(() => {
           if (initViewSub) {

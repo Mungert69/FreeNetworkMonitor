@@ -204,7 +204,6 @@ export default function Dashboard() {
   }, [reloadListData, dataSetId, siteId, apiUser]);
 
   useEffect(() => {
-    console.log(" Current User is "+JSON.stringify(user));
     const fetchData = async () => {
       await setIsLoading(true);
       await fetchDataSetsByDate(siteId, setDataSets, dateStart, dateEnd);

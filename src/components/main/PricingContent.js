@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import LoginButton from "../login-button";
-import { getApiSubscriptionUrl } from '../dashboard/ServiceAPI';
+import { getApiSubscriptionUrl,convertDate } from '../dashboard/ServiceAPI';
 import {useFusionAuth} from '@fusionauth/react-sdk';
 
 
@@ -107,7 +107,7 @@ function PricingContent({ noRedirect, apiUser}) {
     if (accountType === 'Free') return 'You are subcribed to the Free Plan. Choose a new Plan to access more features';
     var cancelStr='';
     if (cancelAt!=null){
-      cancelStr=' Cancels on '+cancelAt;
+      cancelStr=' Cancels on '+convertDate (cancelAt,"DD/MM/YYYY");
     }
     return 'You are subcribed to the ' + accountType + ' plan .'+cancelStr;
   }
