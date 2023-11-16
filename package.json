@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://www.freenetworkmonitor.click/",
-  "version": "0.6.12",
+  "version": "0.6.13",
   "private": true,
   "resolutions": {
     "nth-check": "2.1.1",
