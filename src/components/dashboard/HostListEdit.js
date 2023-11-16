@@ -144,7 +144,7 @@ export const HostListEdit = ({ siteId, processorList }) => {
                 >
                   <MenuItem value={'rawconnect'}>Raw Connect (socket connection)</MenuItem>
                   <MenuItem value={'http'}>HTTP Ping (website)</MenuItem>
-                  <MenuItem value={'http'}>HTTPS SSL (certificate check)</MenuItem>
+                  <MenuItem value={'https'}>HTTPS SSL (certificate check)</MenuItem>
                   <MenuItem value={'httphtml'}>HTTP Load (website html)</MenuItem>
                   <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
                   <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
