@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 
 import HttpIcon from '@mui/icons-material/Http';
+import HttpsIcon from '@mui/icons-material/Https';
 import LinkIcon from '@mui/icons-material/Link';
 import HtmlIcon from '@mui/icons-material/Html';
 import LanguageIcon from '@mui/icons-material/Language';
@@ -248,6 +249,8 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
         return endPointIcon('Raw Socket Connection', <LinkIcon />);
       case 'http':
         return endPointIcon('Http (Website) Ping', <HttpIcon />);
+        case 'https':
+          return endPointIcon('Https (Certificate) SSL', <HttpsIcon />);
       case 'httphtml':
         return endPointIcon('Http Load (Website Html)', <HtmlIcon />);
       case 'httpfull':
