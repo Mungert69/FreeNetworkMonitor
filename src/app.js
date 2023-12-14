@@ -1,13 +1,15 @@
 import React, { lazy, Suspense } from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { LoadingCircle } from "./loading-circle";
 import CookieConsent from "react-cookie-consent";
-import { createBrowserHistory } from 'history'
 import ReactGA4 from 'react-ga4';
+import RouteChangeTracker from './route-change-tracker';
+
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const Pricing = lazy(() => import('./components/main/Pricing'));
 const Faq = lazy(() => import('./components/main/Faq'));
 const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
+
 const TRACKING_ID = "G-QZ49HV7DS2"; // OUR_TRACKING_ID
 ReactGA4.initialize(TRACKING_ID, {
   gaOptions: {
@@ -15,21 +17,15 @@ ReactGA4.initialize(TRACKING_ID, {
     siteSpeedSampleRate: 50
   }
 });
-const browserHistory = createBrowserHistory()
-browserHistory.listen((location, action) => {
-  ReactGA4.send({ hitType: "pageview", page: window.location.pathname });
-})
+
+
+
 const App = () => {
-  /*useEffect(() => {
-    ReactGA4.send({ hitType: "pageview", page: window.location.pathname });
-  }, []);*/
-  if (false) {
-    return <LoadingCircle small={true} />;
-  }
   const renderLoader = () => <LoadingCircle indicatorSize={100} thickness={2} />;
+
   return (
-    <div >
-      <div >
+    <div>
+      <div>
         <CookieConsent
           location="bottom"
           buttonText="Agree"
@@ -40,38 +36,41 @@ const App = () => {
           expires={1500}
         >
           This website uses cookies to enhance the user experience.{" "}
-          <span style={{ fontAweight: 'bold' }}>By clicking agree or continuing to use this site you agree to the use of cookies. For full cookie policy click <a href="https://www.freenetworkmonitor.click/cookiepolicy.html"> Cookie Policy</a>. To view our privacy policy click <a href="https://www.freenetworkmonitor.click/privacypolicy.html">Privacy Policy</a></span>
+          <span style={{ fontWeight: 'bold' }}>
+            By clicking agree or continuing to use this site you agree to the use of cookies. 
+            For full cookie policy click <a href="https://www.freenetworkmonitor.click/cookiepolicy.html">Cookie Policy</a>. 
+            To view our privacy policy click <a href="https://www.freenetworkmonitor.click/privacypolicy.html">Privacy Policy</a>
+          </span>
         </CookieConsent>
-        <Switch>
-        <Route exact path="/blog" render={() => {window.location.href="/blog/index.html"}} />
-          <Route exact path="/" >
+        <RouteChangeTracker />
+       
+        <Routes>
+          <Route path="/blog" element={<Navigate to="/blog/index.html" replace />} />
+          <Route exact path="/" element={
             <Suspense fallback={renderLoader()}>
               <ProductDetail />
             </Suspense>
-
-          </Route>
-          <Route exact path="/dashboard"  >
-             <Suspense fallback={renderLoader()}>
-             <Dashboard />
+          } />
+          <Route exact path="/dashboard" element={
+            <Suspense fallback={renderLoader()}>
+              <Dashboard />
             </Suspense>
-  
-          </Route>
-          <Route exact path="/faq"  >
-          <Suspense fallback={renderLoader()}>
-          <Faq />
+          } />
+          <Route exact path="/faq" element={
+            <Suspense fallback={renderLoader()}>
+              <Faq />
             </Suspense>
-           
-          </Route>
-          <Route exact path="/subscription"  >
-          <Suspense fallback={renderLoader()}>
-          <Pricing />
+          } />
+          <Route exact path="/subscription" element={
+            <Suspense fallback={renderLoader()}>
+              <Pricing />
             </Suspense>
-         
-          </Route>
-          <Redirect to="/" />
-        </Switch>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </div>
   );
 };
+
 export default App;
