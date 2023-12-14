@@ -12,4 +12,4 @@ npm run export
 cp -r ./out ../FreeNetworkMonitor/
 cd ../FreeNetworkMonitor
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:0.6.13
+docker push mungert/networkmonitorreact-local:0.6.14
