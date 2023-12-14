@@ -176,10 +176,18 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     setAlertCount(alertCount);
 }
 
-export const fetchProcessorList = async (baseUrlId, setProcessorList) => {
+export const fetchProcessorList = async (baseUrlId, setProcessorList,user,isAuthenticated) => {
     var data = [];
+    if (isAuthenticated) { var extUrlStr = 'Auth'; }
+    else {
+        user = {};
+        user.userID = defaultUser;
+        user.sub = defaultUser;
+        extUrlStr = 'Default';
+
+    }
     axiosRetry(axios, { retries: 3 });
-    const result = await trackPromise(axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetProcessorList')).catch(function (error) {
+    const result = await trackPromise(axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetFilteredProcessorList'+extUrlStr)).catch(function (error) {
         console.log('ServiceAPI.fetchProcessorList Axios Error was : ' + error);
         return;
     }));
