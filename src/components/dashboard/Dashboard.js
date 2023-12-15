@@ -207,7 +207,7 @@ export default function Dashboard() {
     const fetchData = async () => {
       await setIsLoading(true);
       await fetchDataSetsByDate(siteId, setDataSets, dateStart, dateEnd);
-      await fetchProcessorList(siteId, setProcessorList);
+      await fetchProcessorList(siteId, setProcessorList, user, isAuthenticated);
       await setIsLoading(false);
     };
     fetchData();
