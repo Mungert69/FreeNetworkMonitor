@@ -187,8 +187,9 @@ export const fetchProcessorList = async (baseUrlId, setProcessorList,user,isAuth
 
     }
     axiosRetry(axios, { retries: 3 });
-    const result = await trackPromise(axios.get((apiBaseUrls[baseUrlId] + '/Monitor/GetFilteredProcessorList'+extUrlStr)).catch(function (error) {
-        console.log('ServiceAPI.fetchProcessorList Axios Error was : ' + error);
+    const url=apiBaseUrls[baseUrlId] + '/Monitor/GetFilteredProcessorList'+extUrlStr;
+    const result = await trackPromise(axios.get((url)).catch(function (error) {
+        console.log('ServiceAPI.fetchProcessorList with url ="+url+" : Axios Error was : ' + error);
         return;
     }));
     try {
