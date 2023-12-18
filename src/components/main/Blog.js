@@ -68,7 +68,7 @@ const getSidebar = (archives) => {
       'Welcome to our blog on network monitoring, security, and quantum readiness. Stay up-to-date on the latest trends and best practices in network monitoring, security, and the implications of quantum computing. With expert insights, practical tips, and real-world examples, our blog is your go-to resource for all things related to these important topics.',
     archives,
     social: [
-      { name: 'GitHub', icon: GitHubIcon, url: 'https://github.com/Mungert69/FreeNetworkMonitor' },
+      { name: 'GitHub', icon: GitHubIcon, url: 'https://github.com/Mungert69' },
       { name: 'Twitter', icon: TwitterIcon, url: 'https://twitter.com/freenetmonitor' },
       { name: 'LinkedIn', icon: LinkedInIcon, url: 'https://www.linkedin.com/products/mahadevaprojects-free-network-monitor-online/' },
     ]
