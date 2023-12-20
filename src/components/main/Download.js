@@ -107,23 +107,23 @@ const Download = () => {
                 Choose your platform:
               </Typography>
             </Grid>
-            {/* Android Download Instructions */}
-            <Grid item xs={12} sm={6}>
+           {/* APK Download Instructions */}
+           <Grid item xs={12} sm={6}>
               <Typography variant="body1">
-                To download the Free Network Monitor App on Android, click the link below to visit the Google Play Store. After opening the page, click the "Install" button to start the installation process.
+                To download the Free Network Monitor App APK for Android, click the link below. After downloading, open the file to start the installation process.
               </Typography>
-              <a href="https://play.google.com/store/apps/details?id=com.yourapp.android" target="_blank" rel="noopener noreferrer" className={classes.link}>
-                Download on Google Play
-              </a>
+              <Button variant="contained" color="primary" href="https://devwww.freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk" target="_blank" className={classes.button}>
+                Download APK
+              </Button>
             </Grid>
-            {/* iOS Download Instructions */}
+            {/* Windows Download Instructions */}
             <Grid item xs={12} sm={6}>
               <Typography variant="body1">
-                To download the Free Network Monitor App on iOS, click the link below to visit the App Store. After opening the page, click the "Download" button to start the installation process.
+                To download the Free Network Monitor App for Windows, click the link below. After downloading, run the installer to complete the setup.
               </Typography>
-              <a href="https://apps.apple.com/us/app/your-app/id1234567890" target="_blank" rel="noopener noreferrer" className={classes.link}>
-                Download on the App Store
-              </a>
+              <Button variant="contained" color="primary" href="https://devwww.freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk" target="_blank" className={classes.button}>
+                Download for Windows
+                </Button>
             </Grid>
           </Grid>
           <Typography variant="body1" color="textPrimary" gutterBottom>
