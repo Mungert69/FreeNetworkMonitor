@@ -9,6 +9,7 @@ const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const Pricing = lazy(() => import('./components/main/Pricing'));
 const Faq = lazy(() => import('./components/main/Faq'));
 const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
+const Download = lazy(() => import('./components/main/Download'));
 
 const TRACKING_ID = "G-QZ49HV7DS2"; // OUR_TRACKING_ID
 ReactGA4.initialize(TRACKING_ID, {
@@ -64,6 +65,11 @@ const App = () => {
           <Route exact path="/subscription" element={
             <Suspense fallback={renderLoader()}>
               <Pricing />
+            </Suspense>
+          } />
+            <Route exact path="/download" element={
+            <Suspense fallback={renderLoader()}>
+              <Download />
             </Suspense>
           } />
           <Route path="*" element={<Navigate to="/" replace />} />

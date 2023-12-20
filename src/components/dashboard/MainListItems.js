@@ -8,6 +8,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
 import BlogIcon from '@mui/icons-material/Book';
+import DownloadIcon from '@mui/icons-material/GetApp'; 
 
 export  function MainListItems({classes})  {
 
@@ -61,6 +62,14 @@ export  function MainListItems({classes})  {
         <ListItemText primary="Blog" />
       </ListItem>
     </a>
+    <Link className={classes.linkCompact} href="/Download"> {/* Link to the DownloadPage */}
+        <ListItem button key="download">
+          <ListItemIcon>
+            <DownloadIcon />
+          </ListItemIcon>
+          <ListItemText primary="Download" />
+        </ListItem>
+      </Link>
 
   </div>
 

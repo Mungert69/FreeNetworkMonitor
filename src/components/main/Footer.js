@@ -12,9 +12,15 @@ import Grid from '@mui/material/Grid';
 function Footer(props) {
   const { description, title } = props;
 
+  // Add a CSS class for the Trustpilot image
+  const trustpilotImageStyle = {
+    maxWidth: '20%', // Adjust the width as needed
+    height: 'auto', // Maintain aspect ratio
+  };
+
   return (
     <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
-      <Container >
+      <Container>
         <Grid
           container
           spacing={2}
@@ -28,30 +34,27 @@ function Footer(props) {
             justifyContent="space-around"
           >
             <Grid item xs={6}>
-
-              <div className="trustpilot-widget" data-locale="en-GB" data-template-id="5419b6a8b0d04a076446a9ad" data-businessunit-id="63224c4a7ccb8c2b2d77712f" data-style-height="24px" data-style-width="100%" data-theme="light" data-min-review-count="10" data-without-reviews-preferred-string-id="1" data-style-alignment="center">
-                <a href="https://uk.trustpilot.com/review/freenetworkmonitor.click" target="_blank" rel="noopener">Trustpilot</a>
-              </div>
-                 </Grid>
-            <Grid item xs={6}>
-            <div className="trustpilot-widget" data-locale="en-GB" data-template-id="56278e9abfbbba0bdcd568bc" data-businessunit-id="63224c4a7ccb8c2b2d77712f" data-style-height="52px" data-style-width="100%">
-                <a href="https://uk.trustpilot.com/review/freenetworkmonitor.click" target="_blank" rel="noopener">Trustpilot</a>
-              </div>
-       
+              <Grid container alignItems="center" justifyContent="center" spacing={2}>
+                <Grid item>
+                  <img src="https://cdn.trustpilot.net/brand-assets/4.3.0/logo-white.svg" alt="Trustpilot" style={trustpilotImageStyle} />
+                </Grid>
+                <Grid item>
+                  <Typography variant="body2" color="textSecondary">
+                    <Link href="https://uk.trustpilot.com/review/freenetworkmonitor.click" target="_blank" rel="noopener">
+                      Review us on Trustpilot
+                    </Link>
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-          <Grid item >
+          <Grid item>
             <Copyright />
           </Grid>
-
         </Grid>
-
-
       </Container>
-    </Box >
+    </Box>
   );
 }
-
-
 
 export default React.memo(Footer);
