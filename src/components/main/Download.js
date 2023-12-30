@@ -119,9 +119,9 @@ const Download = () => {
             {/* Windows Download Instructions */}
             <Grid item xs={12} sm={6}>
               <Typography variant="body1">
-                To download the Free Network Monitor App for Windows, click the link below. After downloading, run the installer to complete the setup.
+                To download the Free Network Monitor Agent App from the Windows Store, click the link below. After installing follow the in App setup guide.
               </Typography>
-              <Button variant="contained" color="primary" href="https://devwww.freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk" target="_blank" className={classes.button}>
+              <Button variant="contained" color="primary" href="https://apps.microsoft.com/detail/9P58PM1PM9TZ?hl" target="_blank" className={classes.button}>
                 Download for Windows
                 </Button>
             </Grid>
