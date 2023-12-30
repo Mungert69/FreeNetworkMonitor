@@ -430,7 +430,7 @@ export const getUserInfoApi = async (baseUrlId, user) => {
 
 
 export const addUserApi = async (baseUrlId, user) => {
-
+    console.log("user data from fusion user : "+JSON.stringify(user));
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
