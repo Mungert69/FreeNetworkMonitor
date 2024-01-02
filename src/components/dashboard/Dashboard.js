@@ -39,8 +39,6 @@ import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';
 import {useFusionAuth} from '@fusionauth/react-sdk';
 
-
-
 export default function Dashboard() {
   const { isAuthenticated, user } = useFusionAuth();
   const defaultHost = { 'id': 1 };
@@ -77,6 +75,7 @@ export default function Dashboard() {
     
     const apiUser = await getUserInfoApi(siteId, user);
     await setApiUser(apiUser);
+    console.log(" Current User is "+JSON.stringify(apiUser));
   }
   const handleSetDataSetId = (id, date) => {
     // change the data set id
@@ -122,11 +121,16 @@ export default function Dashboard() {
     const getAccess = async () => {
       var siteId = 0;
       try {
+        console.log("Calling fetchLoadServer");
         var loadServer = await fetchLoadServer(user);
+        console.log("Calling getSiteIdfromUrl");
         siteId = await getSiteIdfromUrl(loadServer);
-        const apiUser = await addUserApi(siteId, user);
+        console.log("Calling addUserApi");
+        await addUserApi(siteId, user);
+        console.log("Calling setSiteId");
         await setSiteId(siteId);
-        await setApiUser(apiUser);
+        console.log("Calling getUserInfo");
+        await getUserInfo();
         // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
         console.log("Error in Dashboard failed to get access error was" + e + " : user was " + user.sub);

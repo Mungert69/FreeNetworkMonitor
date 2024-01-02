@@ -1,6 +1,8 @@
 #!/bin/sh
 value=`cat ../secret`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
+rm ./public/click.freenetworkmonitor*
+cp ./downloads/click.freenetworkmonitor.dev.apk ./public/click.freenetworkmonitor.networkmonitormaui.apk
 npm install --omit=dev
 npm audit
 npm run build
@@ -12,4 +14,4 @@ npm run export
 cp -r ./out ../FreeNetworkMonitor/
 cd ../FreeNetworkMonitor
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:0.6.15
+docker push mungert/networkmonitorreact-local:0.6.16

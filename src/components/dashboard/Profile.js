@@ -28,18 +28,19 @@ import { updateApiUser,resendVerifyEmail } from './ServiceAPI';
 const Profile = ({ apiUser, siteId }) => {
 
   const [state, setState] = React.useState({
-    name: apiUser.nickname,
+    name: apiUser.name, picture : apiUser.picture
   });
   const [disableEmail, setDisableEmail]=React.useState(apiUser.disableEmail);
   const [message, setMessage] = React.useState({ info: 'init' });
 
 
-  const { name } = state;
+  const { name, picture } = state;
 
 
   const handleSubmit = async () => {
     const user = apiUser;
-    user.nickname = name;
+    user.name = name;
+    user.picture=picture;
     user.disableEmail = disableEmail;
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     await setMessage(message);
@@ -50,7 +51,7 @@ const Profile = ({ apiUser, siteId }) => {
 
   const handleSubmitVerifyEmail = async () => {
     const user = apiUser;
-    user.nickname = name;
+    user.name = name;
     var message = { text: 'Verfication email sent please check you inbox.', info: false };
     await setMessage(message);
     message = await resendVerifyEmail(siteId, user);
@@ -59,6 +60,12 @@ const Profile = ({ apiUser, siteId }) => {
   }
 
   const handleChangeText = (event) => {
+    setState({
+      ...state,
+      [event.target.name]: event.target.value,
+    });
+  };
+  const handleChangePicture = (event) => {
     setState({
       ...state,
       [event.target.name]: event.target.value,
@@ -83,11 +90,22 @@ const Profile = ({ apiUser, siteId }) => {
                   fullWidth
                   helperText="Edit your name"
                   label="Name"
-                  name="Name"
+                  name="name"
                   required
                   value={name}
                   variant="outlined"
                   onChange={handleChangeText}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  fullWidth
+                  helperText="Edit your Picture Url"
+                  label="Picture Url"
+                  name="picture"
+                  value={picture}
+                  variant="outlined"
+                  onChange={handleChangePicture}
                 />
               </Grid>
 

@@ -60,7 +60,7 @@ export  function ProfileDialog({ setOpen, apiUser,siteId, initViewSub, setInitVi
           {initViewSub ?
           <StripeCheckOut apiUser={apiUser}  siteId={siteId}/>
           :
-           <Profile  apiUser={apiUser}  siteId={siteId}/>
+           <Profile  apiUser={apiUser}  siteId={siteId} />
        
           }
         </DialogContent>
