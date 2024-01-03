@@ -65,7 +65,7 @@
     "preinstall": "npx npm-force-resolutions",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "GENERATE_SOURCEMAP=false cross-env PORT=8080 HOST=127.0.0.1 react-scripts start",
-    "startssl": "GENERATE_SOURCEMAP=false HTTPS=true cross-env PORT=8443 HOST=81.0.220.99 react-scripts start",
+    "startssl": "GENERATE_SOURCEMAP=false HTTPS=true cross-env PORT=8443 HOST=127.0.0.1 react-scripts start",
     "build": " react-scripts build && compress-cra",
     "eject": "react-scripts eject"
   },
