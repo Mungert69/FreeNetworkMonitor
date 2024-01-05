@@ -112,7 +112,7 @@ const Download = () => {
               <Typography variant="body1">
                 To download the Free Network Monitor App APK for Android, click the link below. After downloading, open the file to start the installation process.
               </Typography>
-              <Button variant="contained" color="primary" href="https://devwww.freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk" target="_blank" className={classes.button}>
+              <Button variant="contained" color="primary" href={`${window.location.origin}/click.freenetworkmonitor.networkmonitormaui.apk`} target="_blank" className={classes.button}>
                 Download APK
               </Button>
             </Grid>
