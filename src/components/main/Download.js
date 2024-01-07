@@ -90,13 +90,11 @@ services:
     container_name: processor
     restart: always
     volumes:
-      - ~/state/appsettings-processor.json:/app/appsettings.json
-      - ~/state/ProcessorDataObj:/app/ProcessorDataObj
-      - ~/state/PingParams:/app/PingParams
-      - ~/state/MonitorIPs:/app/MonitorIPs
+      - ~/state/:/app/state/
+
 \`\`\`
 
-**Notes on compose file** Create the folder ~/state . From shell type  mkdir ~/state (this is a linux folder path, adjust acordingly for windows) this folder must be writable by the docker instance that is running. Start by setting full permissions ( chmod 777 ~/state ). After the agent is authorised and you have setup your first hosts. If you are concerned for secutiry of these files then change the owner to the same as the owner of the files that have been created by the docker agent and set full permissions only for this user. 
+**Notes on compose file** Create the folder ~/state . From shell type  mkdir ~/state (this is a linux folder path, adjust acordingly for windows) this folder must be writable by the docker instance that is running. Start by setting full permissions ( chmod 777 ~/state ). If you are concerned for the secutiry of the files then change the owner to the same as the owner of the files that will be created, in the folder, by the docker agent. Then set full permissions only for this user. 
 
 
 2. **Run Docker Compose**: In the directory where your \`docker-compose.yml\` file is located, run:
