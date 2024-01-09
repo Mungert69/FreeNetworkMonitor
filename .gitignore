@@ -708,3 +708,4 @@ server.key
 server.crt
 dotnet
 package-lock.json
+downloads/

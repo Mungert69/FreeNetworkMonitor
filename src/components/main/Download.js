@@ -21,7 +21,143 @@ import useClasses from "../dashboard/useClasses";
 import useTheme from "@mui/material/styles/useTheme";
 import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
-import Button from "@mui/material/Button";
+import ReactMarkdown from 'react-markdown';
+const markdown = `
+# Choose your platform:
+
+## Android Download Instructions
+
+To download the Free Network Monitor Agent APK for Android, click the link below. After downloading, open the file to start the installation process. Note this version is alpha testing and is not yet available in google play store. Android has limitations on background network usage that prevent the monitoring from working when the device sleeps. This version is provided for testing only.
+
+[Download APK](https://freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk)
+
+## Windows Install Instructions
+
+To install the Free Network Monitor Agent App from the Windows Store, click the link below.
+
+[Install for Windows](https://apps.microsoft.com/detail/9P58PM1PM9TZ?hl)
+
+## Post-Installation Instructions
+
+After installing the app:
+
+1. **Authorization**: In order for your device to function as an agent, it first needs to be authorized. Start by clicking the 'Authorize' button on the main page to begin the authentication process.
+
+2. **Login**: Follow the on-screen instructions to log in to your account. If you don't have an account, you can create one during the authentication process.
+
+3. **Dashboard Access**: Once you have successfully logged in and authenticated your agent, visit the website [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard) and log in with the same email address you used to authorize your agent. It is from here that you will view and manage network monitoring.
+
+4. **Adding Hosts**: Once logged into the Free Network Monitor site, go to the dashboard and add a host that you want to monitor, click the flashing edit icon. You might wish to monitor a local router at the IP address 192.168.1.1 using the endpoint type 'icmp' to ping the local router, thereby monitoring its availability.
+
+5. **Select Monitor Location**: You can choose either predefined remote agents or your local agent. However, for monitoring local devices like a router at 192.168.1.1, you would need to choose 'your email address - local' when selecting a monitor location.
+
+6. **View and Edit Mode**: Click the edit icon to toggle between view and edit modes. In view mode, after about 2 minutes, host monitoring data should start appearing. For detailed response data, click the chart icon next to the host.
+
+7. **Alerts and Reports**: Alerts will be sent to your email address if the host is detected as down. Weekly reports are also sent to your email address with an analysis of your hosts' performance. Note that you must verify your email address to receive email alerts and reports. If you don't receive the verification email, exclude support@mahadeva.co.uk from your spam filter.
+
+8. **Account Management**: You can manage your account by clicking the profile icon.
+
+**View Log Entries**: To verify that hosts are being added to the agent successfully, click View Logs on the main page of the agent app. The following log entry indicates one host being updated:
+
+\`\`\`
+MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 MonitorIPs Queue .
+\`\`\`
+
+Note: Android and Windows version of the agents do not support Quantum Safe TLS connection monitoring. If you need this feature in your agent then use the fully featured docker version below.
+
+# Docker Setup Instructions
+
+## Installing Docker Compose
+
+Docker Compose is included when you install Docker Desktop. This is the easiest and recommended method to get Docker Compose, which also installs Docker Engine and Docker CLI, necessary for running Compose. Docker Desktop is available for:
+
+- Linux
+- macOS
+- Windows
+
+For detailed instructions on installing Docker Desktop, refer to the [official Docker documentation](https://docs.docker.com/get-docker/).
+
+To set up the Free Network Monitor Agent within Docker, follow these steps:
+
+1. **Create a Docker Compose File**: Create a \`docker-compose.yml\` file with the following content:
+
+\`\`\`yaml
+version: "3.8"
+
+services:
+  networkmonitorprocessor:
+    image: mungert/networkmonitorprocessor:1.0.0
+    container_name: processor
+    restart: always
+    volumes:
+      - ~/state/:/app/state/
+
+\`\`\`
+
+**Notes on compose file** Create the folder ~/state . From shell type  mkdir ~/state (this is a linux folder path, adjust acordingly for windows) this folder must be writable by the docker instance that is running. Start by setting full permissions ( chmod 777 ~/state ). If you are concerned for the secutiry of the files then change the owner to the same as the owner of the files that will be created, in the folder, by the docker agent. Then set full permissions only for this user. 
+
+
+2. **Run Docker Compose**: In the directory where your \`docker-compose.yml\` file is located, run:
+
+\`\`\`bash
+docker-compose up -d
+\`\`\`
+
+## Authorizing the Agent
+
+Unlike the app version, the Docker version of the Free Network Monitor Agent requires manual authorization:
+
+1. **Start the Authorization Process**: After starting the Docker container, use the following command to view the logs:
+
+\`\`\`bash
+docker logs processor -f
+\`\`\`
+
+2. **Retrieve the Authorization URL**: Look for a log entry similar to the following:
+
+\`\`\`
+https://authnew.freenetworkmonitor.click:2096/oauth2/device?client_id=de064977-4bde-4426-81f7-4354041fe58b&tenantId=a4d7499b-557c-d132-7d6f-0a575402a781&user_code=2PBLYP
+\`\`\`
+
+Copy and paste this URL into a web browser to start the authentication process.
+
+3. **Complete the Authentication**: Follow the on-screen instructions to log in to your account or create a new one.
+
+4. **Verify Successful Authorization**: Check the Docker logs for a success message like the following:
+
+\`\`\`
+MessageAPI : SetAuthKey :  SetAuthKey :  Success : Set AuthKey and saved NetConnectConfig to appsettings.json
+\`\`\`
+
+## Adding Hosts for Monitoring
+
+Once the agent is authorized, you can start adding hosts to monitor:
+
+1. **Monitor Hosts**: Add hosts to monitor via the Free Network Monitor Service dashboard at [https://freenetworkmonitor.click/dashboard](https://freenetworkmonitor.click/dashboard). Login with the same email address you used to authorize the agent.
+
+2. **Adding Hosts**: Once logged into the Free Network Monitor site, go to the dashboard and add a host that you want to monitor, click the flashing edit icon. You might wish to monitor a local router at the IP address 192.168.1.1 using the endpoint type 'icmp' to ping the local router, thereby monitoring its availability.
+
+3. **Select Monitor Location**: You can choose either predefined remote agents or your local agent. However, for monitoring local devices like a router at 192.168.1.1, you would need to choose 'your email address - local' when selecting a monitor location.
+
+4. **View and Edit Mode**: Click the edit icon to toggle between view and edit modes. In view mode, after about 2 minutes, host monitoring data should start appearing. For detailed response data, click the chart icon next to the host.
+
+5. **Alerts and Reports**: Alerts will be sent to your email address if the host is detected as down. Weekly reports are also sent to your email address with an analysis of your hosts' performance. Note that you must verify your email address to receive email alerts and reports. If you don't receive the verification email, exclude support@mahadeva.co.uk from your spam filter.
+
+6. **Account Management**: You can manage your account by clicking the profile icon.
+
+
+
+**View Log Entries**: To verify that hosts are being added successfully, check the Docker logs for entries like:
+
+\`\`\`
+MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 MonitorIPs Queue .
+\`\`\`
+
+## Support
+
+If you encounter any issues or have questions, please feel free to reach out to us at support@mahadeva.co.uk. We're here to help and would love to hear your feedback!
+`;
+
 const Download = () => {
   const theme = useTheme();
   const classes = useClasses(styleObject(theme, process.env.PUBLIC_URL + "/ping.svg"));
@@ -100,41 +236,9 @@ const Download = () => {
             </Grid>
           </Grid>
           <hr />
-          <Grid container spacing={2}>
-            {/* Platform Selection and Download Instructions */}
-            <Grid item xs={12}>
-              <Typography variant="h5" color="textPrimary">
-                Choose your platform:
-              </Typography>
-            </Grid>
-           {/* APK Download Instructions */}
-           <Grid item xs={12} sm={6}>
-              <Typography variant="body1">
-                To download the Free Network Monitor App APK for Android, click the link below. After downloading, open the file to start the installation process.
-              </Typography>
-              <Button variant="contained" color="primary" href="https://devwww.freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk" target="_blank" className={classes.button}>
-                Download APK
-              </Button>
-            </Grid>
-            {/* Windows Download Instructions */}
-            <Grid item xs={12} sm={6}>
-              <Typography variant="body1">
-                To download the Free Network Monitor Agent App from the Windows Store, click the link below. After installing follow the in App setup guide.
-              </Typography>
-              <Button variant="contained" color="primary" href="https://apps.microsoft.com/detail/9P58PM1PM9TZ?hl" target="_blank" className={classes.button}>
-                Download for Windows
-                </Button>
-            </Grid>
-          </Grid>
-          <Typography variant="body1" color="textPrimary" gutterBottom>
-            After installing the app, follow these instructions:
-          </Typography>
-          <ol>
-            <li>Open the app and click the "Authorize" button to begin the authentication process.</li>
-            <li>Follow the on-screen instructions to log in to your account. If you don't have an account, you can create one during the authentication process.</li>
-            <li>Once you have successfully logged in and authenticated the app you can return to the website and login here to add hosts to monitor via your device. You will see the device listed as your email address - local when selecting a monitor location.</li>
-            <li>After logging in, you can add and manage hosts using the same email address you used for authentication in the app.</li>
-          </ol>
+          <div>
+            <ReactMarkdown children={markdown} />
+        </div>
           <Footer />
         </Container>
       </main>
