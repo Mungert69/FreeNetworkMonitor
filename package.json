@@ -1,12 +1,13 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://www.freenetworkmonitor.click/",
-  "version": "0.6.16",
+  "version": "0.6.17",
   "private": true,
   "resolutions": {
     "nth-check": "2.1.1",
     "@babel/traverse": "7.23.2",
-    "postcss": "8.4.31"
+    "postcss": "8.4.31",
+    "follow-redirects" : "1.15.5"
   },
   "dependencies": {
     "@emotion/cache": "11.10.7",
