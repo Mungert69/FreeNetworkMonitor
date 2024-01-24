@@ -1,10 +1,13 @@
 import MUIDataTable from "mui-datatables";
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   Button,
   Tooltip,
   MenuItem,
+  Badge,
+  IconButton
 } from '@mui/material';
+import StorageIcon from '@mui/icons-material/Storage';
 
 import HttpIcon from '@mui/icons-material/Http';
 import HttpsIcon from '@mui/icons-material/Https';
@@ -15,7 +18,7 @@ import PingIcon from '@mui/icons-material/Speed';
 import DnsIcon from '@mui/icons-material/Dns';
 import EmailIcon from '@mui/icons-material/Email';
 import QuantumIcon from '@mui/icons-material/Flare'; // Replace this import with an actual icon representing QUANTUM
-
+import DataSetsList from './DataSetsList';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -26,7 +29,7 @@ const muiCache = createCache({
   "prepend": true
 });
 
-export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }) => {
+export const HostList = ({ data, clickViewChart, resetHostAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd }) => {
 
   const getMuiTheme = () => createTheme({
     components: {
@@ -71,7 +74,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
     }
   })
 
-
+  const [showDataSetsList, setShowDataSetsList] = useState(false);
   const columns = [
     {
       name: "",
@@ -213,6 +216,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
 
     filter: true,
     filterType: 'dropdown',
+    customToolbar: () => (<HeaderElements />),
     jumpToPage: true,
     selectableRows: false,
     onTableChange: (action, tableState) => {
@@ -271,11 +275,38 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList }
     }
   };
 
+  const HeaderElements = () => (
+    <>
+      {/* Existing toolbar elements */}
+      <IconButton color="inherit" size="large">
+        <Badge color="secondary">
+          <Tooltip title="Select Dataset">
+            <StorageIcon onClick={() => setShowDataSetsList(!showDataSetsList)}/>
+          </Tooltip>
+        </Badge>
+      </IconButton>
+      {/* Rest of the toolbar elements */}
+    </>
+  );
+  
+  const onDataSetSelect =  () => {
+    // setDisplayDataSets(true);
+    // Where to display DataSetList compoment if this is set here?
 
+  }
   return (
     <>
       <CacheProvider value={muiCache}>
+      {showDataSetsList && (
+      <DataSetsList 
+        dataSets={dataSets} 
+        handleSetDataSetId={handleSetDataSetId} 
+        setDateStart={setDateStart} 
+        setDateEnd={setDateEnd} 
+      />
+    )}
         <ThemeProvider theme={getMuiTheme()}>
+        
           <MUIDataTable
             title={"View Hosts"}
             data={data}

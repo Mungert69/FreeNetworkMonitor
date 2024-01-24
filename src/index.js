@@ -6,7 +6,7 @@ import { FusionAuthProvider } from '@fusionauth/react-sdk';
 import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 import reportWebVitals from './reportWebVitals';
 import { getClientId, getServerUrl, getRedirectUri } from './components/dashboard/ServiceAPI';
-
+import CssBaseline from '@mui/material/CssBaseline';
 
 
 const theme = createTheme(
@@ -37,7 +37,10 @@ root.render(
       redirectUri={getRedirectUri()}
     >
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>      <App /></ThemeProvider>
+        <ThemeProvider theme={theme}>
+        <CssBaseline />
+          <App />
+        </ThemeProvider>
       </StyledEngineProvider>;
     </FusionAuthProvider>
 

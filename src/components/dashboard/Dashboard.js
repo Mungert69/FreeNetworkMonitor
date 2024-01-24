@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import clsx from 'clsx';
-import CssBaseline from '@mui/material/CssBaseline';
+
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -29,7 +29,7 @@ import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
 import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
-import DataSetsList from './DataSetsList';
+import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
@@ -40,12 +40,13 @@ import ReactGA4 from 'react-ga4';
 import {useFusionAuth} from '@fusionauth/react-sdk';
 
 export default function Dashboard() {
+  const theme = useTheme();
   const { isAuthenticated, user } = useFusionAuth();
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
   //const [defaultUser, setDefaultUser] = React.useState(true);
-  const [open, setOpen] = React.useState(true);
+  //const [open, setOpen] = React.useState(false);
   const [chartData, setChartData] = React.useState([]);
   const [listData, setListData] = React.useState([]);
   const [dataSets, setDataSets] = React.useState([]);
@@ -67,9 +68,16 @@ export default function Dashboard() {
   reloadListDataRef.current = reloadListData;
   const dataSetIdRef = useRef(dataSetId);
   dataSetIdRef.current = dataSetId;
-  const classes = useClasses(styleObject(useTheme(), null));
+  const classes = useClasses(styleObject(theme, null));
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const fixedHeightTallPaper = clsx(classes.paper, classes.fixedHeightTall);
+  
+  const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(isMediumOrLarger);
+  }, [isMediumOrLarger]);
 
   const getUserInfo= async() => {
     
@@ -218,7 +226,7 @@ export default function Dashboard() {
   }, [siteId, dateStart, dateEnd]);
   return (
     <div className={classes.root}>
-      <CssBaseline />
+
       <Helmet>
         <title>Dashboard For Free Network Monitor</title>
         <meta name="description" content="This is the dashboard for Free Network Monitor. It provides a free online network monitoring service.
@@ -270,11 +278,12 @@ export default function Dashboard() {
         <Loading />
       </AppBar>
       <Drawer
-        variant="permanent"
+        variant={isMediumOrLarger ? "permanent" : "temporary"}
+        open={open}
+        onClose={handleDrawerClose}
         classes={{
           paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
-        open={open}
       >
         <div className={classes.toolbarIcon}>
           <IconButton onClick={handleDrawerClose} size="large">
@@ -284,10 +293,7 @@ export default function Dashboard() {
         <Divider />
         <List><MainListItems classes={classes} /></List>
         <Divider />
-        <ListSubheader>Select a Dataset</ListSubheader>
-        <Paper className={fixedHeightTallPaper}>
-          <DataSetsList dataSets={dataSets} handleSetDataSetId={handleSetDataSetId} setDateStart={setDateStart} setDateEnd={setDateEnd} />
-        </Paper>
+        
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -310,7 +316,14 @@ export default function Dashboard() {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {toggleTable ?
-                  <HostList  data={listData} clickViewChart={clickViewChart} resetHostAlert={resetHostAlert} processorList={processorList} />
+                  <HostList   data={listData} 
+                  clickViewChart={clickViewChart} 
+                  resetHostAlert={resetHostAlert} 
+                  processorList={processorList}
+                  dataSets={dataSets}
+                  handleSetDataSetId={handleSetDataSetId}
+                  setDateStart={setDateStart}
+                  setDateEnd={setDateEnd} />
                   :
                   <React.Fragment>
 
