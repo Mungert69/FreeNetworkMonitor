@@ -297,16 +297,17 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList,d
   return (
     <>
       <CacheProvider value={muiCache}>
-      {showDataSetsList && (
+     
+        <ThemeProvider theme={getMuiTheme()}>
+        {showDataSetsList && (
       <DataSetsList 
-        dataSets={dataSets} 
-        handleSetDataSetId={handleSetDataSetId} 
-        setDateStart={setDateStart} 
-        setDateEnd={setDateEnd} 
+              dataSets={dataSets}
+              handleSetDataSetId={handleSetDataSetId}
+              setDateStart={setDateStart}
+              setDateEnd={setDateEnd}
+              onClose={() => setShowDataSetsList(!showDataSetsList) }      
       />
     )}
-        <ThemeProvider theme={getMuiTheme()}>
-        
           <MUIDataTable
             title={"View Hosts"}
             data={data}

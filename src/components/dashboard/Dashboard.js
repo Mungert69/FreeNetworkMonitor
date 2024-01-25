@@ -75,9 +75,7 @@ export default function Dashboard() {
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setOpen(isMediumOrLarger);
-  }, [isMediumOrLarger]);
+
 
   const getUserInfo= async() => {
     

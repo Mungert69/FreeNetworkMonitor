@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Grid, ListItem, ListItemIcon, ListItemText, Tooltip, TextField, Paper } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import CloseIcon from '@mui/icons-material/Close';
+import { IconButton} from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-export function DataSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd }) {
+export function DataSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd, onClose }) {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
 
@@ -20,9 +22,9 @@ export function DataSetsList({ dataSets, handleSetDataSetId, setDateStart, setDa
   };
 
   return (
-    <Paper sx={{ p: 2, maxHeight: 300, overflow: 'auto' }}>
-      <LocalizationProvider dateAdapter={AdapterMoment}>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+    <Paper sx={{ p: 2, maxHeight: 300, overflow: 'auto', position: 'relative' }}>
+       <LocalizationProvider dateAdapter={AdapterMoment}>
+         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={6}>
             <MobileDatePicker
               label="Start Date"
@@ -42,7 +44,11 @@ export function DataSetsList({ dataSets, handleSetDataSetId, setDateStart, setDa
             />
           </Grid>
         </Grid>
-      </LocalizationProvider>
+        </LocalizationProvider>
+        <IconButton onClick={onClose} size="small" sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1000 }}>
+        <CloseIcon />
+        </IconButton>
+
       <Grid container spacing={1}>
         {dataSets.map((data) => (
           <Grid item xs={12} sm={6} md={4} key={data.id}>
