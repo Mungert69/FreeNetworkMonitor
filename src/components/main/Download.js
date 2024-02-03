@@ -41,7 +41,7 @@ As part of our select group of beta testers, you will have exclusive access to d
 
 **Haven't Received an Invitation?**
 
-If you do not have an invitation but are interested in participating in our beta testing program, we welcome your enthusiasm! Please send a request to [support@freenetworkmonitor.click](mailto:support@freenetworkmonitor.click) to express your interest. Include a brief note about why you're excited to join our beta testing community, and we'll get back to you with details on how you can participate.
+If you do not have an invitation but are interested in participating in our beta testing program, we welcome your enthusiasm! [Become a Tester for Free Network Monitor Agent App](https://play.google.com/apps/testing/click.freenetworkmonitor.networkmonitormaui). If you experience any problems please send a support request to [support@freenetworkmonitor.click](mailto:support@freenetworkmonitor.click) .
 
 **Beta Tester Rewards:**
 
