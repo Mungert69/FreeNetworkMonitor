@@ -35,7 +35,7 @@ As part of our select group of beta testers, you will have exclusive access to d
 
 1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store. Please note, this link will only grant access to users who have been invited.
    
-   [Download the Free Network Monitor Agent App](https://play.google.com/apps/test/click.freenetworkmonitor.networkmonitormaui/29) 
+   [Download the Free Network Monitor Agent App](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui&pli=1) 
 
 2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Free Network Monitor Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
 
