@@ -27,9 +27,25 @@ const markdown = `
 
 ## Android Download Instructions
 
-To download the Free Network Monitor Agent APK for Android, click the link below. After downloading, open the file to start the installation process. Note this version is alpha testing and is not yet available in google play store. Android has limitations on background network usage that prevent the monitoring from working when the device sleeps. This version is provided for testing only.
+**Exclusive Beta Testing Invitation**
 
-[Download APK](https://freenetworkmonitor.click/click.freenetworkmonitor.networkmonitormaui.apk)
+As part of our select group of beta testers, you will have exclusive access to download the Free Network Monitor Agent app directly from the Google Play Store. This opportunity is currently available only to users who have received a special invitation.
+
+**How to Download:**
+
+1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store. Please note, this link will only grant access to users who have been invited.
+   
+   [Download the Free Network Monitor Agent App](https://play.google.com/apps/test/click.freenetworkmonitor.networkmonitormaui/29) 
+
+2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Free Network Monitor Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
+
+**Haven't Received an Invitation?**
+
+If you do not have an invitation but are interested in participating in our beta testing program, we welcome your enthusiasm! Please send a request to [support@freenetworkmonitor.click](mailto:support@freenetworkmonitor.click) to express your interest. Include a brief note about why you're excited to join our beta testing community, and we'll get back to you with details on how you can participate.
+
+**Beta Tester Rewards:**
+
+In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Free Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
 
 ## Windows Install Instructions
 
@@ -41,27 +57,33 @@ To install the Free Network Monitor Agent App from the Windows Store, click the 
 
 After installing the app:
 
-1. **Authorization**: In order for your device to function as an agent, it first needs to be authorized. Start by clicking the 'Authorize' button on the main page to begin the authentication process.
+1. **Enable Agent**: Toggle the "Enable Agent" slider to the on position. Three task buttons will appear below. Complete each task to ensure full functionality of your device as an agent.
 
-2. **Login**: Follow the on-screen instructions to log in to your account. If you don't have an account, you can create one during the authentication process.
+2. **Authorization**: Your device needs authorization to function as an agent. Click the 'Authorize' button on the main page, which redirects you to the OAuth authentication site. Follow the on-screen instructions to log in to your account. If you do not have an account, you can create one during this process. Close the browser window once you receive a message confirming your agent is authenticated.
 
-3. **Dashboard Access**: Once you have successfully logged in and authenticated your agent, visit the website [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard) and log in with the same email address you used to authorize your agent. It is from here that you will view and manage network monitoring.
+3. **Login to Free Network Monitor**: Click this task to be redirected to the [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard). Login with the same email address you used for agent authorization. This is where you'll manage your network monitoring.
 
-4. **Adding Hosts**: Once logged into the Free Network Monitor site, go to the dashboard and add a host that you want to monitor, click the flashing edit icon. You might wish to monitor a local router at the IP address 192.168.1.1 using the endpoint type 'icmp' to ping the local router, thereby monitoring its availability.
+4. **Adding Hosts**: After logging into the Free Network Monitor site, navigate to the dashboard. To add a host for monitoring, click the flashing edit icon. For instance, to monitor a local router, input its IP address (e.g., 192.168.1.1) and select 'icmp' as the endpoint type. This action enables you to ping the router, monitoring its availability.
 
-5. **Select Monitor Location**: You can choose either predefined remote agents or your local agent. However, for monitoring local devices like a router at 192.168.1.1, you would need to choose 'your email address - local' when selecting a monitor location.
+5. **Select Monitor Location**: You have the option to choose between predefined remote agents or your local agent for monitoring purposes. For local devices like a router at 192.168.1.1, select 'your email address - local' as the monitor location.
 
-6. **View and Edit Mode**: Click the edit icon to toggle between view and edit modes. In view mode, after about 2 minutes, host monitoring data should start appearing. For detailed response data, click the chart icon next to the host.
+6. **View and Edit Mode**: Utilize the edit icon to switch between view and edit modes. In view mode, monitoring data for hosts will appear after about 2 minutes. Click the chart icon next to a host for more detailed response data.
 
-7. **Alerts and Reports**: Alerts will be sent to your email address if the host is detected as down. Weekly reports are also sent to your email address with an analysis of your hosts' performance. Note that you must verify your email address to receive email alerts and reports. If you don't receive the verification email, exclude support@mahadeva.co.uk from your spam filter.
+7. **Alerts and Reports**: Receive email alerts if a host is detected as down, along with weekly reports that analyze your hosts' performance. It's necessary to verify your email address to receive these alerts and reports. If the verification email doesn't arrive, make sure to whitelist support@mahadeva.co.uk in your spam filter.
 
-8. **Account Management**: You can manage your account by clicking the profile icon.
+8. **Account Management**: Manage your account by clicking the profile icon.
 
-**View Log Entries**: To verify that hosts are being added to the agent successfully, click View Logs on the main page of the agent app. The following log entry indicates one host being updated:
+**View Monitoring Data**: You have two options for viewing detailed monitoring data. You can use the Free Network Monitor Dashboard or the Agent App, which displays current monitoring data for each dataset (6-hour set of response data).
 
-\`\`\`
-MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 MonitorIPs Queue .
-\`\`\`
+- **Using the Free Network Monitor Dashboard**: Access the dashboard to view comprehensive monitoring data and analyses. 
+
+- **Using the Agent App**: To view data in the app, return to the Agent App and navigate to the Data tab. Here, monitoring data is visually represented:
+    - **Indicator Circles**: Each host is indicated by a circle, which will appear green or red based on the host's current status.
+    - **Click on the Circle**: For more detailed monitoring information, click on the circle representing a host.
+    - **Pulsing Circles**: A pulsing circle indicates that the host is up. The rate of pulsing reflects the response time - faster pulsing signifies quicker response times.
+    - **The Purple Beacon Effect**: This effect shows the percentage of successful responses. A smaller circle indicates a lower success rate, visually representing the reliability of each host.
+
+By providing these visual cues and interactive elements, users can quickly ascertain the health and performance of their monitored hosts at a glance, enhancing the user experience with intuitive navigation and real-time insights.
 
 Note: Android and Windows version of the agents do not support Quantum Safe TLS connection monitoring. If you need this feature in your agent then use the fully featured docker version below.
 
