@@ -47,11 +47,6 @@ If you do not have an invitation but are interested in participating in our beta
 
 In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Free Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
 
-## Windows Install Instructions
-
-To install the Free Network Monitor Agent App from the Windows Store, click the link below.
-
-[Install for Windows](https://apps.microsoft.com/detail/9P58PM1PM9TZ?hl)
 
 ## Post-Installation Instructions
 
