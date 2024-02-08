@@ -80,7 +80,7 @@ After installing the app:
 
 By providing these visual cues and interactive elements, users can quickly ascertain the health and performance of their monitored hosts at a glance, enhancing the user experience with intuitive navigation and real-time insights.
 
-Note: Android and Windows version of the agents do not support Quantum Safe TLS connection monitoring. If you need this feature in your agent then use the fully featured docker version below.
+Note: Android version has two limitaions: it does not support Quantum Safe TLS connection monitoring and Android's battery saving features may affect pollng frequency. If you don't want these limitations in your agent then use the fully featured docker version below.  
 
 # Docker Setup Instructions
 
