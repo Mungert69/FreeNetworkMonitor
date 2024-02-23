@@ -198,8 +198,8 @@ const Download = () => {
     <div className={classes.root}>
       <CssBaseline />
       <Helmet>
-        <title>Download Free Network Monitor App</title>
-        <meta name="description" content="Download the Free Network Monitor Android app for monitoring your network services and websites." />
+        <title>Download Beta - Free Network Monitor App</title>
+        <meta name="description" content="Join the exclusive beta testing program for the Free Network Monitor App and help shape its future." />
       </Helmet>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
@@ -229,37 +229,15 @@ const Download = () => {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={6}>
             <Grid item xs={12}>
-              <Typography color="primary" variant="h2" gutterBottom>
-                Download the Free Network Monitor App
+              <Typography color="primary" variant="h3" gutterBottom>
+              Beta Tester Download Portal
               </Typography>
-              <Typography variant="h5" color="textPrimary" gutterBottom>
-                Take Control of Your Network Anytime, Anywhere
+              <Typography variant="h4" gutterBottom>
+                Welcome Beta Testers!
               </Typography>
-              <Grid item xs={12}>
-                <Typography variant="h4" color="secondary" gutterBottom>
-                  Why Use a Local Device for Network Monitoring?
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  Monitoring your network with a local device offers unparalleled insights and control. Here’s why it’s a game-changer:
-                </Typography>
-                <ul className={classes.bulletList}>
-                  <li>
-                    <Typography variant="body1">Real-Time Local Network Insights: Precise monitoring of your local network, including specific IP ranges.</Typography>
-                  </li>
-                  <li>
-                    <Typography variant="body1">Enhanced Internet Service Metrics: Understand how your internet services perform from your specific location.</Typography>
-                  </li>
-                  <li>
-                    <Typography variant="body1">Proactive Problem Solving: Detect potential network issues early, before they impact operations.</Typography>
-                  </li>
-                  <li>
-                    <Typography variant="body1">Detailed Problem Identification: Quickly pinpoint the exact location and source of network problems.</Typography>
-                  </li>
-                  <li>
-                    <Typography variant="body1">Access to Historical Data: Utilize historical and baseline data for comparative analysis and troubleshooting.</Typography>
-                  </li>
-                </ul>
-              </Grid>
+              <Typography variant="h6" color="textSecondary" gutterBottom>
+                You've been selected to participate in our exclusive beta testing program. Follow the steps below to get started.
+              </Typography>
             </Grid>
           </Grid>
           <hr />
