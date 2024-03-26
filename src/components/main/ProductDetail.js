@@ -17,6 +17,7 @@ import { Helmet } from 'react-helmet'
 import Blog from './Blog';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
+import Chat from "../dashboard/Chat";
 import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
@@ -122,6 +123,12 @@ const ProductDetail = () => {
                                             <Typography color='secondary' variant="h4">
                                                 Are You Ready For Quantum...
                                             </Typography>
+                                        </Grid>
+                                        <Grid item >
+                                            <Typography color='secondary' variant="h4">
+                                                Chat
+                                            </Typography>
+                                            <Chat/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
