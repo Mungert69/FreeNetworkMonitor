@@ -1,85 +1,92 @@
 import './chat.css';
-
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat() {
   const [messages, setMessages] = useState([]);
-  const [lastToken, setLastToken] = useState(''); // Store the most recent token
-  const lastTokenRef = useRef(''); // Initialize with an empty string
+  const [lastToken, setLastToken] = useState('');
+  const lastTokenRef = useRef('');
+  const outputContainerRef = useRef(null);
 
   const [currentMessage, setCurrentMessage] = useState('');
-  const [displayText, setDisplayText] = useState(''); // Add this line
-  const [extractedOutput, setExtractedOutput] = useState({
-    userInput: '',
-    functionCall: '',
-    functionResponse: '',
-    llmFeedback: '',
-    isProcessingUserInput: true, // Start with userInput
-    isProcessingFunctionCall: false,
-    isProcessingFunctionResponse: false,
-    isProcessingLLMFeedback: false
-  });
-  const [currentLine, setCurrentLine] = useState(''); // Store the current line
+  const [displayText, setDisplayText] = useState('');
+  const [userInput, setUserInput] = useState('User:');
+  const [functionCall, setFunctionCall] = useState('');
+  const [functionResponse, setFunctionResponse] = useState('');
+  const [llmFeedback, setLlmFeedback] = useState('Assistant:');
+
+  const [currentLine, setCurrentLine] = useState('');
+  const isProcessingFunctionCallRef = useRef(false);
+  const isProcessingFunctionResponseRef = useRef(false);
+  const isProcessingUserInputRef = useRef(true);
+  const isProcessingLLMOutputRef = useRef(false);
 
   const webSocketRef = useRef(null);
+  const resetProcessingFlags = () => {
+    isProcessingFunctionCallRef.current = false;
+    isProcessingFunctionResponseRef.current = false;
+    isProcessingUserInputRef.current = false;
+    isProcessingLLMOutputRef.current = false;
+  };
 
   useEffect(() => {
-    // Extract sections from the completed line
-    let {
-      isProcessingUserInput,
-      isProcessingFunctionCall,
-      isProcessingFunctionResponse,
-      isProcessingLLMFeedback
-    } = extractedOutput;
-
-    const line = displayText; // Access the completed line
-    //console.log('Completed Line:', line);
-
-    if (isProcessingUserInput) setExtractedOutput(prevState => ({ ...prevState, userInput: line }));
-    if (isProcessingFunctionCall) setExtractedOutput(prevState => ({ ...prevState, functionCall: line }));
-    if (isProcessingFunctionResponse) setExtractedOutput(prevState => ({ ...prevState, functionResponse: line }));
-    if (isProcessingLLMFeedback) setExtractedOutput(prevState => ({ ...prevState, llmFeedback: line }));
-
-    if (lastTokenRef.current==='<end-of-line>') setDisplayText(''); 
-  }, [displayText]);
-
+    const outputContainer = outputContainerRef.current;
+    if (outputContainer) {
+      outputContainer.scrollTop = outputContainer.scrollHeight;
+    }
+  }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
   useEffect(() => {
+
+
     const socket = new WebSocket('wss://devloadserver.freenetworkmonitor.click/LLM/llm-stream');
 
     socket.onopen = () => {
       console.log('WebSocket connection established');
     };
 
-
-
     socket.onmessage = (event) => {
       const newWord = event.data;
       if (newWord === '<end-of-line>') {
         lastTokenRef.current = newWord;
-       //setDisplayText(''); // Add newline 
+        setLlmFeedback((prevFeedback) => prevFeedback + '\n');
 
       } else {
-        console.log("lastTokenRef is " + lastTokenRef.current);
-        var test = '';
-        if (lastTokenRef.current === '<end-of-line>') { // We have a previous token
-          console.log("lastToken found ");
-          setExtractedOutput(prevState => ({
-            ...prevState,
-            isProcessingUserInput: newWord.startsWith(">") && !newWord.startsWith("> FUNCTION RESPONSE"),
-            isProcessingFunctionCall: newWord.startsWith("{"),
-            isProcessingFunctionResponse: newWord.startsWith("> FUNCTION RESPONSE"),
-            isProcessingLLMFeedback: !newWord.startsWith(">") && !newWord.startsWith("{")
-          }));
+        if (lastTokenRef.current === '<end-of-line>') {
+          if (newWord.startsWith('{')) {
+            isProcessingFunctionCallRef.current = true;
+            isProcessingFunctionResponseRef.current = false;
+            isProcessingLLMOutputRef.current = false;
+            lastTokenRef.current = "token";
+            setFunctionCall('Function Call:');
+          } else if (newWord.startsWith("FUNCTION")) {
+            isProcessingFunctionCallRef.current = false;
+            isProcessingFunctionResponseRef.current = true;
+            isProcessingLLMOutputRef.current = false;
+            lastTokenRef.current = "token";
+            setFunctionResponse('Function Response:');
+          } else{
+            isProcessingFunctionCallRef.current = false;
+            isProcessingFunctionResponseRef.current = false;
+            isProcessingLLMOutputRef.current = true;
+            lastTokenRef.current = "token";
+           // setLlmFeedback('Assistant:'); 
+          } 
         }
-        setDisplayText((prevText) => prevText + newWord + ' '); // Append word and space
-        lastTokenRef.current = newWord;
-        //console.log('setLastToken '+newWord);
+
+        if (isProcessingFunctionCallRef.current) {
+          setFunctionCall((prevCall) => prevCall + newWord);
+          //setCurrentLine((prevLine) => prevLine + newWord);
+        } else if (isProcessingFunctionResponseRef.current) {
+          setFunctionResponse((prevResponse) => prevResponse + newWord);
+          //setCurrentLine((prevLine) => prevLine + newWord);
+        }  else  {
+          setLlmFeedback((prevFeedback) => prevFeedback + newWord);
+          //setCurrentLine((prevLine) => prevLine + newWord);
+        }
+
 
       }
     };
-
-
 
     socket.onclose = () => {
       console.log('WebSocket connection closed');
@@ -88,7 +95,7 @@ function Chat() {
     webSocketRef.current = socket;
     const pingInterval = setInterval(() => {
       if (webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.send(''); // Send an empty message
+        webSocketRef.current.send('');
       }
     }, 30000);
     return () => {
@@ -100,17 +107,23 @@ function Chat() {
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.send(currentMessage);
+      setUserInput('User:'+currentMessage);
+      setLlmFeedback('Assistant:');
       setCurrentMessage('');
+      //resetProcessingFlags();
     }
   };
 
   return (
     <div className="Chat">
-      
-      <pre className="user-input">{extractedOutput.userInput}</pre>
-      <pre className="function-call">{extractedOutput.functionCall}</pre>
-      <pre className="function-response">{extractedOutput.functionResponse}</pre>
-      <div className="llm-feedback">{extractedOutput.llmFeedback}</div>
+      <div className="chat-output-container" ref={outputContainerRef}>
+        <div className="chat-output">
+          <pre className="user-input">{userInput}</pre>
+          <pre className="function-call">{functionCall}</pre>
+          <pre className="function-response">{functionResponse}</pre>
+          <div className="llm-feedback">{llmFeedback}</div>
+        </div>
+      </div>
       <input
         type="text"
         placeholder="Type a message..."
