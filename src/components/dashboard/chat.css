@@ -1,0 +1,19 @@
+.Chat {
+    width: 80%; /* Adjust width as needed */
+    margin: 0 auto; /* Center the chat container */
+  }
+  
+  .user-input, 
+  .function-call, 
+  .function-response, 
+  .llm-feedback {
+    overflow-wrap: break-word; /* Prevent text overflow */
+    border: 1px solid #ccc;  /* Add a subtle border  */
+    padding: 10px; 
+    margin-bottom: 5px;
+  } 
+  
+  .function-call, .function-response {
+    font-family: monospace; /* Use a fixed-width font for code-like output */
+  }
+  
