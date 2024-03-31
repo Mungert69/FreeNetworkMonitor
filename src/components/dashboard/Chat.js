@@ -101,7 +101,7 @@ function Chat() {
         <div className="chat-header">Chat</div>
         <div className="chat-body" ref={outputContainerRef}>
           <div className="user-input">{userInput}</div>
-          <div className="llm-feedback">{llmFeedback}</div>
+          <pre className="llm-feedback">{llmFeedback}</pre>
           {isProcessing && !isCallingFunction && <div className="status-message">Thinking...</div>}
           {isCallingFunction && <div className="status-message">Calling function...</div>}
         </div>
