@@ -19,6 +19,8 @@ function Chat() {
   const isProcessingFunctionResponseRef = useRef(false);
   const isProcessingUserInputRef = useRef(true);
   const isProcessingLLMOutputRef = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isCallingFunction, setIsCallingFunction] = useState(false);
 
   const webSocketRef = useRef(null);
   const resetProcessingFlags = () => {
@@ -46,50 +48,27 @@ function Chat() {
 
     socket.onmessage = (event) => {
       const newWord = event.data;
-      if (newWord === '<end-of-line>') {
-        lastTokenRef.current = newWord;
+    
+      if (newWord === '</functioncall>') {
+        setIsCallingFunction(true);
+      } 
+      else if (newWord === '</functioncall-complete>') {
+         setIsCallingFunction(false);
+      } 
+      else if (newWord === '<end-of-line>') {
         setLlmFeedback((prevFeedback) => prevFeedback + '\n');
-
+        setIsProcessing(false);   
       } else {
-        if (lastTokenRef.current === '<end-of-line>') {
-          if (newWord.startsWith('{')) {
-            isProcessingFunctionCallRef.current = true;
-            isProcessingFunctionResponseRef.current = false;
-            isProcessingLLMOutputRef.current = false;
-            lastTokenRef.current = "token";
-            setFunctionCall('Function Call:');
-          } else if (newWord.startsWith("FUNCTION")) {
-            isProcessingFunctionCallRef.current = false;
-            isProcessingFunctionResponseRef.current = true;
-            isProcessingLLMOutputRef.current = false;
-            lastTokenRef.current = "token";
-            setFunctionResponse('Function Response:');
-          } else{
-            isProcessingFunctionCallRef.current = false;
-            isProcessingFunctionResponseRef.current = false;
-            isProcessingLLMOutputRef.current = true;
-            lastTokenRef.current = "token";
-           // setLlmFeedback('Assistant:'); 
-          } 
-        }
-
-        if (isProcessingFunctionCallRef.current) {
-          setFunctionCall((prevCall) => prevCall + newWord);
-          //setCurrentLine((prevLine) => prevLine + newWord);
-        } else if (isProcessingFunctionResponseRef.current) {
-          setFunctionResponse((prevResponse) => prevResponse + newWord);
-          //setCurrentLine((prevLine) => prevLine + newWord);
-        }  else  {
-          setLlmFeedback((prevFeedback) => prevFeedback + newWord);
-          //setCurrentLine((prevLine) => prevLine + newWord);
-        }
-
-
+        setLlmFeedback((prevFeedback) => prevFeedback + newWord);
       }
     };
-
+    
     socket.onclose = () => {
       console.log('WebSocket connection closed');
+    };
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      // Optionally, display an error message to the user or attempt to reconnect
     };
 
     webSocketRef.current = socket;
@@ -106,31 +85,37 @@ function Chat() {
 
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
+      setIsProcessing(true); // Start loading indicator
       webSocketRef.current.send(currentMessage);
-      setUserInput('User:'+currentMessage);
+      setUserInput('User:' + currentMessage);
       setLlmFeedback('Assistant:');
       setCurrentMessage('');
       //resetProcessingFlags();
     }
   };
 
+
   return (
-    <div className="Chat">
-      <div className="chat-output-container" ref={outputContainerRef}>
-        <div className="chat-output">
-          <pre className="user-input">{userInput}</pre>
-          <pre className="function-call">{functionCall}</pre>
-          <pre className="function-response">{functionResponse}</pre>
+    <div className="chat-container">
+      <div className="chat-window">
+        <div className="chat-header">Chat</div>
+        <div className="chat-body" ref={outputContainerRef}>
+          <div className="user-input">{userInput}</div>
           <div className="llm-feedback">{llmFeedback}</div>
+          {isProcessing && !isCallingFunction && <div className="status-message">Thinking...</div>}
+          {isCallingFunction && <div className="status-message">Calling function...</div>}
+        </div>
+        <div className="chat-footer">
+          <input
+            type="text"
+            className="chat-input"
+            placeholder="Type a message..."
+            value={currentMessage}
+            onChange={(e) => setCurrentMessage(e.target.value)}
+          />
+          <button className="send-button" onClick={sendMessage}>Send</button>
         </div>
       </div>
-      <input
-        type="text"
-        placeholder="Type a message..."
-        value={currentMessage}
-        onChange={(e) => setCurrentMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
     </div>
   );
 }
