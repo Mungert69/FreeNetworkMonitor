@@ -2,34 +2,80 @@ import './chat.css';
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat() {
-  const [messages, setMessages] = useState([]);
-  const [lastToken, setLastToken] = useState('');
-  const lastTokenRef = useRef('');
+  const [thinkingDots, setThinkingDots] = useState('');
+  const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
+  const [showHelpMessage, setShowHelpMessage] = useState(false);
+  const [helpMessage, setHelpMessage] = useState('');
+  const [helpMessageIndex, setHelpMessageIndex] = useState(0);
+  const [firstMessageShown, setFirstMessageShown] = useState(false);
+
+  
   const outputContainerRef = useRef(null);
 
   const [currentMessage, setCurrentMessage] = useState('');
   const [displayText, setDisplayText] = useState('');
-  const [userInput, setUserInput] = useState('User:');
+  const [userInput, setUserInput] = useState('User: ');
   const [functionCall, setFunctionCall] = useState('');
   const [functionResponse, setFunctionResponse] = useState('');
-  const [llmFeedback, setLlmFeedback] = useState('Assistant:');
+  const [llmFeedback, setLlmFeedback] = useState('Assistant: ');
 
   const [currentLine, setCurrentLine] = useState('');
-  const isProcessingFunctionCallRef = useRef(false);
-  const isProcessingFunctionResponseRef = useRef(false);
-  const isProcessingUserInputRef = useRef(true);
-  const isProcessingLLMOutputRef = useRef(false);
+ 
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
 
   const webSocketRef = useRef(null);
-  const resetProcessingFlags = () => {
-    isProcessingFunctionCallRef.current = false;
-    isProcessingFunctionResponseRef.current = false;
-    isProcessingUserInputRef.current = false;
-    isProcessingLLMOutputRef.current = false;
-  };
+ 
+  useEffect(() => {
+    if (isCallingFunction) {
+      const messages = ["Please wait...", "Function call...", "Running..."];
+      let messageIndex = 0;
+      const intervalId = setInterval(() => {
+        setCallingFunctionMessage(messages[messageIndex++ % messages.length]);
+      }, 3000); // Rotate messages every 2 seconds
+      return () => clearInterval(intervalId);
+    }
+  }, [isCallingFunction]);
 
+  useEffect(() => {
+    let intervalId;
+    if (isProcessing && !isCallingFunction) {
+      intervalId = setInterval(() => {
+        setThinkingDots((dots) => (dots.length < 5 ? dots + '.' : ''));
+      }, 1000); // Change dot animation speed if necessary
+    }
+    return () => clearInterval(intervalId);
+  }, [isProcessing, isCallingFunction]);
+
+  useEffect(() => {
+    let helpMessageTimeout;
+  
+    const showHelpMessage = () => {
+      setShowHelpMessage(true);
+      const helpMessages = [
+        "Having trouble?",
+        "Click Login",
+        "Manage your hosts",
+        "Using the Dashboard"
+      ];
+      setHelpMessage(helpMessages[helpMessageIndex]);
+      setHelpMessageIndex((prevIndex) => (prevIndex + 1) % helpMessages.length);
+      setFirstMessageShown(true); // Mark the first message as shown
+    };
+  
+    if (isProcessing || isCallingFunction) {
+      // Set a longer delay for showing the first help message
+      const initialDelay = firstMessageShown ? 5000 : 30000; // 15 seconds for the first, then 5 seconds for subsequent messages
+      helpMessageTimeout = setTimeout(showHelpMessage, initialDelay);
+    } else {
+      // Reset state when not processing or calling a function
+      setShowHelpMessage(false);
+      setFirstMessageShown(false); // Reset for the next processing/calling function phase
+    }
+  
+    return () => clearTimeout(helpMessageTimeout);
+  }, [isProcessing, isCallingFunction, helpMessageIndex, firstMessageShown]);
+  
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
     if (outputContainer) {
@@ -56,7 +102,7 @@ function Chat() {
          setIsCallingFunction(false);
       } 
       else if (newWord === '<end-of-line>') {
-        setLlmFeedback((prevFeedback) => prevFeedback + '\n');
+        //setLlmFeedback((prevFeedback) => prevFeedback );
         setIsProcessing(false);   
       } else {
         setLlmFeedback((prevFeedback) => prevFeedback + newWord);
@@ -87,8 +133,8 @@ function Chat() {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator
       webSocketRef.current.send(currentMessage);
-      setUserInput('User:' + currentMessage);
-      setLlmFeedback('Assistant:');
+      setUserInput('User: ' + currentMessage);
+      setLlmFeedback('Assistant: ');
       setCurrentMessage('');
       //resetProcessingFlags();
     }
@@ -98,12 +144,13 @@ function Chat() {
   return (
     <div className="chat-container">
       <div className="chat-window">
-        <div className="chat-header">Chat</div>
+        <div className="chat-header">Free Network Monitor Assistant</div>
         <div className="chat-body" ref={outputContainerRef}>
           <div className="user-input">{userInput}</div>
           <pre className="llm-feedback">{llmFeedback}</pre>
-          {isProcessing && !isCallingFunction && <div className="status-message">Thinking...</div>}
-          {isCallingFunction && <div className="status-message">Calling function...</div>}
+          {isProcessing && !isCallingFunction && <div className="status-message">Thinking{thinkingDots}</div>}
+          {isCallingFunction && <div className="status-message">{callingFunctionMessage}</div>}
+          {showHelpMessage && <div className="help-message">{helpMessage}</div>}
         </div>
         <div className="chat-footer">
           <input

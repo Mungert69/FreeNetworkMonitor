@@ -124,12 +124,7 @@ const ProductDetail = () => {
                                                 Are You Ready For Quantum...
                                             </Typography>
                                         </Grid>
-                                        <Grid item >
-                                            <Typography color='secondary' variant="h4">
-                                                Chat
-                                            </Typography>
-                                            <Chat/>
-                                        </Grid>
+                                        
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={12} sm={6} align="center" >
@@ -217,6 +212,7 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
                     <hr></hr>
+                    <Chat/>
                     <hr></hr>
                     <Grid container
                         spacing={6}
