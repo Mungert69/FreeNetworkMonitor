@@ -2,6 +2,7 @@ import './chat.css';
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat() {
+  const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
   const [showHelpMessage, setShowHelpMessage] = useState(false);
@@ -95,7 +96,10 @@ function Chat() {
     socket.onmessage = (event) => {
       const newWord = event.data;
     
-      if (newWord === '</functioncall>') {
+      if (newWord === '</llm-ready>') {
+        setIsReady(true);
+       }
+      else if (newWord === '</functioncall>') {
         setIsCallingFunction(true);
       } 
       else if (newWord === '</functioncall-complete>') {
@@ -160,7 +164,8 @@ function Chat() {
             value={currentMessage}
             onChange={(e) => setCurrentMessage(e.target.value)}
           />
-          <button className="send-button" onClick={sendMessage}>Send</button>
+          {isReady ? <button className="send-button" onClick={sendMessage}>Send</button> : null}
+          
         </div>
       </div>
     </div>
