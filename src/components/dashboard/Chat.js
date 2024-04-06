@@ -1,4 +1,6 @@
 import './chat.css';
+import { getLLMServerUrl } from './ServiceAPI';
+
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat() {
@@ -87,10 +89,10 @@ function Chat() {
   useEffect(() => {
 
 
-    const socket = new WebSocket('wss://devloadserver.freenetworkmonitor.click/LLM/llm-stream');
+    const socket = new WebSocket(getLLMServerUrl());
 
     socket.onopen = () => {
-      console.log('WebSocket connection established');
+      console.log('WebSocket connection established to '+getLLMServerUrl());
     };
 
     socket.onmessage = (event) => {

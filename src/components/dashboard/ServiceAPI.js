@@ -22,6 +22,9 @@ export const getClientId = () => {
 export const getServerUrl = () => {
     return serverUrl;
 }
+export const getLLMServerUrl = () => {
+    return llmServerUrl;
+}
 export const getRedirectUri = () => {
     return redirectUri;
 }
@@ -37,6 +40,7 @@ const apiSubscriptionUrl = appsettings.apiSubscriptionUrl;
 const clientId = appsettings.clientId;
 const serverUrl = appsettings.serverUrl;
 const redirectUri = appsettings.redirectUri;
+const llmServerUrl = appsettings.llmServerUrl;
 
 export const convertDate = (date, format) => {
     var dateObj = new Date(date);
