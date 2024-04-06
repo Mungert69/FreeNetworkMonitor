@@ -1,4 +1,5 @@
 import './chat.css';
+import SaveIcon from '@mui/icons-material/Save';
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -12,23 +13,38 @@ function Chat() {
   const [helpMessageIndex, setHelpMessageIndex] = useState(0);
   const [firstMessageShown, setFirstMessageShown] = useState(false);
 
-  
+
   const outputContainerRef = useRef(null);
 
   const [currentMessage, setCurrentMessage] = useState('');
   const [displayText, setDisplayText] = useState('');
-  const [userInput, setUserInput] = useState('User: ');
+  const [userInput, setUserInput] = useState('');
   const [functionCall, setFunctionCall] = useState('');
   const [functionResponse, setFunctionResponse] = useState('');
-  const [llmFeedback, setLlmFeedback] = useState('Assistant: ');
+  const [llmFeedback, setLlmFeedback] = useState('');
 
   const [currentLine, setCurrentLine] = useState('');
- 
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
 
   const webSocketRef = useRef(null);
- 
+
+  const saveFeedback = () => {
+    // Create a Blob from the llmFeedback state
+    const blob = new Blob([llmFeedback], { type: 'text/plain;charset=utf-8' });
+    // Create an object URL for the blob
+    const url = window.URL.createObjectURL(blob);
+    // Create a new anchor element
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'AssistantOutput.txt'; // Set the file name for the download
+    document.body.appendChild(a); // Append the anchor to the body
+    a.click(); // Simulate a click on the anchor to trigger the download
+    document.body.removeChild(a); // Clean up by removing the anchor
+    window.URL.revokeObjectURL(url); // Release the object URL
+  };
+
   useEffect(() => {
     if (isCallingFunction) {
       const messages = ["Please wait...", "Function call...", "Running..."];
@@ -52,7 +68,7 @@ function Chat() {
 
   useEffect(() => {
     let helpMessageTimeout;
-  
+
     const showHelpMessage = () => {
       setShowHelpMessage(true);
       const helpMessages = [
@@ -65,7 +81,7 @@ function Chat() {
       setHelpMessageIndex((prevIndex) => (prevIndex + 1) % helpMessages.length);
       setFirstMessageShown(true); // Mark the first message as shown
     };
-  
+
     if (isProcessing || isCallingFunction) {
       // Set a longer delay for showing the first help message
       const initialDelay = firstMessageShown ? 5000 : 30000; // 15 seconds for the first, then 5 seconds for subsequent messages
@@ -75,10 +91,10 @@ function Chat() {
       setShowHelpMessage(false);
       setFirstMessageShown(false); // Reset for the next processing/calling function phase
     }
-  
+
     return () => clearTimeout(helpMessageTimeout);
   }, [isProcessing, isCallingFunction, helpMessageIndex, firstMessageShown]);
-  
+
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
     if (outputContainer) {
@@ -92,29 +108,29 @@ function Chat() {
     const socket = new WebSocket(getLLMServerUrl());
 
     socket.onopen = () => {
-      console.log('WebSocket connection established to '+getLLMServerUrl());
+      console.log('WebSocket connection established to ' + getLLMServerUrl());
     };
 
     socket.onmessage = (event) => {
       const newWord = event.data;
-    
+
       if (newWord === '</llm-ready>') {
         setIsReady(true);
-       }
+      }
       else if (newWord === '</functioncall>') {
         setIsCallingFunction(true);
-      } 
+      }
       else if (newWord === '</functioncall-complete>') {
-         setIsCallingFunction(false);
-      } 
+        setIsCallingFunction(false);
+      }
       else if (newWord === '<end-of-line>') {
         //setLlmFeedback((prevFeedback) => prevFeedback );
-        setIsProcessing(false);   
+        setIsProcessing(false);
       } else {
         setLlmFeedback((prevFeedback) => prevFeedback + newWord);
       }
     };
-    
+
     socket.onclose = () => {
       console.log('WebSocket connection closed');
     };
@@ -139,8 +155,8 @@ function Chat() {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator
       webSocketRef.current.send(currentMessage);
-      setUserInput('User: ' + currentMessage);
-      setLlmFeedback('Assistant: ');
+      // setUserInput('User: ' + currentMessage);
+      setLlmFeedback(currentStr => currentStr + '\n' + 'User: ');
       setCurrentMessage('');
       //resetProcessingFlags();
     }
@@ -150,9 +166,15 @@ function Chat() {
   return (
     <div className="chat-container">
       <div className="chat-window">
-        <div className="chat-header">Free Network Monitor Assistant</div>
+
+        <div className="chat-header">
+          <span className="header-title">Free Network Monitor Assistant</span>
+          <button className="save-button" onClick={saveFeedback} title="Save">
+    <SaveIcon style={{ color: 'white' }} />
+  </button>
+        </div>
+
         <div className="chat-body" ref={outputContainerRef}>
-          <div className="user-input">{userInput}</div>
           <pre className="llm-feedback">{llmFeedback}</pre>
           {isProcessing && !isCallingFunction && <div className="status-message">Thinking{thinkingDots}</div>}
           {isCallingFunction && <div className="status-message">{callingFunctionMessage}</div>}
@@ -167,7 +189,7 @@ function Chat() {
             onChange={(e) => setCurrentMessage(e.target.value)}
           />
           {isReady ? <button className="send-button" onClick={sendMessage}>Send</button> : null}
-          
+
         </div>
       </div>
     </div>

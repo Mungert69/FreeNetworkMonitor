@@ -15,17 +15,37 @@
 }
 
 .chat-header {
-  background-color: #607466; /* No change in primary color */
+  background-color: #607466; /* Adjusted primary color */
   color: white;
   padding: 10px;
   text-align: center;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  display: flex; /* Enable flexbox for children alignment */
+  justify-content: space-between; /* Space between title and save button */
+  align-items: center; /* Center align the items vertically */
 }
+
+.header-title {
+  flex-grow: 1; /* Allow the title to take up available space */
+  text-align: left; /* Align the title to the left */
+}
+
+.save-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.save-button:hover {
+  color: #a9d9d9; /* Lighter shade on hover for feedback */
+}
+
 
 .chat-body {
   padding: 10px;
-  height: 400px;
+  height: 300px;
   overflow-y: auto;
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
