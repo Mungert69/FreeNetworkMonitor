@@ -50,6 +50,21 @@
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
+
+.code-block {
+  background-color: #333; /* Dark background for code block */
+  color: #f9f9f9; /* Light text color for readability */
+  padding: 10px; /* Padding inside the box */
+  margin-top: 20px; /* Space above the code block */
+  border-radius: 5px;
+  font-family: monospace;
+  white-space: pre-wrap; /* Preserve formatting */
+  word-wrap: break-word; /* Ensure long lines wrap */
+  margin-bottom: 10px; /* Space below the code block */
+}
+
+
+
 .user-input,
 .llm-feedback,
 .status-message {
@@ -81,17 +96,48 @@
 }
 
 .send-button {
-  background-color: #607466; /* No change in primary color */
+  background-color: #607466; /* Existing style */
   color: white;
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition for color change */
 }
 
 .send-button:hover {
   background-color: #485a5f; /* Darken the primary color on hover */
 }
+
+.send-button:disabled {
+  background-color: #9ca3af; /* Lighter or grayed-out color indicating disabled */
+  color: #6b7280;
+  cursor: not-allowed; /* Change cursor to indicate action is not allowed */
+}
+.icon-button {
+  background-color: #607466; /* Match the header background */
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%; /* Keeps the button round */
+  display: inline-flex; /* Use flex to center the icon */
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, opacity 0.3s; /* Smooth transition for background color and opacity */
+}
+
+.icon-button:hover:not(:disabled) {
+  background-color: #485a5f; /* Darken the button on hover for active buttons */
+}
+
+.icon-button:disabled {
+  background-color: #607466; /* Keep the same background color for disabled state */
+  color: #B0BEC5; /* Lighter icon color for disabled state */
+  cursor: not-allowed;
+  opacity: 0.5; /* Make disabled buttons semi-transparent */
+}
+
 
 .help-message {
   margin-top: 10px;

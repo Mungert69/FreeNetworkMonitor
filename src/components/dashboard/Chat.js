@@ -1,5 +1,6 @@
 import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -102,9 +103,7 @@ function Chat() {
     }
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
-  useEffect(() => {
-
-
+  const connectWebSocket = () => {
     const socket = new WebSocket(getLLMServerUrl());
 
     socket.onopen = () => {
@@ -140,6 +139,10 @@ function Chat() {
     };
 
     webSocketRef.current = socket;
+
+  }
+  useEffect(() => {
+    connectWebSocket();
     const pingInterval = setInterval(() => {
       if (webSocketRef.current.readyState === WebSocket.OPEN) {
         webSocketRef.current.send('');
@@ -147,7 +150,7 @@ function Chat() {
     }, 30000);
     return () => {
       clearInterval(pingInterval);
-      socket.close();
+      webSocketRef.current.socket.close();
     };
   }, []);
 
@@ -161,7 +164,29 @@ function Chat() {
       //resetProcessingFlags();
     }
   };
+  const resetLLM = () => {
+    // Close the existing WebSocket connection if open
+    if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+      webSocketRef.current.close();
+    }
 
+    // Reset state variables
+    setIsReady(false);
+    setThinkingDots('');
+    setCallingFunctionMessage('Calling function...');
+    setShowHelpMessage(false);
+    setHelpMessage('');
+    setHelpMessageIndex(0);
+    setFirstMessageShown(false);
+    setCurrentMessage('');
+    setLlmFeedback('');
+    setIsProcessing(false);
+    setIsCallingFunction(false);
+    // Add any other state resets or logic for stopping the LLM here
+
+    // Re-establish the WebSocket connection
+    connectWebSocket();
+  };
 
   return (
     <div className="chat-container">
@@ -169,13 +194,35 @@ function Chat() {
 
         <div className="chat-header">
           <span className="header-title">Free Network Monitor Assistant</span>
-          <button className="save-button" onClick={saveFeedback} title="Save">
-    <SaveIcon style={{ color: 'white' }} />
-  </button>
+          <div>
+            <button className="icon-button" onClick={saveFeedback} title="Save">
+              <SaveIcon style={{ color: 'white' }} />
+            </button>
+
+            <button
+              className="icon-button"
+              onClick={resetLLM}
+              disabled={!isReady}
+              title={!isReady ? "System not ready" : "Reset the system"}
+            >
+              <RestartAltIcon style={{ color: 'white' }} />
+            </button>
+          </div>
         </div>
 
         <div className="chat-body" ref={outputContainerRef}>
-          <pre className="llm-feedback">{llmFeedback}</pre>
+          <pre className="llm-feedback">
+            {llmFeedback.split(/(```[\s\S]*?```)/).map((part, index) => {
+              if (part.startsWith('```') && part.endsWith('```')) {
+                // Remove the backticks and trim the result
+                const codeContent = part.substring(3, part.length - 3).trim();
+                return <div key={index} className="code-block">{codeContent}</div>;
+              } else {
+                // This part is not a code block
+                return <span key={index}>{part}</span>;
+              }
+            })}
+          </pre>
           {isProcessing && !isCallingFunction && <div className="status-message">Thinking{thinkingDots}</div>}
           {isCallingFunction && <div className="status-message">{callingFunctionMessage}</div>}
           {showHelpMessage && <div className="help-message">{helpMessage}</div>}
@@ -187,9 +234,20 @@ function Chat() {
             placeholder="Type a message..."
             value={currentMessage}
             onChange={(e) => setCurrentMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) { // Check if Enter was pressed without the shift key
+                e.preventDefault(); // Prevent the default action to stop from submitting a form if it's part of one
+                sendMessage();
+              }
+            }}
           />
-          {isReady ? <button className="send-button" onClick={sendMessage}>Send</button> : null}
-
+          <button
+            className="send-button"
+            onClick={sendMessage}
+            disabled={isProcessing || isCallingFunction || !isReady || currentMessage.trim() === ''}
+          >
+            Send
+          </button>
         </div>
       </div>
     </div>
