@@ -126,7 +126,12 @@ function Chat() {
         //setLlmFeedback((prevFeedback) => prevFeedback );
         setIsProcessing(false);
       } else {
-        setLlmFeedback((prevFeedback) => prevFeedback + newWord);
+        setLlmFeedback((prevFeedback) => {
+          // Combine the new word with previous feedback before filtering
+          const combinedFeedback = prevFeedback + newWord;
+          // Now apply the filter on the combined feedback
+          return filterLlmOutput(combinedFeedback);
+        });
       }
     };
 
@@ -154,12 +159,30 @@ function Chat() {
     };
   }, []);
 
+  const filterLlmOutput = (text) => {
+    const replacements = {
+      // Adjusted regex pattern to match the structure without spaces around the pipes
+      '<\\|from\\|>user<\\|recipient\\|>all<\\|content\\|>': 'User: ',
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      '<\\|stop\\|>': '\n'
+    };
+  
+    let filteredText = text;
+    Object.entries(replacements).forEach(([forbidden, alternative]) => {
+      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
+      const regex = new RegExp(forbidden, 'gi');
+      filteredText = filteredText.replace(regex, alternative);
+    });
+  
+    return filteredText;
+  };
+  
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator
       webSocketRef.current.send(currentMessage);
       // setUserInput('User: ' + currentMessage);
-      setLlmFeedback(currentStr => currentStr + '\n' + 'User: ');
+      //setLlmFeedback(currentStr => currentStr + '\n' + 'User: ');
       setCurrentMessage('');
       //resetProcessingFlags();
     }
@@ -244,7 +267,7 @@ function Chat() {
           <button
             className="send-button"
             onClick={sendMessage}
-            disabled={isProcessing || isCallingFunction || !isReady || currentMessage.trim() === ''}
+            disabled={isProcessing || isCallingFunction || !isReady }
           >
             Send
           </button>
