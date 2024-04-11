@@ -1,6 +1,8 @@
 import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -167,17 +169,17 @@ function Chat() {
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
       '<\\|stop\\|>': '\n'
     };
-  
+
     let filteredText = text;
     Object.entries(replacements).forEach(([forbidden, alternative]) => {
       // Use a RegExp constructor for dynamic patterns, including escaping for special characters
       const regex = new RegExp(forbidden, 'gi');
       filteredText = filteredText.replace(regex, alternative);
     });
-  
+
     return filteredText;
   };
-  
+
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator
@@ -235,7 +237,9 @@ function Chat() {
         </div>
 
         <div className="chat-body" ref={outputContainerRef}>
-          <pre className="llm-feedback">
+          {!isReady ? <div className="loading-container">
+            <CircularProgress color="inherit" />
+          </div> : <pre className="llm-feedback">
             {llmFeedback.split(/(```[\s\S]*?```)/).map((part, index) => {
               if (part.startsWith('```') && part.endsWith('```')) {
                 // Remove the backticks and trim the result
@@ -247,6 +251,7 @@ function Chat() {
               }
             })}
           </pre>
+          }
           {isProcessing && !isCallingFunction && <div className="status-message">Thinking{thinkingDots}</div>}
           {isCallingFunction && <div className="status-message">{callingFunctionMessage}</div>}
           {showHelpMessage && <div className="help-message">{helpMessage}</div>}
@@ -268,7 +273,7 @@ function Chat() {
           <button
             className="send-button"
             onClick={sendMessage}
-            disabled={isProcessing || isCallingFunction || !isReady }
+            disabled={isProcessing || isCallingFunction || !isReady}
           >
             Send
           </button>

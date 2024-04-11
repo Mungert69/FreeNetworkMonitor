@@ -1,3 +1,12 @@
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Cover the full width of the llm-feedback area */
+  height: 100%; /* Cover the full height of the llm-feedback area */
+  color: #6239AB; /* Light white background */
+}
 .chat-container {
   display: flex;
   justify-content: center;
