@@ -48,7 +48,7 @@ function Chat() {
 
   useEffect(() => {
     if (isCallingFunction) {
-      const messages = ["Please wait...", "Function call...", "Running..."];
+      const messages = ["Please wait...", "Function call...", "Evaluating..."];
       let messageIndex = 0;
       const intervalId = setInterval(() => {
         setCallingFunctionMessage(messages[messageIndex++ % messages.length]);
@@ -73,7 +73,8 @@ function Chat() {
     const showHelpMessage = () => {
       setShowHelpMessage(true);
       const helpMessages = [
-        "Having trouble?",
+        "Running to slow?",
+        "Need results now!",
         "Click Login",
         "Manage your hosts",
         "Using the Dashboard"
@@ -85,7 +86,7 @@ function Chat() {
 
     if (isProcessing || isCallingFunction) {
       // Set a longer delay for showing the first help message
-      const initialDelay = firstMessageShown ? 5000 : 30000; // 15 seconds for the first, then 5 seconds for subsequent messages
+      const initialDelay = firstMessageShown ? 5000 : 30000; // 60 seconds for the first, then 5 seconds for subsequent messages
       helpMessageTimeout = setTimeout(showHelpMessage, initialDelay);
     } else {
       // Reset state when not processing or calling a function
@@ -162,7 +163,7 @@ function Chat() {
   const filterLlmOutput = (text) => {
     const replacements = {
       // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|>user<\\|recipient\\|>all<\\|content\\|>': 'User: ',
+      '<\\|from\\|>user<\\|content\\|>': 'User: ',
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
       '<\\|stop\\|>': '\n'
     };
@@ -196,7 +197,7 @@ function Chat() {
     // Reset state variables
     setIsReady(false);
     setThinkingDots('');
-    setCallingFunctionMessage('Calling function...');
+    setCallingFunctionMessage('Processing function...');
     setShowHelpMessage(false);
     setHelpMessage('');
     setHelpMessageIndex(0);
