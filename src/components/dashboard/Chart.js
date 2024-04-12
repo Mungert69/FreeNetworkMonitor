@@ -3,6 +3,9 @@ import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Title from './Title';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const customTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -61,22 +64,45 @@ const CustomizedDot = (props) => {
   );
 };
 
-export function Chart({data,selectedDate, hostname}) {
+export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId }) {
   const theme = useTheme();
-  var dateString;
+
+  const currentIndex = dataSets.findIndex(ds => ds.id === dataSetId);
+  const canGoBack = currentIndex < dataSets.length - 1;
+  const canGoForward = currentIndex > 0;
+
+  const navigateDataSet = (step) => {
+    const newIndex = currentIndex + step;
+    if (newIndex >= 0 && newIndex < dataSets.length) {
+      const newDataSetId = dataSets[newIndex].id;
+      handleSetDataSetId(newDataSetId, dataSets[newIndex].date);
+    }
+  };
+
+  const dateString = selectedDate ? selectedDate.toString() : "Current";
+
+  /*var dateString;
   if ( selectedDate===undefined) { 
     dateString="Current";
   }
   else {
     dateString=selectedDate.toString();
-  }
+  }*/
 
   
 
   return (
     <React.Fragment>
       
-      <Title>{dateString} Dataset for {hostname} </Title>
+      <Title>
+        <Button size="small" onClick={() => navigateDataSet(1)} disabled={!canGoBack}>
+          <ArrowBackIcon />
+        </Button>
+        {`${dateString} Dataset for ${hostname}`}
+        <Button size="small" onClick={() => navigateDataSet(-1)} disabled={!canGoForward}>
+          <ArrowForwardIcon />
+        </Button>
+      </Title>
       <ResponsiveContainer> 
         <LineChart
           data={data}

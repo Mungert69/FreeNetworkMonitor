@@ -300,7 +300,14 @@ export default function Dashboard() {
             {viewInfo &&
               <Grid item xs={12} sm={12} md={10} lg={10}>
                 <Paper className={fixedHeightPaper}>
-                  <Chart data={chartData} selectedDate={selectedDate} hostname={hostData.address} />
+                <Chart
+                    data={chartData}
+                    selectedDate={selectedDate}
+                    hostname={hostData.address}
+                    dataSetId={dataSetId}
+                    dataSets={dataSets}
+                    handleSetDataSetId={handleSetDataSetId}
+                  />
                 </Paper>
               </Grid>
             }
