@@ -127,6 +127,8 @@ function Chat() {
 
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl());
+      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone );
+  
     };
 
     socket.onmessage = (event) => {

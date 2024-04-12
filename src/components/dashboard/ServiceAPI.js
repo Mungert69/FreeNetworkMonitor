@@ -1,5 +1,5 @@
 import axios from 'axios';
-import moment from "moment";
+import moment from 'moment-timezone';
 import { trackPromise } from 'react-promise-tracker';
 import axiosRetry from 'axios-retry';
 
@@ -41,14 +41,23 @@ const clientId = appsettings.clientId;
 const serverUrl = appsettings.serverUrl;
 const redirectUri = appsettings.redirectUri;
 const llmServerUrl = appsettings.llmServerUrl;
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+
 
 export const convertDate = (date, format) => {
-    var dateObj = new Date(date);
-    var momentObj = moment(dateObj);
-    var momentString = momentObj.format(format)
-    return momentString;
-}
+ 
+  // Create a Moment.js object from the input UTC date
+  const momentObj = moment.utc(date, 'YYYY-MM-DD HH:mm:ss');
 
+  // Convert the Moment.js object to the user's local time zone
+  const localMomentObj = momentObj.tz(userTimeZone);
+
+  // Format the Moment.js object with the provided format
+  const momentString = localMomentObj.format(format);
+
+  return momentString;
+};
 export const getSiteIdfromUrl = (url) => {
     var siteId;
 
