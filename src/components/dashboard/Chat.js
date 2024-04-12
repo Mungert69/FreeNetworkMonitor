@@ -172,7 +172,7 @@ function Chat() {
   }
 
   useEffect(() => {
-    if (!shouldSpeak) speakText(speechText);
+    //if (!shouldSpeak) speakText(speechText);
     setSpeechText('');
   }, [shouldSpeak]);
 
@@ -196,7 +196,7 @@ function Chat() {
 
     const replacements = {
       // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|>user<\\|content\\|>': 'User: ',
+      '<\\|from\\|>user<\\|recipient\\|>all<\\|content\\|>': 'User: ',
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
       '<\\|stop\\|>': '\n'
     };
