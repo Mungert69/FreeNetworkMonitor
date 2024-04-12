@@ -25,7 +25,8 @@ function Chat() {
   const [functionCall, setFunctionCall] = useState('');
   const [functionResponse, setFunctionResponse] = useState('');
   const [llmFeedback, setLlmFeedback] = useState('');
-
+  const [speechText, setSpeechText] = useState('');
+  const [shouldSpeak, setShouldSpeak] = useState(false);
   const [currentLine, setCurrentLine] = useState('');
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -47,6 +48,8 @@ function Chat() {
     document.body.removeChild(a); // Clean up by removing the anchor
     window.URL.revokeObjectURL(url); // Release the object URL
   };
+
+
 
   useEffect(() => {
     if (isCallingFunction) {
@@ -106,6 +109,19 @@ function Chat() {
     }
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
+  useEffect(() => {
+    connectWebSocket();
+    const pingInterval = setInterval(() => {
+      if (webSocketRef.current.readyState === WebSocket.OPEN) {
+        webSocketRef.current.send('');
+      }
+    }, 30000);
+    return () => {
+      clearInterval(pingInterval);
+      webSocketRef.current.socket.close();
+    };
+
+  }, []);
   const connectWebSocket = () => {
     const socket = new WebSocket(getLLMServerUrl());
 
@@ -127,14 +143,19 @@ function Chat() {
       }
       else if (newWord === '<end-of-line>') {
         //setLlmFeedback((prevFeedback) => prevFeedback );
+
         setIsProcessing(false);
       } else {
+        setSpeechText((prev) => prev+newWord);
         setLlmFeedback((prevFeedback) => {
           // Combine the new word with previous feedback before filtering
           const combinedFeedback = prevFeedback + newWord;
           // Now apply the filter on the combined feedback
+
           return filterLlmOutput(combinedFeedback);
         });
+
+
       }
     };
 
@@ -149,20 +170,30 @@ function Chat() {
     webSocketRef.current = socket;
 
   }
-  useEffect(() => {
-    connectWebSocket();
-    const pingInterval = setInterval(() => {
-      if (webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.send('');
-      }
-    }, 30000);
-    return () => {
-      clearInterval(pingInterval);
-      webSocketRef.current.socket.close();
-    };
-  }, []);
 
+  useEffect(() => {
+    if (!shouldSpeak) speakText(speechText);
+    setSpeechText('');
+  }, [shouldSpeak]);
+
+  const speakText = (text) => {
+    const speechSynthesis = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(utterance);
+  };
   const filterLlmOutput = (text) => {
+
+    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
+    const messageEnd = '<|stop|>';
+
+    if (text.includes(messageStart)) {
+      setShouldSpeak(true);
+    }
+    if (text.includes(messageEnd)) {
+      setShouldSpeak(false);
+    }
+
+
     const replacements = {
       // Adjusted regex pattern to match the structure without spaces around the pipes
       '<\\|from\\|>user<\\|content\\|>': 'User: ',
@@ -175,6 +206,7 @@ function Chat() {
       // Use a RegExp constructor for dynamic patterns, including escaping for special characters
       const regex = new RegExp(forbidden, 'gi');
       filteredText = filteredText.replace(regex, alternative);
+
     });
 
     return filteredText;
