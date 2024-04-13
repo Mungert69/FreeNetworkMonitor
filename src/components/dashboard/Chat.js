@@ -295,6 +295,7 @@ function Chat() {
             type="text"
             className="chat-input"
             placeholder="Type a message..."
+            maxLength={100}  // Limit input to 100 characters
             value={currentMessage}
             onChange={(e) => setCurrentMessage(e.target.value)}
             onKeyPress={(e) => {
