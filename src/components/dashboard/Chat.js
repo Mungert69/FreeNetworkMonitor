@@ -198,7 +198,7 @@ function Chat() {
 
     const replacements = {
       // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|>user<\\|recipient\\|>all<\\|content\\|>': 'User: ',
+      '<\\|from\\|>user<\\|content\\|>': 'User: ',
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
       '<\\|stop\\|>': '\n'
     };
