@@ -25,6 +25,7 @@ const tiers = [
       '10 hosts included',
       'ICMP, Http, Dns and Smtp Ping',
       'One Month full response Data retention',
+      'Must login every 3 months'
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
@@ -33,7 +34,8 @@ const tiers = [
     title: 'Standard',
     price: '1',
     description: [
-      '50 Hosts included',
+      'Monitor up to 50 Hosts',
+      'Local network monitoring with Network Monitor Agent',
       'ICMP, Http, Dns. Raw Connect and Smtp Ping. Includes Quantum Ready check',
       'Email support',
       '6 Month full response Data retention',
@@ -46,8 +48,10 @@ const tiers = [
     subheader: 'Most popular',
     price: '3',
     description: [
-      '300 Hosts included',
-      'ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready check and Security check',
+      'All the features of the Standard Plan plus',
+      'Monitor up to 300 Hosts',
+      'Advanced health check monitors; detect potential issues before they happen',
+      'Advanced health checks for ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready checks',
       'Priority Email support',
       '2 year full response Data retention',
     ],
@@ -59,10 +63,10 @@ const tiers = [
     title: 'Enterprise',
     price: '5',
     description: [
+      'All the features of the Professional Plan plus',
       '500 Hosts included',
-      'ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready and Security check',
-      'Priority email support, High priority monitor service',
-      'Unlimited full response Data retention, Data Export',
+      'One high priority dedicated monitor service agent in one of our datacenter locations (contact support with your requirements)',
+      'Unlimited full response Data retention and Data Export',
     ],
     
     buttonText: 'Get started',
