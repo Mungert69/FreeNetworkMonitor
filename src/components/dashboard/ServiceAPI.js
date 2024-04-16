@@ -103,6 +103,35 @@ export const fetchLoadServer = async (user) => {
     }
 }
 
+// Assuming handleDownload is defined inside the Profile component or receives setMessage as a parameter
+export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, setOpen, setIsLoading) => {
+    setIsLoading(true);  // Set loading to true when download starts
+    
+    axiosRetry(axios, { retries: 3 });
+    const result = await axios({
+        method: 'post',
+        url: apiBaseUrls[baseUrlId] + '/UserConfig/GetUserPingInfoTar',
+        withCredentials: true,
+    }).catch(function (error) {
+        console.log('ServiceAPI.handleDownload Axios Error was : ' + error);
+        setMessage({ info: false, text: 'Failed to generate download link: ' + error.message });
+    });
+
+    if (result && result.data && result.data.success) {
+        console.log('Setting message:', { info: true, text: 'Download ready. Click below to start the download.' });
+        setOpen(true); 
+        setDownloadLink(result.data.data);
+        setMessage({ info: true, text: 'Download ready. Click the link below to start the download.' });
+    } else if (result && result.data) {
+        console.log('Error:', { info: true, text: 'Error: ' + result.data.message });
+
+        setMessage({ info: false, text: 'Error: ' + result.data.message });
+    }
+    setIsLoading(false);
+};
+
+
+  
 export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isAuthenticated) => {
     const monitorPingInfoId = hostData.id;
     if (isAuthenticated) { var extUrlStr = 'Auth'; }
