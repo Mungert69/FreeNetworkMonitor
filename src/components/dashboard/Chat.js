@@ -139,6 +139,18 @@ function Chat({ onHostLinkClick}) {
         hostId: host.MonitorIPID // Include the hostId for use in the callback
       }));
     }
+    else if (jsonData.name === "add_host") {
+      return jsonData.dataJson.map((host) => ({
+        label: host.Address,
+        hostId: host.ID // Include the hostId for use in the callback
+      }));
+    }
+    else if (jsonData.name === "edit_host") {
+      return jsonData.dataJson.map((host) => ({
+        label: host.Address,
+        hostId: host.ID // Include the hostId for use in the callback
+      }));
+    }
     else {
       // Handle other function types or throw an error for unsupported types
       throw new Error("Unsupported function type");

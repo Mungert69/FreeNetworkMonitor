@@ -281,6 +281,10 @@ export default function Dashboard() {
                 </IconButton>
               </FadeWrapper>
           }
+          <IconButton onClick={toggleChatView} className={classes.chatToggle}>
+            <ChatIcon />
+          </IconButton>
+
           <AuthNav />
           <IconButton color="inherit" >
             <Badge badgeContent={alertCount} color="error">
@@ -362,10 +366,6 @@ export default function Dashboard() {
                     <Chat onHostLinkClick={handleHostLinkClick} />
                   </div>
                 )}
-
-                <IconButton onClick={toggleChatView} className={classes.chatToggle}>
-                  <ChatIcon />
-                </IconButton>
 
               </Grid>
             </Grid>
