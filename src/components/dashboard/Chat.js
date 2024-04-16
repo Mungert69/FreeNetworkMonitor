@@ -2,12 +2,13 @@ import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CircularProgress from '@mui/material/CircularProgress';
+import { List, ListItem } from '@mui/material';
 
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
 
-function Chat() {
+function Chat({ handleHostLinkClick}) {
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
@@ -28,7 +29,7 @@ function Chat() {
   const [speechText, setSpeechText] = useState('');
   const [shouldSpeak, setShouldSpeak] = useState(false);
   const [currentLine, setCurrentLine] = useState('');
-
+  const [linkData, setLinkData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
 
@@ -122,6 +123,21 @@ function Chat() {
     };
 
   }, []);
+
+  const processFunctionData = (functionData) => {
+    const jsonData = JSON.parse(functionData);
+  
+    if (jsonData.name === "get_host_list") {
+      return jsonData.dataJson.map((host) => ({
+        link: `/dashboard/host/${host.ID}`, // Assuming you want to navigate to a host detail page
+        label: host.Address,
+        hostId: host.ID // Include the hostId for use in the callback
+      }));
+    } else {
+      // Handle other function types or throw an error for unsupported types
+      throw new Error("Unsupported function type");
+    }
+  }
   const connectWebSocket = () => {
     const socket = new WebSocket(getLLMServerUrl());
 
@@ -133,8 +149,16 @@ function Chat() {
 
     socket.onmessage = (event) => {
       const newWord = event.data;
-
-      if (newWord === '</llm-ready>') {
+      //TODO implement this if condition looking to match newWord is <function-data>SOME TEXT</function-data>
+      if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
+        // Extract the function data
+        const functionData = newWord.slice(15, -16); // Remove the tags
+        console.log('Found function data :'+functionData);
+        const generatedLinkData = processFunctionData(functionData);
+        setLinkData(generatedLinkData);
+        
+      } 
+      else if (newWord === '</llm-ready>') {
         setIsReady(true);
       }
       else if (newWord === '</functioncall>') {
@@ -248,6 +272,16 @@ function Chat() {
     connectWebSocket();
   };
 
+  const renderLinks = () => {
+    return linkData.map((linkItem) => (
+      <ListItem key={linkItem.link}>
+        <a href="#" onClick={() => handleHostLinkClick(linkItem.hostId)}>
+          {linkItem.label}
+        </a>
+      </ListItem>
+    ));
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-window">
@@ -312,6 +346,9 @@ function Chat() {
           >
             Send
           </button>
+          <List>
+        {renderLinks()}
+      </List>
         </div>
       </div>
     </div>

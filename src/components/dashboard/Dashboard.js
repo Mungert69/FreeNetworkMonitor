@@ -37,7 +37,8 @@ import useTheme from '@mui/material/styles/useTheme';
 import { Helmet } from 'react-helmet'
 import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';
-import {useFusionAuth} from '@fusionauth/react-sdk';
+import { useFusionAuth } from '@fusionauth/react-sdk';
+import Chat from "./Chat";
 
 export default function Dashboard() {
   const theme = useTheme();
@@ -75,7 +76,11 @@ export default function Dashboard() {
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
 
-
+  const handleHostLinkClick = (hostId) => {
+    // TODO: Implement the logic to display host-specific data
+    // You could potentially change component state to show the chart or the details
+    console.log("Host Link Clicked with ID:", hostId);
+  };
 
   const getUserInfo= async() => {
     
@@ -318,6 +323,7 @@ export default function Dashboard() {
                 </Paper>
               </Grid>
             }
+            <Chat onHostLinkClick={handleHostLinkClick}/>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {toggleTable ?
