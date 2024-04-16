@@ -8,7 +8,7 @@ import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
 
-function Chat({ handleHostLinkClick}) {
+function Chat({ onHostLinkClick}) {
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
@@ -129,11 +129,17 @@ function Chat({ handleHostLinkClick}) {
   
     if (jsonData.name === "get_host_list") {
       return jsonData.dataJson.map((host) => ({
-        link: `/dashboard/host/${host.ID}`, // Assuming you want to navigate to a host detail page
         label: host.Address,
         hostId: host.ID // Include the hostId for use in the callback
       }));
-    } else {
+    }
+    else if (jsonData.name === "get_host_data") {
+      return jsonData.dataJson.map((host) => ({
+        label: host.Address,
+        hostId: host.MonitorIPID // Include the hostId for use in the callback
+      }));
+    }
+    else {
       // Handle other function types or throw an error for unsupported types
       throw new Error("Unsupported function type");
     }
@@ -275,12 +281,13 @@ function Chat({ handleHostLinkClick}) {
   const renderLinks = () => {
     return linkData.map((linkItem) => (
       <ListItem key={linkItem.link}>
-        <a href="#" onClick={() => handleHostLinkClick(linkItem.hostId)}>
+        <button onClick={() => onHostLinkClick(linkItem.hostId)}>
           {linkItem.label}
-        </a>
+        </button>
       </ListItem>
     ));
   };
+  
 
   return (
     <div className="chat-container">

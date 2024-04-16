@@ -114,7 +114,39 @@ const styleObject = (theme, imageUrl) => {
                     textDecoration: "none"
                 }
             
-        }
+        },
+        chatContainer: {
+            // Style the container (adjust as needed)
+          },
+      
+          chatToggle: {
+            zIndex: '2'
+          },
+      
+          chatOpen: {
+            maxHeight: '300px', // Adjust as needed
+            overflow: 'auto',
+            transition: 'max-height 0.3s ease-out',
+          },
+      
+          chatClosed: {
+            maxHeight: '0',
+            overflow: 'hidden',
+            transition: 'max-height 0.3s ease-in',
+        },
+        chatAndTableContainer: {
+            display: 'flex',
+            position: 'relative',
+          },
+      
+          chatContainer: {
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            width: '300px',
+            height: '100%',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          },
     }
 }
 

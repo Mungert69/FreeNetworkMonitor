@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import MenuIcon from '@mui/icons-material/Menu';
+import ChatIcon from '@mui/icons-material/Chat';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
@@ -72,21 +73,31 @@ export default function Dashboard() {
   const classes = useClasses(styleObject(theme, null));
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const fixedHeightTallPaper = clsx(classes.paper, classes.fixedHeightTall);
-  
+
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
+
+  const toggleChatView = () => {
+    setIsChatOpen(!isChatOpen);
+  };
 
   const handleHostLinkClick = (hostId) => {
+    const item = listData.find(item => item.monitorIPID === hostId);
+    // If item not undefined then set hostData to item.
+    if (item !== undefined) {
+      setHostData(item);
+    }
     // TODO: Implement the logic to display host-specific data
     // You could potentially change component state to show the chart or the details
     console.log("Host Link Clicked with ID:", hostId);
   };
 
-  const getUserInfo= async() => {
-    
+  const getUserInfo = async () => {
+
     const apiUser = await getUserInfoApi(siteId, user);
     await setApiUser(apiUser);
-    console.log(" Current User is "+JSON.stringify(apiUser));
+    console.log(" Current User is " + JSON.stringify(apiUser));
   }
   const handleSetDataSetId = (id, date) => {
     // change the data set id
@@ -170,7 +181,7 @@ export default function Dashboard() {
     };
     checkAuth();
   }, [isAuthenticated]);
-  
+
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     if (query.get('initViewSub')) {
@@ -256,7 +267,7 @@ export default function Dashboard() {
           </Typography>
           {
             !isAuthenticated ? null :
-              <FadeWrapper toggle={toggleTable && listData.length===0}>
+              <FadeWrapper toggle={toggleTable && listData.length === 0}>
                 <IconButton color="inherit">
                   <Badge color="secondary">
                     <Tooltip title={hostListIconText}
@@ -276,7 +287,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {!isAuthenticated ? null : <MiniProfile apiUser={apiUser}  siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={getUserInfo} />}
+          {!isAuthenticated ? null : <MiniProfile apiUser={apiUser} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={getUserInfo} />}
         </Toolbar>
         <Loading />
       </AppBar>
@@ -296,54 +307,69 @@ export default function Dashboard() {
         <Divider />
         <List><MainListItems classes={classes} /></List>
         <Divider />
-        
+
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container} >
-          <Grid container spacing={1}>
-            {viewInfo &&
-              <Grid item xs={12} sm={12} md={10} lg={10}>
-                <Paper className={fixedHeightPaper}>
-                <Chart
-                    data={chartData}
-                    selectedDate={selectedDate}
-                    hostname={hostData.address}
-                    dataSetId={dataSetId}
-                    dataSets={dataSets}
-                    handleSetDataSetId={handleSetDataSetId}
-                  />
-                </Paper>
-              </Grid>
-            }
-            {viewInfo &&
-              <Grid item xs={12} sm={12} md={2} lg={2} >
-                <Paper className={classes.paper}>
-                  <HostDetail hostData={hostData} />
-                </Paper>
-              </Grid>
-            }
-            <Chat onHostLinkClick={handleHostLinkClick}/>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                {toggleTable ?
-                  <HostList   data={listData} 
-                  clickViewChart={clickViewChart} 
-                  resetHostAlert={resetHostAlert} 
-                  processorList={processorList}
-                  dataSets={dataSets}
-                  handleSetDataSetId={handleSetDataSetId}
-                  setDateStart={setDateStart}
-                  setDateEnd={setDateEnd} />
-                  :
-                  <React.Fragment>
+          <div className={classes.chatAndTableContainer}>
 
-                    <HostListEdit siteId={siteId}  processorList={processorList} />
-                  </React.Fragment>
-                }
-              </Paper>
+            <Grid container spacing={1}>
+              {viewInfo &&
+                <Grid item xs={12} sm={12} md={10} lg={10}>
+                  <Paper className={fixedHeightPaper}>
+                    <Chart
+                      data={chartData}
+                      selectedDate={selectedDate}
+                      hostname={hostData.address}
+                      dataSetId={dataSetId}
+                      dataSets={dataSets}
+                      handleSetDataSetId={handleSetDataSetId}
+                    />
+                  </Paper>
+                </Grid>
+              }
+              {viewInfo &&
+                <Grid item xs={12} sm={12} md={2} lg={2} >
+                  <Paper className={classes.paper}>
+                    <HostDetail hostData={hostData} />
+                  </Paper>
+                </Grid>
+              }
+
+              <Grid item xs={12}>
+
+                <Paper className={classes.paper}>
+                  {toggleTable ?
+                    <HostList data={listData}
+                      clickViewChart={clickViewChart}
+                      resetHostAlert={resetHostAlert}
+                      processorList={processorList}
+                      dataSets={dataSets}
+                      handleSetDataSetId={handleSetDataSetId}
+                      setDateStart={setDateStart}
+                      setDateEnd={setDateEnd} />
+                    :
+                    <React.Fragment>
+
+                      <HostListEdit siteId={siteId} processorList={processorList} />
+                    </React.Fragment>
+                  }
+                </Paper>
+
+                {isChatOpen && (
+                  <div className={classes.chatContainer}>
+                    <Chat onHostLinkClick={handleHostLinkClick} />
+                  </div>
+                )}
+
+                <IconButton onClick={toggleChatView} className={classes.chatToggle}>
+                  <ChatIcon />
+                </IconButton>
+
+              </Grid>
             </Grid>
-          </Grid>
+          </div>
         </Container>
       </main>
     </div>
