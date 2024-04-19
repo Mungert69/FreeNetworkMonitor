@@ -41,7 +41,7 @@ const ProductDetail = () => {
     const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL + '/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isChatOpen, setIsChatOpen] = React.useState(false);
 
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
