@@ -29,7 +29,7 @@ import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-import { getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { convertDate,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
@@ -76,21 +76,28 @@ export default function Dashboard() {
 
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const toggleChatView = () => {
     setIsChatOpen(!isChatOpen);
   };
 
-  const handleHostLinkClick = (hostId) => {
-    const item = listData.find(item => item.monitorIPID === hostId);
-    // If item not undefined then set hostData to item.
-    if (item !== undefined) {
-      setHostData(item);
+  const handleHostLinkClick = (linkData) => {
+    if (linkData.isHostData) {
+      setDataSetId(linkData.DataSetID);
+      const hostData = { 'id' : linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID' : linkData.UserID };    
+      if (hostData !== undefined) {
+        clickViewChart(hostData);
+      }
+      setToggleTable(true);
     }
+    if (linkData.isHostList) {
+      setToggleTable(false);
+    }
+
     // TODO: Implement the logic to display host-specific data
     // You could potentially change component state to show the chart or the details
-    console.log("Host Link Clicked with ID:", hostId);
+    console.log("Host Link Clicked with ID:", hostData.ID);
   };
 
   const getUserInfo = async () => {
@@ -361,12 +368,9 @@ export default function Dashboard() {
                   }
                 </Paper>
 
-                {isChatOpen && (
-                  <div className={classes.chatContainer}>
-                    <Chat onHostLinkClick={handleHostLinkClick} />
-                  </div>
-                )}
-
+                <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
+                <Chat onHostLinkClick={handleHostLinkClick} isDashboard={true}/>
+            </div>
               </Grid>
             </Grid>
           </div>

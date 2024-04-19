@@ -212,7 +212,7 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
                     <hr></hr>
-                    <Chat/>
+                    <Chat isDashboard={false}/>
                     <hr></hr>
                     <Grid container
                         spacing={6}

@@ -91,45 +91,61 @@ const styleObject = (theme, imageUrl) => {
             height: 440,
         },
         monitorImage: {
-            height : 150,
+            height: 150,
             width: 150,
         },
-        link:{
+        link: {
             margin: '1rem',
             textDecoration: 'none',
-            color:  theme.palette.primary.dark,
+            color: theme.palette.primary.dark,
             color: "#6239AB",
-                "&:hover": {
-                    color: "#607466",
-                    textDecoration: "none"
-                }
-            
+            "&:hover": {
+                color: "#607466",
+                textDecoration: "none"
+            }
+
         },
-        linkCompact:{
+        linkCompact: {
             textDecoration: 'none',
-            color:  theme.palette.primary.dark,
+            color: theme.palette.primary.dark,
             color: "#6239AB",
-                "&:hover": {
-                    color: "#607466",
-                    textDecoration: "none"
-                }
-            
+            "&:hover": {
+                color: "#607466",
+                textDecoration: "none"
+            }
+
         },
-        chatContainer: {
-            // Style the container (adjust as needed)
-          },
-      
-          chatToggle: {
-            zIndex: '2'
-          },
-      
-          chatOpen: {
-            maxHeight: '300px', // Adjust as needed
+
+
+
+        listItem: {
+            whiteSpace: 'normal',
+            marginRight: theme.spacing(1),
+        },
+        list: {
+            overflowX: 'auto',
+            padding: 0,
+        },
+        chatFooter: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: theme.spacing(1),
+        },
+        chatInput: {
+            flexGrow: 1,
+            marginRight: theme.spacing(1),
+        },
+        sendButton: {
+            flexShrink: 0,
+        },
+        chatOpen: {
+            maxHeight: '350px', // Adjust as needed
             overflow: 'auto',
             transition: 'max-height 0.3s ease-out',
-          },
-      
-          chatClosed: {
+        },
+
+        chatClosed: {
             maxHeight: '0',
             overflow: 'hidden',
             transition: 'max-height 0.3s ease-in',
@@ -137,16 +153,34 @@ const styleObject = (theme, imageUrl) => {
         chatAndTableContainer: {
             display: 'flex',
             position: 'relative',
-          },
-      
-          chatContainer: {
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            width: '300px',
-            height: '100%',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          },
+        },
+
+        chatToggle: {
+            position: 'fixed', // Fix position relative to the viewport
+            right: 300, // 20px from the right edge of the viewport
+            bottom: 20, // 20px from the bottom edge of the viewport
+            zIndex: 1100, // Ensure it's above most other items
+            backgroundColor: theme.palette.primary.light, // A lighter background color for visibility
+            color: 'white', // White icon color
+            '&:hover': {
+                backgroundColor: theme.palette.primary.main, // Darker on hover
+            },
+            width: 56, // Width of the icon button
+            height: 56, // Height of the icon button
+            borderRadius: '50%', // Circular button
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)' // Soft shadow for better visibility
+        },
+        chatHidden: {
+            display: 'none', // default to hidden
+            // other styles for the chat container
+        },
+
+
+
+
     }
 }
 

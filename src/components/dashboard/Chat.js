@@ -1,14 +1,17 @@
 import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
+import SendIcon from '@mui/icons-material/Send';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import CircularProgress from '@mui/material/CircularProgress';
-import { List, ListItem } from '@mui/material';
-
+import { SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
+import styleObject from './styleObject';
+import useClasses from "./useClasses";
+import useTheme from '@mui/material/styles/useTheme';
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
 
-function Chat({ onHostLinkClick}) {
+function Chat({ onHostLinkClick, isDashboard }) {
+  const theme = useTheme();
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
@@ -32,7 +35,15 @@ function Chat({ onHostLinkClick}) {
   const [linkData, setLinkData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
+  const classes = useClasses(styleObject(theme, null));
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to control the drawer
 
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setIsDrawerOpen(open);
+  };
   const webSocketRef = useRef(null);
 
   const saveFeedback = () => {
@@ -119,37 +130,60 @@ function Chat({ onHostLinkClick}) {
     }, 30000);
     return () => {
       clearInterval(pingInterval);
-      webSocketRef.current.socket.close();
+      if (webSocketRef.current.socket !== undefined) webSocketRef.current.socket.close();
     };
 
   }, []);
 
   const processFunctionData = (functionData) => {
+    if (!isDashboard) return null
     const jsonData = JSON.parse(functionData);
-  
+
     if (jsonData.name === "get_host_list") {
       return jsonData.dataJson.map((host) => ({
-        label: host.Address,
-        hostId: host.ID // Include the hostId for use in the callback
+        ...host, // This spreads all properties of host into the new object
+        isHostList: true
       }));
+
     }
     else if (jsonData.name === "get_host_data") {
-      return jsonData.dataJson.map((host) => ({
-        label: host.Address,
-        hostId: host.MonitorIPID // Include the hostId for use in the callback
-      }));
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = {...host};
+        
+        // Conditionally add the isHostData property
+        if (host.UserID !== 'default') {
+          newHost.isHostData = true;
+        }
+    
+        return newHost;
+      });
     }
     else if (jsonData.name === "add_host") {
-      return jsonData.dataJson.map((host) => ({
-        label: host.Address,
-        hostId: host.ID // Include the hostId for use in the callback
-      }));
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = {...host};
+        
+        // Conditionally add the isHostData property
+        if (host.UserID !== 'default') {
+          newHost.isHostData = true;
+        }
+    
+        return newHost;
+      });
     }
     else if (jsonData.name === "edit_host") {
-      return jsonData.dataJson.map((host) => ({
-        label: host.Address,
-        hostId: host.ID // Include the hostId for use in the callback
-      }));
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = {...host};
+        
+        // Conditionally add the isHostData property
+        if (host.userID !== 'default') {
+          newHost.isHostData = true;
+        }
+    
+        return newHost;
+      });
     }
     else {
       // Handle other function types or throw an error for unsupported types
@@ -161,8 +195,8 @@ function Chat({ onHostLinkClick}) {
 
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl());
-      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone );
-  
+      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
     };
 
     socket.onmessage = (event) => {
@@ -171,13 +205,17 @@ function Chat({ onHostLinkClick}) {
       if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
         // Extract the function data
         const functionData = newWord.slice(15, -16); // Remove the tags
-        console.log('Found function data :'+functionData);
+        console.log('Found function data :' + functionData);
         const generatedLinkData = processFunctionData(functionData);
-        setLinkData(generatedLinkData);
-        
-      } 
+        if (generatedLinkData !== null) {
+          setLinkData(generatedLinkData);
+          setIsDrawerOpen(true);
+        }
+
+      }
       else if (newWord === '</llm-ready>') {
         setIsReady(true);
+        setLlmFeedback('');
       }
       else if (newWord === '</functioncall>') {
         setIsCallingFunction(true);
@@ -190,7 +228,7 @@ function Chat({ onHostLinkClick}) {
 
         setIsProcessing(false);
       } else {
-        setSpeechText((prev) => prev+newWord);
+        setSpeechText((prev) => prev + newWord);
         setLlmFeedback((prevFeedback) => {
           // Combine the new word with previous feedback before filtering
           const combinedFeedback = prevFeedback + newWord;
@@ -290,88 +328,133 @@ function Chat({ onHostLinkClick}) {
     connectWebSocket();
   };
 
-  const renderLinks = () => {
-    return linkData.map((linkItem) => (
-      <ListItem key={linkItem.link}>
-        <button onClick={() => onHostLinkClick(linkItem.hostId)}>
-          {linkItem.label}
-        </button>
-      </ListItem>
-    ));
-  };
-  
+  const renderLinks = () => (
+    <List>
+      {linkData.map((linkItem) => (
+        <ListItem key={linkItem.link}>
+          <Button onClick={() => onHostLinkClick(linkItem)} sx={{
+            width: '100%', // Full width button
+            justifyContent: 'flex-start',
+            textTransform: 'none',
+            color: theme.palette.primary.main, // Main theme color for text
+            '&:hover': {
+              backgroundColor: theme.palette.action.hover, // Hover background color
+            }
+          }}>
+            {linkItem.Address}
+          </Button>
+        </ListItem>
+      ))}
+    </List>
+  );
+
 
   return (
-    <div className="chat-container">
-      <div className="chat-window">
-
-        <div className="chat-header">
-          <span className="header-title">Free Network Monitor Assistant</span>
-          <div>
-            <button className="icon-button" onClick={saveFeedback} title="Save">
-              <SaveIcon style={{ color: 'white' }} />
-            </button>
-
-            <button
-              className="icon-button"
-              onClick={resetLLM}
-              disabled={!isReady}
-              title={!isReady ? "System not ready" : "Reset the system"}
-            >
-              <RestartAltIcon style={{ color: 'white' }} />
-            </button>
-          </div>
-        </div>
-
-        <div className="chat-body" ref={outputContainerRef}>
-          {!isReady ? <div className="loading-container">
-            <CircularProgress color="inherit" />
-          </div> : <pre className="llm-feedback">
-            {llmFeedback.split(/(```[\s\S]*?```)/).map((part, index) => {
-              if (part.startsWith('```') && part.endsWith('```')) {
-                // Remove the backticks and trim the result
-                const codeContent = part.substring(3, part.length - 3).trim();
-                return <div key={index} className="code-block">{codeContent}</div>;
-              } else {
-                // This part is not a code block
-                return <span key={index}>{part}</span>;
-              }
-            })}
-          </pre>
+    <Box sx={{ position: 'fixed', bottom: 20, right: 20, width: 300, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+      <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <CardContent>
+          <Grid container alignItems="center">
+            <Grid item xs={12} sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.getContrastText(theme.palette.primary.main),
+              padding: theme.spacing(1),
+              borderRadius: theme.shape.borderRadius / 3
+            }} >
+              <Typography variant="h7" >Network Monitor Assistant</Typography>
+            </Grid>
+            <Grid item xs={12}  alignItems="right" >
+              <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} title="Save">
+                <SaveIcon />
+              </IconButton>
+              <IconButton onClick={resetLLM} color="secondary" disabled={!isReady} title={!isReady ? "System not ready" : "Reset the system"}>
+                <RestartAltIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+        </CardContent>
+        <CardContent ref={outputContainerRef} sx={{ flexGrow: 1, overflow: 'auto' }}>
+          {!isReady ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <pre style={{ fontFamily: 'Monospace', whiteSpace: 'pre-wrap' }}>
+              {llmFeedback.split(/(```[\s\S]*?```)/).map((part, index) => {
+                if (part.startsWith('```') && part.endsWith('```')) {
+                  const codeContent = part.substring(3, part.length - 3).trim();
+                  return <Box key={index} sx={{ my: 2, p: 2, bgcolor: 'background.paper', border: 1, borderColor: 'divider' }}>{codeContent}</Box>;
+                } else {
+                  return <Typography key={index} component="span">{part}</Typography>;
+                }
+              })}
+            </pre>
+          )}
+          {isProcessing && !isCallingFunction && (
+            <Typography color="primary" sx={{ mt: 2, fontStyle: 'italic' }}>{`Thinking${thinkingDots}`}</Typography>
+          )}
+          {isCallingFunction && (
+            <Typography color="secondary" sx={{ mt: 2, fontWeight: 'bold' }}>{callingFunctionMessage}</Typography>
+          )}
+          {(showHelpMessage && !isDashboard) && (
+            <Typography sx={{ mt: 2, bgcolor: 'action.selected' }}>{helpMessage}</Typography>
+          )}
+        </CardContent>
+        <SwipeableDrawer
+        anchor="bottom"
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+        sx={{
+          '& .MuiDrawer-paper': {
+            backgroundColor: theme.palette.background.paper, // Use theme color
+            color: theme.palette.text.primary, // Use theme color for text
+            padding: theme.spacing(2), // Use theme spacing
+            borderTopLeftRadius: '16px', // Rounded corners at the top
+            borderTopRightRadius: '16px',
           }
-          {isProcessing && !isCallingFunction && <div className="status-message">Thinking{thinkingDots}</div>}
-          {isCallingFunction && <div className="status-message">{callingFunctionMessage}</div>}
-          {showHelpMessage && <div className="help-message">{helpMessage}</div>}
-        </div>
-        <div className="chat-footer">
-          <input
-            type="text"
-            className="chat-input"
-            placeholder="Type a message..."
-            maxLength={100}  // Limit input to 100 characters
-            value={currentMessage}
-            onChange={(e) => setCurrentMessage(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) { // Check if Enter was pressed without the shift key
-                e.preventDefault(); // Prevent the default action to stop from submitting a form if it's part of one
-                sendMessage();
-              }
-            }}
-          />
-          <button
-            className="send-button"
-            onClick={sendMessage}
-            disabled={isProcessing || isCallingFunction || !isReady}
-          >
-            Send
-          </button>
-          <List>
+        }}
+      >
         {renderLinks()}
-      </List>
-        </div>
-      </div>
-    </div>
+      </SwipeableDrawer>
+        <CardContent sx={{ pt: 1, pb: 1 }}>
+         
+          <Grid container
+            direction="row"
+          >
+            <Grid item xs={10}>
+              <TextField
+                fullWidth
+                size="small"
+                variant="outlined"
+                label="Type a message..."
+                value={currentMessage}
+                onChange={(e) => setCurrentMessage(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+                inputProps={{ maxLength: 100 }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <IconButton
+                color="primary"
+                onClick={sendMessage}
+                disabled={isProcessing || isCallingFunction || !isReady}
+                aria-label="send message"
+              >
+                <SendIcon /> {/* Using SendIcon as the paper airplane icon */}
+              </IconButton>
+            </Grid>
+
+          </Grid>
+        </CardContent>
+      </Card>
+    </Box>
   );
+
 }
 
 export default Chat;
