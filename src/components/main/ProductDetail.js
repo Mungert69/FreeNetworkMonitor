@@ -6,6 +6,7 @@ import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typog
 import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 import EmailIcon from '@mui/icons-material/Email';
+import ChatIcon from '@mui/icons-material/Chat';
 import LanguageIcon from '@mui/icons-material/Language';
 import ApiTwoToneIcon from '@mui/icons-material/ApiTwoTone';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -40,6 +41,11 @@ const ProductDetail = () => {
     const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL + '/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+
+    const toggleChatView = () => {
+        setIsChatOpen(!isChatOpen);
+    };
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -124,7 +130,7 @@ const ProductDetail = () => {
                                                 Are You Ready For Quantum...
                                             </Typography>
                                         </Grid>
-                                        
+
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={12} sm={6} align="center" >
@@ -173,7 +179,7 @@ const ProductDetail = () => {
                                         <LanguageIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                    Elevating your network monitoring to the next frontier, our real-time quantum readiness monitor is here to assess your website's preparedness for the quantum computing era. By using our innovative Quantum monitor, you can ensure that your website is not only up to current standards but also ready to embrace the technological advancements of the future. Paired with our robust service monitor, you'll have all the necessary tools to keep your website at the top of its game.
+                                        Elevating your network monitoring to the next frontier, our real-time quantum readiness monitor is here to assess your website's preparedness for the quantum computing era. By using our innovative Quantum monitor, you can ensure that your website is not only up to current standards but also ready to embrace the technological advancements of the future. Paired with our robust service monitor, you'll have all the necessary tools to keep your website at the top of its game.
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -191,9 +197,9 @@ const ProductDetail = () => {
 
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                    In addition to quantum readiness, we have expanded monitoring capabilities to cover essential online services. Our business-critical API monitor includes HTTP for website performance, ICMP for network pinging, DNS for domain lookup, and SMTP for email service monitoring. This vigilant monitor alerts you via email if any of these services aren't responding within the set timeout threshold, ensuring efficient performance of your business-critical services.
+                                        In addition to quantum readiness, we have expanded monitoring capabilities to cover essential online services. Our business-critical API monitor includes HTTP for website performance, ICMP for network pinging, DNS for domain lookup, and SMTP for email service monitoring. This vigilant monitor alerts you via email if any of these services aren't responding within the set timeout threshold, ensuring efficient performance of your business-critical services.
                                     </Paper>
-                                    </Grid>
+                                </Grid>
                                 <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
@@ -212,7 +218,12 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
                     <hr></hr>
-                    <Chat isDashboard={false}/>
+                    <IconButton onClick={toggleChatView} className={classes.chatToggle}>
+            <ChatIcon />
+          </IconButton>
+                    <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
+                        <Chat isDashboard={false} />
+                    </div>
                     <hr></hr>
                     <Grid container
                         spacing={6}
