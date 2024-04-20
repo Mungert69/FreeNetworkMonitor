@@ -142,22 +142,24 @@ function Chat({ onHostLinkClick, isDashboard }) {
     const jsonData = JSON.parse(functionData);
 
     if (jsonData.name === "get_host_list") {
-      return jsonData.dataJson.map((host) => ({
-        ...host, // This spreads all properties of host into the new object
-        isHostList: true
-      }));
-
-    }
-    else if (jsonData.name === "get_host_data") {
       return jsonData.dataJson.map((host) => {
         // Create a new object based on the host
         let newHost = { ...host };
 
         // Conditionally add the isHostData property
         if (host.UserID !== 'default') {
-          newHost.isHostData = true;
+          newHost.isHostList = true;
         }
+        newHost.dataSetID = 0;
+        return newHost;
+      });
 
+    }
+    else if (jsonData.name === "get_host_data") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+        newHost.isHostData = true;
         return newHost;
       });
     }
@@ -168,7 +170,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
 
         // Conditionally add the isHostData property
         if (host.UserID !== 'default') {
-          newHost.isHostData = true;
+          newHost.isHostList = true;
         }
 
         return newHost;
@@ -181,7 +183,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
 
         // Conditionally add the isHostData property
         if (host.userID !== 'default') {
-          newHost.isHostData = true;
+          newHost.isHostList = true;
         }
 
         return newHost;
