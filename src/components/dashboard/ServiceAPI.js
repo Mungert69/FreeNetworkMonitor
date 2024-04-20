@@ -339,7 +339,7 @@ export const fetchDataSets = async (baseUrlId, setDataSets) => {
 
 export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user) => {
 
-    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt: prompt };
+    const sentData = { ID: monitorIPID };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -360,7 +360,7 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
 
 export const resetPredictAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user) => {
 
-    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt: prompt };
+    const sentData = { ID: monitorIPID };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
