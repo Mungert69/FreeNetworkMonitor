@@ -126,38 +126,22 @@ const styleObject = (theme, imageUrl) => {
             overflowX: 'auto',
             padding: 0,
         },
-        chatFooter: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: theme.spacing(1),
-        },
-        chatInput: {
-            flexGrow: 1,
-            marginRight: theme.spacing(1),
-        },
-        sendButton: {
-            flexShrink: 0,
-        },
+      
+     
         chatOpen: {
             maxHeight: '350px', // Adjust as needed
             overflow: 'auto',
             transition: 'max-height 0.3s ease-out',
         },
 
-        chatClosed: {
-            maxHeight: '0',
-            overflow: 'hidden',
-            transition: 'max-height 0.3s ease-in',
-        },
-        chatAndTableContainer: {
-            display: 'flex',
-            position: 'relative',
-        },
+     
+        chatToggleShift: {
+            transform: 'translateX(-300px)', // Adjust this value based on your layout
+          },
 
         chatToggle: {
             position: 'fixed', // Fix position relative to the viewport
-            right: 300, // 20px from the right edge of the viewport
+            right: 50, // 20px from the right edge of the viewport
             bottom: 20, // 20px from the bottom edge of the viewport
             zIndex: 1100, // Ensure it's above most other items
             backgroundColor: theme.palette.primary.light, // A lighter background color for visibility

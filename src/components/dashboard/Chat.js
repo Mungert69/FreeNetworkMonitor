@@ -1,8 +1,10 @@
 import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
+import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import useTheme from '@mui/material/styles/useTheme';
@@ -149,39 +151,39 @@ function Chat({ onHostLinkClick, isDashboard }) {
     else if (jsonData.name === "get_host_data") {
       return jsonData.dataJson.map((host) => {
         // Create a new object based on the host
-        let newHost = {...host};
-        
+        let newHost = { ...host };
+
         // Conditionally add the isHostData property
         if (host.UserID !== 'default') {
           newHost.isHostData = true;
         }
-    
+
         return newHost;
       });
     }
     else if (jsonData.name === "add_host") {
       return jsonData.dataJson.map((host) => {
         // Create a new object based on the host
-        let newHost = {...host};
-        
+        let newHost = { ...host };
+
         // Conditionally add the isHostData property
         if (host.UserID !== 'default') {
           newHost.isHostData = true;
         }
-    
+
         return newHost;
       });
     }
     else if (jsonData.name === "edit_host") {
       return jsonData.dataJson.map((host) => {
         // Create a new object based on the host
-        let newHost = {...host};
-        
+        let newHost = { ...host };
+
         // Conditionally add the isHostData property
         if (host.userID !== 'default') {
           newHost.isHostData = true;
         }
-    
+
         return newHost;
       });
     }
@@ -341,7 +343,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
               backgroundColor: theme.palette.action.hover, // Hover background color
             }
           }}>
-            {linkItem.Address+' : '+linkItem.DateStarted}
+            {linkItem.Address + ' : ' + linkItem.DateStarted}
           </Button>
         </ListItem>
       ))}
@@ -362,12 +364,39 @@ function Chat({ onHostLinkClick, isDashboard }) {
             }} >
               <Typography variant="h7" >Network Monitor Assistant</Typography>
             </Grid>
-            <Grid item xs={12}  alignItems="right" >
-              <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} title="Save">
-                <SaveIcon />
+            <Grid item xs={12} alignItems="right" >
+              <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} >
+                <Badge color="secondary">
+                  <Tooltip title="Save"
+                    TransitionComponent={Zoom}>
+                    <SaveIcon />
+                  </Tooltip>
+                </Badge>
+
               </IconButton>
-              <IconButton onClick={resetLLM} color="secondary" disabled={!isReady} title={!isReady ? "System not ready" : "Reset the system"}>
-                <RestartAltIcon />
+
+              {isDrawerOpen ? null : (
+                <IconButton
+                  onClick={toggleDrawer(true)}
+                  color="primary"
+                  disabled={!isReady}
+
+                >
+                  <Badge color="secondary">
+                    <Tooltip title="Open Links"
+                      TransitionComponent={Zoom}>
+                      <KeyboardArrowUpIcon />
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+              )}
+              <IconButton onClick={resetLLM} color="secondary" disabled={!isReady} >
+                <Badge color="secondary">
+                  <Tooltip title={!isReady ? "Assitant not ready" : "Reset the Assitant"}
+                    TransitionComponent={Zoom}>
+                    <RestartAltIcon />
+                  </Tooltip>
+                </Badge>
               </IconButton>
             </Grid>
           </Grid>
@@ -400,24 +429,24 @@ function Chat({ onHostLinkClick, isDashboard }) {
           )}
         </CardContent>
         <SwipeableDrawer
-        anchor="bottom"
-        open={isDrawerOpen}
-        onClose={toggleDrawer(false)}
-        onOpen={toggleDrawer(true)}
-        sx={{
-          '& .MuiDrawer-paper': {
-            backgroundColor: theme.palette.background.paper, // Use theme color
-            color: theme.palette.text.primary, // Use theme color for text
-            padding: theme.spacing(2), // Use theme spacing
-            borderTopLeftRadius: '16px', // Rounded corners at the top
-            borderTopRightRadius: '16px',
-          }
-        }}
-      >
-        {renderLinks()}
-      </SwipeableDrawer>
+          anchor="bottom"
+          open={isDrawerOpen}
+          onClose={toggleDrawer(false)}
+          onOpen={toggleDrawer(true)}
+          sx={{
+            '& .MuiDrawer-paper': {
+              backgroundColor: theme.palette.background.paper, // Use theme color
+              color: theme.palette.text.primary, // Use theme color for text
+              padding: theme.spacing(2), // Use theme spacing
+              borderTopLeftRadius: '16px', // Rounded corners at the top
+              borderTopRightRadius: '16px',
+            }
+          }}
+        >
+          {renderLinks()}
+        </SwipeableDrawer>
         <CardContent sx={{ pt: 1, pb: 1 }}>
-         
+
           <Grid container
             direction="row"
           >
@@ -452,6 +481,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
           </Grid>
         </CardContent>
       </Card>
+
     </Box>
   );
 

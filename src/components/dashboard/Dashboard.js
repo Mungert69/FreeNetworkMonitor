@@ -289,7 +289,8 @@ export default function Dashboard() {
                 </IconButton>
               </FadeWrapper>
           }
-          <IconButton onClick={toggleChatView} className={classes.chatToggle}>
+          <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
+>
             <ChatIcon />
           </IconButton>
 
@@ -324,8 +325,6 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container} >
-          <div className={classes.chatAndTableContainer}>
-
             <Grid container spacing={1}>
               {viewInfo &&
                 <Grid item xs={12} sm={12} md={10} lg={10}>
@@ -374,7 +373,6 @@ export default function Dashboard() {
             </div>
               </Grid>
             </Grid>
-          </div>
         </Container>
       </main>
     </div>
