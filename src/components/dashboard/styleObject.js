@@ -136,12 +136,12 @@ const styleObject = (theme, imageUrl) => {
 
      
         chatToggleShift: {
-            transform: 'translateX(-300px)', // Adjust this value based on your layout
+            transform: 'translateX(-280px)', // Adjust this value based on your layout
           },
 
         chatToggle: {
             position: 'fixed', // Fix position relative to the viewport
-            right: 50, // 20px from the right edge of the viewport
+            right: 20, // 20px from the right edge of the viewport
             bottom: 20, // 20px from the bottom edge of the viewport
             zIndex: 1100, // Ensure it's above most other items
             backgroundColor: theme.palette.primary.light, // A lighter background color for visibility
