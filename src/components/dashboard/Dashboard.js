@@ -84,9 +84,10 @@ export default function Dashboard() {
 
   const handleHostLinkClick = (linkData) => {
     if (linkData.isHostData) {
-      setDataSetId(linkData.DataSetID);
+     
       const hostData = { 'id' : linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID' : linkData.UserID };    
       if (hostData !== undefined) {
+        handleSetDataSetId(hostData.dataSetID, hostData.date);
         clickViewChart(hostData);
       }
       setToggleTable(true);

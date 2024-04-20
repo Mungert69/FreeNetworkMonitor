@@ -1,6 +1,6 @@
 // runtime config
 window['runConfig'] = {
-    appsettingsFile: 'appsettings.json'
+    appsettingsFile: 'appsettings-dev.json'
 }
 window['serverLabel'] = {
     serverLabel : 'dev'

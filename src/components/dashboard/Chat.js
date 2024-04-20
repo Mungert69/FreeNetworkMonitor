@@ -341,7 +341,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
               backgroundColor: theme.palette.action.hover, // Hover background color
             }
           }}>
-            {linkItem.Address+' : '+linkItem.date}
+            {linkItem.Address+' : '+linkItem.DateStarted}
           </Button>
         </ListItem>
       ))}
