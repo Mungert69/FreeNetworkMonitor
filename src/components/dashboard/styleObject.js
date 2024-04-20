@@ -97,8 +97,7 @@ const styleObject = (theme, imageUrl) => {
         link: {
             margin: '1rem',
             textDecoration: 'none',
-            color: theme.palette.primary.dark,
-            color: "#6239AB",
+             color: "#6239AB",
             "&:hover": {
                 color: "#607466",
                 textDecoration: "none"
@@ -107,7 +106,6 @@ const styleObject = (theme, imageUrl) => {
         },
         linkCompact: {
             textDecoration: 'none',
-            color: theme.palette.primary.dark,
             color: "#6239AB",
             "&:hover": {
                 color: "#607466",

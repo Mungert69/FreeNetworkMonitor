@@ -29,7 +29,7 @@ import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-import { convertDate,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { resetPredictAlertApiCall,convertDate,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
@@ -114,6 +114,9 @@ export default function Dashboard() {
   };
   const resetHostAlert = async (id) => {
     await resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
+  };
+  const resetPredictAlert = async (id) => {
+    await resetPredictAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
   };
   const setEditMode = async () => {
     setToggleTable(toggleTable => !toggleTable);
@@ -354,7 +357,8 @@ export default function Dashboard() {
                   {toggleTable ?
                     <HostList data={listData}
                       clickViewChart={clickViewChart}
-                      resetHostAlert={resetHostAlert}
+                    resetHostAlert={resetHostAlert}
+                    resetPredictAlert={resetPredictAlert}
                       processorList={processorList}
                       dataSets={dataSets}
                       handleSetDataSetId={handleSetDataSetId}

@@ -24,13 +24,14 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
+import useTheme from '@mui/material/styles/useTheme';
 const muiCache = createCache({
   "key": "mui",
   "prepend": true
 });
 
-export const HostList = ({ data, clickViewChart, resetHostAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd }) => {
-
+export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd }) => {
+  const theme = useTheme();
   const getMuiTheme = () => createTheme({
     components: {
       MuiSvgIcon: {
@@ -100,7 +101,17 @@ export const HostList = ({ data, clickViewChart, resetHostAlert, processorList,d
                 <span>
                   {row.alertFlag ?
                     <Button onClick={() => resetHostAlert(row.monitorIPID)} >
-                      <ErrorIcon sx={{ color: '#eb5160' }} />
+                     <ErrorIcon sx={{ color: theme.palette.error.main }} />
+                    </Button>
+                    : null}
+
+                </span>
+              </Tooltip>
+              <Tooltip title="Reset Predict Alert">
+                <span>
+                  {row.predictAlertFlag ?
+                    <Button onClick={() => resetPredictAlert(row.monitorIPID)} >
+                     <ErrorIcon sx={{ color: theme.palette.warning.main }} />
                     </Button>
                     : null}
 

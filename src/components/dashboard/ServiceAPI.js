@@ -202,7 +202,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     try {
         result.data.data.map((row) => {
             if (row.monitorStatus.alertFlag) { alertCount++ }
-            const obj = { 'id': row.id, 'dataSetID' : row.dataSetID, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus.alertFlag };
+            const obj = { 'id': row.id, 'dataSetID' : row.dataSetID, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus.alertFlag, 'predictAlertFlag': row.predictStatus.alertFlag };
             data.push(obj)
         });
     }
@@ -357,6 +357,28 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
 
     setReload(!reload);
 };
+
+export const resetPredictAlertApiCall = async (monitorIPID, baseUrlId, setReload, reload, user) => {
+
+    const sentData = { User: user, MonitorIPID: monitorIPID, Prompt: prompt };
+    axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios(
+        {
+            method: 'post',
+            url: apiBaseUrls[baseUrlId] + '/Alerts/ResetPredictAlert',
+            data: sentData,
+            withCredentials: true,
+        }
+    ).catch(function (error) {
+        console.log('ServiceAPI.resetPredictAlertApicall Axios Error was : ' + error);
+        return;
+    }));
+
+    console.log('ServiceAPI.resetPredictAlertApicall reset alert of monitorPingInfoId ' + monitorIPID + " for user " + user.name);
+
+    setReload(!reload);
+};
+
 
 export const fetchEditHostData = async (baseUrlId, user) => {
 

@@ -22,6 +22,9 @@ const theme = createTheme(
       error: {
         main: '#eb5160',
       },
+      warning: {
+        main: '#d4a10d',
+      },
 
     },
   }
