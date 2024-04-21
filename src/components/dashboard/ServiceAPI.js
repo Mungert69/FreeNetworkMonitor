@@ -202,7 +202,7 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     try {
         result.data.data.map((row) => {
             if (row.monitorStatus.alertFlag) { alertCount++ }
-            const obj = { 'id': row.id, 'dataSetID' : row.dataSetID, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus.alertFlag, 'predictAlertFlag': row.predictStatus.alertFlag };
+            const obj = { 'id': row.id, 'dataSetID' : row.dataSetID, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus?.alertFlag, 'predictAlertFlag': row.predictStatus?.alertFlag };
             data.push(obj)
         });
     }
