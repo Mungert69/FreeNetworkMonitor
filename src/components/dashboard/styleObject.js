@@ -134,7 +134,7 @@ const styleObject = (theme, imageUrl) => {
 
      
         chatToggleShift: {
-            transform: 'translateX(-280px)', // Adjust this value based on your layout
+            transform: 'translateX(-300px)', // Adjust this value based on your layout
           },
 
         chatToggle: {

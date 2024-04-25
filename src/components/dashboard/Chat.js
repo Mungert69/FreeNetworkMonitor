@@ -39,11 +39,17 @@ function Chat({ onHostLinkClick, isDashboard }) {
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
-  const [llmRunnerType, setLlmRunnerType] = useState('LLMProcess');
+  const [llmRunnerType, setLlmRunnerType] = useState('FreeLLM');
   // Function to toggle llmRunnerType
   const toggleLlmRunnerType = () => {
-    setLlmRunnerType(prevType => prevType === 'LLMProcess' ? 'OpenAI' : 'LLMProcess');
+    setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'OpenAI' : 'FreeLLM');
   };
+
+  useEffect(() => {
+    resetLLM();
+    
+  }, [llmRunnerType]);
+
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -358,7 +364,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
 
 
   return (
-    <Box sx={{ position: 'fixed', bottom: 20, right: 20, width: 300, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ position: 'fixed', bottom: 20, right: 20, width: 320, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
       <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <CardContent>
           <Grid container alignItems="center">
@@ -368,7 +374,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
               padding: theme.spacing(1),
               borderRadius: theme.shape.borderRadius / 3
             }} >
-              <Typography variant="h7" >Network Monitor Assistant</Typography>
+              <Typography variant="h7" >Network Monitor Assistant ({ llmRunnerType})</Typography>
             </Grid>
             <Grid item xs={12} alignItems="right" >
               <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} >
