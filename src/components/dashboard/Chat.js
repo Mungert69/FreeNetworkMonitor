@@ -2,7 +2,7 @@ import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
 import styleObject from './styleObject';
@@ -38,8 +38,12 @@ function Chat({ onHostLinkClick, isDashboard }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to control the drawer
-
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
+  const [llmRunnerType, setLlmRunnerType] = useState('LLMProcess');
+  // Function to toggle llmRunnerType
+  const toggleLlmRunnerType = () => {
+    setLlmRunnerType(prevType => prevType === 'LLMProcess' ? 'OpenAI' : 'LLMProcess');
+  };
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -199,7 +203,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
 
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl());
-      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone);
+      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone+','+llmRunnerType);
 
     };
 
@@ -376,7 +380,13 @@ function Chat({ onHostLinkClick, isDashboard }) {
                 </Badge>
 
               </IconButton>
-
+              <IconButton onClick={toggleLlmRunnerType} color="primary" >
+                <Badge color="secondary">
+                  <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
+                    <SwapHorizIcon />
+                  </Tooltip>
+                </Badge>
+              </IconButton>
               {isDrawerOpen ? null : (
                 <IconButton
                   onClick={toggleDrawer(true)}
