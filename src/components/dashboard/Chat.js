@@ -39,7 +39,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
-  const [llmRunnerType, setLlmRunnerType] = useState('FreeLLM');
+  const [llmRunnerType, setLlmRunnerType] = useState('OpenAI');
   // Function to toggle llmRunnerType
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'OpenAI' : 'FreeLLM');
