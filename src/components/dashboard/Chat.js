@@ -39,17 +39,13 @@ function Chat({ onHostLinkClick, isDashboard }) {
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
-  const [llmRunnerType, setLlmRunnerType] = useState('OpenAI');
+  const [llmRunnerType, setLlmRunnerType] = useState('FreeLLM');
   // Function to toggle llmRunnerType
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'OpenAI' : 'FreeLLM');
   };
 
-  useEffect(() => {
-    resetLLM();
-    
-  }, [llmRunnerType]);
-
+ 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -104,9 +100,9 @@ function Chat({ onHostLinkClick, isDashboard }) {
       const helpMessages = [
         "Running to slow?",
         "Need results now!",
-        "Click Login",
-        "Manage your hosts",
-        "Using the Dashboard"
+        "Switch to OpenAI",
+        "Click Toggle LLM Type",
+        "Then Reload Assistant"
       ];
       setHelpMessage(helpMessages[helpMessageIndex]);
       setHelpMessageIndex((prevIndex) => (prevIndex + 1) % helpMessages.length);
@@ -410,7 +406,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
               )}
               <IconButton onClick={resetLLM} color="secondary" disabled={!isReady} >
                 <Badge color="secondary">
-                  <Tooltip title={!isReady ? "Assitant not ready" : "Reset the Assitant"}
+                  <Tooltip title={!isReady ? "Assitant not ready" : "Reload Assitant"}
                     TransitionComponent={Zoom}>
                     <RestartAltIcon />
                   </Tooltip>
