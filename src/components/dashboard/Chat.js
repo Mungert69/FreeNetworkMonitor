@@ -12,7 +12,7 @@ import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
 
-function Chat({ onHostLinkClick, isDashboard }) {
+function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
   const theme = useTheme();
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
@@ -39,7 +39,7 @@ function Chat({ onHostLinkClick, isDashboard }) {
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
-  const [llmRunnerType, setLlmRunnerType] = useState('FreeLLM');
+  const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
   // Function to toggle llmRunnerType
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'OpenAI' : 'FreeLLM');

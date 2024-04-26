@@ -373,7 +373,7 @@ export default function Dashboard() {
                 </Paper>
 
                 <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                <Chat onHostLinkClick={handleHostLinkClick} isDashboard={true}/>
+                <Chat onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'FreeLLM'}/>
             </div>
               </Grid>
             </Grid>

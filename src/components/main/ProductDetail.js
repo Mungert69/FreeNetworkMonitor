@@ -222,7 +222,7 @@ const ProductDetail = () => {
             <ChatIcon />
           </IconButton>
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        <Chat isDashboard={false} />
+                        <Chat isDashboard={false} initRunnerType={'OpenAI'}/>
                     </div>
                     <hr></hr>
                     <Grid container
