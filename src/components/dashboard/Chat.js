@@ -44,7 +44,18 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'OpenAI' : 'FreeLLM');
   };
+  const autoClickedRef = useRef(false);
 
+  useEffect(() => {
+    if (linkData.length === 1 && !autoClickedRef.current) {
+      onHostLinkClick(linkData[0]);
+      autoClickedRef.current = true;  // Mark as clicked
+    } else if (linkData.length !== 1) {
+      autoClickedRef.current = false;  // Reset if the number of links changes
+    }
+  }, [linkData, onHostLinkClick]);
+  
+  
  
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -351,7 +362,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
               backgroundColor: theme.palette.action.hover, // Hover background color
             }
           }}>
-            {linkItem.Address + ' : ' + linkItem.DateStarted}
+           {linkItem.DateStarted ? `${linkItem.Address} : ${linkItem.DateStarted}` : linkItem.Address}
+
           </Button>
         </ListItem>
       ))}
