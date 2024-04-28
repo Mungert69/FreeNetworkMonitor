@@ -156,6 +156,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
 
   const processFunctionData = (functionData) => {
     if (!isDashboard) return null
+    autoClickedRef.current = false;
     const jsonData = JSON.parse(functionData);
 
     if (jsonData.name === "get_host_list") {
