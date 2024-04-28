@@ -24,7 +24,7 @@ const tiers = [
     description: [
       '10 hosts included',
       'ICMP, Http, Dns and Smtp Ping',
-      '10k Max tokens, 2k added daily, for Network Monitor Turbo AI Assistant. FreeLM Assistant',
+      '10k Max tokens, 2k added daily, for Network Monitor Turbo AI Assistant. FreeLLM Assistant',
       'One Month full response Data retention',
       'Must login every 3 months'
     ],
@@ -38,7 +38,7 @@ const tiers = [
       'Monitor up to 50 Hosts',
       'Local network monitoring with Network Monitor Agent',
       'ICMP, Http, Dns. Raw Connect and Smtp Ping. Includes Quantum Ready check',
-      '20k Max Turbo AI tokens, fill 5k daily. FreeLM Assistant',
+      '20k Max Turbo AI tokens, fill 5k daily. FreeLLM Assistant',
       'Email support',
       '6 Month full response Data retention',
     ],
