@@ -24,6 +24,7 @@ const tiers = [
     description: [
       '10 hosts included',
       'ICMP, Http, Dns and Smtp Ping',
+      '10k Max tokens, 2k added daily, for Network Monitor Turbo AI Assistant. FreeLM Assistant',
       'One Month full response Data retention',
       'Must login every 3 months'
     ],
@@ -37,6 +38,7 @@ const tiers = [
       'Monitor up to 50 Hosts',
       'Local network monitoring with Network Monitor Agent',
       'ICMP, Http, Dns. Raw Connect and Smtp Ping. Includes Quantum Ready check',
+      '20k Max Turbo AI tokens, fill 5k daily. FreeLM Assistant',
       'Email support',
       '6 Month full response Data retention',
     ],
@@ -52,6 +54,7 @@ const tiers = [
       'Monitor up to 300 Hosts',
       'Advanced health check monitors; detect potential issues before they happen',
       'Advanced health checks for ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready checks',
+      '80k Max Turbo AI tokens, fill 20k daily',
       'Priority Email support',
       '2 year full response Data retention',
     ],
@@ -65,6 +68,7 @@ const tiers = [
     description: [
       'All the features of the Professional Plan plus',
       '500 Hosts included',
+      '200k Max Turbo AI tokens, fill 50k daily',
       'One high priority dedicated monitor service agent in one of our datacenter locations (contact support with your requirements)',
       'Unlimited full response Data retention and Data Export',
     ],
