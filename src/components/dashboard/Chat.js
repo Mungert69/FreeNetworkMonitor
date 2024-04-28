@@ -42,7 +42,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
   const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
   // Function to toggle llmRunnerType
   const toggleLlmRunnerType = () => {
-    setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'OpenAI' : 'FreeLLM');
+    setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
   };
   const autoClickedRef = useRef(false);
 
@@ -111,7 +111,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
       const helpMessages = [
         "Running to slow?",
         "Need results now!",
-        "Switch to OpenAI",
+        "Switch to TurboLLM",
         "Click Toggle LLM Type",
         "Then Reload Assistant"
       ];
