@@ -92,7 +92,6 @@ const ProductDetail = () => {
                 open={open}
             >
                 <div className={classes.toolbarIcon}>
-
                     <IconButton onClick={handleDrawerClose} size="large">
 
                         <ChevronLeftIcon />
@@ -218,12 +217,8 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
                     <hr></hr>
-                    <IconButton onClick={toggleChatView} className={classes.chatToggle}>
-            <ChatIcon />
-          </IconButton>
-                    <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        <Chat isDashboard={false} initRunnerType={'OpenAI'}/>
-                    </div>
+
+
                     <hr></hr>
                     <Grid container
                         spacing={6}
@@ -247,7 +242,12 @@ const ProductDetail = () => {
 
                     <Blog classes={classes} />
                     <Footer />
-
+                    <IconButton onClick={toggleChatView} className={classes.chatToggle}>
+                        <ChatIcon />
+                    </IconButton>
+                    <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
+                        <Chat isDashboard={false} initRunnerType={'TurboLLM'} />
+                    </div>
                 </Container>
             </main>
         </div >
