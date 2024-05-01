@@ -8,6 +8,7 @@ import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextFie
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import useTheme from '@mui/material/styles/useTheme';
+import { v4 as uuidv4 } from 'uuid';
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -40,7 +41,19 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
   const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
-  // Function to toggle llmRunnerType
+  const getSessionId = () => {
+    const storedSessionId = localStorage.getItem('sessionId');
+    if (storedSessionId) {
+      return storedSessionId;
+    } else {
+      const newSessionId = uuidv4();
+      localStorage.setItem('sessionId', newSessionId);
+      return newSessionId;
+    }
+  };
+
+  const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
+
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
   };
@@ -217,7 +230,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
 
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl());
-      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone+','+llmRunnerType);
+
+      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone+','+llmRunnerType+','+sessionId);
 
     };
 
