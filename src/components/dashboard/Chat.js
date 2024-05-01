@@ -431,7 +431,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
                   </Badge>
                 </IconButton>
               )}
-              <IconButton onClick={resetLLM} color="secondary" disabled={!isReady} >
+              <IconButton onClick={resetLLM} color="secondary" >
                 <Badge color="secondary">
                   <Tooltip title={!isReady ? "Assitant not ready" : "Reload Assitant"}
                     TransitionComponent={Zoom}>
