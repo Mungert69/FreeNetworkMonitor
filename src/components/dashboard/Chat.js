@@ -9,6 +9,7 @@ import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import { v4 as uuidv4 } from 'uuid';
+import Message from './Message';
 import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -41,6 +42,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
   const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
+  const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
+ 
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
     if (storedSessionId) {
@@ -249,6 +252,15 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
         }
 
       }
+      else if (newWord.startsWith('</llm-error>')) { 
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+            persist: true,
+            text: newWord.substring('</llm-error>'.length),
+            success: false
+        };
+        setMessage(message);
+    }
       else if (newWord === '</llm-ready>') {
         setIsReady(true);
         setLlmFeedback('');
@@ -522,7 +534,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
           </Grid>
         </CardContent>
       </Card>
-
+      <Message message={message} />
     </Box>
   );
 

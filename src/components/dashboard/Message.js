@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-import Slide from '@mui/material/Slide';
-import Button from '@mui/material/Button';
+import React from 'react';
+import { SnackbarProvider, useSnackbar, closeSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
-function TransitionUp(props) {
-  return <Slide {...props} direction="up" />;
-}
-const MessageBar = ({ message}) => {
+
+const MessageBar = ({ message }) => {
   const { enqueueSnackbar } = useSnackbar();
   var severity = 'info';
   if (message.info === undefined) {
@@ -20,15 +14,32 @@ const MessageBar = ({ message}) => {
       severity = 'success';
     }
   }
-  enqueueSnackbar(message.text, { variant: severity, autoHideDuration: 5000, anchorOrigin: { vertical: 'bottom', horizontal: 'center' } });
-}
-export function Message({message}) {
-  if (message === undefined || message.info === 'init'  ) {
-    return;
-   }
-  console.log('Message='+message);
+
+  enqueueSnackbar(message.text, {
+    variant: severity,
+    persist: message.persist,  // Control if the message should auto-hide
+    autoHideDuration: message.persist ? null : 5000,  // Null for persistent messages
+    anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+  });
+};
+
+export function Message({ message }) {
+  if (message === undefined || message.info === 'init') {
+    return null;
+  }
+  console.log('Message=' + JSON.stringify(message));
   return (
-    <SnackbarProvider maxSnack={5} >
+    <SnackbarProvider maxSnack={5} 
+                      action={(key) => (
+                        <IconButton
+                          size="small"
+                          aria-label="close"
+                          color="inherit"
+                          onClick={() => closeSnackbar(key)}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                      )}>
       <MessageBar message={message} />
     </SnackbarProvider>
   );
