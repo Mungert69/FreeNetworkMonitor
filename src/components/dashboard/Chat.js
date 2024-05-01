@@ -40,10 +40,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
- 
+
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
     if (storedSessionId) {
@@ -70,9 +70,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
       autoClickedRef.current = false;  // Reset if the number of links changes
     }
   }, [linkData, onHostLinkClick]);
-  
-  
- 
+
+
+
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -234,7 +234,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl());
 
-      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone+','+llmRunnerType+','+sessionId);
+      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerType + ',' + sessionId);
 
     };
 
@@ -252,15 +252,39 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
         }
 
       }
-      else if (newWord.startsWith('</llm-error>')) { 
+      else if (newWord.startsWith('</llm-error>')) {
         // Pass only the part of newWord after '</llm-error>'
         var message = {
-            persist: true,
-            text: newWord.substring('</llm-error>'.length),
-            success: false
+          persist: true,
+          text: newWord.substring('</llm-error>'.length),
+          success: false
         };
         setMessage(message);
-    }
+      }
+      else if (newWord.startsWith('</llm-info>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          info : '',
+          text: newWord.substring('</llm-info>'.length),
+        };
+        setMessage(message);
+      }
+      else if (newWord.startsWith('</llm-warning>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          warning: '',
+          text: newWord.substring('</llm-warning>'.length),
+        };
+        setMessage(message);
+      }
+      else if (newWord.startsWith('</llm-success>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          success: true,
+          text: newWord.substring('</llm-success>'.length),
+        };
+        setMessage(message);
+      }
       else if (newWord === '</llm-ready>') {
         setIsReady(true);
         setLlmFeedback('');
@@ -389,7 +413,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
               backgroundColor: theme.palette.action.hover, // Hover background color
             }
           }}>
-           {linkItem.DateStarted ? `${linkItem.Address} : ${linkItem.DateStarted}` : linkItem.Address}
+            {linkItem.DateStarted ? `${linkItem.Address} : ${linkItem.DateStarted}` : linkItem.Address}
 
           </Button>
         </ListItem>
@@ -409,7 +433,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
               padding: theme.spacing(1),
               borderRadius: theme.shape.borderRadius / 3
             }} >
-              <Typography variant="h7" >Network Monitor Assistant ({ llmRunnerType})</Typography>
+              <Typography variant="h7" >Network Monitor Assistant ({llmRunnerType})</Typography>
             </Grid>
             <Grid item xs={12} alignItems="right" >
               <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} >

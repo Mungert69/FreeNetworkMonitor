@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 const MessageBar = ({ message }) => {
   const { enqueueSnackbar } = useSnackbar();
   var severity = 'info';
-  if (message.info === undefined) {
+  if (message.info === undefined && message.warning === undefined) {
     if (message.success === false) {
       severity = 'error';
     }
@@ -14,11 +14,12 @@ const MessageBar = ({ message }) => {
       severity = 'success';
     }
   }
+  else if (message.warning !== undefined) severity = 'warning';
 
   enqueueSnackbar(message.text, {
     variant: severity,
     persist: message.persist,  // Control if the message should auto-hide
-    autoHideDuration: message.persist ? null : 5000,  // Null for persistent messages
+    autoHideDuration: message.persist ? null : 10000,  // Null for persistent messages
     anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
   });
 };
