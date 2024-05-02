@@ -19,7 +19,7 @@ const MessageBar = ({ message }) => {
   enqueueSnackbar(message.text, {
     variant: severity,
     persist: message.persist,  // Control if the message should auto-hide
-    autoHideDuration: message.persist ? null : 10000,  // Null for persistent messages
+    autoHideDuration: message.persist ? null : 200*message.text.length,  // Null for persistent messages
     anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
   });
 };
