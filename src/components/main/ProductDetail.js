@@ -79,6 +79,10 @@ const ProductDetail = () => {
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
+                    <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
+>
+            <ChatIcon />
+          </IconButton>
                     <AuthNav />
 
                 </Toolbar>
@@ -242,11 +246,10 @@ const ProductDetail = () => {
 
                     <Blog classes={classes} />
                     <Footer />
-                    <IconButton onClick={toggleChatView} className={classes.chatToggle}>
-                        <ChatIcon />
-                    </IconButton>
+                  
+                    
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        <Chat isDashboard={false} initRunnerType={'TurboLLM'} />
+                        <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} />
                     </div>
                 </Container>
             </main>

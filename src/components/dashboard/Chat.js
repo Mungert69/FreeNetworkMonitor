@@ -1,6 +1,7 @@
 import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -14,7 +15,7 @@ import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
 
-function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
+function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
   const theme = useTheme();
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
@@ -472,6 +473,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType }) {
                   <Tooltip title={!isReady ? "Assitant not ready" : "Reload Assitant"}
                     TransitionComponent={Zoom}>
                     <RestartAltIcon />
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+              <IconButton onClick={() =>setIsChatOpen(false)} color="secondary" >
+                <Badge color="secondary">
+                  <Tooltip title={"Hide Assistant"}
+                    TransitionComponent={Zoom}>
+                    <CloseIcon />
                   </Tooltip>
                 </Badge>
               </IconButton>
