@@ -71,7 +71,7 @@ After installing the app:
 
 4. **Adding Hosts**: After logging into the Free Network Monitor site, navigate to the dashboard. To add a host for monitoring, click the flashing edit icon. For instance, to monitor a local router, input its IP address (e.g., 192.168.1.1) and select 'icmp' as the endpoint type. This action enables you to ping the router, monitoring its availability.
 
-5. **Select Monitor Location**: You have the option to choose between predefined remote agents or your local agent for monitoring purposes. For local devices like a router at 192.168.1.1, select 'your email address - local' as the monitor location.
+5. **Select Monitor Location**: You have the option to choose between predefined remote agents or your local agent for monitoring purposes. For local devices like a router at 192.168.1.1, select 'your email address - agent id' as the monitor location.
 
 6. **View and Edit Mode**: Utilize the edit icon to switch between view and edit modes. In view mode, monitoring data for hosts will appear after about 2 minutes. Click the chart icon next to a host for more detailed response data.
 
@@ -164,7 +164,7 @@ Once the agent is authorized, you can start adding hosts to monitor:
 
 2. **Adding Hosts**: Once logged into the Free Network Monitor site, go to the dashboard and add a host that you want to monitor, click the flashing edit icon. You might wish to monitor a local router at the IP address 192.168.1.1 using the endpoint type 'icmp' to ping the local router, thereby monitoring its availability.
 
-3. **Select Monitor Location**: You can choose either predefined remote agents or your local agent. However, for monitoring local devices like a router at 192.168.1.1, you would need to choose 'your email address - local' when selecting a monitor location.
+3. **Select Monitor Location**: You can choose either predefined remote agents or your local agent. However, for monitoring local devices like a router at 192.168.1.1, you would need to choose 'your email address - agent id' when selecting a monitor location.
 
 4. **View and Edit Mode**: Click the edit icon to toggle between view and edit modes. In view mode, after about 2 minutes, host monitoring data should start appearing. For detailed response data, click the chart icon next to the host.
 
