@@ -77,6 +77,7 @@ export default function Dashboard() {
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatKey, setChatKey] = useState(0);
 
   const toggleChatView = () => {
     setIsChatOpen(!isChatOpen);
@@ -188,6 +189,7 @@ export default function Dashboard() {
         await setSiteId(getStartSiteId());
         await setApiUser(undefined);
       }
+      setChatKey(prevKey => prevKey + 1);
       setIsLoading(false);
     };
     checkAuth();
@@ -373,7 +375,7 @@ export default function Dashboard() {
                 </Paper>
 
                 <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                <Chat onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={ setIsChatOpen } />
+                <Chat  key={chatKey}  onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={ setIsChatOpen } />
             </div>
               </Grid>
             </Grid>
