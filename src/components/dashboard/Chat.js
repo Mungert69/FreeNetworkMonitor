@@ -47,14 +47,28 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
 
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
-    if (storedSessionId) {
-      return storedSessionId;
-    } else {
-      const newSessionId = uuidv4();
-      localStorage.setItem('sessionId', newSessionId);
-      return newSessionId;
+    const storedTimestamp = localStorage.getItem('sessionTimestamp');
+    const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
+  
+    if (storedSessionId && storedTimestamp) {
+      const currentTime = new Date().getTime();
+      if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
+        // Session expired, remove stored data
+        localStorage.removeItem('sessionId');
+        localStorage.removeItem('sessionTimestamp');
+      } else {
+        // Session still valid, return stored session ID
+        return storedSessionId;
+      }
     }
+  
+    // Generate new session ID and store timestamp
+    const newSessionId = uuidv4();
+    localStorage.setItem('sessionId', newSessionId);
+    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
+    return newSessionId;
   };
+  
 
   const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
 
