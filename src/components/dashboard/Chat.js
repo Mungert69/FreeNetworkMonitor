@@ -119,7 +119,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
       let messageIndex = 0;
       const intervalId = setInterval(() => {
         setCallingFunctionMessage(messages[messageIndex++ % messages.length]);
-      }, 3000); // Rotate messages every 2 seconds
+      }, 3000); // Rotate messages every 3 seconds
       return () => clearInterval(intervalId);
     }
   }, [isCallingFunction]);
@@ -177,7 +177,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
       if (webSocketRef.current.readyState === WebSocket.OPEN) {
         webSocketRef.current.send('');
       }
-    }, 30000);
+    }, 60000);
     return () => {
       clearInterval(pingInterval);
       if (webSocketRef.current.socket !== undefined) webSocketRef.current.socket.close();
@@ -189,7 +189,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
     if (!isDashboard) return null
     autoClickedRef.current = false;
     const jsonData = JSON.parse(functionData);
-
+    if (!jsonData ) {
+      return null;
+    }
     if (jsonData.name === "get_host_list") {
       return jsonData.dataJson.map((host) => {
         // Create a new object based on the host

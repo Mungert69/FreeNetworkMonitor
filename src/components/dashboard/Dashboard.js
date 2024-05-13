@@ -56,6 +56,7 @@ export default function Dashboard() {
   const [dataSetId, setDataSetId] = React.useState(0);
   const [siteId, setSiteId] = React.useState(getStartSiteId());
   const [selectedDate, setSelectedDate] = React.useState();
+  const [defaultSearchValue, setDefaultSearchValue] = React.useState('');
   const [alertCount, setAlertCount] = React.useState(0);
   const [toggleTable, setToggleTable] = React.useState(true);
   const [reloadListData, setReloadListData] = React.useState(true);
@@ -88,12 +89,15 @@ export default function Dashboard() {
      
       const hostData = { 'id' : linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID' : linkData.UserID };    
       if (hostData !== undefined) {
+        setDefaultSearchValue(hostData.address);
         handleSetDataSetId(hostData.dataSetID, hostData.date);
         clickViewChart(hostData);
+
       }
       setToggleTable(true);
     }
     if (linkData.isHostList) {
+      setDefaultSearchValue(linkData.Address);
       setToggleTable(false);
     }
 
@@ -120,7 +124,9 @@ export default function Dashboard() {
     await resetPredictAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
   };
   const setEditMode = async () => {
+    setDefaultSearchValue('');
     setToggleTable(toggleTable => !toggleTable);
+
 
   };
   const handleDrawerOpen = () => {
@@ -357,19 +363,19 @@ export default function Dashboard() {
 
                 <Paper className={classes.paper}>
                   {toggleTable ?
-                    <HostList data={listData}
-                      clickViewChart={clickViewChart}
+                  <HostList data={listData}
+                    clickViewChart={clickViewChart}
                     resetHostAlert={resetHostAlert}
                     resetPredictAlert={resetPredictAlert}
-                      processorList={processorList}
-                      dataSets={dataSets}
-                      handleSetDataSetId={handleSetDataSetId}
-                      setDateStart={setDateStart}
-                      setDateEnd={setDateEnd} />
+                    processorList={processorList}
+                    dataSets={dataSets}
+                    handleSetDataSetId={handleSetDataSetId}
+                    setDateStart={setDateStart}
+                    setDateEnd={setDateEnd} defaultSearchValue={defaultSearchValue} />
                     :
                     <React.Fragment>
 
-                      <HostListEdit siteId={siteId} processorList={processorList} />
+                      <HostListEdit siteId={siteId} processorList={processorList} defaultSearchValue={defaultSearchValue}/>
                     </React.Fragment>
                   }
                 </Paper>

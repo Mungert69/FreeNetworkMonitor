@@ -1,5 +1,5 @@
 import MUIDataTable from "mui-datatables";
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import {
   Button,
   Tooltip,
@@ -30,7 +30,7 @@ const muiCache = createCache({
   "prepend": true
 });
 
-export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd }) => {
+export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd,defaultSearchValue }) => {
   const theme = useTheme();
   const getMuiTheme = () => createTheme({
     components: {
@@ -230,6 +230,9 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
     customToolbar: () => (<HeaderElements />),
     jumpToPage: true,
     selectableRows: false,
+  
+    searchText: defaultSearchValue, // Populate the search field with default value
+
     onTableChange: (action, tableState) => {
       // Save the current table state to local storage when the table changes
       if (action === 'filterChange' || action === 'columnSortChange' || action === 'changeRowsPerPage' || action === 'changePage' || action === 'resetFilters') {
@@ -305,11 +308,32 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
     // Where to display DataSetList compoment if this is set here?
 
   }
+  const [searchText, setSearchText] = useState('');
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    if (defaultSearchValue) {
+      setSearchText(defaultSearchValue);
+      // Focus and trigger the search input
+      if (searchInputRef.current) {
+        searchInputRef.current.value = defaultSearchValue;
+        searchInputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        searchInputRef.current.focus();
+        searchInputRef.current.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
+      }
+    }
+  }, [defaultSearchValue]);
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
   return (
     <>
       <CacheProvider value={muiCache}>
      
         <ThemeProvider theme={getMuiTheme()}>
+          
         {showDataSetsList && (
       <DataSetsList 
               dataSets={dataSets}

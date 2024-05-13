@@ -1,6 +1,6 @@
 import MUIDataTable from "mui-datatables";
 import { TablePagination, Grid } from '@mui/material';
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import {
   FormControlLabel,
   TextField,
@@ -30,7 +30,7 @@ const muiCache = createCache({
   "prepend": true
 });
 
-export const HostListEdit = ({ siteId, processorList }) => {
+export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   const { user } = useFusionAuth();
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
@@ -300,7 +300,18 @@ export const HostListEdit = ({ siteId, processorList }) => {
     customToolbar: () => (<HeaderElements />),
     jumpToPage: true,
     selectableRows: false,
-
+    textLabels: {
+      // Customize the search placeholder text
+      body: {
+        noMatch: "No matching records found",
+        toolTip: "Sort",
+        columnHeaderTooltip: column => `Sort for ${column.label}`
+      },
+      toolbar: {
+        search: "Search hosts" // Customize the search placeholder text here
+      }
+    },
+    searchText: defaultSearchValue // Populate the search field with default value
   };
 
 
@@ -334,6 +345,25 @@ export const HostListEdit = ({ siteId, processorList }) => {
     </>
   );
 
+  const [searchText, setSearchText] = useState('');
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    if (defaultSearchValue) {
+      setSearchText(defaultSearchValue);
+      // Focus and trigger the search input
+      if (searchInputRef.current) {
+        searchInputRef.current.value = defaultSearchValue;
+        searchInputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        searchInputRef.current.focus();
+        searchInputRef.current.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
+      }
+    }
+  }, [defaultSearchValue]);
+
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
 
   const saveData = async (data) => {
     setDisplayEdit(false);
