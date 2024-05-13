@@ -92,6 +92,7 @@ export default function Dashboard() {
         setDefaultSearchValue(hostData.address);
         handleSetDataSetId(hostData.dataSetID, hostData.date);
         clickViewChart(hostData);
+        setHostListIconText("Add Hosts");
 
       }
       setToggleTable(true);
@@ -99,6 +100,8 @@ export default function Dashboard() {
     if (linkData.isHostList) {
       setDefaultSearchValue(linkData.Address);
       setToggleTable(false);
+      setViewInfo(false);
+      setHostListIconText("View Hosts");
     }
 
     // TODO: Implement the logic to display host-specific data
