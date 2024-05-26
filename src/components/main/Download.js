@@ -29,27 +29,23 @@ const markdown = `
 
 **Exclusive Beta Testing Invitation**
 
-As part of our select group of beta testers, you will have exclusive access to download the Free Network Monitor Agent app directly from the Google Play Store. This opportunity is currently available only to users who have received a special invitation.
+As part of our select group of beta testers, you will have exclusive access to download the Free Network Monitor Agent app directly from the Google Play Store.
 
 **How to Download:**
 
-1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store. Please note, this link will only grant access to users who have been invited.
+1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store.
    
-   [Confirm Tester Access to Free Network Monitor Agent](https://play.google.com/apps/testing/click.freenetworkmonitor.networkmonitormaui) 
+   [Free Network Monitor Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui) 
 
 2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Free Network Monitor Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
 
-**Haven't Received an Invitation?**
-
-If you do not have an invitation but are interested in participating in our beta testing program, we welcome your enthusiasm! Please send a request to [support@freenetworkmonitor.click](mailto:support@freenetworkmonitor.click) to express your interest. Include a brief note about why you're excited to join our beta testing community, and we'll get back to you with details on how you can participate.
 
 **Beta Tester Rewards:**
 
 In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Free Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
 
 
-
-Note: Android version has two limitaions: it does not support Quantum Safe TLS connection monitoring and Android's battery saving features may affect pollng frequency. If you don't want these limitations in your agent then use the fully featured docker version below.  
+Note: Android version has two limitaions: it does not support Quantum Safe TLS connection monitoring and Android's battery saving features may affect pollng frequency when not connected to a charger. If you don't want these limitations in your agent then use the fully featured docker version below.  
 
 ## Windows Install Instructions
 
