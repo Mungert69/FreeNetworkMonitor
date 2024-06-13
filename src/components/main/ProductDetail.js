@@ -249,7 +249,7 @@ const ProductDetail = () => {
                   
                     
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} />
+                        <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId}/>
                     </div>
                 </Container>
             </main>

@@ -15,7 +15,7 @@ import { getLLMServerUrl } from './ServiceAPI';
 
 import React, { useState, useEffect, useRef } from 'react';
 
-function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
+function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
@@ -246,7 +246,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen }) {
     }
   }
   const connectWebSocket = () => {
-    const socket = new WebSocket(getLLMServerUrl());
+    const socket = new WebSocket(getLLMServerUrl(siteId));
 
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl());
