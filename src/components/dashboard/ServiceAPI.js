@@ -111,7 +111,8 @@ export const fetchLoadServer = async (user) => {
 }
 
 export const fetchFirstLoadServer = async () => {
-      axiosRetry(axios, { retries: 3 });
+    axiosRetry(axios, { retries: 3 });
+    var data;
     const result = await trackPromise(axios(
         {
             method: 'post',

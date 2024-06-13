@@ -29,7 +29,7 @@ import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-import { resetPredictAlertApiCall,convertDate,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { resetPredictAlertApiCall,convertDate,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer,fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect} from "react";
 import clsx from 'clsx';
 //combine all the @mui/material imports into one line not including icons
 import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
+import { getStartSiteId,fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
@@ -42,7 +43,7 @@ const ProductDetail = () => {
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
-
+    const [siteId, setSiteId] = React.useState(getStartSiteId());
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -53,7 +54,22 @@ const ProductDetail = () => {
         setOpen(false);
     };
 
-
+    useEffect(() => {
+        const firstLoadSiteId = async () => {
+          var siteId = 0;
+          try {
+            console.log("Calling fetchLoadServer for user default");
+            var loadServer = await fetchFirstLoadServer();
+            console.log("Calling getSiteIdfromUrl");
+            siteId = await getSiteIdfromUrl(loadServer);   
+            console.log("Calling setSiteId");
+            await setSiteId(siteId);
+               } catch (e) {
+            console.log("Error in Dashboard failed to get load SiteId for default user");
+          }
+        }
+        firstLoadSiteId();
+      }, []);
     reportWebVitals(sendToAnalytics);
     return (
         <div className={classes.root}>
