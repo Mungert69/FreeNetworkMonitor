@@ -110,6 +110,32 @@ export const fetchLoadServer = async (user) => {
     }
 }
 
+export const fetchFirstLoadServer = async () => {
+      axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios(
+        {
+            method: 'post',
+            url: apiLoadBalancerUrl + '/Load/GetFirstLoadServer' ,
+        }
+    ).catch(function (error) {
+        console.log('ServiceAPI.fetchFirstLoadServer Axios Error was : ' + error);
+        return;
+    }));
+    try {
+        data = result.data.data;
+        console.log('ServiceAPI.fetchFirstLoadServer got load server : ' + data);
+        return data;
+
+    }
+    catch (error) {
+        console.log('ServiceAPI.fetchFirstLoadServer unable to set load server : ' + error);
+        if (result != undefined && result.data.message !== undefined)
+            console.log('Api Result.Message was ' + result.data.message);
+        return;
+    }
+}
+
+
 // Assuming handleDownload is defined inside the Profile component or receives setMessage as a parameter
 export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, setOpen, setIsLoading) => {
     setIsLoading(true);  // Set loading to true when download starts

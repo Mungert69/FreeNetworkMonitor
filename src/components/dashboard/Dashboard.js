@@ -209,6 +209,20 @@ export default function Dashboard() {
     if (query.get('initViewSub')) {
       setInitViewSub(true);
     }
+    const firstLoadSiteId = async () => {
+      var siteId = 0;
+      try {
+        console.log("Calling fetchLoadServer for user default");
+        var loadServer = await fetchFirstLoadServer();
+        console.log("Calling getSiteIdfromUrl");
+        siteId = await getSiteIdfromUrl(loadServer);   
+        console.log("Calling setSiteId");
+        await setSiteId(siteId);
+           } catch (e) {
+        console.log("Error in Dashboard failed to get load SiteId for default user");
+      }
+    }
+    firstLoadSiteId();
   }, []);
   useEffect(() => {
     let interval;
