@@ -195,7 +195,7 @@ export default function Dashboard() {
       else {
         //await setDefaultUser(true);
         console.log("Is Authenticated is false")
-        await  firstLoadSiteId();
+        await setSiteId(getStartSiteId());
         await setApiUser(undefined);
       }
       setChatKey(prevKey => prevKey + 1);
