@@ -246,6 +246,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }
   const connectWebSocket = () => {
+  
     const socket = new WebSocket(getLLMServerUrl(siteId));
 
     socket.onopen = () => {

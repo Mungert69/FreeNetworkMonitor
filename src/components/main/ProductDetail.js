@@ -43,7 +43,7 @@ const ProductDetail = () => {
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
-    const [siteId, setSiteId] = React.useState(getStartSiteId());
+    const [siteId, setSiteId] = React.useState(null);
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -265,7 +265,7 @@ const ProductDetail = () => {
                   
                     
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId}/>
+                        {siteId && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
                     </div>
                 </Container>
             </main>

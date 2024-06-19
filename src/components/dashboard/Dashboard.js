@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [dataSets, setDataSets] = React.useState([]);
   const [hostData, setHostData] = React.useState(defaultHost);
   const [dataSetId, setDataSetId] = React.useState(0);
-  const [siteId, setSiteId] = React.useState(getStartSiteId());
+  const [siteId, setSiteId] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState();
   const [defaultSearchValue, setDefaultSearchValue] = React.useState('');
   const [alertCount, setAlertCount] = React.useState(0);
@@ -164,7 +164,7 @@ export default function Dashboard() {
     const getAccess = async () => {
       var siteId = 0;
       try {
-        console.log("Calling fetchLoadServer");
+        console.log("Calling fetchLoadServer is Authenticated triggered");
         var loadServer = await fetchLoadServer(user);
         console.log("Calling getSiteIdfromUrl");
         siteId = await getSiteIdfromUrl(loadServer);
@@ -195,7 +195,7 @@ export default function Dashboard() {
       else {
         //await setDefaultUser(true);
         console.log("Is Authenticated is false")
-        await setSiteId(getStartSiteId());
+        await firstLoadSiteId();
         await setApiUser(undefined);
       }
       setChatKey(prevKey => prevKey + 1);
@@ -222,7 +222,7 @@ export default function Dashboard() {
       setInitViewSub(true);
     }
    
-    firstLoadSiteId();
+    //firstLoadSiteId();
   }, []);
   useEffect(() => {
     let interval;
@@ -398,8 +398,8 @@ export default function Dashboard() {
                 </Paper>
 
                 <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                <Chat  key={chatKey}  onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={ setIsChatOpen } siteId={siteId} />
-            </div>
+                {siteId && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+ </div>
               </Grid>
             </Grid>
         </Container>

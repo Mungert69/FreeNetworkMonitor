@@ -211,7 +211,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
 
 export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, isAuthenticated) => {
     var data = [];
-    console.log("Is Authenticated "+isAuthenticated)
+    //console.log("Is Authenticated "+isAuthenticated)
     if (isAuthenticated) { var extUrlStr = 'Auth'; }
     else {
         user = {};
