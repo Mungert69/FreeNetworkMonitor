@@ -5,7 +5,10 @@ import axiosRetry from 'axios-retry';
 
 const defaultUser = "default";
 
-export const getStartSiteId = () => { return startSiteId; }
+export const getStartSiteId = () => {
+    var loadServer = fetchFirstLoadServer();
+    return getSiteIdfromUrl(loadServer);
+}
 export const getServerLabel = () => {
     return serverLabel;
 }

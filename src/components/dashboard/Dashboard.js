@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [dataSets, setDataSets] = React.useState([]);
   const [hostData, setHostData] = React.useState(defaultHost);
   const [dataSetId, setDataSetId] = React.useState(0);
-  const [siteId, setSiteId] = React.useState();
+  const [siteId, setSiteId] = React.useState(undefined);
   const [selectedDate, setSelectedDate] = React.useState();
   const [defaultSearchValue, setDefaultSearchValue] = React.useState('');
   const [alertCount, setAlertCount] = React.useState(0);
@@ -195,7 +195,7 @@ export default function Dashboard() {
       else {
         //await setDefaultUser(true);
         console.log("Is Authenticated is false")
-        await setSiteId(getStartSiteId());
+        await firstLoadSiteId();
         await setApiUser(undefined);
       }
       setChatKey(prevKey => prevKey + 1);
@@ -204,26 +204,28 @@ export default function Dashboard() {
     checkAuth();
   }, [isAuthenticated]);
 
+  const firstLoadSiteId = async () => {
+    var siteId = 0;
+    try {
+      console.log("Calling fetchLoadServer for user default");
+      var loadServer = await fetchFirstLoadServer();
+      console.log("Calling getSiteIdfromUrl");
+      siteId = await getSiteIdfromUrl(loadServer);   
+      console.log("Calling setSiteId");
+      await setSiteId(siteId);
+         } catch (e) {
+      console.log("Error in Dashboard failed to get load SiteId for default user");
+    }
+  }
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     if (query.get('initViewSub')) {
       setInitViewSub(true);
     }
-    const firstLoadSiteId = async () => {
-      var siteId = 0;
-      try {
-        console.log("Calling fetchLoadServer for user default");
-        var loadServer = await fetchFirstLoadServer();
-        console.log("Calling getSiteIdfromUrl");
-        siteId = await getSiteIdfromUrl(loadServer);   
-        console.log("Calling setSiteId");
-        await setSiteId(siteId);
-           } catch (e) {
-        console.log("Error in Dashboard failed to get load SiteId for default user");
-      }
-    }
-    firstLoadSiteId();
+   
+    //firstLoadSiteId();
   }, []);
+
   useEffect(() => {
     let interval;
     if (realTime) {
