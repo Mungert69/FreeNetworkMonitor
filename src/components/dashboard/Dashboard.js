@@ -398,7 +398,7 @@ export default function Dashboard() {
                 </Paper>
 
                 <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                {siteId && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+                {siteId ?? false && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
  </div>
               </Grid>
             </Grid>
