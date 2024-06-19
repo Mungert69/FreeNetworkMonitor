@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [dataSets, setDataSets] = React.useState([]);
   const [hostData, setHostData] = React.useState(defaultHost);
   const [dataSetId, setDataSetId] = React.useState(0);
-  const [siteId, setSiteId] = React.useState(getStartSiteId());
+  const [siteId, setSiteId] = React.useState();
   const [selectedDate, setSelectedDate] = React.useState();
   const [defaultSearchValue, setDefaultSearchValue] = React.useState('');
   const [alertCount, setAlertCount] = React.useState(0);
