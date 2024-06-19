@@ -265,7 +265,7 @@ const ProductDetail = () => {
                   
                     
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                    {siteId ?? false && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+                    {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
                     </div>
                 </Container>
             </main>
