@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [dataSets, setDataSets] = React.useState([]);
   const [hostData, setHostData] = React.useState(defaultHost);
   const [dataSetId, setDataSetId] = React.useState(0);
-  const [siteId, setSiteId] = React.useState('');
+  const [siteId, setSiteId] = React.useState(getStartSiteId());
   const [selectedDate, setSelectedDate] = React.useState();
   const [defaultSearchValue, setDefaultSearchValue] = React.useState('');
   const [alertCount, setAlertCount] = React.useState(0);
@@ -195,7 +195,7 @@ export default function Dashboard() {
       else {
         //await setDefaultUser(true);
         console.log("Is Authenticated is false")
-        await firstLoadSiteId();
+        await  firstLoadSiteId();
         await setApiUser(undefined);
       }
       setChatKey(prevKey => prevKey + 1);
@@ -203,7 +203,6 @@ export default function Dashboard() {
     };
     checkAuth();
   }, [isAuthenticated]);
-
   const firstLoadSiteId = async () => {
     var siteId = 0;
     try {
@@ -223,9 +222,8 @@ export default function Dashboard() {
       setInitViewSub(true);
     }
    
-    //firstLoadSiteId();
+    firstLoadSiteId();
   }, []);
-
   useEffect(() => {
     let interval;
     if (realTime) {
