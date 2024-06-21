@@ -45,7 +45,7 @@ As part of our select group of beta testers, you will have exclusive access to d
 In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Free Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
 
 
-Note: Android version has two limitaions: it does not support Quantum Safe TLS connection monitoring and Android's battery saving features may affect pollng frequency when not connected to a charger. If you don't want these limitations in your agent then use the fully featured docker version below.  
+Note: Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. If you don't want this limitation in your agent then use the fully featured docker version below.  
 
 ## Windows Install Instructions
 
@@ -53,7 +53,7 @@ To install the Local Network Monitor Agent App from the Windows Store, click the
 
 [Install for Windows](https://apps.microsoft.com/detail/9PFJ3203JWDT)
 
-Note : Windows version does not currently support Quantum Safe TLS connection monitoring. Again if you don't want this limitation in your agent then use the fully featured docker version below.
+Note : Windows version does not currently support Quantum Safe TLS connection monitoring. If you don't want this limitation in your agent then use the fully featured docker version below.
 
 ## Post-Installation Instructions
 
