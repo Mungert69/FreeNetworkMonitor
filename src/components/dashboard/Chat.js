@@ -355,7 +355,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const filterLlmOutput = (text) => {
 
-    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
+    const messageStart = '\n<|recipient|> all\n<|content|>';
     const messageEnd = '<|stop|>';
 
     if (text.includes(messageStart)) {
@@ -369,7 +369,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const replacements = {
       // Adjusted regex pattern to match the structure without spaces around the pipes
       '<\\|from\\|>user<\\|content\\|>': 'User: ',
-      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      //'<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      '\\n<\\|recipient\\|> all\\n<\\|content\\|>': '\nAssistant:',
       '<\\|stop\\|>': '\n'
     };
 
