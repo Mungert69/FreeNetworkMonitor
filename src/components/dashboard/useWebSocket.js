@@ -68,7 +68,6 @@ function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
 
         const handleMessage = (newWord) => {
             // Execute the callback functions passed in the "callbacks" object
-            const newWord = event.data;
             //TODO implement this if condition looking to match newWord is <function-data>SOME TEXT</function-data>
             if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
                 // Extract the function data
