@@ -18,6 +18,31 @@ import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
+  const getSessionId = () => {
+    const storedSessionId = localStorage.getItem('sessionId');
+    const storedTimestamp = localStorage.getItem('sessionTimestamp');
+    const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
+
+    if (storedSessionId && storedTimestamp) {
+      const currentTime = new Date().getTime();
+      if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
+        // Session expired, remove stored data
+        localStorage.removeItem('sessionId');
+        localStorage.removeItem('sessionTimestamp');
+      } else {
+        // Session still valid, return stored session ID
+        return storedSessionId;
+      }
+    }
+
+    // Generate new session ID and store timestamp
+    const newSessionId = uuidv4();
+    localStorage.setItem('sessionId', newSessionId);
+    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
+    return newSessionId;
+  };
+
+
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
@@ -59,32 +84,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     processFunctionData,
     filterLlmOutput,
   };
-
-  const getSessionId = () => {
-    const storedSessionId = localStorage.getItem('sessionId');
-    const storedTimestamp = localStorage.getItem('sessionTimestamp');
-    const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
-
-    if (storedSessionId && storedTimestamp) {
-      const currentTime = new Date().getTime();
-      if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
-        // Session expired, remove stored data
-        localStorage.removeItem('sessionId');
-        localStorage.removeItem('sessionTimestamp');
-      } else {
-        // Session still valid, return stored session ID
-        return storedSessionId;
-      }
-    }
-
-    // Generate new session ID and store timestamp
-    const newSessionId = uuidv4();
-    localStorage.setItem('sessionId', newSessionId);
-    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
-    return newSessionId;
-  };
-
-
   
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
@@ -249,118 +248,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }
 
-  /*useEffect(() => {
-    connectWebSocket();
-    const pingInterval = setInterval(() => {
-      if (webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.send('');
-      }
-    }, 60000);
-    return () => {
-      clearInterval(pingInterval);
-    };
-
-  }, []);*/
-
-
-
- /* const connectWebSocket = () => {
-
-    const socket = new WebSocket(getLLMServerUrl(siteId));
-
-    socket.onopen = () => {
-      console.log('WebSocket connection established to ' + getLLMServerUrl());
-
-      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerType + ',' + sessionId);
-
-    };
-
-    socket.onmessage = (event) => {
-      const newWord = event.data;
-      //TODO implement this if condition looking to match newWord is <function-data>SOME TEXT</function-data>
-      if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
-        // Extract the function data
-        const functionData = newWord.slice(15, -16); // Remove the tags
-        console.log('Found function data :' + functionData);
-        const generatedLinkData = processFunctionData(functionData);
-        if (generatedLinkData !== null) {
-          setLinkData(generatedLinkData);
-          setIsDrawerOpen(true);
-        }
-
-      }
-      else if (newWord.startsWith('</llm-error>')) {
-        // Pass only the part of newWord after '</llm-error>'
-        var message = {
-          persist: true,
-          text: newWord.substring('</llm-error>'.length),
-          success: false
-        };
-        setMessage(message);
-      }
-      else if (newWord.startsWith('</llm-info>')) {
-        // Pass only the part of newWord after '</llm-error>'
-        var message = {
-          info: '',
-          text: newWord.substring('</llm-info>'.length),
-        };
-        setMessage(message);
-      }
-      else if (newWord.startsWith('</llm-warning>')) {
-        // Pass only the part of newWord after '</llm-error>'
-        var message = {
-          warning: '',
-          text: newWord.substring('</llm-warning>'.length),
-        };
-        setMessage(message);
-      }
-      else if (newWord.startsWith('</llm-success>')) {
-        // Pass only the part of newWord after '</llm-error>'
-        var message = {
-          success: true,
-          text: newWord.substring('</llm-success>'.length),
-        };
-        setMessage(message);
-      }
-      else if (newWord === '</llm-ready>') {
-        setIsReady(true);
-        setLlmFeedback('');
-      }
-      else if (newWord === '</functioncall>') {
-        setIsCallingFunction(true);
-      }
-      else if (newWord === '</functioncall-complete>') {
-        setIsCallingFunction(false);
-      }
-      else if (newWord === '<end-of-line>') {
-        //setLlmFeedback((prevFeedback) => prevFeedback );
-
-        setIsProcessing(false);
-      } else {
-        setSpeechText((prev) => prev + newWord);
-        setLlmFeedback((prevFeedback) => {
-          // Combine the new word with previous feedback before filtering
-          const combinedFeedback = prevFeedback + newWord;
-          // Now apply the filter on the combined feedback
-
-          return filterLlmOutput(combinedFeedback);
-        });
-
-
-      }
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    webSocketRef.current = socket;
-   
-  }*/
-
+ 
   useEffect(() => {
     //if (!shouldSpeak) speakText(speechText);
     setSpeechText('');
