@@ -415,9 +415,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const resetLLM = () => {
     // Close the existing WebSocket connection if open
-    if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+    /*if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.close();
-    }
+    }*/
 
     // Reset state variables
     setIsReady(false);
@@ -434,7 +434,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     // Add any other state resets or logic for stopping the LLM here
 
     // Re-establish the WebSocket connection
-    connectWebSocket();
+   // connectWebSocket();
   };
 
   const renderLinks = () => (
