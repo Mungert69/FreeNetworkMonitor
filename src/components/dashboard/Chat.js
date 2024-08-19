@@ -171,19 +171,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
-  useEffect(() => {
-    connectWebSocket();
-    const pingInterval = setInterval(() => {
-      if (webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.send('');
-      }
-    }, 60000);
-    return () => {
-      clearInterval(pingInterval);
-      if (webSocketRef.current.socket !== undefined) webSocketRef.current.socket.close();
-    };
-
-  }, []);
+  
 
   const processFunctionData = (functionData) => {
     if (!isDashboard) return null
@@ -245,6 +233,33 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       throw new Error("Unsupported function type");
     }
   }
+
+  useEffect(() => {
+    connectWebSocket();
+    const pingInterval = setInterval(() => {
+      if (webSocketRef.current.readyState === WebSocket.OPEN) {
+        webSocketRef.current.send('');
+      }
+    }, 60000);
+    return () => {
+      clearInterval(pingInterval);
+      if (webSocketRef.current.socket !== undefined) webSocketRef.current.socket.close();
+    };
+
+  }, []);
+  const attemptReconnect = () => {
+    const reconnectDelay = calculateReconnectDelay();
+    console.log(`Attempting to reconnect in ${reconnectDelay / 1000} seconds...`);
+
+    reconnectTimeout = setTimeout(() => {
+      connectWebSocket();
+    }, reconnectDelay);
+  };
+
+  const calculateReconnectDelay = () => {
+    // Implement an exponential backoff algorithm for reconnection
+    return Math.min(10000, 1000 * Math.pow(2, webSocketRef.current?.reconnectAttempts || 0)); // Max delay 10 seconds
+  };
   const connectWebSocket = () => {
   
     const socket = new WebSocket(getLLMServerUrl(siteId));
@@ -333,10 +348,11 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     socket.onclose = () => {
       console.log('WebSocket connection closed');
+      attemptReconnect();
     };
     socket.onerror = (error) => {
       console.error('WebSocket error:', error);
-      // Optionally, display an error message to the user or attempt to reconnect
+      attemptReconnect();
     };
 
     webSocketRef.current = socket;
