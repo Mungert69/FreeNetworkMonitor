@@ -263,8 +263,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     socket.onopen = () => {
       console.log('WebSocket connection established to ' + getLLMServerUrl(siteId));
-
-      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId);
+      const sendStr=Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId
+      socket.send(sendStr);
+      console.log(' Sending string to websocket : '+sendStr);
       setReconnectDelay(1000); // Reset delay on successful connection
    
     };
