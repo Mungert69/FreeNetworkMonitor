@@ -26,8 +26,12 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [firstMessageShown, setFirstMessageShown] = useState(false);
 
 
+  const webSocketRef = useRef(null);
   const outputContainerRef = useRef(null);
-  const llmRunnerTypeRef = useRef('TurboLLM'); // Initial value for the ref
+  const llmRunnerTypeRef = useRef('TurboLLM');
+  const openMessage = useRef(null);
+  const [isPaused, setPause] = useState(false);
+  const [reconnect, setReconnect] = useState(false);
   const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM'); // Initial state
 
 
@@ -47,12 +51,12 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const [reconnectDelay, setReconnectDelay] = useState(1000); // Start with 1 second
- 
+
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
-  
+
     if (storedSessionId && storedTimestamp) {
       const currentTime = new Date().getTime();
       if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
@@ -64,21 +68,21 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         return storedSessionId;
       }
     }
-  
+
     // Generate new session ID and store timestamp
     const newSessionId = uuidv4();
     localStorage.setItem('sessionId', newSessionId);
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
     return newSessionId;
   };
-  
+
 
   const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
 
   const toggleLlmRunnerType = () => {
     llmRunnerTypeRef.current = llmRunnerTypeRef.current === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM';
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
-    
+
   };
   const autoClickedRef = useRef(false);
 
@@ -99,7 +103,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
     setIsDrawerOpen(open);
   };
-  const webSocketRef = useRef(null);
+
 
   const saveFeedback = () => {
     // Create a Blob from the llmFeedback state
@@ -176,13 +180,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
- 
+
 
   const processFunctionData = (functionData) => {
     if (!isDashboard) return null
     autoClickedRef.current = false;
     const jsonData = JSON.parse(functionData);
-    if (!jsonData ) {
+    if (!jsonData) {
       return null;
     }
     if (jsonData.name === "get_host_list") {
@@ -239,38 +243,37 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }
 
+  function sendMessageCheck(message) {
+    if (webSocketRef.current.readyState === WebSocket.OPEN) {
+      webSocketRef.current.send(message);
+    } else {
+      console.log(webSocketRef.current.readyState)
+      openMessage.current = message;
+      setReconnect(!reconnect);
+    }
+  }
   useEffect(() => {
-    connectWebSocket();
-    const pingInterval = setInterval(() => {
-      if (webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.send('');
-        console.log('Sent web socket Ping ' );
-   
+    webSocketRef.current = new WebSocket(getLLMServerUrl(siteId));
+    console.log('WebSocket connection established to ' + getLLMServerUrl(siteId));
+
+    webSocketRef.current.onopen = () => {
+      const sendStr = Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId
+
+      webSocketRef.current.send(sendStr);
+      console.log(' Sent opening message to websocket : ' + sendStr);
+      if (openMessage == null) {
+
+      } else {
+        webSocketRef.current.send(openMessage.current);
+        console.log(" Sent queued message " + openMessage.current);
+        openMessage.current = null
       }
-    }, 50000);
-    return () => {
-      clearInterval(pingInterval);
-      if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.close();
-      }
+
+      //setReconnectDelay(1000); // Reset delay on successful connection
+
     };
 
-  }, []);
-
-  const connectWebSocket = () => {
-  
-    const socket = new WebSocket(getLLMServerUrl(siteId));
-
-    socket.onopen = () => {
-      console.log('WebSocket connection established to ' + getLLMServerUrl(siteId));
-      const sendStr=Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId
-      socket.send(sendStr);
-      console.log(' Sending string to websocket : '+sendStr);
-      setReconnectDelay(1000); // Reset delay on successful connection
-   
-    };
-
-    socket.onmessage = (event) => {
+    webSocketRef.current.onmessage = (event) => {
       const newWord = event.data;
       //TODO implement this if condition looking to match newWord is <function-data>SOME TEXT</function-data>
       if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
@@ -296,7 +299,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       else if (newWord.startsWith('</llm-info>')) {
         // Pass only the part of newWord after '</llm-error>'
         var message = {
-          info : '',
+          info: '',
           text: newWord.substring('</llm-info>'.length),
         };
         setMessage(message);
@@ -345,24 +348,59 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       }
     };
 
-    socket.onclose = () => {
+    webSocketRef.current.onclose = () => {
       console.log('WebSocket connection closed');
-      reconnectWebSocket();
+      setReconnect(!reconnect);
     };
-    socket.onerror = (error) => {
+    webSocketRef.current.onerror = (error) => {
       console.error('WebSocket error:', error);
       // Optionally, display an error message to the user or attempt to reconnect
     };
 
-    webSocketRef.current = socket;
 
-  }
-  const reconnectWebSocket = () => {
-    setTimeout(() => {
-      setReconnectDelay(prevDelay => Math.min(prevDelay * 2, 30000)); // Double the delay, up to maxDelay
-      connectWebSocket();
-    }, reconnectDelay);
-  };
+    const wsCurrent = webSocketRef.current;
+
+    return () => {
+      wsCurrent.close();
+    }
+  }, [reconnect]);
+
+  useEffect(() => {
+    if (!webSocketRef.current) return;
+
+    webSocketRef.current.onmessage = message => {
+      if (isPaused) return;
+
+      try {
+        console.log(message);
+      } catch (f) {
+        console.log(f);
+      }
+    };
+
+  }, [isPaused]);
+
+
+  useEffect(() => {
+    sendMessageCheck('');
+    // connectWebSocket();
+    const pingInterval = setInterval(() => {
+      if (webSocketRef.current.readyState === WebSocket.OPEN) {
+        sendMessageCheck('');
+        console.log('Sent web socket Ping ');
+
+      }
+    }, 5000);
+    return () => {
+      clearInterval(pingInterval);
+      /*if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+        webSocketRef.current.close();
+      }*/
+    };
+
+  }, []);
+
+
   useEffect(() => {
     //if (!shouldSpeak) speakText(speechText);
     setSpeechText('');
@@ -407,7 +445,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator
-      webSocketRef.current.send(currentMessage);
+      sendMessageCheck(currentMessage);
       // setUserInput('User: ' + currentMessage);
       //setLlmFeedback(currentStr => currentStr + '\n' + 'User: ');
       setCurrentMessage('');
@@ -418,6 +456,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     // Close the existing WebSocket connection if open
     if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.close();
+      setReconnect(!reconnect);
+      //webSocketRef.current.open();
     }
 
     // Reset state variables
@@ -510,7 +550,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   </Tooltip>
                 </Badge>
               </IconButton>
-              <IconButton onClick={() =>setIsChatOpen(false)} color="secondary" >
+              <IconButton onClick={() => setIsChatOpen(false)} color="secondary" >
                 <Badge color="secondary">
                   <Tooltip title={"Hide Assistant"}
                     TransitionComponent={Zoom}>
