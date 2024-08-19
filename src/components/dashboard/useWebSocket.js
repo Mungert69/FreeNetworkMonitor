@@ -48,9 +48,6 @@ function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
 
             socket.onerror = (error) => {
                 console.error('WebSocket error:', error);
-                if (shouldReconnect) {
-                    attemptReconnect();
-                }
             };
 
             webSocketRef.current = socket;

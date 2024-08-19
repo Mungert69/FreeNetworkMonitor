@@ -12,127 +12,11 @@ import useTheme from '@mui/material/styles/useTheme';
 import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
 import { getLLMServerUrl } from './ServiceAPI';
-import useWebSocket from './useWebSocket'; // Import your hook
 
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
-  const getSessionId = () => {
-    const storedSessionId = localStorage.getItem('sessionId');
-    const storedTimestamp = localStorage.getItem('sessionTimestamp');
-    const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
-
-    if (storedSessionId && storedTimestamp) {
-      const currentTime = new Date().getTime();
-      if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
-        // Session expired, remove stored data
-        localStorage.removeItem('sessionId');
-        localStorage.removeItem('sessionTimestamp');
-      } else {
-        // Session still valid, return stored session ID
-        return storedSessionId;
-      }
-    }
-
-    // Generate new session ID and store timestamp
-    const newSessionId = uuidv4();
-    localStorage.setItem('sessionId', newSessionId);
-    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
-    return newSessionId;
-  };
-
-  const processFunctionData = (functionData) => {
-    if (!isDashboard) return null
-    autoClickedRef.current = false;
-    const jsonData = JSON.parse(functionData);
-    if (!jsonData) {
-      return null;
-    }
-    if (jsonData.name === "get_host_list") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.UserID !== 'default') {
-          newHost.isHostList = true;
-        }
-        newHost.dataSetID = 0;
-        return newHost;
-      });
-
-    }
-    else if (jsonData.name === "get_host_data") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-        newHost.isHostData = true;
-        return newHost;
-      });
-    }
-    else if (jsonData.name === "add_host") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.UserID !== 'default') {
-          newHost.isHostList = true;
-        }
-
-        return newHost;
-      });
-    }
-    else if (jsonData.name === "edit_host") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.userID !== 'default') {
-          newHost.isHostList = true;
-        }
-
-        return newHost;
-      });
-    }
-    else {
-      // Handle other function types or throw an error for unsupported types
-      throw new Error("Unsupported function type");
-    }
-  }
-  const filterLlmOutput = (text) => {
-
-    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
-    const messageEnd = '<|stop|>';
-
-    if (text.includes(messageStart)) {
-      setShouldSpeak(true);
-    }
-    if (text.includes(messageEnd)) {
-      setShouldSpeak(false);
-    }
-
-
-    const replacements = {
-      // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|>user<\\|content\\|>': 'User: ',
-      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
-      '<\\|stop\\|>': '\n'
-    };
-
-    let filteredText = text;
-    Object.entries(replacements).forEach(([forbidden, alternative]) => {
-      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
-      const regex = new RegExp(forbidden, 'gi');
-      filteredText = filteredText.replace(regex, alternative);
-
-    });
-
-    return filteredText;
-  };
-
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
@@ -143,6 +27,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
 
   const outputContainerRef = useRef(null);
+  const llmRunnerTypeRef = useRef('TurboLLM'); // Initial value for the ref
+  const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM'); // Initial state
+
 
   const [currentMessage, setCurrentMessage] = useState('');
   const [displayText, setDisplayText] = useState('');
@@ -158,25 +45,40 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
-  const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
-
-  const callbacks = {
-    setMessage,
-    setIsDrawerOpen,
-    setLinkData,
-    setIsReady,
-    setIsProcessing,
-    setSpeechText,
-    setLlmFeedback,
-    setIsCallingFunction,
-    processFunctionData,
-    filterLlmOutput,
+  const [reconnectDelay, setReconnectDelay] = useState(1000); // Start with 1 second
+ 
+  const getSessionId = () => {
+    const storedSessionId = localStorage.getItem('sessionId');
+    const storedTimestamp = localStorage.getItem('sessionTimestamp');
+    const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
+  
+    if (storedSessionId && storedTimestamp) {
+      const currentTime = new Date().getTime();
+      if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
+        // Session expired, remove stored data
+        localStorage.removeItem('sessionId');
+        localStorage.removeItem('sessionTimestamp');
+      } else {
+        // Session still valid, return stored session ID
+        return storedSessionId;
+      }
+    }
+  
+    // Generate new session ID and store timestamp
+    const newSessionId = uuidv4();
+    localStorage.setItem('sessionId', newSessionId);
+    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
+    return newSessionId;
   };
   
+
+  const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
+
   const toggleLlmRunnerType = () => {
+    llmRunnerTypeRef.current = llmRunnerTypeRef.current === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM';
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
+    
   };
   const autoClickedRef = useRef(false);
 
@@ -197,8 +99,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
     setIsDrawerOpen(open);
   };
-  //const webSocketRef = useRef(null);
-  
+  const webSocketRef = useRef(null);
 
   const saveFeedback = () => {
     // Create a Blob from the llmFeedback state
@@ -275,8 +176,192 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
-
  
+
+  const processFunctionData = (functionData) => {
+    if (!isDashboard) return null
+    autoClickedRef.current = false;
+    const jsonData = JSON.parse(functionData);
+    if (!jsonData ) {
+      return null;
+    }
+    if (jsonData.name === "get_host_list") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+
+        // Conditionally add the isHostData property
+        if (host.UserID !== 'default') {
+          newHost.isHostList = true;
+        }
+        newHost.dataSetID = 0;
+        return newHost;
+      });
+
+    }
+    else if (jsonData.name === "get_host_data") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+        newHost.isHostData = true;
+        return newHost;
+      });
+    }
+    else if (jsonData.name === "add_host") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+
+        // Conditionally add the isHostData property
+        if (host.UserID !== 'default') {
+          newHost.isHostList = true;
+        }
+
+        return newHost;
+      });
+    }
+    else if (jsonData.name === "edit_host") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+
+        // Conditionally add the isHostData property
+        if (host.userID !== 'default') {
+          newHost.isHostList = true;
+        }
+
+        return newHost;
+      });
+    }
+    else {
+      // Handle other function types or throw an error for unsupported types
+      throw new Error("Unsupported function type");
+    }
+  }
+
+  useEffect(() => {
+    connectWebSocket();
+    const pingInterval = setInterval(() => {
+      if (webSocketRef.current.readyState === WebSocket.OPEN) {
+        webSocketRef.current.send('');
+        console.log('Sent web socket Ping ' );
+   
+      }
+    }, 50000);
+    return () => {
+      clearInterval(pingInterval);
+      if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+        webSocketRef.current.close();
+      }
+    };
+
+  }, []);
+
+  const connectWebSocket = () => {
+  
+    const socket = new WebSocket(getLLMServerUrl(siteId));
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established to ' + getLLMServerUrl(siteId));
+
+      socket.send(Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId);
+      setReconnectDelay(1000); // Reset delay on successful connection
+   
+    };
+
+    socket.onmessage = (event) => {
+      const newWord = event.data;
+      //TODO implement this if condition looking to match newWord is <function-data>SOME TEXT</function-data>
+      if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
+        // Extract the function data
+        const functionData = newWord.slice(15, -16); // Remove the tags
+        console.log('Found function data :' + functionData);
+        const generatedLinkData = processFunctionData(functionData);
+        if (generatedLinkData !== null) {
+          setLinkData(generatedLinkData);
+          setIsDrawerOpen(true);
+        }
+
+      }
+      else if (newWord.startsWith('</llm-error>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          persist: true,
+          text: newWord.substring('</llm-error>'.length),
+          success: false
+        };
+        setMessage(message);
+      }
+      else if (newWord.startsWith('</llm-info>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          info : '',
+          text: newWord.substring('</llm-info>'.length),
+        };
+        setMessage(message);
+      }
+      else if (newWord.startsWith('</llm-warning>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          warning: '',
+          text: newWord.substring('</llm-warning>'.length),
+        };
+        setMessage(message);
+      }
+      else if (newWord.startsWith('</llm-success>')) {
+        // Pass only the part of newWord after '</llm-error>'
+        var message = {
+          success: true,
+          text: newWord.substring('</llm-success>'.length),
+        };
+        setMessage(message);
+      }
+      else if (newWord === '</llm-ready>') {
+        setIsReady(true);
+        setLlmFeedback('');
+      }
+      else if (newWord === '</functioncall>') {
+        setIsCallingFunction(true);
+      }
+      else if (newWord === '</functioncall-complete>') {
+        setIsCallingFunction(false);
+      }
+      else if (newWord === '<end-of-line>') {
+        //setLlmFeedback((prevFeedback) => prevFeedback );
+
+        setIsProcessing(false);
+      } else {
+        setSpeechText((prev) => prev + newWord);
+        setLlmFeedback((prevFeedback) => {
+          // Combine the new word with previous feedback before filtering
+          const combinedFeedback = prevFeedback + newWord;
+          // Now apply the filter on the combined feedback
+
+          return filterLlmOutput(combinedFeedback);
+        });
+
+
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+      reconnectWebSocket();
+    };
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      // Optionally, display an error message to the user or attempt to reconnect
+    };
+
+    webSocketRef.current = socket;
+
+  }
+  const reconnectWebSocket = () => {
+    setTimeout(() => {
+      setReconnectDelay(prevDelay => Math.min(prevDelay * 2, 30000)); // Double the delay, up to maxDelay
+      connectWebSocket();
+    }, reconnectDelay);
+  };
   useEffect(() => {
     //if (!shouldSpeak) speakText(speechText);
     setSpeechText('');
@@ -287,7 +372,37 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const utterance = new SpeechSynthesisUtterance(text);
     speechSynthesis.speak(utterance);
   };
-  
+  const filterLlmOutput = (text) => {
+
+    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
+    const messageEnd = '<|stop|>';
+
+    if (text.includes(messageStart)) {
+      setShouldSpeak(true);
+    }
+    if (text.includes(messageEnd)) {
+      setShouldSpeak(false);
+    }
+
+
+    const replacements = {
+      // Adjusted regex pattern to match the structure without spaces around the pipes
+      '<\\|from\\|>user<\\|content\\|>': 'User: ',
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      '<\\|stop\\|>': '\n'
+    };
+
+    let filteredText = text;
+    Object.entries(replacements).forEach(([forbidden, alternative]) => {
+      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
+      const regex = new RegExp(forbidden, 'gi');
+      filteredText = filteredText.replace(regex, alternative);
+
+    });
+
+    return filteredText;
+  };
+
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator
@@ -300,9 +415,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const resetLLM = () => {
     // Close the existing WebSocket connection if open
-    /*if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+    if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.close();
-    }*/
+    }
 
     // Reset state variables
     setIsReady(false);
@@ -316,13 +431,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setLlmFeedback('');
     setIsProcessing(false);
     setIsCallingFunction(false);
-    // Add any other state resets or logic for stopping the LLM here
 
-    // Re-establish the WebSocket connection
-   // connectWebSocket();
   };
-
-  const webSocketRef = useWebSocket(getLLMServerUrl(siteId), siteId, sessionId, llmRunnerType, callbacks);
 
   const renderLinks = () => (
     <List>
@@ -399,7 +509,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   </Tooltip>
                 </Badge>
               </IconButton>
-              <IconButton onClick={() => setIsChatOpen(false)} color="secondary" >
+              <IconButton onClick={() =>setIsChatOpen(false)} color="secondary" >
                 <Badge color="secondary">
                   <Tooltip title={"Hide Assistant"}
                     TransitionComponent={Zoom}>
