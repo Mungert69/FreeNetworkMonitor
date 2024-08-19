@@ -1,3 +1,4 @@
+import { getLLMServerUrl } from './ServiceAPI';
 import { useEffect, useRef, useState } from 'react';
 
 function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
