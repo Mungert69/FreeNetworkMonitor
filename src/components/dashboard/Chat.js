@@ -45,6 +45,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
+  const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
 
   const callbacks = {
     setMessage,
@@ -84,8 +85,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
 
 
-  const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
-
+  
   const toggleLlmRunnerType = () => {
     setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
   };
@@ -109,8 +109,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setIsDrawerOpen(open);
   };
   //const webSocketRef = useRef(null);
-  const webSocketRef = useWebSocket(getLLMServerUrl(siteId), siteId, sessionId, llmRunnerType, callbacks);
-
+  
 
   const saveFeedback = () => {
     // Create a Blob from the llmFeedback state
@@ -436,6 +435,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     // Re-establish the WebSocket connection
    // connectWebSocket();
   };
+
+  const webSocketRef = useWebSocket(getLLMServerUrl(siteId), siteId, sessionId, llmRunnerType, callbacks);
 
   const renderLinks = () => (
     <List>
