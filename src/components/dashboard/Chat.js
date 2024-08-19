@@ -12,6 +12,7 @@ import useTheme from '@mui/material/styles/useTheme';
 import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
 import { getLLMServerUrl } from './ServiceAPI';
+import useWebSocket from './useWebSocket'; // Import your hook
 
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -45,11 +46,24 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [llmRunnerType, setLlmRunnerType] = useState(initRunnerType);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
 
+  const callbacks = {
+    setMessage,
+    setIsDrawerOpen,
+    setLinkData,
+    setIsReady,
+    setIsProcessing,
+    setSpeechText,
+    setLlmFeedback,
+    setIsCallingFunction,
+    processFunctionData,
+    filterLlmOutput,
+  };
+
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
-  
+
     if (storedSessionId && storedTimestamp) {
       const currentTime = new Date().getTime();
       if (currentTime - parseInt(storedTimestamp) > oneDayInMilliseconds) {
@@ -61,14 +75,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         return storedSessionId;
       }
     }
-  
+
     // Generate new session ID and store timestamp
     const newSessionId = uuidv4();
     localStorage.setItem('sessionId', newSessionId);
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
     return newSessionId;
   };
-  
+
 
   const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
 
@@ -94,7 +108,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
     setIsDrawerOpen(open);
   };
-  const webSocketRef = useRef(null);
+  //const webSocketRef = useRef(null);
+  const webSocketRef = useWebSocket(getLLMServerUrl(siteId), siteId, sessionId, llmRunnerType, callbacks);
+
 
   const saveFeedback = () => {
     // Create a Blob from the llmFeedback state
@@ -171,13 +187,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
-  
+
 
   const processFunctionData = (functionData) => {
     if (!isDashboard) return null
     autoClickedRef.current = false;
     const jsonData = JSON.parse(functionData);
-    if (!jsonData ) {
+    if (!jsonData) {
       return null;
     }
     if (jsonData.name === "get_host_list") {
@@ -234,7 +250,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }
 
-  useEffect(() => {
+  /*useEffect(() => {
     connectWebSocket();
     const pingInterval = setInterval(() => {
       if (webSocketRef.current.readyState === WebSocket.OPEN) {
@@ -243,25 +259,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }, 60000);
     return () => {
       clearInterval(pingInterval);
-      if (webSocketRef.current.socket !== undefined) webSocketRef.current.socket.close();
     };
 
-  }, []);
-  const attemptReconnect = () => {
-    const reconnectDelay = calculateReconnectDelay();
-    console.log(`Attempting to reconnect in ${reconnectDelay / 1000} seconds...`);
+  }, []);*/
 
-    reconnectTimeout = setTimeout(() => {
-      connectWebSocket();
-    }, reconnectDelay);
-  };
 
-  const calculateReconnectDelay = () => {
-    // Implement an exponential backoff algorithm for reconnection
-    return Math.min(10000, 1000 * Math.pow(2, webSocketRef.current?.reconnectAttempts || 0)); // Max delay 10 seconds
-  };
-  const connectWebSocket = () => {
-  
+
+ /* const connectWebSocket = () => {
+
     const socket = new WebSocket(getLLMServerUrl(siteId));
 
     socket.onopen = () => {
@@ -297,7 +302,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       else if (newWord.startsWith('</llm-info>')) {
         // Pass only the part of newWord after '</llm-error>'
         var message = {
-          info : '',
+          info: '',
           text: newWord.substring('</llm-info>'.length),
         };
         setMessage(message);
@@ -348,16 +353,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     socket.onclose = () => {
       console.log('WebSocket connection closed');
-      attemptReconnect();
     };
     socket.onerror = (error) => {
       console.error('WebSocket error:', error);
-      attemptReconnect();
     };
 
     webSocketRef.current = socket;
-
-  }
+   
+  }*/
 
   useEffect(() => {
     //if (!shouldSpeak) speakText(speechText);
@@ -509,7 +512,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   </Tooltip>
                 </Badge>
               </IconButton>
-              <IconButton onClick={() =>setIsChatOpen(false)} color="secondary" >
+              <IconButton onClick={() => setIsChatOpen(false)} color="secondary" >
                 <Badge color="secondary">
                   <Tooltip title={"Hide Assistant"}
                     TransitionComponent={Zoom}>
