@@ -42,6 +42,96 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return newSessionId;
   };
 
+  const processFunctionData = (functionData) => {
+    if (!isDashboard) return null
+    autoClickedRef.current = false;
+    const jsonData = JSON.parse(functionData);
+    if (!jsonData) {
+      return null;
+    }
+    if (jsonData.name === "get_host_list") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+
+        // Conditionally add the isHostData property
+        if (host.UserID !== 'default') {
+          newHost.isHostList = true;
+        }
+        newHost.dataSetID = 0;
+        return newHost;
+      });
+
+    }
+    else if (jsonData.name === "get_host_data") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+        newHost.isHostData = true;
+        return newHost;
+      });
+    }
+    else if (jsonData.name === "add_host") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+
+        // Conditionally add the isHostData property
+        if (host.UserID !== 'default') {
+          newHost.isHostList = true;
+        }
+
+        return newHost;
+      });
+    }
+    else if (jsonData.name === "edit_host") {
+      return jsonData.dataJson.map((host) => {
+        // Create a new object based on the host
+        let newHost = { ...host };
+
+        // Conditionally add the isHostData property
+        if (host.userID !== 'default') {
+          newHost.isHostList = true;
+        }
+
+        return newHost;
+      });
+    }
+    else {
+      // Handle other function types or throw an error for unsupported types
+      throw new Error("Unsupported function type");
+    }
+  }
+  const filterLlmOutput = (text) => {
+
+    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
+    const messageEnd = '<|stop|>';
+
+    if (text.includes(messageStart)) {
+      setShouldSpeak(true);
+    }
+    if (text.includes(messageEnd)) {
+      setShouldSpeak(false);
+    }
+
+
+    const replacements = {
+      // Adjusted regex pattern to match the structure without spaces around the pipes
+      '<\\|from\\|>user<\\|content\\|>': 'User: ',
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      '<\\|stop\\|>': '\n'
+    };
+
+    let filteredText = text;
+    Object.entries(replacements).forEach(([forbidden, alternative]) => {
+      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
+      const regex = new RegExp(forbidden, 'gi');
+      filteredText = filteredText.replace(regex, alternative);
+
+    });
+
+    return filteredText;
+  };
 
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
@@ -186,68 +276,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
 
 
-
-  const processFunctionData = (functionData) => {
-    if (!isDashboard) return null
-    autoClickedRef.current = false;
-    const jsonData = JSON.parse(functionData);
-    if (!jsonData) {
-      return null;
-    }
-    if (jsonData.name === "get_host_list") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.UserID !== 'default') {
-          newHost.isHostList = true;
-        }
-        newHost.dataSetID = 0;
-        return newHost;
-      });
-
-    }
-    else if (jsonData.name === "get_host_data") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-        newHost.isHostData = true;
-        return newHost;
-      });
-    }
-    else if (jsonData.name === "add_host") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.UserID !== 'default') {
-          newHost.isHostList = true;
-        }
-
-        return newHost;
-      });
-    }
-    else if (jsonData.name === "edit_host") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.userID !== 'default') {
-          newHost.isHostList = true;
-        }
-
-        return newHost;
-      });
-    }
-    else {
-      // Handle other function types or throw an error for unsupported types
-      throw new Error("Unsupported function type");
-    }
-  }
-
  
   useEffect(() => {
     //if (!shouldSpeak) speakText(speechText);
@@ -259,37 +287,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const utterance = new SpeechSynthesisUtterance(text);
     speechSynthesis.speak(utterance);
   };
-  const filterLlmOutput = (text) => {
-
-    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
-    const messageEnd = '<|stop|>';
-
-    if (text.includes(messageStart)) {
-      setShouldSpeak(true);
-    }
-    if (text.includes(messageEnd)) {
-      setShouldSpeak(false);
-    }
-
-
-    const replacements = {
-      // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|>user<\\|content\\|>': 'User: ',
-      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
-      '<\\|stop\\|>': '\n'
-    };
-
-    let filteredText = text;
-    Object.entries(replacements).forEach(([forbidden, alternative]) => {
-      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
-      const regex = new RegExp(forbidden, 'gi');
-      filteredText = filteredText.replace(regex, alternative);
-
-    });
-
-    return filteredText;
-  };
-
+  
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
       setIsProcessing(true); // Start loading indicator

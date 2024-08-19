@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
     const webSocketRef = useRef(null);
     const [shouldReconnect, setShouldReconnect] = useState(true);
+    const [reconnectDelay, setReconnectDelay] = useState(1000); // Start with 1 second delay
+
 
     useEffect(() => {
         let reconnectTimeout;
@@ -22,6 +24,7 @@ function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
                 console.log('WebSocket connection established to ' + getLLMServerUrl(siteId));
                 socket.send(`${Intl.DateTimeFormat().resolvedOptions().timeZone},${llmRunnerType},${sessionId}`);
                 setShouldReconnect(true);
+                setReconnectDelay(1000);
 
                 // Start ping interval to keep the connection alive
                 pingInterval = setInterval(() => {
@@ -54,17 +57,12 @@ function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
         };
 
         const attemptReconnect = () => {
-            const reconnectDelay = calculateReconnectDelay();
+            setReconnectDelay((prevDelay) => Math.min(prevDelay * 2, 30000)); // Incremental backoff, capped at 20 seconds
             console.log(`Attempting to reconnect in ${reconnectDelay / 1000} seconds...`);
 
             reconnectTimeout = setTimeout(() => {
                 connectWebSocket();
             }, reconnectDelay);
-        };
-
-        const calculateReconnectDelay = () => {
-            // Implement an exponential backoff algorithm for reconnection
-            return Math.min(10000, 1000 * Math.pow(2, webSocketRef.current?.reconnectAttempts || 0)); // Max delay 10 seconds
         };
 
         const handleMessage = (newWord) => {
@@ -153,7 +151,7 @@ function useWebSocket(url, siteId, sessionId, llmRunnerType, callbacks) {
                 webSocketRef.current.close(); // Close the WebSocket connection
             }
         };
-    }, [siteId, sessionId, llmRunnerType, callbacks]);
+    }, []);
 
     return webSocketRef;
 }
