@@ -268,9 +268,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         console.log(" Sent queued message " + openMessage.current);
         openMessage.current = null
       }
-
-      //setReconnectDelay(1000); // Reset delay on successful connection
-
     };
 
     webSocketRef.current.onmessage = (event) => {
@@ -383,6 +380,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   useEffect(() => {
     sendMessageCheck('');
+    console.log('Initial page load web socket Ping ');
     // connectWebSocket();
     const pingInterval = setInterval(() => {
       if (webSocketRef.current.readyState === WebSocket.OPEN) {
@@ -456,8 +454,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     // Close the existing WebSocket connection if open
     if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.close();
-      setReconnect(!reconnect);
-      //webSocketRef.current.open();
     }
 
     // Reset state variables
