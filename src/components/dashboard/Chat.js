@@ -424,7 +424,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     const replacements = {
       // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|>user<\\|content\\|>': 'User: ',
+      '<\\|from\\|>user<\\|recipient\\|>all<\\|content\\|>': 'User: ',
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
       '<\\|stop\\|>': '\n'
     };
