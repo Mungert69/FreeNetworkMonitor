@@ -88,7 +88,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const newSessionId = uuidv4();
     localStorage.setItem('sessionId', newSessionId);
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
-    return newSessionId;
+    setSessionId(newSessionId);
   };
 
 
@@ -262,7 +262,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     if (webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.send(message);
     } else {
-      console.log(webSocketRef.current.readyState)
+      console.log(' Web socket not in OPEN state ' + webSocketRef.current.readyState);
       openMessage.current = message;
       setReconnect(!reconnect);
     }
@@ -276,7 +276,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
       webSocketRef.current.send(sendStr);
       console.log(' Sent opening message to websocket : ' + sendStr);
-      if (openMessage == null) {
+      if (openMessage.current == null ) {
 
       } else {
         webSocketRef.current.send(openMessage.current);
@@ -418,6 +418,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     //if (!shouldSpeak) speakText(speechText);
     setSpeechText('');
   }, [shouldSpeak]);
+
+  useEffect(() => {
+    resetLLM();
+  }, [sessionId]);
 
   const speakText = (text) => {
     const speechSynthesis = window.speechSynthesis;
@@ -570,11 +574,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 </Badge>
               </IconButton>
               <IconButton
-                onClick={() => {
-                  const newSessionId = resetSessionId();
-                  setSessionId(newSessionId);
-                  setTimeout(() => resetLLM(), 0);
-                }}
+                onClick={() => resetSessionId()}
                 color="error"  // Changed from "primary" to "error"
                 sx={{
                   '&:hover': {
@@ -660,7 +660,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
             <Grid item xs={2}>
               <IconButton
                 color="primary"
-                onClick={sendMessage}
+                onClick={() => sendMessage()}
                 disabled={isProcessing || isCallingFunction || !isReady}
                 aria-label="send message"
               >
