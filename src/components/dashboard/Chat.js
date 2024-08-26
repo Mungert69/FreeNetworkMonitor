@@ -2,6 +2,7 @@ import './chat.css';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -68,6 +69,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         return storedSessionId;
       }
     }
+
+    // Generate new session ID and store timestamp
+    const newSessionId = uuidv4();
+    localStorage.setItem('sessionId', newSessionId);
+    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
+    return newSessionId;
+  };
+
+  const resetSessionId = () => {
+    const storedSessionId = localStorage.getItem('sessionId');
+    const storedTimestamp = localStorage.getItem('sessionTimestamp');
+    localStorage.removeItem('sessionId');
+    localStorage.removeItem('sessionTimestamp');
+
 
     // Generate new session ID and store timestamp
     const newSessionId = uuidv4();
@@ -551,6 +566,25 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   <Tooltip title={"Hide Assistant"}
                     TransitionComponent={Zoom}>
                     <CloseIcon />
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  const newSessionId = resetSessionId();
+                  setSessionId(newSessionId);
+                  setTimeout(() => resetLLM(), 0);
+                }}
+                color="error"  // Changed from "primary" to "error"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'error.light',  // Lighter shade of error color on hover
+                  }
+                }}
+              >
+                <Badge color="warning">
+                  <Tooltip title="Reset Session" TransitionComponent={Zoom}>
+                    <RefreshIcon />
                   </Tooltip>
                 </Badge>
               </IconButton>
