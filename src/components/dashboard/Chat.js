@@ -78,9 +78,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
 
   const resetSessionId = () => {
-    if (webSocketRef.current.readyState === WebSocket.OPEN) {
-      webSocketRef.current.send('<|REMOVE_SESSION|>');
-    } 
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     localStorage.removeItem('sessionId');
@@ -92,7 +89,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     localStorage.setItem('sessionId', newSessionId);
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
     setSessionId(newSessionId);
-
   };
 
 
@@ -277,7 +273,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     webSocketRef.current.onopen = () => {
       const sendStr = Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId
-
       webSocketRef.current.send(sendStr);
       console.log(' Sent opening message to websocket : ' + sendStr);
       if (openMessage.current == null ) {
@@ -338,7 +333,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       }
       else if (newWord === '</llm-ready>') {
         setIsReady(true);
-        setLlmFeedback('');
       }
       else if (newWord === '</functioncall>') {
         setIsCallingFunction(true);
@@ -474,8 +468,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   };
   const resetLLM = () => {
+    // Close the existing WebSocket connection if open
     if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
-    
       webSocketRef.current.close();
     }
 
