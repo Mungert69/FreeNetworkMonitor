@@ -438,22 +438,25 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       setShouldSpeak(false);
     }
 
+const replacements = {
+  // Match "user" followed by any characters, a newline, then any recipient, and "<|content|>"
+  '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': 'User: ',
+  // Match "assistant" followed by any recipient except "all", then "<|content|>"
+  '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': 'Function Call:',
+  // Match "assistant" with recipient "all", followed by "<|content|>"
+  '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+  // Match function call responses with any "from" except "user" or "assistant"
+  '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': 'Function Response: ',
+  // Match the stop pattern
+  '<\\|stop\\|>': '\n'
+};
 
-    const replacements = {
-      // Adjusted regex pattern to match the structure without spaces around the pipes
-      '<\\|from\\|> user\\\\\\n<\\|recipient\\|> all\\\\\\n<\\|content\\|>': 'User: ',
-      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
-      '<\\|stop\\|>': '\n'
-    };
-
-    let filteredText = text;
-    Object.entries(replacements).forEach(([forbidden, alternative]) => {
-      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
-      const regex = new RegExp(forbidden, 'gi');
-      filteredText = filteredText.replace(regex, alternative);
-
-    });
-
+let filteredText = text;
+Object.entries(replacements).forEach(([forbidden, alternative]) => {
+  // Use a RegExp constructor for dynamic patterns, including escaping for special characters
+  const regex = new RegExp(forbidden, 'gis');  // 's' flag allows '.' to match newline characters
+  filteredText = filteredText.replace(regex, alternative);
+});
     return filteredText;
   };
 
