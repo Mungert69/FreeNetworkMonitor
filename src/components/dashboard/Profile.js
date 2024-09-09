@@ -116,7 +116,7 @@ const Profile = ({ apiUser, siteId }) => {
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                helperText="Edit your name"
+                helperText={!name ? "Edit your name" : ""}
                 label="Name"
                 name="name"
                 required
@@ -128,7 +128,7 @@ const Profile = ({ apiUser, siteId }) => {
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
-                helperText="Edit your Picture Url"
+                helperText={!picture ? "Edit your Picture Url" : ""}
                 label="Picture Url"
                 name="picture"
                 value={picture}
