@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
@@ -44,7 +44,14 @@ const Profile = ({ apiUser, siteId }) => {
   const { name, picture } = state;
   const [isLoading, setIsLoading] = useState(false);
 
-
+  useEffect(() => {
+    setState({
+      name: apiUser.name,
+      picture: apiUser.picture
+    });
+    setDisableEmail(apiUser.disableEmail);
+  }, [apiUser]);
+  
   const handleClose = () => {
     setOpen(false);
   };
@@ -217,29 +224,29 @@ const Profile = ({ apiUser, siteId }) => {
         </CardContent>
         <Divider />
         <CardActions>
-        <Grid container spacing={2} justifyContent="space-between">
-    <Grid item xs={6}>
-      <Button
-        fullWidth
-        type="submit"
-        variant="contained"
-        onClick={handleSubmit}
-      >
-        Save Changes
-      </Button>
-    </Grid>
-    <Grid item xs={6}>
-      <Button
-        fullWidth
-        type="button"
-        variant="contained"
-        onClick={() => handleDownload(siteId, setMessage, setDownloadLink, setOpen, setIsLoading)}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Processing...' : 'Generate Data Download'}
-      </Button>
-    </Grid>
-  </Grid></CardActions>
+          <Grid container spacing={2} justifyContent="space-between">
+            <Grid item xs={6}>
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                onClick={handleSubmit}
+              >
+                Save Changes
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                fullWidth
+                type="button"
+                variant="contained"
+                onClick={() => handleDownload(siteId, setMessage, setDownloadLink, setOpen, setIsLoading)}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Processing...' : 'Generate Data Download'}
+              </Button>
+            </Grid>
+          </Grid></CardActions>
       </Card>
     </>
   );
