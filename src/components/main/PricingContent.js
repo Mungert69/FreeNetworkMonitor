@@ -13,9 +13,8 @@ import Typography from '@mui/material/Typography';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import LoginButton from "../login-button";
-import { getApiSubscriptionUrl,convertDate } from '../dashboard/ServiceAPI';
-import {useFusionAuth} from '@fusionauth/react-sdk';
-
+import { getApiSubscriptionUrl, convertDate } from '../dashboard/ServiceAPI';
+import { useFusionAuth } from '@fusionauth/react-sdk';
 
 const tiers = [
   {
@@ -23,9 +22,11 @@ const tiers = [
     price: '0',
     description: [
       '10 hosts included',
-      'ICMP, Http, Dns and Smtp Ping',
-      '10k Max tokens, 2k added daily, for Network Monitor Turbo AI Assistant. FreeLLM Assistant',
-      'One Month full response Data retention',
+      'Basic ICMP, HTTP, DNS, and SMTP Ping',
+      '50k Max tokens, 25k added daily for the Turbo AI Assistant',
+      'FreeLLM Assistant for basic monitoring tasks and guidance on network setup',
+      'Limited access to AI-driven security insights and health checks',
+      'One Month full response data retention',
       'Must login every 3 months'
     ],
     buttonText: 'Sign up for free',
@@ -36,11 +37,14 @@ const tiers = [
     price: '1',
     description: [
       'Monitor up to 50 Hosts',
-      'Local network monitoring with Network Monitor Agent',
-      'ICMP, Http, Dns. Raw Connect and Smtp Ping. Includes Quantum Ready check',
-      '20k Max Turbo AI tokens, fill 5k daily. FreeLLM Assistant',
+      'Local network monitoring with Network Monitor and Quantum Secure Agents',
+      'Advanced monitoring with ICMP, HTTP, DNS, Raw Connect, SMTP Ping, and Quantum-Ready checks',
+      '150k Max tokens, fill 50k daily for Turbo AI Assistant',
+      'Turbo AI Assistant for enhanced network monitoring and intelligent alerts',
+      'FreeLLM Assistant for routine commands, basic checks, and troubleshooting',
+      'AI-driven recommendations on network performance optimizations and security checks',
       'Email support',
-      '6 Month full response Data retention',
+      '6 Month full response data retention',
     ],
     buttonText: 'Get started',
     buttonVariant: 'outlined',
@@ -50,15 +54,17 @@ const tiers = [
     subheader: 'Most popular',
     price: '3',
     description: [
-      'All the features of the Standard Plan plus',
-      'Monitor up to 300 Hosts',
-      'Advanced health check monitors; detect potential issues before they happen',
-      'Advanced health checks for ICMP, Http, Dns, Raw Connect and Smtp Ping. Includes Quantum Ready checks',
-      '80k Max Turbo AI tokens, fill 20k daily',
-      'Priority Email support',
-      '2 year full response Data retention',
+      'All features of the Standard Plan plus:',
+      'Monitor up to 300 Hosts with advanced tracking',
+      'Conduct local and remote network security assessments and penetration tests using the Network Monitor and Quantum Secure Agents.',
+      'Comprehensive health checks (ICMP, HTTP, DNS, Raw Connect, SMTP Ping, Quantum-Ready checks)',
+      '750k Max tokens, fill 250k daily for Turbo AI Assistant',
+      'Access to advanced Turbo AI Assistant with full network diagnostic capabilities',
+      'Security and Penetration Expert LLMs for detailed audits, vulnerability scans, and threat detection',
+      'Predictive AI models for identifying and resolving network issues before they happen',
+      'Priority email support',
+      '2-year full response data retention',
     ],
-    
     buttonText: 'Get started',
     buttonVariant: 'contained',
   },
@@ -66,60 +72,57 @@ const tiers = [
     title: 'Enterprise',
     price: '5',
     description: [
-      'All the features of the Professional Plan plus',
-      '500 Hosts included',
-      '200k Max Turbo AI tokens, fill 50k daily',
-      'One high priority dedicated monitor service agent in one of our datacenter locations (contact support with your requirements)',
-      'Unlimited full response Data retention and Data Export',
+      'All features of the Professional Plan plus:',
+      'Monitor up to 500 Hosts with dedicated support',
+      '2000k Max tokens, fill 500k daily for Turbo AI Assistant',
+      'Exclusive access to the most advanced features of the Turbo AI Assistant for real-time, large-scale monitoring, comprehensive penetration testing, and in-depth network insights.',
+      'Includes BusyBox command execution on agents for enhanced functionality and versatility, enabling more comprehensive system management and automation directly from your monitoring agents.',
+      'Unlimited FreeLLM Assistant usage for all basic and advanced queries',
+      'One high-priority dedicated monitor service agent in a datacenter location',
+      'Unlimited full response data retention and export',
     ],
-    
     buttonText: 'Get started',
     buttonVariant: 'outlined',
   },
-  
 ];
 
-
-function PricingContent({ noRedirect, apiUser}) {
+function PricingContent({ noRedirect, apiUser }) {
   const { isAuthenticated } = useFusionAuth();
 
   const url = (title, userId, email, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
 
-    if (customerId !== '') return getApiSubscriptionUrl()+'/customer-portal/' + customerId;
+    if (customerId !== '') return getApiSubscriptionUrl() + '/customer-portal/' + customerId;
 
     if (title === 'Free') {
       return '';
     }
-    return getApiSubscriptionUrl()+'/CreateCheckoutSession/' + userId + '/' + title + '/' + email;
+    return getApiSubscriptionUrl() + '/CreateCheckoutSession/' + userId + '/' + title + '/' + email;
+  };
 
-  }
   const buttonText = (tier, accountType, customerId) => {
-
-    if (noRedirect) return 'View Subcription';
-    if (customerId !== ''){
+    if (noRedirect) return 'View Subscription';
+    if (customerId !== '') {
       if (tier.title === accountType) {
         return 'Current Plan';
       }
       return 'Change Subscription';
     }
     if (tier.title === accountType) {
-        return 'Current Plan';
+      return 'Current Plan';
     }
     return tier.buttonText;
-   
-  }
+  };
 
-  const descriptionText =(accountType,cancelAt) => {
+  const descriptionText = (accountType, cancelAt) => {
     if (noRedirect) return 'Keep Your Business Online with 24/7 Network Monitoring. Subscribe Now.';
-    if (accountType === 'Free') return 'You are subcribed to the Free Plan. Choose a new Plan to access more features';
-    var cancelStr='';
-    if (cancelAt!=null){
-      cancelStr=' Cancels on '+convertDate (cancelAt,"Do MMMM YYYY");
+    if (accountType === 'Free') return 'You are subscribed to the Free Plan. Choose a new Plan to access more features.';
+    let cancelStr = '';
+    if (cancelAt != null) {
+      cancelStr = ' Cancels on ' + convertDate(cancelAt, "Do MMMM YYYY");
     }
-    return 'You are subcribed to the ' + accountType + ' plan .'+cancelStr;
-  }
-
+    return 'You are subscribed to the ' + accountType + ' plan.' + cancelStr;
+  };
 
   return (
     <React.Fragment>
@@ -127,16 +130,17 @@ function PricingContent({ noRedirect, apiUser}) {
       <CssBaseline />
 
       <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-        <Typography variant="h2" align="center" >
-          <img src='/img/logo.png' alt="Free Network Monitor Logo" height="96px" /></Typography>
+        <Typography variant="h2" align="center">
+          <img src='/img/logo.png' alt="Free Network Monitor Logo" height="96px" />
+        </Typography>
 
         <Typography variant="h5" align="center" color="text.secondary" component="p">
-          {descriptionText(apiUser.accountType, apiUser.cancelAt)}</Typography>
+          {descriptionText(apiUser.accountType, apiUser.cancelAt)}
+        </Typography>
       </Container>
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
           {tiers.map((tier) => (
-            // Enterprise card is full width at sm breakpoint
             <Grid
               item
               key={tier.title}
@@ -190,10 +194,13 @@ function PricingContent({ noRedirect, apiUser}) {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  {isAuthenticated ? <Button href={url(tier.title, apiUser.userID,apiUser.email, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
-                    {buttonText(tier, apiUser.accountType,apiUser.customerId)}
-                  </Button> : <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} />}
-
+                  {isAuthenticated ? (
+                    <Button href={url(tier.title, apiUser.userID, apiUser.email, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
+                      {buttonText(tier, apiUser.accountType, apiUser.customerId)}
+                    </Button>
+                  ) : (
+                    <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} />
+                  )}
                 </CardActions>
               </Card>
             </Grid>
