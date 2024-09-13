@@ -491,26 +491,28 @@ Object.entries(replacements).forEach(([forbidden, alternative]) => {
 
   };
 
-  const renderLinks = () => (
-    <List>
-      {linkData.map((linkItem) => (
-        <ListItem key={linkItem.link}>
-          <Button onClick={() => onHostLinkClick(linkItem)} sx={{
-            width: '100%', // Full width button
-            justifyContent: 'flex-start',
-            textTransform: 'none',
-            color: theme.palette.primary.main, // Main theme color for text
-            '&:hover': {
-              backgroundColor: theme.palette.action.hover, // Hover background color
-            }
-          }}>
-            {linkItem.DateStarted ? `${linkItem.Address} : ${linkItem.DateStarted}` : linkItem.Address}
+  const renderLinks = () => {
+    if (!linkData || linkData.length === 0) return;
+    return (
+      <List>
+        {linkData.map((linkItem) => (
+          <ListItem key={linkItem.link}>
+            <Button onClick={() => onHostLinkClick(linkItem)} sx={{
+              width: '100%', // Full width button
+              justifyContent: 'flex-start',
+              textTransform: 'none',
+              color: theme.palette.primary.main, // Main theme color for text
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover, // Hover background color
+              }
+            }}>
+              {linkItem.DateStarted ? `${linkItem.Address} : ${linkItem.DateStarted}` : linkItem.Address}
 
-          </Button>
-        </ListItem>
-      ))}
-    </List>
-  );
+            </Button>
+          </ListItem>
+        ))}
+      </List>);
+  };
 
 
   return (
