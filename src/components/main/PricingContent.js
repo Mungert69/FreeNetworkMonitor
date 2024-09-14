@@ -87,7 +87,7 @@ const tiers = [
 ];
 
 function PricingContent({ noRedirect, apiUser }) {
-  const { isAuthenticated } = useFusionAuth();
+  const { isLoggedIn } = useFusionAuth();
 
   const url = (title, userId, email, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
@@ -194,7 +194,7 @@ function PricingContent({ noRedirect, apiUser }) {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  {isAuthenticated ? (
+                  {isLoggedIn ? (
                     <Button href={url(tier.title, apiUser.userID, apiUser.email, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
                       {buttonText(tier, apiUser.accountType, apiUser.customerId)}
                     </Button>

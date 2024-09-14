@@ -31,7 +31,7 @@ const muiCache = createCache({
 });
 
 export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
-  const { user } = useFusionAuth();
+  const { userInfo } = useFusionAuth();
   const [selectedId, setSelectedId] = React.useState();
   const [data, setData] = React.useState([]);
   const [reset, setReset] = React.useState(true);
@@ -83,7 +83,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   })
   React.useEffect(() => {
     (async () => {
-      const returndata = await fetchEditHostData(siteId, user);
+      const returndata = await fetchEditHostData(siteId, userInfo);
       if (returndata !== undefined) {
         setData(returndata);
       }
@@ -382,7 +382,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
     setDisplayEdit(false);
     var message = { text: 'Plesae wait..', info: true };
     await setMessage(message);
-    message = await addHostApi(siteId, user, data);
+    message = await addHostApi(siteId, userInfo, data);
     await setMessage(message);
     setDisplayEdit(true);
     setReset(!reset);
@@ -392,7 +392,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
     setDisplayEdit(false);
     var message = { text: 'Please wait..', info: true };
     await setMessage(message);
-    message = await delHostApi(siteId, user, selectedId);
+    message = await delHostApi(siteId, userInfo, selectedId);
     await setSelectedId(undefined);
     await setMessage(message);
     setDisplayEdit(true);

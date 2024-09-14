@@ -4,17 +4,12 @@ import {useFusionAuth} from '@fusionauth/react-sdk';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const LogoutButton = () => {
-  const { logout } = useFusionAuth();
+  const { startLogout } = useFusionAuth();
   
 
   return (
-    <Button variant="contained" color="primary" endIcon={ <LogoutIcon />}
-  
-      onClick={() => {
-        logout({
-          returnTo: window.location.origin,
-        });
-      }}
+    <Button variant="contained" color="primary" endIcon={<LogoutIcon />}
+      onClick={startLogout}
     >
       Log Out
     </Button>

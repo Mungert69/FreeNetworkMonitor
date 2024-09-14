@@ -6,12 +6,12 @@ import ReactGA4 from 'react-ga4';
 import FadeWrapper from './dashboard/FadeWrapper';
 
 const LoginButton = ({loginText, fullLength, redirectUrl}) => {
-  const { login } = useFusionAuth();
+  const { startLogin } = useFusionAuth();
  
   return (
     <FadeWrapper toggle={true}>
     <Button  variant="contained" color="primary" endIcon={ <LoginIcon />}
-      onClick={() => login()}
+      onClick={startLogin}
     >{loginText}</Button>
     </FadeWrapper>
   );

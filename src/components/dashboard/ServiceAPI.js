@@ -168,9 +168,9 @@ export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, set
 
 
   
-export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isAuthenticated) => {
+export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isLoggedIn) => {
     const monitorPingInfoId = hostData.id;
-    if (isAuthenticated) { var extUrlStr = 'Auth'; }
+    if (isLoggedIn) { var extUrlStr = 'Auth'; }
     else {
         user = {};
         user.userID = defaultUser;
@@ -209,10 +209,10 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     setChartData(data);
 }
 
-export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, isAuthenticated) => {
+export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertCount, user, isLoggedIn) => {
     var data = [];
-    //console.log("Is Authenticated "+isAuthenticated)
-    if (isAuthenticated) { var extUrlStr = 'Auth'; }
+    //console.log("Is Authenticated "+isLoggedIn)
+    if (isLoggedIn) { var extUrlStr = 'Auth'; }
     else {
         user = {};
         user.userID = defaultUser;
@@ -254,9 +254,9 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
     setAlertCount(alertCount);
 }
 
-export const fetchProcessorList = async (baseUrlId, setProcessorList,user,isAuthenticated) => {
+export const fetchProcessorList = async (baseUrlId, setProcessorList,user,isLoggedIn) => {
     var data = [];
-    if (isAuthenticated) { var extUrlStr = 'Auth'; }
+    if (isLoggedIn) { var extUrlStr = 'Auth'; }
     else {
         user = {};
         user.userID = defaultUser;

@@ -43,7 +43,7 @@ import Chat from "./Chat";
 
 export default function Dashboard() {
   const theme = useTheme();
-  const { isAuthenticated, user } = useFusionAuth();
+  const { isLoggedIn,  userInfo } = useFusionAuth();
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
@@ -111,7 +111,7 @@ export default function Dashboard() {
 
   const getUserInfo = async () => {
 
-    const apiUser = await getUserInfoApi(siteId, user);
+    const apiUser = await getUserInfoApi(siteId, userInfo);
     await setApiUser(apiUser);
     console.log(" Current User is " + JSON.stringify(apiUser));
   }
@@ -165,25 +165,25 @@ export default function Dashboard() {
       var siteId = 0;
       try {
         console.log("Calling fetchLoadServer is Authenticated triggered");
-        var loadServer = await fetchLoadServer(user);
+        var loadServer = await fetchLoadServer(userInfo);
         console.log("Calling getSiteIdfromUrl");
         siteId = await getSiteIdfromUrl(loadServer);
         console.log("Calling addUserApi");
-        await addUserApi(siteId, user);
+        await addUserApi(siteId, userInfo);
         console.log("Calling setSiteId");
         await setSiteId(siteId);
         console.log("Calling getUserInfo");
         await getUserInfo();
         // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
-        console.log("Error in Dashboard failed to get access error was" + e + " : user was " + user.sub);
+        console.log("Error in Dashboard failed to get access error was" + e + " : user was " + userInfo.sub);
       }
     }
 
     const checkAuth = async () => {
 
       setIsLoading(true);
-      if (isAuthenticated) {
+      if (isLoggedIn) {
         //await setDefaultUser(false);
         await getAccess();
         console.log("Is Authenticated is true")
@@ -202,7 +202,7 @@ export default function Dashboard() {
       setIsLoading(false);
     };
     checkAuth();
-  }, [isAuthenticated]);
+  }, [isLoggedIn]);
   const firstLoadSiteId = async () => {
     var siteId = 0;
     try {
@@ -249,7 +249,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       await setIsLoading(true);
-      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, user, isAuthenticated);
+      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, userInfo, isLoggedIn);
       await setIsLoading(false);
     };
     fetchData();
@@ -259,8 +259,8 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       await setIsLoading(true);
-      await fetchListData(dataSetId, siteId, setListData, setAlertCount, user, isAuthenticated);
-      await fetchProcessorList(siteId, setProcessorList, user, isAuthenticated);
+      await fetchListData(dataSetId, siteId, setListData, setAlertCount, userInfo, isLoggedIn);
+      await fetchProcessorList(siteId, setProcessorList, userInfo, isLoggedIn);
       await setIsLoading(false);
     };
     fetchData();
@@ -302,7 +302,7 @@ export default function Dashboard() {
             Dashboard
           </Typography>
           {
-            !isAuthenticated ? null :
+            !isLoggedIn ? null :
               <FadeWrapper toggle={toggleTable && listData.length === 0}>
                 <IconButton color="inherit">
                   <Badge color="secondary">
@@ -328,7 +328,7 @@ export default function Dashboard() {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          {!isAuthenticated ? null : <MiniProfile apiUser={apiUser} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={getUserInfo} />}
+          {!isLoggedIn ? null : <MiniProfile apiUser={apiUser} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={getUserInfo} />}
         </Toolbar>
         <Loading />
       </AppBar>
