@@ -45,7 +45,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
         styleOverrides: {
           root: {
             padding: "0px",
-            paddingLeft: "16px",
+            paddingLeft: "8px",
             bottomMargin: "0px"
           }
         }
@@ -59,8 +59,8 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
       MuiDataTableCell: {
         styleOverrides: {
           root: {
-            padding: "8px",
-            paddingLeft: "32px",
+            padding: "4px",
+            paddingLeft: "16px",
           }
         }
       },

@@ -73,13 +73,16 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         bottom: '20px',
         width: 'calc(100% - 84px)',
         height: 'calc(100% - 84px)', // Adjust based on your AppBar height
-        maxHeight: 'none'
+        maxHeight: 'none',
       }
       : {
-        bottom: 20,
-        right: 20,
-        width: 320,
-        maxHeight: '90vh',
+        top: '64px', // Adjust based on your AppBar height
+        left: '64px',
+        right: '20px',
+        bottom: '20px',
+        width: 'calc(50% - 84px)',
+        height: 'calc(50% - 84px)', // Adjust based on your AppBar height
+        maxHeight: 'none',
       }),
   };
   

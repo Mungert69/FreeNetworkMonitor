@@ -52,7 +52,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
         styleOverrides: {
           root: {
             padding: "0px",
-            paddingLeft: "16px",
+            paddingLeft: "8px",
             bottomMargin: "0px"
           }
         }
@@ -66,8 +66,8 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
       MuiDataTableCell: {
         styleOverrides: {
           root: {
-            padding: "8px",
-            paddingLeft: "32px",
+            padding: "4px",
+            paddingLeft: "16px",
           }
         }
       },
