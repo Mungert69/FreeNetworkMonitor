@@ -67,21 +67,19 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     transformOrigin: 'right', 
     ...(isExpanded
       ? {
-        top: '64px', // Adjust based on your AppBar height
+        top: '70px', // Adjust based on your AppBar height
         left: '64px',
         right: '20px',
         bottom: '20px',
         width: 'calc(100% - 84px)',
-        height: 'calc(100% - 84px)', // Adjust based on your AppBar height
-        maxHeight: 'none',
+        height: 'calc(100% - 90px)', // Adjust based on your AppBar height
+        maxHeight: 'none'
       }
       : {
-        top: '64px', // Adjust based on your AppBar height
-        left: '64px',
-        right: '20px',
         bottom: '20px',
-        width: 'calc(50% - 84px)',
-        height: 'calc(50% - 84px)', // Adjust based on your AppBar height
+        right: '20px',
+        width: 'calc(33% - 84px)',
+        height: 'calc(100% - 90px)',
         maxHeight: 'none',
       }),
   };
