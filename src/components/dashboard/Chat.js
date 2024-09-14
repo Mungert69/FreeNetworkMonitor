@@ -78,7 +78,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       : {
         bottom: '20px',
         right: '20px',
-        width: 'calc(33% - 84px)',
+        width: '320px',
         height: 'calc(100% - 90px)',
         maxHeight: 'none',
       }),
