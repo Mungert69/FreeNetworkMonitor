@@ -95,7 +95,7 @@ By providing these visual cues and interactive elements, users can quickly ascer
 Docker Compose is included when you install Docker Desktop. This is the easiest and recommended method to get Docker Compose, which also installs Docker Engine and Docker CLI, necessary for running Compose. Docker Desktop is available for:
 
 - Linux
-- macOS
+- MacOS
 - Windows
 
 For detailed instructions on installing Docker Desktop, refer to the [official Docker documentation](https://docs.docker.com/get-docker/).
@@ -109,15 +109,16 @@ version: "3.8"
 
 services:
   networkmonitorprocessor:
-    image: mungert/networkmonitorprocessor:1.1.6
+    image: mungert/networkmonitorprocessor:1.1.12
     container_name: processor
+    user: root
     restart: always
     volumes:
       - ~/state/:/app/state/
 
 \`\`\`
 
-**Notes on compose file** Create the folder ~/state . From shell type  mkdir ~/state (this is a linux folder path, adjust acordingly for windows) this folder must be writable by the docker instance that is running. Start by setting full permissions ( chmod 777 ~/state ). If you are concerned for the secutiry of the files then change the owner to the same as the owner of the files that will be created, in the folder, by the docker agent. Then set full permissions only for this user. 
+**Notes on compose file** For linux host create the folder ~/state. From shell type  mkdir ~/state (this is a linux folder path, adjust acordingly for windows).  
 
 
 2. **Run Docker Compose**: In the directory where your \`docker-compose.yml\` file is located, run:
