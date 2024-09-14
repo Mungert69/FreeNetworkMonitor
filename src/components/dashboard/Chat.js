@@ -7,9 +7,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import useTheme from '@mui/material/styles/useTheme';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
-import useTheme from '@mui/material/styles/useTheme';
 import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
 import { getLLMServerUrl } from './ServiceAPI';
@@ -18,6 +20,8 @@ import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
+
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
@@ -52,7 +56,33 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const [reconnectDelay, setReconnectDelay] = useState(1000); // Start with 1 second
+  
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
+  const chatStyles = {
+    position: 'fixed',
+    transition: 'all 0.3s ease-in-out',
+    ...(isExpanded
+      ? {
+        top: '64px', // Adjust based on your AppBar height
+        left: '0',
+        right: '0',
+        bottom: '0',
+        width: '100%',
+        height: 'calc(100% - 64px)', // Adjust based on your AppBar height
+        maxHeight: 'none',
+        zIndex: theme.zIndex.drawer + 1,
+      }
+      : {
+        bottom: 20,
+        right: 20,
+        width: 320,
+        maxHeight: '90vh',
+      }),
+  };
+  
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
@@ -275,7 +305,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       const sendStr = Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId
       webSocketRef.current.send(sendStr);
       console.log(' Sent opening message to websocket : ' + sendStr);
-      if (openMessage.current == null ) {
+      if (openMessage.current == null) {
 
       } else {
         webSocketRef.current.send(openMessage.current);
@@ -438,25 +468,25 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       setShouldSpeak(false);
     }
 
-const replacements = {
-  // Match "user" followed by any characters, a newline, then any recipient, and "<|content|>"
-  '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': 'User: ',
-  // Match "assistant" followed by any recipient except "all", then "<|content|>"
-  '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': 'Function Call:',
-  // Match "assistant" with recipient "all", followed by "<|content|>"
-  '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
-  // Match function call responses with any "from" except "user" or "assistant"
-  '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': 'Function Response: ',
-  // Match the stop pattern
-  '<\\|stop\\|>': '\n'
-};
+    const replacements = {
+      // Match "user" followed by any characters, a newline, then any recipient, and "<|content|>"
+      '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': 'User: ',
+      // Match "assistant" followed by any recipient except "all", then "<|content|>"
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': 'Function Call:',
+      // Match "assistant" with recipient "all", followed by "<|content|>"
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      // Match function call responses with any "from" except "user" or "assistant"
+      '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': 'Function Response: ',
+      // Match the stop pattern
+      '<\\|stop\\|>': '\n'
+    };
 
-let filteredText = text;
-Object.entries(replacements).forEach(([forbidden, alternative]) => {
-  // Use a RegExp constructor for dynamic patterns, including escaping for special characters
-  const regex = new RegExp(forbidden, 'gis');  // 's' flag allows '.' to match newline characters
-  filteredText = filteredText.replace(regex, alternative);
-});
+    let filteredText = text;
+    Object.entries(replacements).forEach(([forbidden, alternative]) => {
+      // Use a RegExp constructor for dynamic patterns, including escaping for special characters
+      const regex = new RegExp(forbidden, 'gis');  // 's' flag allows '.' to match newline characters
+      filteredText = filteredText.replace(regex, alternative);
+    });
     return filteredText;
   };
 
@@ -516,9 +546,10 @@ Object.entries(replacements).forEach(([forbidden, alternative]) => {
 
 
   return (
-    <Box sx={{ position: 'fixed', bottom: 20, right: 20, width: 320, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
-      <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <CardContent>
+    <Box sx={chatStyles}>
+      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+
           <Grid container alignItems="center">
             <Grid item xs={12} sx={{
               backgroundColor: theme.palette.primary.main,
@@ -573,6 +604,13 @@ Object.entries(replacements).forEach(([forbidden, alternative]) => {
                   <Tooltip title={"Hide Assistant"}
                     TransitionComponent={Zoom}>
                     <CloseIcon />
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+              <IconButton onClick={toggleExpand} color="primary">
+                <Badge color="secondary">
+                  <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
+                    {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
                   </Tooltip>
                 </Badge>
               </IconButton>
