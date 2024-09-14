@@ -63,17 +63,17 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const chatStyles = {
     position: 'fixed',
-    transition: 'all 0.3s ease-in-out',
+    transition: 'all 0.5s ease-in-out',
+    transformOrigin: 'right', 
     ...(isExpanded
       ? {
         top: '64px', // Adjust based on your AppBar height
-        left: '0',
-        right: '0',
-        bottom: '0',
-        width: '100%',
-        height: 'calc(100% - 64px)', // Adjust based on your AppBar height
-        maxHeight: 'none',
-        zIndex: theme.zIndex.drawer + 1,
+        left: '64px',
+        right: '20px',
+        bottom: '20px',
+        width: 'calc(100% - 84px)',
+        height: 'calc(100% - 84px)', // Adjust based on your AppBar height
+        maxHeight: 'none'
       }
       : {
         bottom: 20,
