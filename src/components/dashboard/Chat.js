@@ -14,7 +14,8 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import useTheme from '@mui/material/styles/useTheme';
@@ -28,7 +29,11 @@ import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
+  const [expandedFunction, setExpandedFunction] = useState(null);
 
+  const handleAccordionChange = (panel) => (event, isExpanded) => {
+    setExpandedFunction(isExpanded ? panel : null);
+  };
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
@@ -582,6 +587,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const renderContent = (content) => {
     const lines = content.split('\n');
+    let functionIndex = 0;
     return lines.map((line, index) => {
       if (line.startsWith('<User:>')) {
         return (
