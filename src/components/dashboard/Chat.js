@@ -1,4 +1,12 @@
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import './chat.css';
+import PersonIcon from '@mui/icons-material/Person';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import CodeIcon from '@mui/icons-material/Code';
+import ReplyIcon from '@mui/icons-material/Reply';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
@@ -471,13 +479,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     const replacements = {
       // Match "user" followed by any characters, a newline, then any recipient, and "<|content|>"
-      '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': 'User: ',
+      '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': '<User:> ',
       // Match "assistant" followed by any recipient except "all", then "<|content|>"
-      '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': 'Function Call:',
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': '<Function Call:>',
       // Match "assistant" with recipient "all", followed by "<|content|>"
-      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': 'Assistant:',
+      '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': '<Assistant:>',
       // Match function call responses with any "from" except "user" or "assistant"
-      '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': 'Function Response: ',
+      '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': '<Function Response:> ',
       // Match the stop pattern
       '<\\|stop\\|>': '\n'
     };
@@ -545,7 +553,81 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       </List>);
   };
 
-
+  const renderMarkdown = (content) => {
+    return (
+      <ReactMarkdown
+        components={{
+          code({node, inline, className, children, ...props}) {
+            const match = /language-(\w+)/.exec(className || '')
+            return !inline && match ? (
+              <SyntaxHighlighter
+                style={vscDarkPlus}
+                language={match[1]}
+                PreTag="div"
+                {...props}
+              >
+                {String(children).replace(/\n$/, '')}
+              </SyntaxHighlighter>
+            ) : (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            )
+          }
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    );
+  };
+  const renderContent = (content) => {
+    const lines = content.split('\n');
+    return lines.map((line, index) => {
+      if (line.startsWith('<User:>')) {
+        return (
+          <Typography key={index} component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
+            <PersonIcon sx={{ mr: 1 }} />
+            {renderMarkdown(line.replace('<User:>', ''))}
+          </Typography>
+        );
+      } else if (line.startsWith('<Assistant:>')) {
+        return (
+          <Typography key={index} component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
+            <SmartToyIcon sx={{ mr: 1 }} />
+            {renderMarkdown(line.replace('<Assistant:>', ''))}
+          </Typography>
+        );
+      }  else if (line.startsWith('<Function Call:>') || line.startsWith('<Function Response:>')) {
+        const isCall = line.startsWith('<Function Call:>');
+        const panelId = `function-${functionIndex}`;
+        functionIndex++;
+        return (
+          <Accordion 
+            key={index}
+            expanded={expandedFunction === panelId}
+            onChange={handleAccordionChange(panelId)}
+            sx={{ mt: 1, mb: 1 }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls={`${panelId}-content`}
+              id={`${panelId}-header`}
+            >
+              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                {isCall ? <CodeIcon sx={{ mr: 1 }} /> : <ReplyIcon sx={{ mr: 1 }} />}
+                {isCall ? 'Function Call' : 'Function Response'}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {renderMarkdown(line.replace(isCall ? '<Function Call:>' : '<Function Response:>', ''))}
+            </AccordionDetails>
+          </Accordion>
+        );
+      } else {
+        return renderMarkdown(line) ;
+      }
+    });
+  };
   return (
     <Box sx={chatStyles}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -639,16 +721,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               <CircularProgress />
             </Box>
           ) : (
-            <pre style={{ fontFamily: 'Monospace', whiteSpace: 'pre-wrap' }}>
-              {llmFeedback.split(/(```[\s\S]*?```)/).map((part, index) => {
-                if (part.startsWith('```') && part.endsWith('```')) {
-                  const codeContent = part.substring(3, part.length - 3).trim();
-                  return <Box key={index} sx={{ my: 2, p: 2, bgcolor: 'background.paper', border: 1, borderColor: 'divider' }}>{codeContent}</Box>;
-                } else {
-                  return <Typography key={index} component="span">{part}</Typography>;
-                }
-              })}
-            </pre>
+            <Box>
+            {renderContent(llmFeedback)}
+          </Box>
           )}
           {isProcessing && !isCallingFunction && (
             <Typography color="primary" sx={{ mt: 2, fontStyle: 'italic' }}>{`Thinking${thinkingDots}`}</Typography>
