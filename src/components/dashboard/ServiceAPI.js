@@ -93,6 +93,9 @@ export const fetchLoadServer = async (user) => {
             url: apiLoadBalancerUrl + '/Load/GetLoadServer' + extUrlStr,
             data: sentData,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchLoadServer Axios Error was : ' + error);
@@ -148,6 +151,9 @@ export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, set
         method: 'post',
         url: apiBaseUrls[baseUrlId] + '/UserConfig/GetUserPingInfoTar',
         withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        },
     }).catch(function (error) {
         console.log('ServiceAPI.handleDownload Axios Error was : ' + error);
         setMessage({ info: false, text: 'Failed to generate download link: ' + error.message });
@@ -188,6 +194,9 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
             url: apiBaseUrls[baseUrlId] + '/ResponseTime/GetPingInfosByMonitorPingInfoID' + extUrlStr,
             data: sentData,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchChartData Axios Error was : ' + error);
@@ -229,6 +238,9 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
             url: apiBaseUrls[baseUrlId] + '/HostData/GetMonitorPingInfosByDataSetID' + extUrlStr,
             data: sentData,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     )
         .catch(function (error) {
@@ -271,6 +283,9 @@ export const fetchProcessorList = async (baseUrlId, setProcessorList,user,isLogg
             method: 'post',
             url: url,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     )
         .catch(function (error) {
@@ -383,6 +398,9 @@ export const resetAlertApiCall = async (monitorIPID, baseUrlId, setReload, reloa
             url: apiBaseUrls[baseUrlId] + '/Alerts/ResetAlert',
             data: sentData,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.resetAlertApicall Axios Error was : ' + error);
@@ -404,6 +422,9 @@ export const resetPredictAlertApiCall = async (monitorIPID, baseUrlId, setReload
             url: apiBaseUrls[baseUrlId] + '/Alerts/ResetPredictAlert',
             data: sentData,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.resetPredictAlertApicall Axios Error was : ' + error);
@@ -426,6 +447,9 @@ export const fetchEditHostData = async (baseUrlId, user) => {
             url: apiBaseUrls[baseUrlId] + '/HostInfo/GetMonitorIPsFromUserID',
             data: user,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.fetchEditHostData Axios Error was : ' + error);
@@ -515,6 +539,9 @@ export const getUserInfoApi = async (baseUrlId, user) => {
             url: apiBaseUrls[baseUrlId] + '/UserConfig/GetUserInfo',
             data: user,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.getUserInfoApi Axios Error was : ' + error);
@@ -538,6 +565,9 @@ export const addUserApi = async (baseUrlId, user) => {
             url: apiBaseUrls[baseUrlId] + '/UserConfig/AddUserApi',
             data: user,
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
         }
     ).catch(function (error) {
         console.log('ServiceAPI.addUserApi Axios Error was : ' + error);
@@ -561,6 +591,9 @@ export const updateApiUser = async (baseUrlId, user) => {
                 url: apiBaseUrls[baseUrlId] + '/UserConfig/UpdateApiUser',
                 data: user,
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
             }
         ).catch(function (error) {
             console.log('ServiceAPI.updateApiUser Axios Error was : ' + error);
@@ -599,6 +632,9 @@ export const resendVerifyEmail = async (baseUrlId, user) => {
                 url: apiBaseUrls[baseUrlId] + '/email/SendVerifyEmail',
                 data: user,
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
             }
         ).catch(function (error) {
             console.log('ServiceAPI.resendVerifyEmail Axios Error was : ' + error);
@@ -636,6 +672,9 @@ export const addHostApi = async (baseUrlId, user, data) => {
                 url: apiBaseUrls[baseUrlId] + '/HostConfig/SaveHostDataWithUserID',
                 data: data,
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.addHostApi PreSave Axios Error was : ' + error;
@@ -649,6 +688,9 @@ export const addHostApi = async (baseUrlId, user, data) => {
                 url: apiBaseUrls[baseUrlId] + '/HostConfig/AddHostApi',
                 data: user,
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.addHostApi Add host Axios Error was : ' + error;
@@ -728,6 +770,9 @@ export const delHostApi = async (baseUrlId, user, index) => {
                 url: apiBaseUrls[baseUrlId] + '/HostConfig/DelHostApi',
                 data: host,
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.addHostApi Axios Error was : ' + error;
@@ -761,6 +806,9 @@ export const saveHostData = async (baseUrlId, data) => {
                 url: apiBaseUrls[baseUrlId] + '/HostConfig/SaveHostDataWithUserID',
                 data: data,
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.saveHostData Axios Error was : ' + error;
