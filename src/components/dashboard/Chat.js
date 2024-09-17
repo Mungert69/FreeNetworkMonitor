@@ -625,7 +625,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {renderMarkdown(line.replace(isCall ? '<Function Call:>' : '<Function Response:>', ''))}
+              {line.replace(isCall ? '<Function Call:>' : '<Function Response:>', '')}
             </AccordionDetails>
           </Accordion>
         );
