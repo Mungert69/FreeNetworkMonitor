@@ -576,7 +576,7 @@ export const addUserApi = async (baseUrlId, user) => {
     var apiUser = result.data.data;
     //apiUser.picture = user.picture
     apiUser.logonServer = apiBaseUrls[baseUrlId];
-    console.log('ServiceAPI.addUserApi checked ');
+    console.log('ServiceAPI.addUserApi checked apiUser.userID ='+apiUser.userID);
     return apiUser;
 
 }

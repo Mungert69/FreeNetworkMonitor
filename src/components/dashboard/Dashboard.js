@@ -169,16 +169,20 @@ export default function Dashboard() {
         console.log("Calling getSiteIdfromUrl");
         siteId = await getSiteIdfromUrl(loadServer);
         console.log("Calling addUserApi");
-        await addUserApi(siteId, userInfo);
+        var apiUser=await addUserApi(siteId, userInfo);
         console.log("Calling setSiteId");
         await setSiteId(siteId);
-        console.log("Calling getUserInfo");
-        await getUserInfo();
+
+        await setApiUser(apiUser);
+        console.log(" Current User is " + JSON.stringify(apiUser));
+     
         // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
         console.log("Error in Dashboard failed to get access error was" + e + " : user was " + userInfo.sub);
       }
     }
+
+   
 
     const checkAuth = async () => {
 
@@ -216,6 +220,8 @@ export default function Dashboard() {
       console.log("Error in Dashboard failed to get load SiteId for default user");
     }
   }
+
+
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     if (query.get('initViewSub')) {

@@ -8,9 +8,9 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUs
       const [openProfile, setOpenProfile] = React.useState(false);
       const updateUserInfo  = async () =>{
           await setOpenProfile(true);
-          await getUserInfo();
 
       }
+      
       useEffect(() => {
           if (initViewSub) {
                setOpenProfile(true);
@@ -19,7 +19,7 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUs
      if (apiUser!==undefined ) {
           return (
                <div>
-                    {openProfile ? <ProfileDialog apiUser={apiUser} siteId={siteId} setOpen={setOpenProfile} initViewSub={initViewSub} setInitViewSub={setInitViewSub} /> : null}
+                    {openProfile ? <ProfileDialog apiUser={apiUser} siteId={siteId} setOpen={setOpenProfile} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={ getUserInfo} /> : null}
                     <Tooltip title="View Profile Info" TransitionComponent={Zoom}>
                          <Box
                               component="img"

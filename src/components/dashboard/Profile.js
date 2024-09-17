@@ -32,7 +32,7 @@ import { updateApiUser, resendVerifyEmail, handleDownload } from './ServiceAPI';
 
 
 
-const Profile = ({ apiUser, siteId }) => {
+const Profile = ({ apiUser, siteId, getUserInfo }) => {
 
   const [state, setState] = React.useState({
     name: apiUser.name, picture: apiUser.picture
@@ -64,6 +64,7 @@ const Profile = ({ apiUser, siteId }) => {
     var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
     await setMessage(message);
     message = await updateApiUser(siteId, user);
+    await getUserInfo();
     await setMessage(message);
 
   }
