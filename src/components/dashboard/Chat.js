@@ -1,8 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FixedSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+
 import './chat.css';
 import PersonIcon from '@mui/icons-material/Person';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -26,7 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
 import { getLLMServerUrl } from './ServiceAPI';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
@@ -35,7 +34,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpandedFunction(isExpanded ? panel : null);
   };
-  const [messages, setMessages] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [thinkingDots, setThinkingDots] = useState('');
@@ -239,7 +237,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     if (outputContainer) {
       outputContainer.scrollTop = outputContainer.scrollHeight;
     }
-  }, [displayText, userInput, functionCall, functionResponse, llmFeedback]);
+  }, [llmFeedback]);
 
 
 
@@ -560,8 +558,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       </List>);
   };
 
-  
-  const renderMarkdown = useCallback((content) => {
+  const renderMarkdown = (content) => {
     return (
       <ReactMarkdown
         components={{
@@ -587,66 +584,56 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         {content}
       </ReactMarkdown>
     );
-  }, []);
-
-  const MessageItem = useCallback(({ index, style }) => {
-    const message = messages[index];
-    let content;
-
-    if (message.type === 'user') {
-      content = (
-        <Typography component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
-          <PersonIcon sx={{ mr: 1 }} />
-          {renderMarkdown(message.content)}
-        </Typography>
-      );
-    } else if (message.type === 'assistant') {
-      content = (
-        <Typography component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
-          <SmartToyIcon sx={{ mr: 1 }} />
-          {renderMarkdown(message.content)}
-        </Typography>
-      );
-    } else if (message.type === 'function') {
-      content = (
-        <Accordion sx={{ mt: 1, mb: 1 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-              {message.isCall ? <CodeIcon sx={{ mr: 1 }} /> : <ReplyIcon sx={{ mr: 1 }} />}
-              {message.isCall ? 'Function Call' : 'Function Response'}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {message.content}
-          </AccordionDetails>
-        </Accordion>
-      );
-    } else {
-      content = renderMarkdown(message.content);
-    }
-
-    return <div style={style}>{content}</div>;
-  }, [messages, renderMarkdown]);
-
-  useEffect(() => {
-    // Parse llmFeedback into messages array
-    const parsedMessages = llmFeedback.split('\n').map(line => {
+  };
+  const renderContent = (content) => {
+    const lines = content.split('\n');
+    let functionIndex = 0;
+    return lines.map((line, index) => {
       if (line.startsWith('<User:>')) {
-        return { type: 'user', content: line.replace('<User:>', '') };
+        return (
+          <Typography key={index} component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
+            <PersonIcon sx={{ mr: 1 }} />
+            {renderMarkdown(line.replace('<User:>', ''))}
+          </Typography>
+        );
       } else if (line.startsWith('<Assistant:>')) {
-        return { type: 'assistant', content: line.replace('<Assistant:>', '') };
-      } else if (line.startsWith('<Function Call:>')) {
-        return { type: 'function', isCall: true, content: line.replace('<Function Call:>', '') };
-      } else if (line.startsWith('<Function Response:>')) {
-        return { type: 'function', isCall: false, content: line.replace('<Function Response:>', '') };
+        return (
+          <Typography key={index} component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
+            <SmartToyIcon sx={{ mr: 1 }} />
+            {renderMarkdown(line.replace('<Assistant:>', ''))}
+          </Typography>
+        );
+      }  else if (line.startsWith('<Function Call:>') || line.startsWith('<Function Response:>')) {
+        const isCall = line.startsWith('<Function Call:>');
+        const panelId = `function-${functionIndex}`;
+        functionIndex++;
+        return (
+          <Accordion 
+            key={index}
+            expanded={expandedFunction === panelId}
+            onChange={handleAccordionChange(panelId)}
+            sx={{ mt: 1, mb: 1 }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls={`${panelId}-content`}
+              id={`${panelId}-header`}
+            >
+              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                {isCall ? <CodeIcon sx={{ mr: 1 }} /> : <ReplyIcon sx={{ mr: 1 }} />}
+                {isCall ? 'Function Call' : 'Function Response'}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {line.replace(isCall ? '<Function Call:>' : '<Function Response:>', '')}
+            </AccordionDetails>
+          </Accordion>
+        );
       } else {
-        return { type: 'other', content: line };
+        return renderMarkdown(line) ;
       }
     });
-    setMessages(parsedMessages);
-  }, [llmFeedback]);
-
-  
+  };
   return (
     <Box sx={chatStyles}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -740,18 +727,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               <CircularProgress />
             </Box>
           ) : (
-           <AutoSizer>
-              {({ height, width }) => (
-                <FixedSizeList
-                  height={height}
-                  itemCount={messages.length}
-                  itemSize={50} // Adjust this value based on your average item height
-                  width={width}
-                >
-                  {MessageItem}
-                </FixedSizeList>
-              )}
-            </AutoSizer>
+            <Box>
+            {renderContent(llmFeedback)}
+          </Box>
           )}
           {isProcessing && !isCallingFunction && (
             <Typography color="primary" sx={{ mt: 2, fontStyle: 'italic' }}>{`Thinking${thinkingDots}`}</Typography>

@@ -70,7 +70,7 @@ const ProductDetail = () => {
         }
         firstLoadSiteId();
       }, []);
-    reportWebVitals(sendToAnalytics);
+   // reportWebVitals(sendToAnalytics);
     return (
         <div className={classes.root}>
             <CssBaseline />
