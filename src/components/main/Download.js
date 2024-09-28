@@ -109,7 +109,7 @@ version: "3.8"
 
 services:
   networkmonitorprocessor:
-    image: mungert/networkmonitorprocessor:1.1.12
+    image: mungert/networkmonitorprocessor:1.1.13
     container_name: processor
     user: root
     restart: always
