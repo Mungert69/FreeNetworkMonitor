@@ -1,8 +1,8 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import clsx from 'clsx';
 //combine all the @mui/material imports into one line not including icons
 import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
-import { getStartSiteId,fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
+import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
@@ -11,6 +11,9 @@ import ChatIcon from '@mui/icons-material/Chat';
 import LanguageIcon from '@mui/icons-material/Language';
 import ApiTwoToneIcon from '@mui/icons-material/ApiTwoTone';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import AssistantIcon from '@mui/icons-material/Assistant';
+import SecurityIcon from '@mui/icons-material/Security';
+
 
 import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
@@ -56,21 +59,21 @@ const ProductDetail = () => {
 
     useEffect(() => {
         const firstLoadSiteId = async () => {
-          var siteId = 0;
-          try {
-            console.log("Calling fetchLoadServer for user default");
-            var loadServer = await fetchFirstLoadServer();
-            console.log("Calling getSiteIdfromUrl");
-            siteId = await getSiteIdfromUrl(loadServer);   
-            console.log("Calling setSiteId");
-            await setSiteId(siteId);
-               } catch (e) {
-            console.log("Error in Dashboard failed to get load SiteId for default user");
-          }
+            var siteId = 0;
+            try {
+                console.log("Calling fetchLoadServer for user default");
+                var loadServer = await fetchFirstLoadServer();
+                console.log("Calling getSiteIdfromUrl");
+                siteId = await getSiteIdfromUrl(loadServer);
+                console.log("Calling setSiteId");
+                await setSiteId(siteId);
+            } catch (e) {
+                console.log("Error in Dashboard failed to get load SiteId for default user");
+            }
         }
         firstLoadSiteId();
-      }, []);
-   // reportWebVitals(sendToAnalytics);
+    }, []);
+    // reportWebVitals(sendToAnalytics);
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -96,9 +99,9 @@ const ProductDetail = () => {
                         Free Network Monitor
                     </Typography>
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
->
-            <ChatIcon />
-          </IconButton>
+                    >
+                        <ChatIcon />
+                    </IconButton>
                     <AuthNav />
 
                 </Toolbar>
@@ -234,6 +237,35 @@ const ProductDetail = () => {
 
                                 </Grid>
                             </Grid>
+                            <Grid item xs={12} sm={12} md={6}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={6} align="center" >
+                                        <Grow
+                                            in={!isLoading}
+                                            style={{ transformOrigin: '0 0 0' }}
+                                            {...(!isLoading ? { timeout: 4000 } : {})}
+                                        >
+                                            <AssistantIcon color='secondary' fontSize='large' />
+                                        </Grow>
+                                        <Paper className={classes.paper}>
+                                            Introducing the <strong>AI-powered Network Monitor Assistant</strong>, which allows you to easily manage hosts, perform network scans, investigate unusual network activity, and more—all with real-time insights and security checks. With its ability to run BusyBox commands and perform in-depth security audits, you can take a proactive approach to network security and performance optimization.
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} align="center" >
+                                        <Grow
+                                            in={!isLoading}
+                                            style={{ transformOrigin: '0 0 0' }}
+                                            {...(!isLoading ? { timeout: 5000 } : {})}
+                                        >
+                                            <SecurityIcon color='secondary' fontSize='large' />
+                                        </Grow>
+                                        <Paper className={classes.paper}>
+                                            From vulnerability assessments to SSL/TLS configuration checks, the assistant helps ensure that your network is secure, up-to-date, and ready for future threats. Whether you're performing a security audit or troubleshooting connectivity issues, the assistant provides detailed recommendations and solutions.
+                                        </Paper>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
                         </Grid>
                     </Grid>
                     <hr></hr>
@@ -262,10 +294,10 @@ const ProductDetail = () => {
 
                     <Blog classes={classes} />
                     <Footer />
-                  
-                    
+
+
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                    {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+                        {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
                     </div>
                 </Container>
             </main>
