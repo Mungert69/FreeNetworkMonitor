@@ -19,5 +19,5 @@ _July 2, 2022 by [Mahadeva](/)_
       </svg> indicates network host is down.
 
 
-<img src="https://www.freenetworkmonitor.click/img/display-chart-from-dataset.gif" width="666" height="301" alt="Free network monitor online how to display a chart">
+<img src="https://freenetworkmonitor.click/img/display-chart-from-dataset.gif" width="666" height="301" alt="Free network monitor online how to display a chart">
 

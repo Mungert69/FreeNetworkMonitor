@@ -10,7 +10,7 @@ import React from "react";
 
 const LogoLink = () => {
     return (
-      <Link href="https://www.freenetworkmonitor.click">
+      <Link href="https://freenetworkmonitor.click">
            
                 <Card >
                   

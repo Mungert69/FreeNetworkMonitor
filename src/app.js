@@ -39,8 +39,8 @@ const App = () => {
           This website uses cookies to enhance the user experience.{" "}
           <span style={{ fontWeight: 'bold' }}>
             By clicking agree or continuing to use this site you agree to the use of cookies. 
-            For full cookie policy click <a href="https://www.freenetworkmonitor.click/cookiepolicy.html">Cookie Policy</a>. 
-            To view our privacy policy click <a href="https://www.freenetworkmonitor.click/privacypolicy.html">Privacy Policy</a>
+            For full cookie policy click <a href="https://freenetworkmonitor.click/cookiepolicy.html">Cookie Policy</a>. 
+            To view our privacy policy click <a href="https://freenetworkmonitor.click/privacypolicy.html">Privacy Policy</a>
           </span>
         </CookieConsent>
         <RouteChangeTracker />

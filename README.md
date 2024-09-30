@@ -14,7 +14,7 @@ Our local agent monitor app lets you oversee local hosts, while our ChatGPT-powe
 
 ## Live Demo
 
-<a href='https://www.freenetworkmonitor.click/'>Click here to view live site</a>
+<a href='https://freenetworkmonitor.click/'>Click here to view live site</a>
 
 Please check it out and leave a review from the Trust Pilot link at the bottom of the landing page.
 
