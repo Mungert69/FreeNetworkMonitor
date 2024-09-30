@@ -36,6 +36,8 @@ As part of our select group of beta testers, you will have exclusive access to d
 1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store.
    
    [Free Network Monitor Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui) 
+ 
+   [Quantum Secure Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.quantumsecure)
 
 2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Free Network Monitor Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
 
@@ -51,7 +53,11 @@ Note: Android version has a limitaion: Android's battery saving features may aff
 
 To install the Local Network Monitor Agent App from the Windows Store, click the link below.
 
-[Install for Windows](https://apps.microsoft.com/detail/9PFJ3203JWDT)
+[Install for Windows](https://www.microsoft.com/store/apps/9PFJ3203JWDT)
+
+To install the Quantum Secure Agent App from the Windows Store, click the link below.
+
+[Install for Windows](https://www.microsoft.com/store/apps/9NXT248W9NR6)
 
 Note : Windows version does not currently support Quantum Safe TLS connection monitoring. If you don't want this limitation in your agent then use the fully featured docker version below.
 
@@ -109,7 +115,7 @@ version: "3.8"
 
 services:
   networkmonitorprocessor:
-    image: mungert/networkmonitorprocessor:1.1.13
+    image: mungert/networkmonitorprocessor:1.1.14
     container_name: processor
     user: root
     restart: always
@@ -196,8 +202,8 @@ const Download = () => {
       <CssBaseline />
       <Helmet>
         <title>Download Beta - Free Network Monitor App</title>
-        <meta name="description" content="Join the exclusive beta testing program for the Free Network Monitor App and help shape its future." />
-      </Helmet>
+        <meta name="description" content="Join the exclusive beta testing program for the Free Network Monitor Agent and Quantum Secure Agent apps to help shape their future." />
+        </Helmet>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           {isLoading && <Loading small={true} />}
