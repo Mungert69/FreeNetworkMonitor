@@ -39,7 +39,7 @@ As part of our select group of beta testers, you will have exclusive access to d
  
    [Quantum Secure Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.quantumsecure)
 
-2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Free Network Monitor Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
+2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
 
 
 **Beta Tester Rewards:**
