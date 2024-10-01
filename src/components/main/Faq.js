@@ -30,35 +30,58 @@ const data = {
     rows: [
         {
             title: "How do I add websites and hosts to monitor?",
-            content: `You must first login to add hosts. Goto the dashboard page and click login.
-            If you dont already have an account then create an account when given this option. When you have logged in then click the edit icon top left next to login icon. For a visual guide see guide number 2 above.`,
+            content: `
+                <p>You must first login to add hosts. Go to the 
+                <a href="https://freenetworkmonitor.click/dashboard" target="_blank">dashboard page</a> and click "Login".</p>
+                <p>If you don't already have an account, create one when prompted. After logging in, click the edit icon at the top left, next to the login icon. For a visual guide, refer to guide number 2 above.</p>
+            `,
         },
         {
             title: "How do I receive alerts?",
-            content:
-                "Alerts are automatically sent to the email address you have associated with your login. As long as you are still subscribed to receive alerts there is nothing you additional you need to do.",
+            content: `
+                <p>Alerts are automatically sent to the email address associated with your login. As long as you are still subscribed to receive alerts, no additional action is required.</p>
+            `,
         },
         {
-            title: "How do I add more hosts",
-            content: `The limit is determinded by your account type. Upgrade your subscription and enjoy many additional benefits to add more hosts <a>https://freenetworkmonitor.click/subscription</a>.`,
+            title: "How do I add more hosts?",
+            content: `
+                <p>The number of hosts you can add is determined by your account type. To add more hosts and enjoy additional benefits, 
+                <a href="https://freenetworkmonitor.click/subscription" target="_blank">upgrade your subscription</a>.</p>
+            `,
         },
         {
             title: "The time of events changes when I login in different locations?",
-            content: 'The timezone of your browser is used to calculate the time of events. On the server all times are stored as UTC.  So the time of events will appear to change if you login from different geographical locations. However the alerts will be sent with the UTC being used as a timestamp.',
+            content: `
+                <p>The timezone of your browser is used to calculate the time of events. On the server, all times are stored as UTC. Therefore, the time of events may appear to change if you log in from different geographical locations. However, alerts will always be sent with UTC as the timestamp.</p>
+            `,
         },
         {
             title: "How do I get support or ask a question?",
-            content: 'You can contact us for support or to ask a question by emailing <b>support@freenetworkmonitor.click</b> or <b>support@mahadeva.co.uk</b>.',
+            content: `
+                <p>You can contact us for support or to ask a question by emailing 
+                <strong>support@freenetworkmonitor.click</strong> or <strong>support@mahadeva.co.uk</strong>.</p>
+            `,
         },
         {
-            title: "I am not receiving email notifications when the dashboard shows a new alert",
-            content: 'Check that you have Send emails notifications enable in your profile: Click the profile icon top right on dashboard. Click on the bell icon to toggle notifications on and off. Note if you unsubscribe from receiving emails within the alert emails this will disable email notifications.',
+            title: "I am not receiving email notifications when the dashboard shows a new alert.",
+            content: `
+                <p>Check that you have email notifications enabled in your profile:</p>
+                <ol>
+                    <li>Click the profile icon in the top right of the 
+                    <a href="https://freenetworkmonitor.click/dashboard" target="_blank">dashboard</a>.</li>
+                    <li>Click the bell icon to toggle notifications on and off.</li>
+                </ol>
+                <p>Note: If you unsubscribe from receiving emails via an alert email, this will disable email notifications.</p>
+            `,
         },
         {
             title: "I no longer receive any alerts for a host.",
-            content: 'Only one host alert is sent until you reset that alert: On the dashboard host list click the red alert icon to reset the alert',
+            content: `
+                <p>Only one host alert is sent until you reset that alert:</p>
+                <p>On the 
+                <a href="https://freenetworkmonitor.click/dashboard" target="_blank">dashboard host list</a>, click the red alert icon to reset the alert.</p>
+            `,
         },
-
         {
             title: "Network Monitor Assistant : How do I add a new host?",
             content: `
@@ -319,8 +342,158 @@ const data = {
                 </ul>
                 <p>You can always upgrade your plan as your network monitoring needs evolve.</p>
             `
-        }
+        },
 
+        {
+            title: "How do I add websites and hosts to monitor?",
+            content: `You must first login to add hosts. Goto the dashboard page and click login.
+            If you dont already have an account then create an account when given this option. When you have logged in then click the edit icon top left next to login icon. For a visual guide see guide number 2 above.`,
+        },
+        {
+            title: "How do I receive alerts?",
+            content:
+                "Alerts are automatically sent to the email address you have associated with your login. As long as you are still subscribed to receive alerts there is nothing additional you need to do.",
+        },
+        {
+            title: "How do I install the Network Monitor Agent on Android?",
+            content: `
+                <p>You can download the Free Network Monitor Agent app from the 
+                <a href="https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui">Google Play Store</a> 
+                or the <a href="https://play.google.com/store/apps/details?id=click.freenetworkmonitor.quantumsecure">Quantum Secure Agent</a>. 
+                Follow the installation instructions, and after the app is installed, enable the agent and follow the post-installation steps to start monitoring.</p>
+            `,
+        },
+        {
+            title: "How do I install the Network Monitor Agent on Windows?",
+            content: `
+                <p>The Network Monitor Agent can be installed from the 
+                <a href="https://www.microsoft.com/store/apps/9PFJ3203JWDT">Microsoft Store</a> for Windows. 
+                If you are using the Quantum Secure Agent, you can find it 
+                <a href="https://www.microsoft.com/store/apps/9NXT248W9NR6">here</a>. 
+                After installation, enable the agent and complete the post-installation steps to authorize and manage your monitoring.</p>
+            `,
+        },
+        {
+            title: "What are the post-installation steps after installing the agent?",
+            content: `
+                <ol>
+                    <li>Toggle the "Enable Agent" slider to activate the agent.</li>
+                    <li>Authorize the agent by logging in through OAuth when prompted.</li>
+                    <li>Login to the Free Network Monitor Dashboard using the same email to manage your monitoring setup.</li>
+                    <li>Add hosts for monitoring by selecting the appropriate IP addresses and monitor location.</li>
+                </ol>
+            `,
+        },
+        {
+            title: "What are the limitations of the Android version of the agent?",
+            content: `
+                <p>Due to Android’s battery-saving features, the polling frequency may be reduced when the device is not connected to a charger. 
+                If you require continuous monitoring without this limitation, consider using the Docker version of the agent.</p>
+            `,
+        },
+        {
+            title: "How do I install the Network Monitor Agent using Docker?",
+            content: `
+                <p>To install using Docker, first install Docker Desktop, which includes Docker Compose. 
+                Then, create a <code>docker-compose.yml</code> file as shown in the 
+                <a href="https://docs.docker.com/get-docker/">documentation</a> and run the 
+                <code>docker-compose up -d</code> command to start the container. 
+                Follow the logs for the authorization URL and complete the authorization process to start monitoring.</p>
+            `,
+        },
+        {
+            title: "How do I authorize the Docker version of the agent?",
+            content: `
+                <ol>
+                    <li>After starting the Docker container, view the logs with the command <code>docker logs processor -f</code>.</li>
+                    <li>Look for the OAuth authorization URL in the logs, and visit the link to complete the authentication process.</li>
+                </ol>
+            `,
+        },
+        {
+            title: "How do I add hosts for monitoring using the Docker agent?",
+            content: `
+                <ol>
+                    <li>Once the Docker agent is authorized, go to the 
+                    <a href="https://freenetworkmonitor.click/dashboard">Free Network Monitor Dashboard</a> to add hosts.</li>
+                    <li>Select a monitor location and the endpoint type (e.g., 'icmp' for ping monitoring), and switch between view and edit modes to monitor your hosts.</li>
+                </ol>
+            `,
+        },
+        {
+            title: "How do I view monitoring data for hosts?",
+            content: `
+                <p>You can view monitoring data through the Free Network Monitor Dashboard or directly in the Agent App. 
+                In the app, host statuses are represented by indicator circles. Click the circle to get more detailed monitoring information, 
+                with visual effects such as pulsing and beacon effects to represent response time and reliability.</p>
+            `,
+        },
+        {
+            title: "How do I set up alerts and reports for monitored hosts?",
+            content: `
+                <p>You’ll receive email alerts if a host goes down, and weekly reports analyzing the performance of your hosts. 
+                Be sure to verify your email address to receive these notifications. If you don’t see the verification email, 
+                whitelist <a href="mailto:support@mahadeva.co.uk">support@mahadeva.co.uk</a> to ensure it reaches your inbox.</p>
+            `,
+        },
+        {
+            title: "What is a Local Agent?",
+            content: `
+                <p>A Local Agent is an agent that you install and run on a device within your local network, such as a computer, phone, or a Docker container. 
+                It monitors devices and services that are accessible from your local network, such as routers, local servers, or other private network devices.</p>
+                <p>Local Agents provide visibility into network devices that are not publicly accessible and offer insights into the health of your local infrastructure.</p>
+            `,
+        },
+        {
+            title: "What is an Internet-Based Agent provided by Free Network Monitor?",
+            content: `
+                <p>Internet-Based Agents are managed by the Free Network Monitor service and operate from predefined global locations. 
+                These agents monitor public-facing services like websites or cloud servers and are ideal for tracking availability and performance from different regions.</p>
+                <p>Unlike Local Agents, Internet-Based Agents do not need to be installed or configured by the user and are ready to use via the dashboard.</p>
+            `,
+        },
+        {
+            title: "When should I use a Local Agent?",
+            content: `
+                <p>You should use a Local Agent when you need to monitor devices or services within your private network that are not accessible to the internet. 
+                This is ideal for checking the availability of routers, local servers, or other internal devices. Local Agents give you full control and visibility over your private network.</p>
+            `,
+        },
+        {
+            title: "When should I use an Internet-Based Agent?",
+            content: `
+                <p>Use an Internet-Based Agent when monitoring public-facing services such as websites, public servers, or cloud services. 
+                These agents are useful for ensuring that your services are accessible and performing well from different global locations.</p>
+            `,
+        },
+        {
+            title: "Can I use both a Local Agent and an Internet-Based Agent together?",
+            content: `
+                <p>Yes, you can use both types of agents together. For example, you can use a Local Agent to monitor internal devices like routers and servers, 
+                while using an Internet-Based Agent to monitor public-facing services like websites or cloud applications. This gives you a complete view of your infrastructure.</p>
+            `,
+        },
+        {
+            title: "How do I use the penetration testing function of the Network Monitor Local Agents?",
+            content: `
+                <p>The penetration testing function of the Network Monitor Agent requires Metasploit to be installed:</p>
+                <ul>
+                    <li><strong>Docker Version:</strong> The Docker version of the agent has Metasploit pre-installed, so no additional setup is required.</li>
+                    <li><strong>Windows Version:</strong> You need to manually install Metasploit and ensure it is accessible via the system's <code>PATH</code>. 
+                    For installation instructions, refer to the <a href="https://www.metasploit.com/download" target="_blank">Metasploit official site</a>.</li>
+                    <li><strong>Android Version:</strong> Metasploit is not available for Android at this time, so the penetration testing function is unavailable on this platform.</li>
+                </ul>
+            `,
+        },
+        {
+            title: "What is the difference between the Free Network Monitor Agent and the Quantum Secure Agent?",
+            content: `
+                <p>The Free Network Monitor Agent and the Quantum Secure Agent are nearly identical in functionality. 
+                However, the Quantum Secure Agent includes additional features that allow it to scan your local network for devices and monitor whether they are using 
+                quantum-safe TLS KEM (Key Encapsulation Mechanism) encryption. This makes the Quantum Secure Agent ideal for environments where quantum-safe encryption 
+                is a priority for network security.</p>
+            `,
+        }
     ],
 };
 
