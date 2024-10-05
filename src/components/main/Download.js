@@ -23,13 +23,44 @@ import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
 import ReactMarkdown from 'react-markdown';
 const markdown = `
-# Choose your platform:
+# Introduction to the Free Network Monitor Agent
 
-## Android Download Instructions
+Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
+
+## Key Features of the Free Network Monitor Agent
+
+### Comprehensive Monitoring:
+- Track the performance and availability of any device on your local or remote network using ICMP (ping), HTTP(S), and other protocols.
+- Get real-time insights into your network performance, such as response times, downtime, and latency for each monitored host.
+- Monitor local network devices, even those behind firewalls or on private IP ranges (like 192.168.x.x), by utilizing the Agent installed on your local machine.
+
+### Multi-Platform Support:
+- Available for Android (via Google Play Store) and Windows (via Windows Store), enabling network monitoring across different platforms.
+- The Docker version offers full functionality on Linux, macOS, and Windows, providing a containerized solution for secure and robust monitoring without platform-specific limitations.
+
+### Advanced Security Tools Integration:
+- The Agent supports advanced security diagnostics with built-in tools such as Nmap for network scanning and Metasploit for vulnerability testing. Use these powerful tools to scan for vulnerabilities, detect open ports, or run exploitation modules for real-world security audits.
+- Easily search for and run specific Metasploit modules using our intuitive interface, targeting vulnerabilities or exploring possible attack vectors on your network.
+
+### Email Alerts and Reports:
+- Receive automatic email notifications if a monitored host goes down, ensuring you're informed of critical network issues as soon as they happen.
+- Weekly performance reports delivered to your inbox provide an overview of how your monitored devices have performed over time.
+
+### Simple Authorization and Setup:
+- Authorize the Agent using OAuth authentication to securely link it with your Free Network Monitor account.
+- Effortlessly add hosts to monitor from the Free Network Monitor dashboard, and select whether to use predefined remote agents or your local Agent for monitoring.
+
+### Real-Time Data and Historical Analysis:
+- View detailed monitoring data directly from the Agent app or the [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard).
+- Use visual indicators such as pulsing circles and color-coded status icons to quickly assess the health and performance of monitored devices.
+
+## Choose your platform:
+
+### Android Download Instructions
 
 **Exclusive Beta Testing Invitation**
 
-As part of our select group of beta testers, you will have exclusive access to download the Free Network Monitor Agent app directly from the Google Play Store.
+As a beta tester, you will have exclusive access to download the Free Network Monitor Agent app from the Google Play Store.
 
 **How to Download:**
 
@@ -53,13 +84,13 @@ Note: Android version has a limitaion: Android's battery saving features may aff
 
 To install the Local Network Monitor Agent App from the Windows Store, click the link below.
 
-[Install for Windows](https://www.microsoft.com/store/apps/9PFJ3203JWDT)
+[Local Network Monitor Agent Install for Windows](https://www.microsoft.com/store/apps/9PFJ3203JWDT)
 
 To install the Quantum Secure Agent App from the Windows Store, click the link below.
 
-[Install for Windows](https://www.microsoft.com/store/apps/9NXT248W9NR6)
+[Quantum Secure Agent Install for Windows](https://www.microsoft.com/store/apps/9NXT248W9NR6)
 
-Note : Windows version does not currently support Quantum Safe TLS connection monitoring. If you don't want this limitation in your agent then use the fully featured docker version below.
+
 
 ## Post-Installation Instructions
 
