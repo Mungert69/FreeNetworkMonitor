@@ -97,7 +97,7 @@ To install the Quantum Secure Agent App from the Windows Store, click the link b
 > 2. Download the Windows installer.  
 > 3. Run the installer as an Administrator and follow the on-screen instructions.  
 > 
-> After installation, ensure that the msfconsole command is accessible from the system’s PATH, so you can run it from the command line&#8203;:contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}.
+> After installation, ensure that the msfconsole command is accessible from the system’s PATH.
 
 ## Post-Installation Instructions
 
