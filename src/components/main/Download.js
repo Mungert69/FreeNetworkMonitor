@@ -23,7 +23,6 @@ import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
 import ReactMarkdown from 'react-markdown';
 const markdown = `
-# Introduction to the Free Network Monitor Agent
 
 Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
 
@@ -38,9 +37,13 @@ Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a
 - Available for Android (via Google Play Store) and Windows (via Windows Store), enabling network monitoring across different platforms.
 - The Docker version offers full functionality on Linux, macOS, and Windows, providing a containerized solution for secure and robust monitoring without platform-specific limitations.
 
+### AI-Powered Integration:
+- The Agent acts as a proxy for the AI-powered Network Monitor Assistant, executing commands such as Nmap scans, Metasploit modules, and OpenSSL security checks. This seamless integration allows you to manage hosts, investigate network anomalies, and perform in-depth network security audits directly from the dashboard.
+- Whether you're optimizing performance or securing your infrastructure, the assistant works with the Agent to provide proactive and real-time network management, ensuring you stay ahead of potential threats.
+
 ### Advanced Security Tools Integration:
-- The Agent supports advanced security diagnostics with built-in tools such as Nmap for network scanning and Metasploit for vulnerability testing. Use these powerful tools to scan for vulnerabilities, detect open ports, or run exploitation modules for real-world security audits.
-- Easily search for and run specific Metasploit modules using our intuitive interface, targeting vulnerabilities or exploring possible attack vectors on your network.
+- The Agent supports advanced security diagnostics with integrated tools such as Nmap for network scanning and Metasploit for vulnerability testing. Use these powerful tools to scan for vulnerabilities, detect open ports, or run exploitation modules for real-world security audits.
+- Easily search for and run specific Metasploit modules using our intuitive web-based Network Monitor Assistant, targeting vulnerabilities or exploring possible attack vectors on your network. The Agent performs the scans and tests at your command, ensuring comprehensive coverage and real-time results.
 
 ### Email Alerts and Reports:
 - Receive automatic email notifications if a monitored host goes down, ensuring you're informed of critical network issues as soon as they happen.
@@ -48,7 +51,7 @@ Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a
 
 ### Simple Authorization and Setup:
 - Authorize the Agent using OAuth authentication to securely link it with your Free Network Monitor account.
-- Effortlessly add hosts to monitor from the Free Network Monitor dashboard, and select whether to use predefined remote agents or your local Agent for monitoring.
+- Effortlessly add hosts to monitor from the Free Network Monitor dashboard, and select whether to use predefined remote agents or your local Agent for monitoring. You can also use the Network Monitor Assistant, on the dashboard [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard), to add and manage hosts.
 
 ### Real-Time Data and Historical Analysis:
 - View detailed monitoring data directly from the Agent app or the [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard).
@@ -77,8 +80,7 @@ As a beta tester, you will have exclusive access to download the Free Network Mo
 
 In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Free Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
 
-
-Note: Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. If you don't want this limitation in your agent then use the fully featured docker version below.  
+> **Note:** Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. The Metasploit framework is not available for Android. If you don't want these limitations in your agent then use the fully featured Windows or docker versions below.  
 
 ## Windows Install Instructions
 
@@ -90,7 +92,12 @@ To install the Quantum Secure Agent App from the Windows Store, click the link b
 
 [Quantum Secure Agent Install for Windows](https://www.microsoft.com/store/apps/9NXT248W9NR6)
 
-
+> **Note:** To use Metasploit for penetration testing with your Windows agent, you need to install the Metasploit framework for Windows. You can download the Metasploit Framework from the official Rapid7 site. The installer comes with all the necessary dependencies, including msfconsole.  
+> 1. Visit the [Metasploit download page](https://www.metasploit.com/download).  
+> 2. Download the Windows installer.  
+> 3. Run the installer as an Administrator and follow the on-screen instructions.  
+> 
+> After installation, ensure that the msfconsole command is accessible from the system’s PATH, so you can run it from the command line&#8203;:contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}.
 
 ## Post-Installation Instructions
 
@@ -104,6 +111,8 @@ After installing the app:
 
 4. **Adding Hosts**: After logging into the Free Network Monitor site, navigate to the dashboard. To add a host for monitoring, click the flashing edit icon. For instance, to monitor a local router, input its IP address (e.g., 192.168.1.1) and select 'icmp' as the endpoint type. This action enables you to ping the router, monitoring its availability.
 
+    You can also add hosts using the **Network Monitor Assistant** on the dashboard. Simply type in the host information (e.g., IP address and endpoint type), and the assistant will handle the command execution for you.
+
 5. **Select Monitor Location**: You have the option to choose between predefined remote agents or your local agent for monitoring purposes. For local devices like a router at 192.168.1.1, select 'your email address - agent id' as the monitor location.
 
 6. **View and Edit Mode**: Utilize the edit icon to switch between view and edit modes. In view mode, monitoring data for hosts will appear after about 2 minutes. Click the chart icon next to a host for more detailed response data.
@@ -112,9 +121,9 @@ After installing the app:
 
 8. **Account Management**: Manage your account by clicking the profile icon.
 
-**View Monitoring Data**: You have two options for viewing detailed monitoring data. You can use the Free Network Monitor Dashboard or the Agent App, which displays current monitoring data for each dataset (6-hour set of response data).
+**View Monitoring Data**: You have three options for viewing detailed monitoring data. You can use the Free Network Monitor Dashboard, the Agent App, or the Network Monitor Assistant to access current monitoring data for each dataset (6-hour set of response data).
 
-- **Using the Free Network Monitor Dashboard**: Access the dashboard to view comprehensive monitoring data and analyses. 
+- **Using the Free Network Monitor Dashboard**: Access the dashboard to view comprehensive monitoring data and analyses.
 
 - **Using the Agent App**: To view data in the app, return to the Agent App and navigate to the Data tab. Here, monitoring data is visually represented:
     - **Indicator Circles**: Each host is indicated by a circle, which will appear green or red based on the host's current status.
@@ -122,7 +131,25 @@ After installing the app:
     - **Pulsing Circles**: A pulsing circle indicates that the host is up. The rate of pulsing reflects the response time - faster pulsing signifies quicker response times.
     - **The Purple Beacon Effect**: This effect shows the percentage of successful responses. A smaller circle indicates a lower success rate, visually representing the reliability of each host.
 
-By providing these visual cues and interactive elements, users can quickly ascertain the health and performance of their monitored hosts at a glance, enhancing the user experience with intuitive navigation and real-time insights.
+- **Using the Network Monitor Assistant**: You can ask the **Network Monitor Assistant** questions about your monitoring data. The assistant will not only display the requested data but will also automatically switch views on the web page to show you the relevant information. This option provides a more interactive way of accessing your monitoring data, using natural language queries to get insights quickly.
+
+### Using the Network Monitor Assistant with your agent for Security, Penetration Testing, BusyBox Commands, and Internet Search
+
+The **Network Monitor Assistant** allows you to conduct advanced security tests, penetration assessments, execute **BusyBox** commands, and even search the internet directly from the dashboard. It acts as an intermediary, running various security tools and commands, while also providing helpful internet search functionality to assist in troubleshooting or gathering information. The assistant supports the following:
+
+- **Nmap Scans**: You can initiate network scans using Nmap to discover open ports, detect devices, and assess potential vulnerabilities. Simply ask the assistant to run a scan on a specific host, and it will display the scan results, including details on open ports and running services.
+
+- **Metasploit Modules**: The assistant enables you to perform targeted penetration testing by running specific Metasploit modules. This allows you to exploit vulnerabilities on your network and test your security defenses. By requesting the assistant to execute a Metasploit module, you can simulate real-world attacks and get a detailed report of the vulnerabilities identified.
+
+- **OpenSSL Checks**: For SSL/TLS configuration audits, the assistant can run OpenSSL checks on your network, helping ensure your encryption settings are up to date and secure. This is essential for verifying the strength of SSL/TLS certificates and protecting data in transit.
+
+- **BusyBox Commands**: The assistant supports **BusyBox**, a lightweight set of UNIX tools commonly used in embedded systems. You can ask the assistant to run various **BusyBox** commands like file management, networking, and process control. Commands such as ls, ifconfig, ping, and more can be executed through the assistant, simplifying the process of managing and troubleshooting network devices.
+
+- **Internet Search Capabilities**: The assistant can also search the internet to help you find answers to technical questions, solutions to errors, or additional documentation. Simply ask the assistant to search for the  answer to a question, and it will return relevant search results or articles directly to your dashboard. This is particularly useful when troubleshooting complex issues or looking for further insights on specific commands, configurations, or vulnerabilities.
+
+By leveraging the assistant’s capabilities, you can perform these tasks without needing to manually configure or run the tools yourself. The assistant will automatically execute the commands, display the results, search the web, and guide you through interpreting the findings.
+
+> **Important:** Before running any penetration tests, security scans, **BusyBox** commands, or using the internet search functionality, ensure you have explicit authorization for the systems being tested. Unauthorized testing can lead to legal consequences.
 
 
 # Docker Setup Instructions
