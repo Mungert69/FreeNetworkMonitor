@@ -173,7 +173,39 @@ export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, set
 };
 
 
-  
+export const fetchEndpointTypes = async (baseUrlId) => {
+    var data = [];
+    axiosRetry(axios, { retries: 3 });
+    const result = await trackPromise(axios(
+        {
+            method: 'get',
+            url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypes', // Replace with the correct API endpoint
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }
+    ).catch(function (error) {
+        console.log('ServiceAPI.fetchEndpointTypes Axios Error was : ' + error);
+        return;
+    }));
+    
+    try {
+        result.data.data.map((row) => {
+            data.push({ value: row.endpointType, label: row.endpointDescription });
+        });
+    }
+    catch (error) {
+        console.log('ServiceAPI.fetchEndpointTypes Mapping Data Error was : ' + error);
+        if (result !== undefined && result.data.message !== undefined)
+            console.log('Api Result.Message was ' + result.data.message);
+        return undefined;
+    }
+
+    console.log('ServiceAPI.fetchEndpointTypes fetched ' + data.length + ' endpoint types');
+    return data;
+}
+ 
 export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isLoggedIn) => {
     const monitorPingInfoId = hostData.id;
     if (isLoggedIn) { var extUrlStr = 'Auth'; }

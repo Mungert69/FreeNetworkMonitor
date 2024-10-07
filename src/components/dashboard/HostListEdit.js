@@ -8,7 +8,7 @@ import {
   MenuItem,
   Checkbox
 } from '@mui/material';
-import { fetchEditHostData, saveHostData, addHostApi, delHostApi } from './ServiceAPI';
+import { fetchEditHostData, saveHostData, addHostApi, delHostApi,fetchEndpointTypes } from './ServiceAPI';
 import IconButton from '@mui/material/IconButton';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
@@ -39,6 +39,8 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   const [displayEdit, setDisplayEdit] = React.useState(true);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const paginationRef = useRef(null);
+  const [endpointTypes, setEndpointTypes] = useState([]); // Store endpoint types
+  
   const getMuiTheme = () => createTheme({
     components: {
       MuiSvgIcon: {
@@ -84,6 +86,10 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   React.useEffect(() => {
     (async () => {
       const returndata = await fetchEditHostData(siteId, userInfo);
+      const endpointData = await fetchEndpointTypes(); // Fetch endpoint types
+      if (endpointData !== undefined) {
+        setEndpointTypes(endpointData); // Set fetched endpoint types
+      }
       if (returndata !== undefined) {
         setData(returndata);
       }
@@ -142,14 +148,11 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
                     updateValue(event.target.value);
                   }}
                 >
-                  <MenuItem value={'rawconnect'}>Raw Connect (socket connection)</MenuItem>
-                  <MenuItem value={'http'}>HTTP Ping (website)</MenuItem>
-                  <MenuItem value={'https'}>HTTPS SSL (certificate check)</MenuItem>
-                  <MenuItem value={'httphtml'}>HTTP Load (website html)</MenuItem>
-                  <MenuItem value={'icmp'}>ICMP (Ping)</MenuItem>
-                  <MenuItem value={'dns'}>DNS (Domain Lookup)</MenuItem>
-                  <MenuItem value={'smtp'}>SMTP (Email Ping)</MenuItem>
-                  <MenuItem value={'quantum'}>QUANTUM (Quantum Ready)</MenuItem>
+                  {endpointTypes.map((type) => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.label}
+                    </MenuItem>
+                  ))}
 
                 </Select>
               }
