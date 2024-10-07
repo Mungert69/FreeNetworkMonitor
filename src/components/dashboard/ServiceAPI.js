@@ -180,7 +180,6 @@ export const fetchEndpointTypes = async (baseUrlId) => {
         {
             method: 'get',
             url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypes', // Replace with the correct API endpoint
-            withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
             },

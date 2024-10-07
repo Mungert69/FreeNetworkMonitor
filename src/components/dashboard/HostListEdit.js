@@ -86,7 +86,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   React.useEffect(() => {
     (async () => {
       const returndata = await fetchEditHostData(siteId, userInfo);
-      const endpointData = await fetchEndpointTypes(); // Fetch endpoint types
+      const endpointData = await fetchEndpointTypes(siteId); // Fetch endpoint types
       if (endpointData !== undefined) {
         setEndpointTypes(endpointData); // Set fetched endpoint types
       }
