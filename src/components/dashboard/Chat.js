@@ -289,7 +289,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         });
   
       default:
-        console.warn("Unsupported function type received:", jsonData.name);
+        //console.warn("Unsupported function type received:", jsonData.name);
         return null; // Handle unsupported function types gracefully
     }
   };
