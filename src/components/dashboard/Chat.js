@@ -14,8 +14,8 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+
+import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import useTheme from '@mui/material/styles/useTheme';
@@ -24,6 +24,7 @@ import useClasses from "./useClasses";
 import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
 import { getLLMServerUrl } from './ServiceAPI';
+import MessageLine from './MessageLine';
 
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -242,66 +243,57 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
 
   const processFunctionData = (functionData) => {
-    if (!isDashboard) return null
+    if (!isDashboard) return null;
+  
     autoClickedRef.current = false;
-    const jsonData = JSON.parse(functionData);
-    if (!jsonData) {
-      return null;
+  
+    let jsonData;
+    try {
+      jsonData = JSON.parse(functionData);
+    } catch (error) {
+      console.error("Failed to parse function data JSON:", error);
+      return null; // Handle gracefully in case of JSON parsing error
     }
-    if (jsonData.name === "get_host_list") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.UserID !== 'default') {
-          newHost.isHostList = true;
-        }
-        newHost.dataSetID = 0;
-        return newHost;
-      });
-
+  
+    if (!jsonData || !jsonData.name || !jsonData.dataJson) {
+      console.error("Malformed function data received:", jsonData);
+      return null; // Handle missing fields gracefully
     }
-    else if (jsonData.name === "get_host_data") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-        newHost.isHostData = true;
-        return newHost;
-      });
+  
+    switch (jsonData.name) {
+      case "get_host_list":
+        return jsonData.dataJson.map((host) => {
+          let newHost = { ...host };
+          if (host.UserID !== "default") {
+            newHost.isHostList = true;
+          }
+          newHost.dataSetID = 0;
+          return newHost;
+        });
+  
+      case "get_host_data":
+        return jsonData.dataJson.map((host) => {
+          let newHost = { ...host };
+          newHost.isHostData = true;
+          return newHost;
+        });
+  
+      case "add_host":
+      case "edit_host":
+        return jsonData.dataJson.map((host) => {
+          let newHost = { ...host };
+          if (host.UserID !== "default") {
+            newHost.isHostList = true;
+          }
+          return newHost;
+        });
+  
+      default:
+        console.warn("Unsupported function type received:", jsonData.name);
+        return null; // Handle unsupported function types gracefully
     }
-    else if (jsonData.name === "add_host") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.UserID !== 'default') {
-          newHost.isHostList = true;
-        }
-
-        return newHost;
-      });
-    }
-    else if (jsonData.name === "edit_host") {
-      return jsonData.dataJson.map((host) => {
-        // Create a new object based on the host
-        let newHost = { ...host };
-
-        // Conditionally add the isHostData property
-        if (host.userID !== 'default') {
-          newHost.isHostList = true;
-        }
-
-        return newHost;
-      });
-    }
-    else {
-      // Handle other function types or throw an error for unsupported types
-      throw new Error("Unsupported function type");
-    }
-  }
-
+  };
+  
   function sendMessageCheck(message) {
     if (webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.send(message);
@@ -558,79 +550,19 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       </List>);
   };
 
-  const renderMarkdown = (content) => {
-    return (
-      <ReactMarkdown
-        components={{
-          code({node, inline, className, children, ...props}) {
-            const match = /language-(\w+)/.exec(className || '')
-            return !inline && match ? (
-              <SyntaxHighlighter
-                style={vscDarkPlus}
-                language={match[1]}
-                PreTag="div"
-                {...props}
-              >
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
-            ) : (
-              <code className={className} {...props}>
-                {children}
-              </code>
-            )
-          }
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-    );
-  };
   const renderContent = (content) => {
     const lines = content.split('\n');
-    let functionIndex = 0;
     return lines.map((line, index) => {
       if (line.startsWith('<User:>')) {
-        return (
-          <Typography key={index} component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
-            <PersonIcon sx={{ mr: 1 }} />
-            {renderMarkdown(line.replace('<User:>', ''))}
-          </Typography>
-        );
+        return <MessageLine key={index} line={line.replace('<User:>', '')} lineType="User" />;
       } else if (line.startsWith('<Assistant:>')) {
-        return (
-          <Typography key={index} component="div" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 1 }}>
-            <SmartToyIcon sx={{ mr: 1 }} />
-            {renderMarkdown(line.replace('<Assistant:>', ''))}
-          </Typography>
-        );
-      }  else if (line.startsWith('<Function Call:>') || line.startsWith('<Function Response:>')) {
-        const isCall = line.startsWith('<Function Call:>');
-        const panelId = `function-${functionIndex}`;
-        functionIndex++;
-        return (
-          <Accordion 
-            key={index}
-            expanded={expandedFunction === panelId}
-            onChange={handleAccordionChange(panelId)}
-            sx={{ mt: 1, mb: 1 }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`${panelId}-content`}
-              id={`${panelId}-header`}
-            >
-              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                {isCall ? <CodeIcon sx={{ mr: 1 }} /> : <ReplyIcon sx={{ mr: 1 }} />}
-                {isCall ? 'Function Call' : 'Function Response'}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {line.replace(isCall ? '<Function Call:>' : '<Function Response:>', '')}
-            </AccordionDetails>
-          </Accordion>
-        );
+        return <MessageLine key={index} line={line.replace('<Assistant:>', '')} lineType="Assistant" />;
+      } else if (line.startsWith('<Function Call:>')) {
+        return <MessageLine key={index} line={line.replace('<Function Call:>', '')} lineType="FunctionCall" />;
+      } else if (line.startsWith('<Function Response:>')) {
+        return <MessageLine key={index} line={line.replace('<Function Response:>', '')} lineType="FunctionResponse" />;
       } else {
-        return renderMarkdown(line) ;
+        return <MessageLine key={index} line={line} />;
       }
     });
   };
