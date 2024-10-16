@@ -477,14 +477,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const replacements = {
       // Match "user" followed by any characters, a newline, then any recipient, and "<|content|>"
       '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': '<User:> ',
+      '<\\|start_header_id\\|>user.*\\n<\\|end_header_id\\|>': '<User:> ',
+      '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': '<User:> ',
       // Match "assistant" followed by any recipient except "all", then "<|content|>"
       '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': '<Function Call:>',
+      '<\\|reserved_special_token_249\\|>': '<Function Call:>',
       // Match "assistant" with recipient "all", followed by "<|content|>"
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': '<Assistant:>',
+      '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>': '<Assistant:>',
       // Match function call responses with any "from" except "user" or "assistant"
       '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': '<Function Response:> ',
+      '<\\|start_header_id\\|>tool<\\|end_header_id\\|>': '<Function Response:> ',
       // Match the stop pattern
-      '<\\|stop\\|>': '\n'
+      '<\\|stop\\|>': '\n',
+      '<\\|eot_id\\|>': '\n'
     };
 
     let filteredText = text;
