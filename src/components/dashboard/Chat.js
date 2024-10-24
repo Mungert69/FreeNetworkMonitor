@@ -475,22 +475,27 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
 
     const replacements = {
-      // Match "user" followed by any characters, a newline, then any recipient, and "<|content|>"
       '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': '<User:> ',
-      '<\\|start_header_id\\|>user.*\\n<\\|end_header_id\\|>': '<User:> ',
-      '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': '<User:> ',
-      // Match "assistant" followed by any recipient except "all", then "<|content|>"
+      //'<\\|im_start\\|>user\\n': '<User:> ',
+      //'<\\|start_header_id\\|>user\\n<\\|end_header_id\\|>': '<User:> ',
+
       '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': '<Function Call:>',
-      '<\\|reserved_special_token_249\\|>': '<Function Call:>',
-      // Match "assistant" with recipient "all", followed by "<|content|>"
+      '<Assistant:><\\|reserved_special_token_249\\|>': '<Function Call:>',
+      '<Assistant:><tool_call>': '<Function Call:>',
+
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': '<Assistant:>',
-      '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>': '<Assistant:>',
-      // Match function call responses with any "from" except "user" or "assistant"
+      '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n>>>all\\n': '<Assistant:>',
+      '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n': '<Assistant:>',
+      '<\\|im_start\\|>assistant\\n':'<Assistant:>',
+
       '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': '<Function Response:> ',
-      '<\\|start_header_id\\|>tool<\\|end_header_id\\|>': '<Function Response:> ',
-      // Match the stop pattern
+      
+      //'<\\|start_header_id\\|>tool<\\|end_header_id\\|>': '<Function Response:> ',
+     
       '<\\|stop\\|>': '\n',
-      '<\\|eot_id\\|>': '\n'
+      '<\\|eot_id\\|>': '\n',
+      '<\\|eom_id\\|>' : '\n',
+      '<\\|im_end\\|>' : '\n'
     };
 
     let filteredText = text;
