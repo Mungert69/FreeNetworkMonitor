@@ -31,7 +31,7 @@ const theme = createTheme(
 );
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-const config: FusionAuthProviderConfig = {
+const config = {
   clientId: getClientId(), // Your app's FusionAuth client id
   redirectUri: getRedirectUri(), // The URI that the user is directed to after the login/register/logout action
   serverUrl: getServerUrl(), // The url of the server that performs the token exchange

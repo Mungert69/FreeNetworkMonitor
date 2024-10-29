@@ -43,7 +43,7 @@ import Chat from "./Chat";
 
 export default function Dashboard() {
   const theme = useTheme();
-  const { isLoggedIn,  userInfo } = useFusionAuth();
+  const { isLoggedIn,  userInfo,  isFetchingUserInfo } = useFusionAuth();
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
@@ -187,14 +187,15 @@ export default function Dashboard() {
     const checkAuth = async () => {
 
       setIsLoading(true);
-      if (isLoggedIn) {
+      if (isLoggedIn && !isFetchingUserInfo) {
         //await setDefaultUser(false);
-        await getAccess();
-        console.log("Is Authenticated is true")
+       
+        console.log("isLoggedIn = "+JSON.stringify(isLoggedIn)+" isFetchingUserInfo "+JSON.stringify(isFetchingUserInfo))
         ReactGA4.event({
           category: 'User',
           action: 'User Logged In'
         });
+        await getAccess();
       }
       else {
         //await setDefaultUser(true);
@@ -206,7 +207,7 @@ export default function Dashboard() {
       setIsLoading(false);
     };
     checkAuth();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isFetchingUserInfo]);
   const firstLoadSiteId = async () => {
     var siteId = 0;
     try {
