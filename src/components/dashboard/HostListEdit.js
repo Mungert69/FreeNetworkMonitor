@@ -406,9 +406,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
       const updatedData = data.map(host => 
         host.id === editedHost.id ? { ...host, ...editedHost } : host
       );
-      setData(updatedData);
-      
-      
+      setData(updatedData);  
       // Save the updated data
       await saveData(updatedData);
       
@@ -492,11 +490,14 @@ const handleEditCancel = () => {
     setMessage({ text: 'Please wait. Saving can take up to one minute...', info: false });
     
     try {
-      const response = await saveHostData(siteId, data);
+      const sanitizedData = data.map(({ edit, ...host }) => host);
+      const response = await saveHostData(siteId, sanitizedData);
       setMessage(response);
       
       // Reset the edit flag after saving
-      setIsEdited(false);
+      if (response.success) {
+        setIsEdited(false);
+      }
     } catch (error) {
       console.error('Error saving data:', error);
       setMessage({ text: 'Failed to save data.', success: false, info: false });
