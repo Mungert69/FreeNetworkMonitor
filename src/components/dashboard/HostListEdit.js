@@ -235,9 +235,9 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
             <Select
               value={value}
               onChange={event => {
-                const newValue = event.target.value;
+                const row = tableMeta.rowIndex;
                 debouncedUpdate(row, 'endPointType', event.target.value);
-                updateValue(newValue);
+                updateValue(event.target.value);
               }}
               style={{ width: '200px' }}
             >
@@ -309,7 +309,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
                 <Checkbox checked={value} onChange={event => {
                   const row = tableMeta.rowIndex;
                   debouncedUpdate(row, 'enabled', event.target.value);
-                  updateValue(tempData[row]["enabled"]);
+                  updateValue(event.target.value);
                 }} />
               }
             />);
