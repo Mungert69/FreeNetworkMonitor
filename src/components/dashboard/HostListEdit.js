@@ -308,8 +308,8 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
               control={
                 <Checkbox checked={value} onChange={event => {
                   const row = tableMeta.rowIndex;
-                  debouncedUpdate(row, 'enabled', event.target.value);
-                  updateValue(event.target.value);
+                  debouncedUpdate(row, 'enabled', event.target.checked);
+                  updateValue(event.target.checked);
                 }} />
               }
             />);
@@ -362,7 +362,8 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
         sort: false,
         empty: true,
         customBodyRenderLite: (tableMeta) => {
-          return (
+          return (  <div style={{ display: 'flex', justifyContent: 'center', width: '50px' }}>
+      
             <IconButton color="inherit" size="large">
               <Badge color="secondary">
                 <Tooltip title="Delete Host">
@@ -374,6 +375,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
                 </Tooltip>
               </Badge>
             </IconButton>
+            </div>
           );
         }
       }
