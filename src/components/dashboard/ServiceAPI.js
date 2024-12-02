@@ -179,7 +179,7 @@ export const fetchEndpointTypes = async (baseUrlId) => {
     const result = await trackPromise(axios(
         {
             method: 'get',
-            url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypes', // Replace with the correct API endpoint
+            url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypes', 
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -191,7 +191,8 @@ export const fetchEndpointTypes = async (baseUrlId) => {
     
     try {
         result.data.data.map((row) => {
-            data.push({ value: row.endpointType, label: row.endpointDescription });
+            console.log('Found EndPointType '+JSON.stringify(row));
+            data.push(row);
         });
     }
     catch (error) {
@@ -205,6 +206,7 @@ export const fetchEndpointTypes = async (baseUrlId) => {
     return data;
 }
  
+
 export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isLoggedIn) => {
     const monitorPingInfoId = hostData.id;
     if (isLoggedIn) { var extUrlStr = 'Auth'; }

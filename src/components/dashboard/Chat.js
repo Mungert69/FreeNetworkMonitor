@@ -720,7 +720,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                     sendMessage();
                   }
                 }}
-                inputProps={{ maxLength: 100 }}
+                inputProps={{ maxLength: 1000 }}
               />
             </Grid>
             <Grid item xs={2}>

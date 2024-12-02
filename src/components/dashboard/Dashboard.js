@@ -387,7 +387,8 @@ export default function Dashboard() {
 
                 <Paper className={classes.paper}>
                   {toggleTable ?
-                  <HostList data={listData}
+                  <HostList siteId={siteId} 
+                    data={listData}
                     clickViewChart={clickViewChart}
                     resetHostAlert={resetHostAlert}
                     resetPredictAlert={resetPredictAlert}

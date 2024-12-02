@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://freenetworkmonitor.click/",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "private": true,
   "resolutions": {
     "nth-check": "2.1.1",
@@ -16,7 +16,8 @@
     "webpack": "5.95.0",
     "rollup": "2.79.2",
     "cookie" : "0.7.2",
-    "http-proxy-middleware" : "2.0.7"
+    "http-proxy-middleware" : "2.0.7",
+    "cross-spawn" : "7.0.6"
   },
   "dependencies": {
     "@emotion/cache": "11.13.0",

@@ -17,7 +17,10 @@ import LanguageIcon from '@mui/icons-material/Language';
 import PingIcon from '@mui/icons-material/Speed';
 import DnsIcon from '@mui/icons-material/Dns';
 import EmailIcon from '@mui/icons-material/Email';
-import QuantumIcon from '@mui/icons-material/Flare'; // Replace this import with an actual icon representing QUANTUM
+import QuantumIcon from '@mui/icons-material/Flare'; // Replace with actual Quantum icon
+import NmapIcon from '@mui/icons-material/Search'; // Placeholder icon
+import NmapVulnIcon from '@mui/icons-material/BugReport'; // Placeholder icon
+import CrawlSiteIcon from '@mui/icons-material/Public'; // Placeholder icon
 import DataSetsList from './DataSetsList';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -25,12 +28,31 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import useTheme from '@mui/material/styles/useTheme';
+import { fetchEndpointTypes } from './ServiceAPI';
+
 const muiCache = createCache({
   "key": "mui",
   "prepend": true
 });
+const iconMap = {
+  PingIcon: <PingIcon />,
+  HttpIcon: <HttpIcon />,
+  HttpsIcon: <HttpsIcon />,
+  HtmlIcon: <HtmlIcon />,
+  LanguageIcon: <LanguageIcon />,
+  LinkIcon: <LinkIcon />,
+  DnsIcon: <DnsIcon />,
+  EmailIcon: <EmailIcon />,
+  QuantumIcon: <QuantumIcon />,
+  NmapIcon: <NmapIcon />,
+  NmapVulnIcon: <NmapVulnIcon />,
+  CrawlSiteIcon: <CrawlSiteIcon />,
+  // Add other icons as necessary
+  ErrorIcon: <ErrorIcon />
+};
 
-export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd,defaultSearchValue }) => {
+export const HostList = ({ siteId,data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd,defaultSearchValue }) => {
+  
   const theme = useTheme();
   const getMuiTheme = () => createTheme({
     components: {
@@ -74,8 +96,34 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
 
     }
   })
-
+  const [endpointTypes, setEndpointTypes] = useState([]);
+  const [endpointTypeMap, setEndpointTypeMap] = useState({});
   const [showDataSetsList, setShowDataSetsList] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [endpointData] = await Promise.all([
+          fetchEndpointTypes(siteId) // Fetch endpoint types
+        ]);
+
+        if (endpointData) {
+          setEndpointTypes(endpointData);
+          // Create a map for easy lookup by internalType
+          const map = {};
+          endpointData.forEach(type => {
+            map[type.internalType.toLowerCase()] = type;
+          });
+          setEndpointTypeMap(map);
+        }
+ 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, [siteId]);
+
   const columns = [
     {
       name: "",
@@ -93,7 +141,7 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
               <Tooltip title="View Chart">
                 <span>
                   <Button onClick={() => clickViewChart(row)} >
-                    <BarChartIcon colour='action' />
+                    <BarChartIcon color='action' />
                   </Button>
                 </span>
               </Tooltip>
@@ -133,28 +181,38 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
           return (<>{value} </>);
         }
       }
-    }, {
+    },{
       name: 'endPointType',
-      label: ' ',
+      label: 'Endpoint Type',
       options: {
         filter: true,
         sort: true,
         customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].endPointType;
-          return (<>
-            {getIconForValue(value)}
-          </>);
-        }
-      }
-    }, {
-      name: 'status',
-      label: 'Status',
-      options: {
-        filter: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].status;
+          const internalType = data[dataIndex].endPointType.toLowerCase();
+          const endpointType = endpointTypeMap[internalType];
+
+          if (!endpointType) {
+            return (
+              <Tooltip title="Could not find Endpoint">
+                <span>
+                  <ErrorIcon />
+                </span>
+              </Tooltip>
+            );
+          }
+
+          const { icon, name, description } = endpointType;
+
+          const iconComponent = iconMap[icon] || <ErrorIcon />;
+
+
           return (
-            <>{value}</>);
+            <Tooltip title={description || name}>
+              <span>
+                {iconComponent}
+              </span>
+            </Tooltip>
+          );
         }
       }
     }, {
@@ -247,46 +305,6 @@ export const HostList = ({ data, clickViewChart, resetHostAlert,resetPredictAler
       }
     }
 
-  };
-
-  const endPointIcon = (title, component) => {
-    // Write to console for debug
-    //console.log(title);
-    return (
-      <Tooltip title={title}>
-        <span>
-          {component}
-        </span>
-      </Tooltip>
-    );
-  }
-
-  const getIconForValue = (value) => {
-    switch (value) {
-        case 'rawconnect':
-        return endPointIcon('Raw Socket Connection', <LinkIcon />);
-      case 'http':
-        return endPointIcon('Http (Website) Ping', <HttpIcon />);
-        case 'https':
-          return endPointIcon('Https (Certificate) SSL', <HttpsIcon />);
-      case 'httphtml':
-        return endPointIcon('Http Load (Website Html)', <HtmlIcon />);
-      case 'httpfull':
-        return endPointIcon('Http Full (Website Page)', <LanguageIcon />);
-      case 'icmp':
-        return endPointIcon('Icmp Ping', <PingIcon />);
-      case 'dns':
-        return endPointIcon('Dns Lookup', <DnsIcon />);
-
-      case 'smtp':
-        return endPointIcon('Smtp (Email) Ping', <EmailIcon />);
-
-      case 'quantum':
-        return endPointIcon('Quantum Ready Check', <QuantumIcon />);
-
-      default:
-        return endPointIcon('End Point Not Set', <ErrorIcon />);
-    }
   };
 
   const HeaderElements = () => (

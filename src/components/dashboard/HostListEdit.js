@@ -18,6 +18,22 @@ import AddIcon from '@mui/icons-material/Add';
 import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
+
+// Import necessary MUI Icons
+import PingIcon from '@mui/icons-material/Speed';
+import HttpIcon from '@mui/icons-material/Http';
+import HttpsIcon from '@mui/icons-material/Https';
+import HtmlIcon from '@mui/icons-material/Html';
+import LanguageIcon from '@mui/icons-material/Language';
+import LinkIcon from '@mui/icons-material/Link';
+import DnsIcon from '@mui/icons-material/Dns';
+import EmailIcon from '@mui/icons-material/Email';
+import QuantumIcon from '@mui/icons-material/Flare'; // Replace with actual Quantum icon
+import NmapIcon from '@mui/icons-material/Search'; // Placeholder icon
+import NmapVulnIcon from '@mui/icons-material/BugReport'; // Placeholder icon
+import CrawlSiteIcon from '@mui/icons-material/Public'; // Placeholder icon
+import ErrorIcon from '@mui/icons-material/Error'; // Error Icon
+
 import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -29,6 +45,25 @@ const muiCache = createCache({
   "key": "mui",
   "prepend": true
 });
+// Mapping of icon names to actual MUI Icon components
+const iconMap = {
+  PingIcon: <PingIcon />,
+  HttpIcon: <HttpIcon />,
+  HttpsIcon: <HttpsIcon />,
+  HtmlIcon: <HtmlIcon />,
+  LanguageIcon: <LanguageIcon />,
+  LinkIcon: <LinkIcon />,
+  DnsIcon: <DnsIcon />,
+  EmailIcon: <EmailIcon />,
+  QuantumIcon: <QuantumIcon />,
+  NmapIcon: <NmapIcon />,
+  NmapVulnIcon: <NmapVulnIcon />,
+  CrawlSiteIcon: <CrawlSiteIcon />,
+  // Add other icons as necessary
+  ErrorIcon: <ErrorIcon />
+};
+
+
 
 export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   const { userInfo } = useFusionAuth();
@@ -40,7 +75,8 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const paginationRef = useRef(null);
   const [endpointTypes, setEndpointTypes] = useState([]); // Store endpoint types
-  
+  const [endpointTypeMap, setEndpointTypeMap] = useState({}); // Map for easy lookup
+
   const getMuiTheme = () => createTheme({
     components: {
       MuiSvgIcon: {
@@ -83,18 +119,36 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
 
     }
   })
-  React.useEffect(() => {
-    (async () => {
-      const returndata = await fetchEditHostData(siteId, userInfo);
-      const endpointData = await fetchEndpointTypes(siteId); // Fetch endpoint types
-      if (endpointData !== undefined) {
-        setEndpointTypes(endpointData); // Set fetched endpoint types
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [returndata, endpointData] = await Promise.all([
+          fetchEditHostData(siteId, userInfo),
+          fetchEndpointTypes(siteId) // Fetch endpoint types
+        ]);
+
+        if (endpointData) {
+          setEndpointTypes(endpointData);
+          // Create a map for easy lookup by internalType
+          const map = {};
+          endpointData.forEach(type => {
+            map[type.internalType.toLowerCase()] = type;
+          });
+          setEndpointTypeMap(map);
+        }
+
+        if (returndata) {
+          setData(returndata);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setMessage({ text: 'Failed to fetch data.', success: false, info: false });
       }
-      if (returndata !== undefined) {
-        setData(returndata);
-      }
-    })();
+    };
+
+    fetchData();
   }, [reset]);
+
 
   const columns = [
     {
@@ -132,31 +186,25 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
         filter: true,
         sort: true,
         customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'endPointType');
+          const rowIndex = tableMeta.rowIndex;
           return (
-            <FormControlLabel
-              label=""
+            <Select
               value={value}
-              control={
-                <Select
-                  value={value}
-                  onChange={event => {
-                    const row = tableMeta.rowIndex;
-                    var tempData = data;
-                    tempData[row]["endPointType"] = event.target.value;
-                    setData(tempData);
-                    updateValue(event.target.value);
-                  }}
-                >
-                  {endpointTypes.map((type) => (
-                    <MenuItem key={type.value} value={type.value}>
-                      {type.label}
-                    </MenuItem>
-                  ))}
-
-                </Select>
-              }
-            />
+              onChange={event => {
+                const newValue = event.target.value;
+                const updatedData = [...data];
+                updatedData[rowIndex]["endPointType"] = newValue;
+                setData(updatedData);
+                updateValue(newValue);
+              }}
+              style={{ width: '200px' }}
+            >
+              {endpointTypes.map((type) => (
+                <MenuItem key={type.internalType} value={type.internalType}>
+                  {type.name}
+                </MenuItem>
+              ))}
+            </Select>
           );
         }
       }
