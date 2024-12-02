@@ -1,6 +1,8 @@
 import MUIDataTable from "mui-datatables";
 import { TablePagination, Grid } from '@mui/material';
-import React, { useRef, useState, useEffect } from 'react'
+import debounce from 'lodash.debounce';
+
+import React, { useRef, useState, useEffect,useCallback  } from 'react'
 import {
   FormControlLabel,
   TextField,
@@ -18,7 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
-
+import EditIcon from '@mui/icons-material/Edit';
 // Import necessary MUI Icons
 import PingIcon from '@mui/icons-material/Speed';
 import HttpIcon from '@mui/icons-material/Http';
@@ -33,6 +35,7 @@ import NmapIcon from '@mui/icons-material/Search'; // Placeholder icon
 import NmapVulnIcon from '@mui/icons-material/BugReport'; // Placeholder icon
 import CrawlSiteIcon from '@mui/icons-material/Public'; // Placeholder icon
 import ErrorIcon from '@mui/icons-material/Error'; // Error Icon
+import EditHostDialog from './EditHostDialog'; // Import the dialog component
 
 import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
@@ -76,6 +79,9 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   const paginationRef = useRef(null);
   const [endpointTypes, setEndpointTypes] = useState([]); // Store endpoint types
   const [endpointTypeMap, setEndpointTypeMap] = useState({}); // Map for easy lookup
+  const [editingHost, setEditingHost] = useState(null); // Host being edited
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Edit dialog open state
+  const [isEdited, setIsEdited] = useState(false);
 
   const getMuiTheme = () => createTheme({
     components: {
@@ -149,8 +155,48 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
     fetchData();
   }, [reset]);
 
-
+  const debouncedUpdate = useCallback(
+    debounce((rowIndex, field, value) => {
+      setData(prevData => {
+        const updatedData = [...prevData];
+        updatedData[rowIndex] = { ...updatedData[rowIndex], [field]: value };
+        return updatedData;
+      });
+      setIsEdited(true);
+    }, 300), // 300ms delay
+    []
+  );
+  
   const columns = [
+    {
+      name: "edit",
+      label: "Edit",
+      options: {
+        filter: false,
+        sort: false,
+        empty: true,
+        customBodyRenderLite: (dataIndex) => {
+          const row = data[dataIndex];
+          return (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {/* Edit Host Button */}
+              <Tooltip title="Edit Host">
+                <span>
+                  <IconButton
+                    onClick={() => {
+                      setEditingHost(row);
+                      setIsEditDialogOpen(true);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </div>
+          );
+        }
+      }
+    },
     {
       name: 'id',
       options: {
@@ -170,9 +216,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
             control={<TextField value={value} style={{ width: '300px' }} />}
             onChange={event => {
               const row = tableMeta.rowIndex;
-              var tempData = data;
-              tempData[row]["address"] = event.target.value;
-              setData(tempData);
+              debouncedUpdate(row, 'address', event.target.value);
               updateValue(event.target.value);
             }
             }
@@ -192,9 +236,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
               value={value}
               onChange={event => {
                 const newValue = event.target.value;
-                const updatedData = [...data];
-                updatedData[rowIndex]["endPointType"] = newValue;
-                setData(updatedData);
+                debouncedUpdate(row, 'endPointType', event.target.value);
                 updateValue(newValue);
               }}
               style={{ width: '200px' }}
@@ -222,10 +264,9 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
               control={<TextField value={value} style={{ width: '80px' }} />}
               onChange={event => {
                 const row = tableMeta.rowIndex;
-                var tempData = data;
-                tempData[row]["timeout"] = event.target.value;
-                setData(tempData);
+                debouncedUpdate(row, 'timeout', event.target.value);
                 updateValue(event.target.value);
+
               }}
             />
           );
@@ -245,9 +286,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
               control={<TextField value={value} style={{ width: '80px' }} />}
               onChange={event => {
                 const row = tableMeta.rowIndex;
-                var tempData = data;
-                tempData[row]["port"] = event.target.value;
-                setData(tempData);
+                debouncedUpdate(row, 'port', event.target.value);
                 updateValue(event.target.value);
               }}
             />
@@ -269,9 +308,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
               control={
                 <Checkbox checked={value} onChange={event => {
                   const row = tableMeta.rowIndex;
-                  var tempData = data;
-                  tempData[row]["enabled"] = !tempData[row]["enabled"];
-                  setData(tempData);
+                  debouncedUpdate(row, 'enabled', event.target.value);
                   updateValue(tempData[row]["enabled"]);
                 }} />
               }
@@ -296,9 +333,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
                   value={value}
                   onChange={event => {
                     const row = tableMeta.rowIndex;
-                    var tempData = data;
-                    tempData[row]["appID"] = event.target.value;
-                    setData(tempData);
+                    debouncedUpdate(row, 'appID', event.target.value);
                     updateValue(event.target.value);
                   }}
                 >
@@ -365,11 +400,46 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
     searchText: defaultSearchValue // Populate the search field with default value
   };
 
+  const handleEditSave = async (editedHost) => {
+    try {
+      // Update the data array with the edited host
+      const updatedData = data.map(host => 
+        host.id === editedHost.id ? { ...host, ...editedHost } : host
+      );
+      setData(updatedData);
+      
+      
+      // Save the updated data
+      await saveData(updatedData);
+      
+      // Reset the edited state to stop the Save Icon from flashing
+      setIsEdited(false);
+      
+      // Close the dialog
+      setIsEditDialogOpen(false);
+      setEditingHost(null);
+      
+      console.log('Host updated and saved:', editedHost);
+    } catch (error) {
+      console.error('Error saving edited host:', error);
+      setMessage({ text: 'Failed to save edited host.', success: false, info: false });
+      
+      // Optionally, keep the Save Icon flashing to indicate unsaved changes
+      setIsEdited(true);
+    }
+  };
+  
 
+// Handle canceling the Edit Dialog
+const handleEditCancel = () => {
+  setIsEditDialogOpen(false);
+  setEditingHost(null);
+};
 
 
   const HeaderElements = () => (
     <>
+       <FadeWrapper toggle={isEdited}>
       <IconButton color="inherit" size="large">
         <Badge color="secondary">
           <Tooltip title="Save Host List">
@@ -377,6 +447,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
           </Tooltip>
         </Badge>
       </IconButton>
+    </FadeWrapper>
       <FadeWrapper toggle={data.length === 0}>
         <IconButton color="inherit" size="large" 	>
           <Badge color="secondary" >
@@ -418,12 +489,22 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
 
   const saveData = async (data) => {
     setDisplayEdit(false);
-    var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
-    setMessage(message);
-    message = await saveHostData(siteId, data);
-    setMessage(message);
-    setDisplayEdit(true);
-  }
+    setMessage({ text: 'Please wait. Saving can take up to one minute...', info: false });
+    
+    try {
+      const response = await saveHostData(siteId, data);
+      setMessage(response);
+      
+      // Reset the edit flag after saving
+      setIsEdited(false);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      setMessage({ text: 'Failed to save data.', success: false, info: false });
+    } finally {
+      setDisplayEdit(true);
+    }
+  };
+  
   const addHost = async () => {
     if (!displayEdit) {
       var message = { text: 'Please save before adding another host.', success: false };
@@ -456,6 +537,14 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
       <Message message={message} />
       <CacheProvider value={muiCache}>
         <ThemeProvider theme={getMuiTheme()}>
+            <EditHostDialog
+            open={isEditDialogOpen}
+            onClose={handleEditCancel}
+            host={editingHost}
+            endpointTypes={endpointTypes}
+            processorList={processorList}
+            onSave={handleEditSave}
+          />
           <MUIDataTable
             title={"Edit Hosts"}
             data={data}
