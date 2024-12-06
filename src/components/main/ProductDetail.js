@@ -77,7 +77,7 @@ const ProductDetail = () => {
         <div className={classes.root}>
             <CssBaseline />
             <Helmet>
-                <title>Free Network and Quatum Readyiness Monitor Online Website Monitoring</title>
+                <title>Free Network and Quantum Readiness Monitor Online Website Monitoring</title>
                 <meta name="description" content="Discover our innovative network monitoring tool, equipped with an advanced quantum readiness feature to ensure your website's preparedness for the quantum computing era. Our free, user-friendly monitor offers comprehensive network host availability checks, including HTTP, ICMP, DNS, and SMTP services. Embrace future technology today with our leading-edge quantum-ready network monitor."></meta>
             </Helmet>
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
