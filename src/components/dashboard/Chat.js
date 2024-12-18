@@ -70,7 +70,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const [reconnectDelay, setReconnectDelay] = useState(1000); // Start with 1 second
-  
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -235,10 +237,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
-    if (outputContainer) {
+    if (!outputContainer) return;
+
+    // Only auto-scroll if autoScrollEnabled is true
+    // and user is at the bottom when new content is added
+    if (autoScrollEnabled) {
       outputContainer.scrollTop = outputContainer.scrollHeight;
     }
-  }, [llmFeedback]);
+  }, [llmFeedback, autoScrollEnabled]);
 
 
 
@@ -438,11 +444,33 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
       }
     }, 5000);
+
+  
+
+    const outputContainer = outputContainerRef.current;
+    if (!outputContainer) return;
+
+    const handleScroll = () => {
+      // Check if user is at (or near) bottom
+      const isAtBottom = Math.abs(
+        outputContainer.scrollHeight - outputContainer.scrollTop - outputContainer.clientHeight
+      ) < 10; // 10px threshold, can adjust as needed
+
+      if (isAtBottom) {
+        // If user scrolled back down to bottom, re-enable auto-scrolling
+        setAutoScrollEnabled(true);
+      } else {
+        // If user scrolled up, disable auto-scrolling
+        setAutoScrollEnabled(false);
+      }
+    };
+
+    outputContainer.addEventListener('scroll', handleScroll);
+
     return () => {
+      outputContainer.removeEventListener('scroll', handleScroll);
       clearInterval(pingInterval);
-      /*if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
-        webSocketRef.current.close();
-      }*/
+    
     };
 
   }, []);
