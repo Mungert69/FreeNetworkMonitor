@@ -106,7 +106,7 @@ export default function Dashboard() {
 
     // TODO: Implement the logic to display host-specific data
     // You could potentially change component state to show the chart or the details
-    console.log("Host Link Clicked with ID:", hostData.ID);
+    //console.log("Host Link Clicked with host data:", JSON.stringify(hostData));
   };
 
   const getUserInfo = async () => {
@@ -152,6 +152,7 @@ export default function Dashboard() {
     }
   }
   const clickViewChart = (hostData) => {
+    console.log("Passing host data to chart:", JSON.stringify(hostData));
     // Set hostData to the selected host
     setHostData(hostData);
     // Set viewInfo to true to show the chart.

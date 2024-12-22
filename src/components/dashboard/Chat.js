@@ -23,7 +23,7 @@ import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
-import { getLLMServerUrl } from './ServiceAPI';
+import { getLLMServerUrl, convertDate } from './ServiceAPI';
 import MessageLine from './MessageLine';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -75,6 +75,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const closeExpand = () => {
+    setIsExpanded(false);
   };
 
   const chatStyles = {
@@ -281,7 +285,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         return jsonData.dataJson.map((host) => {
           let newHost = { ...host };
           newHost.isHostData = true;
-          return newHost;
+           return newHost;
         });
   
       case "add_host":
@@ -336,7 +340,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         const generatedLinkData = processFunctionData(functionData);
         if (generatedLinkData !== null) {
           setLinkData(generatedLinkData);
-          setIsDrawerOpen(true);
+          if (generatedLinkData.length>1) setIsDrawerOpen(true);
         }
 
       }
@@ -567,12 +571,12 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
 
   const renderLinks = () => {
-    if (!linkData || linkData.length === 0) return;
+    if (!linkData || linkData.length == 0) return;
     return (
       <List>
         {linkData.map((linkItem) => (
           <ListItem key={linkItem.link}>
-            <Button onClick={() => onHostLinkClick(linkItem)} sx={{
+            <Button onClick={() => {closeExpand(); onHostLinkClick(linkItem);}} sx={{
               width: '100%', // Full width button
               justifyContent: 'flex-start',
               textTransform: 'none',
