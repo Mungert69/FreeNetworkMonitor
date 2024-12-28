@@ -86,7 +86,7 @@ In appreciation of your valuable feedback and participation, all testers involve
 
 To install the Local Network Monitor Agent App from the Windows Store, click the link below.
 
-[Local Network Monitor Agent Install for Windows](https://www.microsoft.com/store/apps/9PFJ3203JWDT)
+[Local Network Monitor Agent Install for Windows](https://www.microsoft.com/store/apps/9P58PM1PM9TZ )
 
 To install the Quantum Secure Agent App from the Windows Store, click the link below.
 
