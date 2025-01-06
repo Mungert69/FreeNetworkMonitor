@@ -127,8 +127,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
     return newSessionId;
   };
-
+ 
   const resetSessionId = () => {
+    if (webSocketRef.current.readyState === WebSocket.OPEN) {
+      webSocketRef.current.send('<|REMOVE_SESSION|>');
+      console.log('Message sent: <|REMOVE_SESSION|>');
+  } else {
+      console.error('WebSocket is not open. Message not sent.');
+  }
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     localStorage.removeItem('sessionId');
