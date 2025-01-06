@@ -8,6 +8,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import CodeIcon from '@mui/icons-material/Code';
 import ReplyIcon from '@mui/icons-material/Reply';
 import SaveIcon from '@mui/icons-material/Save';
+import StopIcon from '@mui/icons-material/Stop';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -84,7 +85,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const chatStyles = {
     position: 'fixed',
     transition: 'all 0.5s ease-in-out',
-    transformOrigin: 'right', 
+    transformOrigin: 'right',
     ...(isExpanded
       ? {
         top: '70px', // Adjust based on your AppBar height
@@ -103,7 +104,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         maxHeight: 'none',
       }),
   };
-  
+
   const getSessionId = () => {
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
@@ -127,14 +128,22 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
     return newSessionId;
   };
- 
+
+  const stopLLM = () => {
+    if (webSocketRef.current.readyState === WebSocket.OPEN) {
+      webSocketRef.current.send('<|STOP_LLM|>');
+      console.log('Message sent: <|STOP_LLM|>');
+    } else {
+      console.error('WebSocket is not open. STOP_LLM Message not sent.');
+    }
+  }
   const resetSessionId = () => {
     if (webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.send('<|REMOVE_SESSION|>');
       console.log('Message sent: <|REMOVE_SESSION|>');
-  } else {
-      console.error('WebSocket is not open. Message not sent.');
-  }
+    } else {
+      console.error('WebSocket is not open. REMOVE_SESSION Message not sent.');
+    }
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     localStorage.removeItem('sessionId');
@@ -260,9 +269,9 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const processFunctionData = (functionData) => {
     if (!isDashboard) return null;
-  
+
     autoClickedRef.current = false;
-  
+
     let jsonData;
     try {
       jsonData = JSON.parse(functionData);
@@ -270,12 +279,12 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       console.error("Failed to parse function data JSON:", error);
       return null; // Handle gracefully in case of JSON parsing error
     }
-  
+
     if (!jsonData || !jsonData.name || !jsonData.dataJson) {
       console.error("Malformed function data received:", jsonData);
       return null; // Handle missing fields gracefully
     }
-  
+
     switch (jsonData.name) {
       case "get_host_list":
         return jsonData.dataJson.map((host) => {
@@ -286,14 +295,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
           newHost.dataSetID = 0;
           return newHost;
         });
-  
+
       case "get_host_data":
         return jsonData.dataJson.map((host) => {
           let newHost = { ...host };
           newHost.isHostData = true;
-           return newHost;
+          return newHost;
         });
-  
+
       case "add_host":
       case "edit_host":
         return jsonData.dataJson.map((host) => {
@@ -303,13 +312,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
           }
           return newHost;
         });
-  
+
       default:
         //console.warn("Unsupported function type received:", jsonData.name);
         return null; // Handle unsupported function types gracefully
     }
   };
-  
+
   function sendMessageCheck(message) {
     if (webSocketRef.current.readyState === WebSocket.OPEN) {
       webSocketRef.current.send(message);
@@ -346,7 +355,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         const generatedLinkData = processFunctionData(functionData);
         if (generatedLinkData !== null) {
           setLinkData(generatedLinkData);
-          if (generatedLinkData.length>1) setIsDrawerOpen(true);
+          if (generatedLinkData.length > 1) setIsDrawerOpen(true);
         }
 
       }
@@ -455,7 +464,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       }
     }, 5000);
 
-  
+
 
     const outputContainer = outputContainerRef.current;
     if (!outputContainer) return;
@@ -480,7 +489,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return () => {
       outputContainer.removeEventListener('scroll', handleScroll);
       clearInterval(pingInterval);
-    
+
     };
 
   }, []);
@@ -524,16 +533,16 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': '<Assistant:>',
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n>>>all\\n': '<Assistant:>',
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n': '<Assistant:>',
-      '<\\|im_start\\|>assistant\\n':'<Assistant:>',
+      '<\\|im_start\\|>assistant\\n': '<Assistant:>',
 
       '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': '<Function Response:> ',
-      
+
       //'<\\|start_header_id\\|>tool<\\|end_header_id\\|>': '<Function Response:> ',
-     
+
       '<\\|stop\\|>': '\n',
       '<\\|eot_id\\|>': '\n',
-      '<\\|eom_id\\|>' : '\n',
-      '<\\|im_end\\|>' : '\n'
+      '<\\|eom_id\\|>': '\n',
+      '<\\|im_end\\|>': '\n'
     };
 
     let filteredText = text;
@@ -582,7 +591,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       <List>
         {linkData.map((linkItem) => (
           <ListItem key={linkItem.link}>
-            <Button onClick={() => {closeExpand(); onHostLinkClick(linkItem);}} sx={{
+            <Button onClick={() => { closeExpand(); onHostLinkClick(linkItem); }} sx={{
               width: '100%', // Full width button
               justifyContent: 'flex-start',
               textTransform: 'none',
@@ -709,8 +718,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
             </Box>
           ) : (
             <Box>
-            {renderContent(llmFeedback)}
-          </Box>
+              {renderContent(llmFeedback)}
+            </Box>
           )}
           {isProcessing && !isCallingFunction && (
             <Typography color="primary" sx={{ mt: 2, fontStyle: 'italic' }}>{`Thinking${thinkingDots}`}</Typography>
@@ -761,16 +770,34 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 inputProps={{ maxLength: 1000 }}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
               <IconButton
                 color="primary"
                 onClick={() => sendMessage()}
                 disabled={isProcessing || isCallingFunction || !isReady}
                 aria-label="send message"
               >
-                <SendIcon /> {/* Using SendIcon as the paper airplane icon */}
+                <SendIcon />
               </IconButton>
             </Grid>
+            <Grid item xs={1}>
+              <IconButton
+                onClick={() => stopLLM()}
+                color="black"  // Changed from "primary" to "error"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'black.light',  // Lighter shade of error color on hover
+                  }
+                }}
+              >
+                <Badge color="warning">
+                  <Tooltip title="Stop LLM" TransitionComponent={Zoom}>
+                    <StopIcon />
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+            </Grid>
+
 
           </Grid>
         </CardContent>
