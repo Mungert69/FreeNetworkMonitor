@@ -67,6 +67,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [linkData, setLinkData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
+  const [isLLMBusy, setIsLLMBusy] = useState(false);
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
@@ -216,13 +217,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   useEffect(() => {
     let intervalId;
-    if (isProcessing && !isCallingFunction) {
+    if (isProcessing && !isLLMBusy) {
       intervalId = setInterval(() => {
         setThinkingDots((dots) => (dots.length < 5 ? dots + '.' : ''));
       }, 1000); // Change dot animation speed if necessary
     }
     return () => clearInterval(intervalId);
-  }, [isProcessing, isCallingFunction]);
+  }, [isProcessing, isLLMBusy]);
 
   useEffect(() => {
     let helpMessageTimeout;
@@ -241,7 +242,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       setFirstMessageShown(true); // Mark the first message as shown
     };
 
-    if (isProcessing || isCallingFunction) {
+    if (isProcessing || isLLMBusy) {
       // Set a longer delay for showing the first help message
       const initialDelay = firstMessageShown ? 5000 : 30000; // 60 seconds for the first, then 5 seconds for subsequent messages
       helpMessageTimeout = setTimeout(showHelpMessage, initialDelay);
@@ -252,7 +253,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
 
     return () => clearTimeout(helpMessageTimeout);
-  }, [isProcessing, isCallingFunction, helpMessageIndex, firstMessageShown]);
+  }, [isProcessing, isLLMBusy, helpMessageIndex, firstMessageShown]);
 
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
@@ -401,6 +402,12 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       else if (newWord === '</functioncall-complete>') {
         setIsCallingFunction(false);
       }
+      else if (newWord === '</llm-busy>') {
+        setIsLLMBusy(true);
+      }
+      else if (newWord === '</llm-listening>') {
+        setIsLLMBusy(false);
+      }
       else if (newWord === '<end-of-line>') {
         //setLlmFeedback((prevFeedback) => prevFeedback );
 
@@ -534,6 +541,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n>>>all\\n': '<Assistant:>',
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n': '<Assistant:>',
       '<\\|im_start\\|>assistant\\n': '<Assistant:>',
+      '<\\|im_start\\|>assistant<\\|im_sep\\|>\\n': '<Assistant:>',
 
       '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': '<Function Response:> ',
 
@@ -581,6 +589,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setCurrentMessage('');
     setLlmFeedback('');
     setIsProcessing(false);
+    setIsLLMBusy(false);
     setIsCallingFunction(false);
 
   };
@@ -721,7 +730,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               {renderContent(llmFeedback)}
             </Box>
           )}
-          {isProcessing && !isCallingFunction && (
+          {isProcessing && !isLLMBusy && (
             <Typography color="primary" sx={{ mt: 2, fontStyle: 'italic' }}>{`Thinking${thinkingDots}`}</Typography>
           )}
           {isCallingFunction && (
@@ -774,7 +783,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               <IconButton
                 color="primary"
                 onClick={() => sendMessage()}
-                disabled={isProcessing || isCallingFunction || !isReady}
+                disabled={isProcessing || isLLMBusy || !isReady}
                 aria-label="send message"
               >
                 <SendIcon />
