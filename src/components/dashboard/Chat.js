@@ -403,9 +403,11 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         setIsCallingFunction(false);
       }
       else if (newWord === '</llm-busy>') {
+        console.log('Set </llm-busy>');
         setIsLLMBusy(true);
       }
       else if (newWord === '</llm-listening>') {
+        console.log('Set </llm-listening>');
         setIsLLMBusy(false);
       }
       else if (newWord === '<end-of-line>') {
@@ -783,7 +785,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               <IconButton
                 color="primary"
                 onClick={() => sendMessage()}
-                disabled={isProcessing || isLLMBusy || !isReady}
+                disabled={ isLLMBusy || !isReady}
                 aria-label="send message"
               >
                <Badge color="primary">
@@ -797,7 +799,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               <IconButton
                 onClick={() => stopLLM()}
                 color="warning"
-                disabled={isProcessing || !isLLMBusy || !isReady}
+                disabled={!isLLMBusy || !isReady}
                 sx={{
                   '&:hover': {
                     backgroundColor: 'warning.light',  // Lighter shade of error color on hover
