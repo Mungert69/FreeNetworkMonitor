@@ -786,16 +786,21 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 disabled={isProcessing || isLLMBusy || !isReady}
                 aria-label="send message"
               >
-                <SendIcon />
+               <Badge color="primary">
+                  <Tooltip title="Send Message" TransitionComponent={Zoom}>
+                    <SendIcon />
+                  </Tooltip>
+                </Badge>
               </IconButton>
             </Grid>
             <Grid item xs={1}>
               <IconButton
                 onClick={() => stopLLM()}
-                color="black"  // Changed from "primary" to "error"
+                color="warning"
+                disabled={isProcessing || !isLLMBusy || !isReady}
                 sx={{
                   '&:hover': {
-                    backgroundColor: 'black.light',  // Lighter shade of error color on hover
+                    backgroundColor: 'warning.light',  // Lighter shade of error color on hover
                   }
                 }}
               >
