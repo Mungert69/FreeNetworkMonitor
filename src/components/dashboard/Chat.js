@@ -805,7 +805,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 }}
               >
                 <Badge color="warning">
-                  <Tooltip title="Stop LLM" TransitionComponent={Zoom}>
+                  <Tooltip title="Halt Assistant" TransitionComponent={Zoom}>
                     <StopIcon />
                   </Tooltip>
                 </Badge>
