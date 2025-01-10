@@ -55,13 +55,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [isPaused, setPause] = useState(false);
   const [reconnect, setReconnect] = useState(false);
   const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM'); // Initial state
-
-
   const [currentMessage, setCurrentMessage] = useState('');
-  const [displayText, setDisplayText] = useState('');
-  const [userInput, setUserInput] = useState('');
-  const [functionCall, setFunctionCall] = useState('');
-  const [functionResponse, setFunctionResponse] = useState('');
   const [llmFeedback, setLlmFeedback] = useState('');
   const [speechText, setSpeechText] = useState('');
   const [shouldSpeak, setShouldSpeak] = useState(false);
@@ -73,8 +67,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
-  const [reconnectDelay, setReconnectDelay] = useState(1000); // Start with 1 second
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+  const [isToggleDisabled, setIsToggleDisabled] = useState(false); // Add state for disabling the toggle button
 
 
   const toggleExpand = () => {
@@ -163,10 +157,19 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const [sessionId, setSessionId] = useState(getSessionId()); // Use the getSessionId function during initial state setup
 
-  const toggleLlmRunnerType = () => {
-    llmRunnerTypeRef.current = llmRunnerTypeRef.current === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM';
-    setLlmRunnerType(prevType => prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM');
+  useEffect(() => {
+    if (isToggleDisabled) {
+      const timer = setTimeout(() => setIsToggleDisabled(false), 5000);
+      return () => clearTimeout(timer); // Clean up the timer
+    }
+  }, [isToggleDisabled]);
 
+  const toggleLlmRunnerType = () => {
+    if (isToggleDisabled) return; // Prevent execution if disabled
+    setIsToggleDisabled(true); // Disable the button
+    llmRunnerTypeRef.current = llmRunnerTypeRef.current === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM';
+    setLlmRunnerType(prevType => (prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM'));
+  
   };
   const autoClickedRef = useRef(false);
 
@@ -526,7 +529,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     if (loadCount > 1) {
       setLoadWarning(
         <>
-          Warning: {llmRunnerType} load is high. Consider trying again later, using TurboLLM or Free Network Monitor GPT at{' '}
+          Warning: {llmRunnerType} load is high {loadCount} message in queue. Consider trying again later, using TurboLLM or Free Network Monitor GPT at{' '}
           <a
             href="https://chatgpt.com/g/g-g0XMzU1nM-free-network-monitor"
             target="_blank"
@@ -700,7 +703,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 </Badge>
 
               </IconButton>
-              <IconButton onClick={toggleLlmRunnerType} color="primary" >
+              <IconButton onClick={toggleLlmRunnerType} color="primary"   disabled={isToggleDisabled}>
                 <Badge color="secondary">
                   <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
                     <SwapHorizIcon />
