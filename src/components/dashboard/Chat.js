@@ -511,7 +511,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   useEffect(() => {
     resetLLM();
-  }, [sessionId]);
+  }, [sessionId,llmRunnerType]);
 
   const speakText = (text) => {
     const speechSynthesis = window.speechSynthesis;
@@ -681,14 +681,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   </Badge>
                 </IconButton>
               )}
-              <IconButton onClick={resetLLM} color="secondary" >
-                <Badge color="secondary">
-                  <Tooltip title={!isReady ? "Assitant not ready" : "Reload Assitant"}
-                    TransitionComponent={Zoom}>
-                    <RestartAltIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
               <IconButton onClick={() => setIsChatOpen(false)} color="secondary" >
                 <Badge color="secondary">
                   <Tooltip title={"Hide Assistant"}
