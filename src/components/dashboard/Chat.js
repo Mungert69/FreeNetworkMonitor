@@ -531,7 +531,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
             href="https://chatgpt.com/g/g-g0XMzU1nM-free-network-monitor"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: 'blue', textDecoration: 'underline' }}
+            style={{ color: 'secondary', textDecoration: 'underline' }}
           >
             this link
           </a>.
