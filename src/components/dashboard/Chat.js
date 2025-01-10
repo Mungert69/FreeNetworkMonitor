@@ -38,6 +38,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [loadCount, setLoadCount] = useState(0);
+  const [loadWarning, setLoadWarning] = useState('');
   const [thinkingDots, setThinkingDots] = useState('');
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
   const [showHelpMessage, setShowHelpMessage] = useState(false);
@@ -396,6 +398,17 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       else if (newWord === '</llm-ready>') {
         setIsReady(true);
       }
+      else if (newWord.startsWith('<load-count>') && newWord.endsWith('</load-count>')) {
+        console.log('<load-count> found');
+        const loadCountString = newWord.slice(12, -13); // Remove the tags
+        const loadCount = parseInt(loadCountString, 10); // Convert to integer
+        if (!isNaN(loadCount)) { // Check if it's a valid number
+          setLoadCount(loadCount);
+        } else {
+          console.error('Invalid load count received:', loadCountString);
+        }
+
+      }
       else if (newWord === '</functioncall>') {
         setIsCallingFunction(true);
       }
@@ -510,8 +523,29 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [shouldSpeak]);
 
   useEffect(() => {
+    if (loadCount > 1) {
+      setLoadWarning(
+        <>
+          Warning: {llmRunnerType} load is high. Consider trying again later, using TurboLLM or Free Network Monitor GPT at{' '}
+          <a
+            href="https://chatgpt.com/g/g-g0XMzU1nM-free-network-monitor"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'blue', textDecoration: 'underline' }}
+          >
+            this link
+          </a>.
+        </>
+      );
+    } else {
+      setLoadWarning('');
+    }
+  }, [loadCount]);
+
+
+  useEffect(() => {
     resetLLM();
-  }, [sessionId,llmRunnerType]);
+  }, [sessionId, llmRunnerType]);
 
   const speakText = (text) => {
     const speechSynthesis = window.speechSynthesis;
@@ -639,6 +673,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     <Box sx={chatStyles}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          {loadWarning && (
+            <Box sx={{ mb: 2, p: 1, bgcolor: 'warning.light', borderRadius: 1 }}>
+              <Typography variant="body1" color="black">
+                {loadWarning}
+              </Typography>
+            </Box>
+          )}
 
           <Grid container alignItems="center">
             <Grid item xs={12} sx={{
@@ -777,10 +818,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
               <IconButton
                 color="primary"
                 onClick={() => sendMessage()}
-                disabled={ isLLMBusy || !isReady}
+                disabled={isLLMBusy || !isReady}
                 aria-label="send message"
               >
-               <Badge color="primary">
+                <Badge color="primary">
                   <Tooltip title="Send Message" TransitionComponent={Zoom}>
                     <SendIcon />
                   </Tooltip>
