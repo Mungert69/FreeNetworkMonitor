@@ -209,7 +209,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
 
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isCallingFunction) {
       const messages = ["Please wait...", "Function call...", "Evaluating..."];
       let messageIndex = 0;
@@ -218,7 +218,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       }, 3000); // Rotate messages every 3 seconds
       return () => clearInterval(intervalId);
     }
-  }, [isCallingFunction]);
+  }, [isCallingFunction]);*/
 
   useEffect(() => {
     let intervalId;
@@ -230,10 +230,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return () => clearInterval(intervalId);
   }, [isProcessing, isLLMBusy]);
 
-  useEffect(() => {
+   /* useEffect(() => {
     let helpMessageTimeout;
 
-    const showHelpMessage = () => {
+  const showHelpMessage = () => {
       setShowHelpMessage(true);
       const helpMessages = [
         "Running to slow?",
@@ -258,7 +258,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
 
     return () => clearTimeout(helpMessageTimeout);
-  }, [isProcessing, isLLMBusy, helpMessageIndex, firstMessageShown]);
+  }, [isProcessing, isLLMBusy, helpMessageIndex, firstMessageShown]);*/
 
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
