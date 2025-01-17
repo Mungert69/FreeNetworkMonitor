@@ -1,5 +1,0 @@
-<IfModule mod_mime.c>
-    AddType audio/wav .wav
-    AddType audio/mpeg .mp3
-</IfModule>
-

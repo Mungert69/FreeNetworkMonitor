@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Serve static files directly (e.g., wav, mp3, images, etc.)
+RewriteCond %{REQUEST_URI} !\.(?:wav|mp3|jpg|jpeg|png|gif|webp|css|js|ico|svg|ttf|woff|woff2|eot|json|map)$ [NC]
+RewriteRule ^ - [L]
+
+# Blog-specific rewrites
+RewriteCond %{REQUEST_URI} ^/blog
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^blog/(.*)$ /blog/index.html [L]
+
+# React app rewrites for everything else
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.html [L]
+

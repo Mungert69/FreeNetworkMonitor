@@ -14,7 +14,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff'; // Mute icon
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';   // Unmute icon
 
 import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -26,16 +27,21 @@ import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
 import { getLLMServerUrl, convertDate } from './ServiceAPI';
 import MessageLine from './MessageLine';
+import AudioPlayer from './AudioPlayer'; // Import the new AudioPlayer component
+
 
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
   const theme = useTheme();
   const [expandedFunction, setExpandedFunction] = useState(null);
+  const audioPlayerRef = useRef(AudioPlayer());
+
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpandedFunction(isExpanded ? panel : null);
   };
+  const [isMuted, setIsMuted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [loadCount, setLoadCount] = useState(0);
@@ -77,6 +83,23 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const closeExpand = () => {
     setIsExpanded(false);
+  };
+
+  const toggleAudio = () => {
+    if (isMuted) {
+      // Unmute: Allow new audio playback
+      console.log('Unmuting audio...');
+      setIsMuted(false); // Update state
+    } else {
+      // Mute: Clear the audio queue
+      console.log('Muting audio...');
+      if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
+        audioPlayerRef.current.clearQueue();
+      } else {
+        console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
+      }
+      setIsMuted(true); // Update state
+    }
   };
 
   const chatStyles = {
@@ -164,6 +187,19 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   }, [isToggleDisabled]);
 
+  useEffect(() => {
+    if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+      if (isMuted) {
+        console.log('Sending <|STOP_AUDIO|> due to mute...');
+        webSocketRef.current.send('<|STOP_AUDIO|>'); // Notify backend to stop audio
+      } else {
+        console.log('Audio unmuted, backend informed.');
+        webSocketRef.current.send('<|START_AUDIO|>'); // Notify backend to resume audio
+      }
+    } else {
+      console.warn('WebSocket is not open. Audio toggle message not sent.');
+    }
+  }, [isMuted]);
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return; // Prevent execution if disabled
     setIsToggleDisabled(true); // Disable the button
@@ -321,8 +357,26 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     };
 
     webSocketRef.current.onmessage = (event) => {
-      const newWord = event.data;
-      //TODO implement this if condition looking to match newWord is <function-data>SOME TEXT</function-data>
+      var newWord = event.data;
+      if (newWord.includes('</audio>')) {
+        console.log(`Received chucnk: ${newWord}`);
+        const [textPart, audioFile] = newWord.split('</audio>');
+        if (textPart) {
+          console.log(`Received text: ${textPart.trim()}`);
+          newWord = textPart.trim(); // Reassign only the text part
+        } else {
+          newWord = ''; // Clear newWord if there's no text part
+        }
+
+        if (audioFile) {
+          console.log(`Attempting to play audio: ${audioFile.trim()}`);
+          // Process the audio part
+          audioPlayerRef.current.playAudioSequentially(audioFile.trim());
+        }
+
+      }
+
+
       if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
         // Extract the function data
         const functionData = newWord.slice(15, -16); // Remove the tags
@@ -334,30 +388,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         }
 
       }
-      else if (newWord.includes('</audio>')) {
-        const audioFile = newWord.replace('</audio>', '').trim();
-        console.log(`Attempting to play audio from: ${audioFile}`);
-      
-        try {
-          const audio = new Audio(audioFile);
-      
-          // Add event listeners for debugging
-          audio.addEventListener('play', () => console.log('Audio started playing.'));
-          audio.addEventListener('ended', () => console.log('Audio playback ended.'));
-          audio.addEventListener('error', (e) => console.error('Audio playback error:', e));
-      
-          // Use the Promise from audio.play()
-          audio.play()
-            .then(() => {
-              console.log('Audio playback succeeded.');
-            })
-            .catch((err) => {
-              console.error('Audio playback failed:', err);
-            });
-        } catch (err) {
-          console.error('Error setting up audio playback:', err);
-        }
-      }      
       else if (newWord.startsWith('</llm-error>')) {
         // Pass only the part of newWord after '</llm-error>'
         var message = {
@@ -596,6 +626,11 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const sendMessage = () => {
     if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
+      if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
+        audioPlayerRef.current.clearQueue(); // Clear the audio queue safely
+      } else {
+        console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
+      }
       setIsProcessing(true); // Start loading indicator
       sendMessageCheck(currentMessage);
       // setUserInput('User: ' + currentMessage);
@@ -745,6 +780,17 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 <Badge color="warning">
                   <Tooltip title="Reset Session" TransitionComponent={Zoom}>
                     <RefreshIcon />
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+              <IconButton
+                onClick={toggleAudio}
+                color="primary"
+                aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+              >
+                <Badge color="secondary">
+                  <Tooltip title={isMuted ? "Unmute Audio" : "Mute Audio"} TransitionComponent={Zoom}>
+                    {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
                   </Tooltip>
                 </Badge>
               </IconButton>
