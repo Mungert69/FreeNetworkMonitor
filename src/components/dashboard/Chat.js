@@ -339,32 +339,21 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         console.log(`Attempting to play audio from: ${audioFile}`);
       
         try {
-         
-          fetch(audioFile)
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.blob();
+          const audio = new Audio(audioFile);
+      
+          // Add event listeners for debugging
+          audio.addEventListener('play', () => console.log('Audio started playing.'));
+          audio.addEventListener('ended', () => console.log('Audio playback ended.'));
+          audio.addEventListener('error', (e) => console.error('Audio playback error:', e));
+      
+          // Use the Promise from audio.play()
+          audio.play()
+            .then(() => {
+              console.log('Audio playback succeeded.');
             })
-            .then((blob) => {
-              // Override MIME type if necessary
-              const fixedBlob = new Blob([blob], { type: "audio/wav" });
-              const audioUrl = URL.createObjectURL(fixedBlob);
-          
-              const audio = new Audio(audioUrl);
-              audio.addEventListener("play", () => console.log("Audio started playing."));
-              audio.addEventListener("ended", () => console.log("Audio playback ended."));
-              audio.addEventListener("error", (e) =>
-                console.error("Audio playback error:", e)
-              );
-          
-              audio.play();
-            })
-            .catch((error) => {
-              console.error("Error fetching audio file:", error);
+            .catch((err) => {
+              console.error('Audio playback failed:', err);
             });
-          
         } catch (err) {
           console.error('Error setting up audio playback:', err);
         }
