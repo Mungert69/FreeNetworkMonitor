@@ -169,7 +169,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setIsToggleDisabled(true); // Disable the button
     llmRunnerTypeRef.current = llmRunnerTypeRef.current === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM';
     setLlmRunnerType(prevType => (prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM'));
-  
+
   };
   const autoClickedRef = useRef(false);
 
@@ -230,42 +230,11 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return () => clearInterval(intervalId);
   }, [isProcessing, isLLMBusy]);
 
-   /* useEffect(() => {
-    let helpMessageTimeout;
-
-  const showHelpMessage = () => {
-      setShowHelpMessage(true);
-      const helpMessages = [
-        "Running to slow?",
-        "Need results now!",
-        "Switch to TurboLLM",
-        "Click Toggle LLM Type",
-        "Then Reload Assistant"
-      ];
-      setHelpMessage(helpMessages[helpMessageIndex]);
-      setHelpMessageIndex((prevIndex) => (prevIndex + 1) % helpMessages.length);
-      setFirstMessageShown(true); // Mark the first message as shown
-    };
-
-    if (isProcessing || isLLMBusy) {
-      // Set a longer delay for showing the first help message
-      const initialDelay = firstMessageShown ? 5000 : 30000; // 60 seconds for the first, then 5 seconds for subsequent messages
-      helpMessageTimeout = setTimeout(showHelpMessage, initialDelay);
-    } else {
-      // Reset state when not processing or calling a function
-      setShowHelpMessage(false);
-      setFirstMessageShown(false); // Reset for the next processing/calling function phase
-    }
-
-    return () => clearTimeout(helpMessageTimeout);
-  }, [isProcessing, isLLMBusy, helpMessageIndex, firstMessageShown]);*/
 
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
     if (!outputContainer) return;
 
-    // Only auto-scroll if autoScrollEnabled is true
-    // and user is at the bottom when new content is added
     if (autoScrollEnabled) {
       outputContainer.scrollTop = outputContainer.scrollHeight;
     }
@@ -365,6 +334,41 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         }
 
       }
+      else if (newWord.includes('</audio>')) {
+        const audioFile = newWord.replace('</audio>', '').trim();
+        console.log(`Attempting to play audio from: ${audioFile}`);
+      
+        try {
+         
+          fetch(audioFile)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.blob();
+            })
+            .then((blob) => {
+              // Override MIME type if necessary
+              const fixedBlob = new Blob([blob], { type: "audio/wav" });
+              const audioUrl = URL.createObjectURL(fixedBlob);
+          
+              const audio = new Audio(audioUrl);
+              audio.addEventListener("play", () => console.log("Audio started playing."));
+              audio.addEventListener("ended", () => console.log("Audio playback ended."));
+              audio.addEventListener("error", (e) =>
+                console.error("Audio playback error:", e)
+              );
+          
+              audio.play();
+            })
+            .catch((error) => {
+              console.error("Error fetching audio file:", error);
+            });
+          
+        } catch (err) {
+          console.error('Error setting up audio playback:', err);
+        }
+      }      
       else if (newWord.startsWith('</llm-error>')) {
         // Pass only the part of newWord after '</llm-error>'
         var message = {
@@ -703,7 +707,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 </Badge>
 
               </IconButton>
-              <IconButton onClick={toggleLlmRunnerType} color="primary"   disabled={isToggleDisabled}>
+              <IconButton onClick={toggleLlmRunnerType} color="primary" disabled={isToggleDisabled}>
                 <Badge color="secondary">
                   <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
                     <SwapHorizIcon />
