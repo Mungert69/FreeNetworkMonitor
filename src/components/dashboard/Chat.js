@@ -15,7 +15,9 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff'; // Mute icon
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';   // Unmute icon
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
 
 import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -28,6 +30,7 @@ import Message from './Message';
 import { getLLMServerUrl, convertDate } from './ServiceAPI';
 import MessageLine from './MessageLine';
 import AudioPlayer from './AudioPlayer'; // Import the new AudioPlayer component
+import useAudioRecorder from './useAudioRecorder'; // Import the custom hook
 
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -36,12 +39,11 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const theme = useTheme();
   const [expandedFunction, setExpandedFunction] = useState(null);
   const audioPlayerRef = useRef(AudioPlayer());
-
-
+ 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpandedFunction(isExpanded ? panel : null);
   };
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [loadCount, setLoadCount] = useState(0);
@@ -63,7 +65,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM'); // Initial state
   const [currentMessage, setCurrentMessage] = useState('');
   const [llmFeedback, setLlmFeedback] = useState('');
-  const [speechText, setSpeechText] = useState('');
   const [shouldSpeak, setShouldSpeak] = useState(false);
   const [currentLine, setCurrentLine] = useState('');
   const [linkData, setLinkData] = useState([]);
@@ -75,12 +76,68 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [isToggleDisabled, setIsToggleDisabled] = useState(false); // Add state for disabling the toggle button
+  
+  
+  const processAudioBlob = async (audioBlob) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'recorded_audio.wav');
+  
+      setIsProcessing(true); // Show loading indicator
+  
+      const response = await fetch('https://devwww.freenetworkmonitor.click/transcribe_audio', {
+        method: 'POST',
+        body: formData,
+      });
+      
+  
+      const data = await response.json();
+      if (data.transcription) {
+        console.log('Transcription:', data.transcription);
+        sendTranscription(data.transcription);
+      } else {
+        alert('Failed to transcribe audio.');
+      }
+    } catch (error) {
+      console.error('Error processing audio blob:', error);
+      alert('Error processing audio.');
+    } finally {
+      setIsProcessing(false); // Hide loading indicator
+    }
+  };
+  const { isRecording, startRecording, stopRecording } = useAudioRecorder(processAudioBlob);
 
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+  const sendTranscription = (transcription) => {
+    if (webSocketRef.current.readyState === WebSocket.OPEN) {
+      if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
+        audioPlayerRef.current.clearQueue(); // Clear audio queue
+      } else {
+        console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
+      }
+  
+      setIsProcessing(true); // Show processing indicator
+      sendMessageCheck(transcription); // Send the transcribed message
+      setCurrentMessage(''); // Clear current input
+    } else {
+      console.error('WebSocket is not open. Transcription message not sent.');
+    }
   };
 
+  const handleStartRecording = () => {
+    if (audioPlayerRef.current && typeof audioPlayerRef.current.pauseAudio === 'function') {
+      audioPlayerRef.current.pauseAudio(); // Pause audio playback
+    }
+    startRecording(); // Start recording
+  };
+  
+  const handleStopRecording = async () => {
+    stopRecording(); // Stop recording
+    if (audioPlayerRef.current && typeof audioPlayerRef.current.resumeAudio === 'function') {
+      audioPlayerRef.current.resumeAudio(); // Resume audio playback
+    }
+  };
+  
+  
   const closeExpand = () => {
     setIsExpanded(false);
   };
@@ -190,10 +247,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   useEffect(() => {
     if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
       if (isMuted) {
-        console.log('Sending <|STOP_AUDIO|> due to mute...');
+        console.log('Sending <|STOP_AUDIO|>');
         webSocketRef.current.send('<|STOP_AUDIO|>'); // Notify backend to stop audio
       } else {
-        console.log('Audio unmuted, backend informed.');
+        console.log('Sending <|START_AUDIO|>');
         webSocketRef.current.send('<|START_AUDIO|>'); // Notify backend to resume audio
       }
     } else {
@@ -454,7 +511,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
         setIsProcessing(false);
       } else {
-        setSpeechText((prev) => prev + newWord);
         setLlmFeedback((prevFeedback) => {
           // Combine the new word with previous feedback before filtering
           const combinedFeedback = prevFeedback + newWord;
@@ -543,11 +599,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, []);
 
 
-  useEffect(() => {
-    //if (!shouldSpeak) speakText(speechText);
-    setSpeechText('');
-  }, [shouldSpeak]);
-
+ 
   useEffect(() => {
     if (loadCount > 1) {
       setLoadWarning(
@@ -573,10 +625,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     resetLLM();
   }, [sessionId, llmRunnerType]);
 
-  const speakText = (text) => {
-    const speechSynthesis = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utterance);
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
   };
   const filterLlmOutput = (text) => {
 
@@ -869,6 +919,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   </Tooltip>
                 </Badge>
               </IconButton>
+               {/* Record Audio Button */}
+          
+            <IconButton
+              color="secondary"
+              onClick={isRecording ? handleStopRecording : handleStartRecording}
+              disabled={isProcessing} // Disable recording while processing
+            >
+              <Badge color="secondary">
+                <Tooltip title={isRecording ? 'Stop Recording' : 'Start Recording'}>
+                  {isRecording ? <MicOffIcon /> : <MicIcon />}
+                </Tooltip>
+              </Badge>
+            </IconButton>
+          
             </Grid>
             <Grid item xs={1}>
               <IconButton

@@ -4,10 +4,24 @@ const AudioPlayer = () => {
   const [audioQueue, setAudioQueue] = useState([]); // Queue of audio files
   const isPlayingRef = useRef(false); // Tracks if audio is currently playing
   const audioRef = useRef(null); // Holds the current Audio object
-
+  const isPausedRef = useRef(false);
   const playAudioSequentially = (audioFile) => {
     // Add the new file to the queue
     setAudioQueue((prevQueue) => [...prevQueue, audioFile]);
+  };
+
+  const pauseAudio = () => {
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      isPausedRef.current = true;
+    }
+  };
+
+  const resumeAudio = () => {
+    if (audioRef.current && isPausedRef.current) {
+      audioRef.current.play();
+      isPausedRef.current = false;
+    }
   };
 
   const stopAudio = () => {
@@ -79,6 +93,8 @@ const AudioPlayer = () => {
     playAudioSequentially, // Expose the function to queue audio files
     stopAudio, // Expose the function to stop playback
     clearQueue, // Expose the function to clear the queue
+    pauseAudio, // Expose the pause function
+    resumeAudio, // Expose the resume function
   };
 };
 
