@@ -27,7 +27,7 @@ import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import { v4 as uuidv4 } from 'uuid';
 import Message from './Message';
-import { getLLMServerUrl, convertDate } from './ServiceAPI';
+import { getLLMServerUrl, convertDate, transcribeAudioApi } from './ServiceAPI';
 import MessageLine from './MessageLine';
 import AudioPlayer from './AudioPlayer'; // Import the new AudioPlayer component
 import useAudioRecorder from './useAudioRecorder'; // Import the custom hook
@@ -39,7 +39,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const theme = useTheme();
   const [expandedFunction, setExpandedFunction] = useState(null);
   const audioPlayerRef = useRef(AudioPlayer());
- 
+
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpandedFunction(isExpanded ? panel : null);
   };
@@ -76,23 +76,15 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [isToggleDisabled, setIsToggleDisabled] = useState(false); // Add state for disabling the toggle button
-  
-  
+
+
   const processAudioBlob = async (audioBlob) => {
     try {
-      const formData = new FormData();
-      formData.append('file', audioBlob, 'recorded_audio.wav');
-  
       setIsProcessing(true); // Show loading indicator
-  
-      const response = await fetch('https://devwww.freenetworkmonitor.click/transcribe_audio', {
-        method: 'POST',
-        body: formData,
-      });
-      
-  
-      const data = await response.json();
-      if (data.transcription) {
+
+      const data = await transcribeAudioApi(audioBlob);
+
+      if (data?.transcription) {
         console.log('Transcription:', data.transcription);
         sendTranscription(data.transcription);
       } else {
@@ -114,7 +106,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       } else {
         console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
       }
-  
+
       setIsProcessing(true); // Show processing indicator
       sendMessageCheck(transcription); // Send the transcribed message
       setCurrentMessage(''); // Clear current input
@@ -129,15 +121,15 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
     startRecording(); // Start recording
   };
-  
+
   const handleStopRecording = async () => {
     stopRecording(); // Stop recording
     if (audioPlayerRef.current && typeof audioPlayerRef.current.resumeAudio === 'function') {
       audioPlayerRef.current.resumeAudio(); // Resume audio playback
     }
   };
-  
-  
+
+
   const closeExpand = () => {
     setIsExpanded(false);
   };
@@ -599,7 +591,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, []);
 
 
- 
+
   useEffect(() => {
     if (loadCount > 1) {
       setLoadWarning(
@@ -697,6 +689,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
     // Reset state variables
     setIsReady(false);
+    setIsMuted(true);
     setThinkingDots('');
     setCallingFunctionMessage('Processing function...');
     setShowHelpMessage(false);
@@ -919,20 +912,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                   </Tooltip>
                 </Badge>
               </IconButton>
-               {/* Record Audio Button */}
-          
-            <IconButton
-              color="secondary"
-              onClick={isRecording ? handleStopRecording : handleStartRecording}
-              disabled={isProcessing} // Disable recording while processing
-            >
-              <Badge color="secondary">
-                <Tooltip title={isRecording ? 'Stop Recording' : 'Start Recording'}>
-                  {isRecording ? <MicOffIcon /> : <MicIcon />}
-                </Tooltip>
-              </Badge>
-            </IconButton>
-          
+              {/* Record Audio Button */}
+
+              <IconButton
+                color="secondary"
+                onClick={isRecording ? handleStopRecording : handleStartRecording}
+                disabled={isProcessing} // Disable recording while processing
+              >
+                <Badge color="secondary">
+                  <Tooltip title={isRecording ? 'Stop Recording' : 'Start Recording'}>
+                    {isRecording ? <MicOffIcon /> : <MicIcon />}
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+
             </Grid>
             <Grid item xs={1}>
               <IconButton

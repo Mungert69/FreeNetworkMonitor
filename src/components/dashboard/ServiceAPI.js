@@ -44,6 +44,7 @@ const prompt = 'web query';
 
 const startSiteId = appsettings.startSiteId;
 const apiLoadBalancerUrl = appsettings.apiLoadBalancerUrl;
+const apiAudioUrl = appsettings.apiAudioUrl;
 const apiBaseUrls = appsettings.apiBaseUrls;
 const apiSubscriptionUrl = appsettings.apiSubscriptionUrl;
 const clientId = appsettings.clientId;
@@ -864,5 +865,33 @@ export const saveHostData = async (baseUrlId, data) => {
     if (message.success) message.text = 'Success save host data. Wait 2 mins for change to go live';
     return message;
 }
+
+export const transcribeAudioApi = async (audioBlob) => {
+    axiosRetry(axios, { retries: 3 }); // Retry logic
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'recorded_audio.wav');
+
+    try {
+        const response = await trackPromise(
+            axios({
+                method: 'post',
+                url: apiAudioUrl+'/transcribe_audio',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Ensure proper headers for file upload
+                },
+            }).catch((error) => {
+                console.error('ServiceAPI.transcribeAudioApi Axios Error:', error);
+                return null;
+            })
+        );
+
+        return response?.data;
+    } catch (error) {
+        console.error('ServiceAPI.transcribeAudioApi Error:', error);
+        return null;
+    }
+};
+
 
 
