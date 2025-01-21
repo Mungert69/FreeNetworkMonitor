@@ -117,16 +117,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const handleStartRecording = () => {
     if (audioPlayerRef.current && typeof audioPlayerRef.current.pauseAudio === 'function') {
-      audioPlayerRef.current.pauseAudio(); // Pause audio playback
+      audioPlayerRef.current.clearQueue(); // Pause audio playback
     }
     startRecording(); // Start recording
   };
 
   const handleStopRecording = async () => {
     stopRecording(); // Stop recording
-    if (audioPlayerRef.current && typeof audioPlayerRef.current.resumeAudio === 'function') {
-      audioPlayerRef.current.resumeAudio(); // Resume audio playback
-    }
+  
   };
 
 
