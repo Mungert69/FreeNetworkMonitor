@@ -60,7 +60,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const outputContainerRef = useRef(null);
   const llmRunnerTypeRef = useRef('TurboLLM');
   const openMessage = useRef(null);
-  const [isPaused, setPause] = useState(false);
   const [reconnect, setReconnect] = useState(false);
   const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM'); // Initial state
   const [currentMessage, setCurrentMessage] = useState('');
@@ -99,20 +98,17 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const { isRecording, startRecording, stopRecording } = useAudioRecorder(processAudioBlob);
 
-  const sendTranscription = (transcription) => {
-    if (webSocketRef.current.readyState === WebSocket.OPEN) {
-      if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
+  const sendTranscription = async (transcription) => {
+       if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
         audioPlayerRef.current.clearQueue(); // Clear audio queue
       } else {
         console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
       }
 
       setIsProcessing(true); // Show processing indicator
-      sendMessageCheck(transcription); // Send the transcribed message
+      await sendMessageCheck(transcription); // Send the transcribed message
       setCurrentMessage(''); // Clear current input
-    } else {
-      console.error('WebSocket is not open. Transcription message not sent.');
-    }
+   
   };
 
   const handleStartRecording = () => {
@@ -124,7 +120,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const handleStopRecording = async () => {
     stopRecording(); // Stop recording
-  
+
   };
 
 
@@ -196,21 +192,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return newSessionId;
   };
 
-  const stopLLM = () => {
-    if (webSocketRef.current.readyState === WebSocket.OPEN) {
+  const stopLLM = async () => {
+    await waitForWebSocket(webSocketRef.current); // Wait for WebSocket to be ready
+      
       webSocketRef.current.send('<|STOP_LLM|>');
       console.log('Message sent: <|STOP_LLM|>');
-    } else {
-      console.error('WebSocket is not open. STOP_LLM Message not sent.');
-    }
+   
   }
-  const resetSessionId = () => {
-    if (webSocketRef.current.readyState === WebSocket.OPEN) {
+  const resetSessionId = async () => {
+    
+    await waitForWebSocket(webSocketRef.current); // Wait for WebSocket to be ready
+      
       webSocketRef.current.send('<|REMOVE_SESSION|>');
       console.log('Message sent: <|REMOVE_SESSION|>');
-    } else {
-      console.error('WebSocket is not open. REMOVE_SESSION Message not sent.');
-    }
+  
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     localStorage.removeItem('sessionId');
@@ -235,18 +230,24 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [isToggleDisabled]);
 
   useEffect(() => {
-    if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
-      if (isMuted) {
-        console.log('Sending <|STOP_AUDIO|>');
-        webSocketRef.current.send('<|STOP_AUDIO|>'); // Notify backend to stop audio
-      } else {
-        console.log('Sending <|START_AUDIO|>');
-        webSocketRef.current.send('<|START_AUDIO|>'); // Notify backend to resume audio
+    const handleAudioToggle = async () => {
+      try {
+        await waitForWebSocket(webSocketRef.current); // Wait for WebSocket to be ready
+        if (isMuted) {
+          console.log('Sending <|STOP_AUDIO|>');
+          webSocketRef.current.send('<|STOP_AUDIO|>'); // Notify backend to stop audio
+        } else {
+          console.log('Sending <|START_AUDIO|>');
+          webSocketRef.current.send('<|START_AUDIO|>'); // Notify backend to resume audio
+        }
+      } catch (error) {
+        console.error('Error while handling audio toggle:', error);
       }
-    } else {
-      console.warn('WebSocket is not open. Audio toggle message not sent.');
-    }
+    };
+  
+    handleAudioToggle(); // Call the async function
   }, [isMuted]);
+  
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return; // Prevent execution if disabled
     setIsToggleDisabled(true); // Disable the button
@@ -290,18 +291,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     window.URL.revokeObjectURL(url); // Release the object URL
   };
 
-
-
-  /*useEffect(() => {
-    if (isCallingFunction) {
-      const messages = ["Please wait...", "Function call...", "Evaluating..."];
-      let messageIndex = 0;
-      const intervalId = setInterval(() => {
-        setCallingFunctionMessage(messages[messageIndex++ % messages.length]);
-      }, 3000); // Rotate messages every 3 seconds
-      return () => clearInterval(intervalId);
-    }
-  }, [isCallingFunction]);*/
 
   useEffect(() => {
     let intervalId;
@@ -377,14 +366,15 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   };
 
-  function sendMessageCheck(message) {
-    if (webSocketRef.current.readyState === WebSocket.OPEN) {
-      webSocketRef.current.send(message);
-    } else {
-      console.log(' Web socket not in OPEN state ' + webSocketRef.current.readyState);
-      openMessage.current = message;
-      setReconnect(!reconnect);
+  const waitForWebSocket = async (webSocket) => {
+    while (webSocket.readyState !== WebSocket.OPEN) {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 100ms
     }
+  };
+  async function sendMessageCheck(message) {
+    await waitForWebSocket(webSocketRef.current);
+    console.log("Sending message =>"+message+"<=");
+    webSocketRef.current.send(message);
   }
   useEffect(() => {
     webSocketRef.current = new WebSocket(getLLMServerUrl(siteId));
@@ -523,28 +513,18 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     };
 
 
-    const wsCurrent = webSocketRef.current;
-
+    
     return () => {
-      wsCurrent.close();
-    }
-  }, [reconnect]);
-
-  useEffect(() => {
-    if (!webSocketRef.current) return;
-
-    webSocketRef.current.onmessage = message => {
-      if (isPaused) return;
-
-      try {
-        console.log(message);
-      } catch (f) {
-        console.log(f);
+      if (webSocketRef.current) {
+        webSocketRef.current.onmessage = null;
+        webSocketRef.current.onclose = null;
+        webSocketRef.current.onerror = null;
+        webSocketRef.current.close();
       }
     };
+  }, [reconnect]);
 
-  }, [isPaused]);
-
+  
 
   useEffect(() => {
     sendMessageCheck('');
@@ -664,21 +644,26 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return filteredText;
   };
 
-  const sendMessage = () => {
-    if (currentMessage && webSocketRef.current.readyState === WebSocket.OPEN) {
+
+
+  const sendMessage = async () => {
       if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
         audioPlayerRef.current.clearQueue(); // Clear the audio queue safely
       } else {
         console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
       }
       setIsProcessing(true); // Start loading indicator
-      sendMessageCheck(currentMessage);
-      // setUserInput('User: ' + currentMessage);
-      //setLlmFeedback(currentStr => currentStr + '\n' + 'User: ');
+
+      try {
+        await sendMessageCheck(currentMessage); // Await the sendMessageCheck function
+      } catch (error) {
+        console.error('Error sending message:', error); // Handle any errors
+      }
+
       setCurrentMessage('');
-      //resetProcessingFlags();
-    }
+    
   };
+
   const resetLLM = () => {
     // Close the existing WebSocket connection if open
     if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
@@ -891,16 +876,31 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    sendMessage();
+
+                    // Call sendMessage and handle any errors
+                    (async () => {
+                      try {
+                        await sendMessage(); // Await the async sendMessage function
+                      } catch (error) {
+                        console.error('Error while sending message:', error);
+                      }
+                    })();
                   }
                 }}
                 inputProps={{ maxLength: 10000 }}
               />
+
             </Grid>
             <Grid item xs={1}>
               <IconButton
                 color="primary"
-                onClick={() => sendMessage()}
+                onClick={async () => {
+                  try {
+                    await sendMessage(); // Await the async sendMessage function
+                  } catch (error) {
+                    console.error('Error while sending message:', error); // Handle errors
+                  }
+                }}
                 disabled={isLLMBusy || !isReady}
                 aria-label="send message"
               >
