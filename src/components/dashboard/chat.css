@@ -60,7 +60,24 @@
 }
 
 
-.code-block {
+.markdown-body {
+  word-wrap: break-word;
+  line-height: 1.6;
+}
+
+.markdown-body p {
+  margin: 0.5em 0;
+}
+
+.markdown-body pre {
+  margin: 1em 0;
+  padding: 1em;
+  background: #1e1e1e;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.markdown-body code:not(pre code) {
   background-color: #333; /* Dark background for code block */
   color: #f9f9f9; /* Light text color for readability */
   padding: 10px; /* Padding inside the box */
@@ -71,6 +88,7 @@
   word-wrap: break-word; /* Ensure long lines wrap */
   margin-bottom: 10px; /* Space below the code block */
 }
+
 
 
 

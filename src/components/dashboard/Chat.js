@@ -18,6 +18,7 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff'; // Mute icon
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
+import MarkdownRenderer from './MarkdownRenderer';
 
 import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -249,11 +250,23 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [isMuted]);
   
   const toggleLlmRunnerType = () => {
-    if (isToggleDisabled) return; // Prevent execution if disabled
-    setIsToggleDisabled(true); // Disable the button
-    llmRunnerTypeRef.current = llmRunnerTypeRef.current === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM';
-    setLlmRunnerType(prevType => (prevType === 'FreeLLM' ? 'TurboLLM' : 'FreeLLM'));
-
+    if (isToggleDisabled) return;
+    setIsToggleDisabled(true);
+  
+    // Define the type sequence
+    const types = ['FreeLLM', 'TurboLLM', 'HugLLM'];
+    
+    // Update the ref
+    const currentRefIndex = types.indexOf(llmRunnerTypeRef.current);
+    const nextRefIndex = (currentRefIndex + 1) % types.length;
+    llmRunnerTypeRef.current = types[nextRefIndex];
+  
+    // Update the state
+    setLlmRunnerType(prevType => {
+      const currentStateIndex = types.indexOf(prevType);
+      const nextStateIndex = (currentStateIndex + 1) % types.length;
+      return types[nextStateIndex];
+    });
   };
   const autoClickedRef = useRef(false);
 
@@ -600,16 +613,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   const filterLlmOutput = (text) => {
 
-    const messageStart = '<|from|> assistant\n<|recipient|> all\n<|content|>';
-    const messageEnd = '<|stop|>';
-
-    if (text.includes(messageStart)) {
-      setShouldSpeak(true);
-    }
-    if (text.includes(messageEnd)) {
-      setShouldSpeak(false);
-    }
-
     const replacements = {
       '<\\|from\\|> user.*\\n<\\|recipient\\|> all.*\\n<\\|content\\|>': '<User:> ',
       //'<\\|im_start\\|>user\\n': '<User:> ',
@@ -710,22 +713,50 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       </List>);
   };
 
+  
   const renderContent = (content) => {
-    const lines = content.split('\n');
-    return lines.map((line, index) => {
-      if (line.startsWith('<User:>')) {
-        return <MessageLine key={index} line={line.replace('<User:>', '')} lineType="User" />;
-      } else if (line.startsWith('<Assistant:>')) {
-        return <MessageLine key={index} line={line.replace('<Assistant:>', '')} lineType="Assistant" />;
-      } else if (line.startsWith('<Function Call:>')) {
-        return <MessageLine key={index} line={line.replace('<Function Call:>', '')} lineType="FunctionCall" />;
-      } else if (line.startsWith('<Function Response:>')) {
-        return <MessageLine key={index} line={line.replace('<Function Response:>', '')} lineType="FunctionResponse" />;
-      } else {
-        return <MessageLine key={index} line={line} />;
+    // Split content while preserving message markers
+    const messageBlocks = [];
+    const markers = ['<User:>', '<Assistant:>', '<Function Call:>', '<Function Response:>'];
+    let currentBlock = { type: 'text', content: '' };
+  
+    const parts = content.split(new RegExp(`(${markers.join('|')})`, 'g'));
+  
+    parts.forEach(part => {
+      if (markers.includes(part)) {
+        if (currentBlock.content.trim() || currentBlock.content.includes('\n')) {
+          messageBlocks.push(currentBlock);
+        }
+        currentBlock = {
+          type: part.replace(/[<>:]/g, '').replace(' ', ''),
+          content: ''
+        };
+      } else if (part) {
+        // Preserve all newlines and whitespace
+        currentBlock.content += part;
       }
     });
+  
+    if (currentBlock.content.trim() || currentBlock.content.includes('\n')) {
+      messageBlocks.push(currentBlock);
+    }
+  
+    return messageBlocks.map((block, index) => {
+      if (block.type === 'text') {
+        return <MarkdownRenderer key={index} content={block.content} />;
+      }
+      
+      return (
+        <MessageLine
+          key={index}
+          line={block.content.replace(/\\`/g, '`')} // Unescape backticks
+          lineType={block.type}
+        />
+      );
+    });
   };
+
+
   return (
     <Box sx={chatStyles}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
