@@ -72,25 +72,27 @@
 .markdown-body pre {
   margin: 1em 0;
   padding: 1em;
-  background: #1e1e1e;
   border-radius: 4px;
   overflow-x: auto;
 }
 
 .markdown-body code:not(pre code) {
-  background-color: #333; /* Dark background for code block */
-  color: #f9f9f9; /* Light text color for readability */
-  padding: 10px; /* Padding inside the box */
-  margin-top: 20px; /* Space above the code block */
-  border-radius: 5px;
+  background-color: #333;
+  color: #f9f9f9;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
   font-family: monospace;
-  white-space: pre-wrap; /* Preserve formatting */
-  word-wrap: break-word; /* Ensure long lines wrap */
-  margin-bottom: 10px; /* Space below the code block */
+  font-size: 0.9em;
 }
 
-
-
+.markdown-body pre div[class*="code-header"] {
+  background: #1e1e1e;
+  color: #9cdcfe;
+  padding: 0.5rem 1rem;
+  margin: -1rem;
+  margin-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
 
 .user-input,
 .llm-feedback,

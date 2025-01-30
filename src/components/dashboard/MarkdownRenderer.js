@@ -13,19 +13,19 @@ const MarkdownRenderer = React.memo(({ content }) => {
           const match = /language-(\w+)/.exec(className || '');
           return !inline && match ? (
             <SyntaxHighlighter
-              style={vscDarkPlus}
-              language={match[1]}
-              PreTag="div"
-              customStyle={{
-                margin: '0.5rem 0',
-                borderRadius: '4px',
-                padding: '1rem',
-                overflowX: 'auto'
-              }}
-              {...props}
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
+  style={vscDarkPlus}
+  language={match[1]}
+  PreTag="div"
+  codeTagProps={{
+    style: {
+      fontFamily: 'monospace',
+      fontSize: '0.9rem'
+    }
+  }}
+  {...props}
+>
+  {String(children).replace(/\n$/, '')}
+</SyntaxHighlighter>
           ) : (
             <code className={className} {...props}>
               {children}
