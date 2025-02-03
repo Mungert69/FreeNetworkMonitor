@@ -18,4 +18,3 @@ Our local agent monitor app lets you oversee local hosts, while our ChatGPT-powe
 
 Please check it out and leave a review from the Trust Pilot link at the bottom of the landing page.
 
-I have made the react frontend available as public here on github. The backed is private. If you would like to use the backend software then please contact me at support@mahadeva.co.uk. 
