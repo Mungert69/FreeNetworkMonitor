@@ -251,6 +251,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return;
+    openMessage.current="<|REPLAY_HISTORY|>";
     setIsToggleDisabled(true);
   
     // Define the type sequence
@@ -397,13 +398,6 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       const sendStr = Intl.DateTimeFormat().resolvedOptions().timeZone + ',' + llmRunnerTypeRef.current + ',' + sessionId
       webSocketRef.current.send(sendStr);
       console.log(' Sent opening message to websocket : ' + sendStr);
-      if (openMessage.current == null) {
-
-      } else {
-        webSocketRef.current.send(openMessage.current);
-        console.log(" Sent queued message " + openMessage.current);
-        openMessage.current = null
-      }
     };
 
     webSocketRef.current.onmessage = (event) => {
@@ -537,7 +531,15 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     };
   }, [reconnect]);
 
-  
+  useEffect(() => {
+    if (isReady && openMessage.current !== null) {   
+        if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+          webSocketRef.current.send(openMessage.current);
+          console.log("Sent queued message: " + openMessage.current);
+          openMessage.current = null; // Clear the message after sending
+        }
+    }
+  }, [isReady]); 
 
   useEffect(() => {
     sendMessageCheck('');
