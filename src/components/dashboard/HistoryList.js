@@ -12,12 +12,12 @@ const HistoryList = ({ histories, onSelectSession }) => {
 
     return (
         <div>
-            <h2 style={{ display: "flex", alignItems: "center" }}>
+            <p style={{ display: "flex", alignItems: "center" }}>
                 User Histories
                 <IconButton onClick={() => setIsExpanded(!isExpanded)}>
                     {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
-            </h2>
+            </p>
 
             {isExpanded && (
                 <ul>

@@ -405,9 +405,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const processHistoryDisplayData = (historyDisplayData) => {
     try {
-      // Parse JSON from WebSocket message
-      const parsedData = JSON.parse(historyDisplayData);
-
+      const decodedString = historyDisplayData.replace(/\u00BF/g, '|');  
+      const parsedData = JSON.parse(decodedString);
       if (Array.isArray(parsedData)) {
         setHistories(parsedData);
       } else {
@@ -447,6 +446,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         }
 
       }
+      console.log(newWord);
+         
 
 
       if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
@@ -479,9 +480,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         console.log('Found history display data: ', historyDisplayData);
 
         try {
-          // Ensure the extracted data is valid JSON
-          const parsedData = JSON.parse(historyDisplayData);
-          processHistoryDisplayData(parsedData);
+          
+          processHistoryDisplayData(historyDisplayData);
         } catch (error) {
           console.error('Error parsing history display data:', error);
         }
