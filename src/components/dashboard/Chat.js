@@ -20,7 +20,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import MarkdownRenderer from './MarkdownRenderer';
 
-import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box } from '@mui/material';
+import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import useTheme from '@mui/material/styles/useTheme';
@@ -32,7 +32,7 @@ import { getLLMServerUrl, convertDate, transcribeAudioApi } from './ServiceAPI';
 import MessageLine from './MessageLine';
 import AudioPlayer from './AudioPlayer'; // Import the new AudioPlayer component
 import useAudioRecorder from './useAudioRecorder'; // Import the custom hook
-
+import HistoryList from "./HistoryList";
 
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -55,6 +55,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [helpMessage, setHelpMessage] = useState('');
   const [helpMessageIndex, setHelpMessageIndex] = useState(0);
   const [firstMessageShown, setFirstMessageShown] = useState(false);
+  const [histories, setHistories] = useState([]);
+
 
 
   const webSocketRef = useRef(null);
@@ -100,16 +102,16 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const { isRecording, startRecording, stopRecording } = useAudioRecorder(processAudioBlob);
 
   const sendTranscription = async (transcription) => {
-       if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
-        audioPlayerRef.current.clearQueue(); // Clear audio queue
-      } else {
-        console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
-      }
+    if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
+      audioPlayerRef.current.clearQueue(); // Clear audio queue
+    } else {
+      console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
+    }
 
-      setIsProcessing(true); // Show processing indicator
-      await sendMessageCheck(transcription); // Send the transcribed message
-      setCurrentMessage(''); // Clear current input
-   
+    setIsProcessing(true); // Show processing indicator
+    await sendMessageCheck(transcription); // Send the transcribed message
+    setCurrentMessage(''); // Clear current input
+
   };
 
   const handleStartRecording = () => {
@@ -168,8 +170,19 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         maxHeight: 'none',
       }),
   };
+  const handleSelectSession = (selectedSessionId) => {
+    setSessionId(selectedSessionId);
+    resetLLM(); // Reset the LLM session with the new session ID
+  };
 
   const getSessionId = () => {
+    // Check if there are any histories available
+    if (histories && Array.isArray(histories) && histories.length > 0 && histories[0] && histories[0].sessionId) {
+      // Use the session ID from the most recent history
+      return histories[0].sessionId;
+    }
+
+    // Fall back to local storage if no histories are available
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     const oneDayInMilliseconds = 86400000; // 1 day in milliseconds
@@ -192,21 +205,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
     return newSessionId;
   };
-
   const stopLLM = async () => {
     await waitForWebSocket(webSocketRef.current); // Wait for WebSocket to be ready
-      
-      webSocketRef.current.send('<|STOP_LLM|>');
-      console.log('Message sent: <|STOP_LLM|>');
-   
+
+    webSocketRef.current.send('<|STOP_LLM|>');
+    console.log('Message sent: <|STOP_LLM|>');
+
   }
   const resetSessionId = async () => {
-    
+
     await waitForWebSocket(webSocketRef.current); // Wait for WebSocket to be ready
-      
-      webSocketRef.current.send('<|REMOVE_SESSION|>');
-      console.log('Message sent: <|REMOVE_SESSION|>');
-  
+
+    webSocketRef.current.send('<|REMOVE_SESSION|>');
+    console.log('Message sent: <|REMOVE_SESSION|>');
+
     const storedSessionId = localStorage.getItem('sessionId');
     const storedTimestamp = localStorage.getItem('sessionTimestamp');
     localStorage.removeItem('sessionId');
@@ -245,23 +257,23 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         console.error('Error while handling audio toggle:', error);
       }
     };
-  
+
     handleAudioToggle(); // Call the async function
   }, [isMuted]);
-  
+
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return;
-    openMessage.current="<|REPLAY_HISTORY|>";
+    openMessage.current = "<|REPLAY_HISTORY|>";
     setIsToggleDisabled(true);
-  
+
     // Define the type sequence
     const types = ['FreeLLM', 'TurboLLM', 'HugLLM'];
-    
+
     // Update the ref
     const currentRefIndex = types.indexOf(llmRunnerTypeRef.current);
     const nextRefIndex = (currentRefIndex + 1) % types.length;
     llmRunnerTypeRef.current = types[nextRefIndex];
-  
+
     // Update the state
     setLlmRunnerType(prevType => {
       const currentStateIndex = types.indexOf(prevType);
@@ -387,9 +399,25 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
   async function sendMessageCheck(message) {
     await waitForWebSocket(webSocketRef.current);
-    console.log("Sending message =>"+message+"<=");
+    console.log("Sending message =>" + message + "<=");
     webSocketRef.current.send(message);
   }
+
+  const processHistoryDisplayData = (historyDisplayData) => {
+    try {
+      // Parse JSON from WebSocket message
+      const parsedData = JSON.parse(historyDisplayData);
+
+      if (Array.isArray(parsedData)) {
+        setHistories(parsedData);
+      } else {
+        console.error("Invalid history data format:", parsedData);
+      }
+    } catch (error) {
+      console.error("Error parsing history display data:", error);
+    }
+  };
+
   useEffect(() => {
     webSocketRef.current = new WebSocket(getLLMServerUrl(siteId));
     console.log('WebSocket connection established to ' + getLLMServerUrl(siteId));
@@ -422,16 +450,43 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
 
       if (newWord.startsWith('<function-data>') && newWord.endsWith('</function-data>')) {
-        // Extract the function data
-        const functionData = newWord.slice(15, -16); // Remove the tags
-        console.log('Found function data :' + functionData);
-        const generatedLinkData = processFunctionData(functionData);
-        if (generatedLinkData !== null) {
-          setLinkData(generatedLinkData);
-          if (generatedLinkData.length > 1) setIsDrawerOpen(true);
-        }
+        // Extract the function data using dynamic substring slicing
+        const startIndex = '<function-data>'.length; // Start index after the opening tag
+        const endIndex = newWord.length - '</function-data>'.length; // End index before the closing tag
 
+        const functionData = newWord.slice(startIndex, endIndex); // Extract the string inside the tags
+        console.log('Found function data: ', functionData);
+
+        try {
+          // Process the function data
+          const generatedLinkData = processFunctionData(functionData);
+
+          if (generatedLinkData !== null) {
+            setLinkData(generatedLinkData);
+            if (generatedLinkData.length > 1) setIsDrawerOpen(true);
+          }
+        } catch (error) {
+          console.error('Error processing function data:', error);
+        }
       }
+     
+      else if (newWord.startsWith('<history-display-name>') && newWord.endsWith('</history-display-name>')) {
+        // Extract the function data using dynamic substring slicing
+        const startIndex = '<history-display-name>'.length; // Start index after the opening tag
+        const endIndex = newWord.length - '</history-display-name>'.length; // End index before the closing tag
+
+        const historyDisplayData = newWord.slice(startIndex, endIndex); // Extract the JSON string inside the tags
+        console.log('Found history display data: ', historyDisplayData);
+
+        try {
+          // Ensure the extracted data is valid JSON
+          const parsedData = JSON.parse(historyDisplayData);
+          processHistoryDisplayData(parsedData);
+        } catch (error) {
+          console.error('Error parsing history display data:', error);
+        }
+      }
+
       else if (newWord.startsWith('</llm-error>')) {
         // Pass only the part of newWord after '</llm-error>'
         var message = {
@@ -470,15 +525,21 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       }
       else if (newWord.startsWith('<load-count>') && newWord.endsWith('</load-count>')) {
         console.log('<load-count> found');
-        const loadCountString = newWord.slice(12, -13); // Remove the tags
+
+        // Calculate the tag length dynamically
+        const startIndex = '<load-count>'.length; // Start index after the opening tag
+        const endIndex = newWord.length - '</load-count>'.length; // End index before the closing tag
+
+        const loadCountString = newWord.slice(startIndex, endIndex); // Extract the string inside the tags
         const loadCount = parseInt(loadCountString, 10); // Convert to integer
+
         if (!isNaN(loadCount)) { // Check if it's a valid number
           setLoadCount(loadCount);
         } else {
           console.error('Invalid load count received:', loadCountString);
         }
-
       }
+
       else if (newWord === '</functioncall>') {
         setIsCallingFunction(true);
       }
@@ -520,7 +581,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     };
 
 
-    
+
     return () => {
       if (webSocketRef.current) {
         webSocketRef.current.onmessage = null;
@@ -532,14 +593,14 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [reconnect]);
 
   useEffect(() => {
-    if (isReady && openMessage.current !== null) {   
-        if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
-          webSocketRef.current.send(openMessage.current);
-          console.log("Sent queued message: " + openMessage.current);
-          openMessage.current = null; // Clear the message after sending
-        }
+    if (isReady && openMessage.current !== null) {
+      if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
+        webSocketRef.current.send(openMessage.current);
+        console.log("Sent queued message: " + openMessage.current);
+        openMessage.current = null; // Clear the message after sending
+      }
     }
-  }, [isReady]); 
+  }, [isReady]);
 
   useEffect(() => {
     sendMessageCheck('');
@@ -652,21 +713,21 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
 
   const sendMessage = async () => {
-      if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
-        audioPlayerRef.current.clearQueue(); // Clear the audio queue safely
-      } else {
-        console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
-      }
-      setIsProcessing(true); // Start loading indicator
+    if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
+      audioPlayerRef.current.clearQueue(); // Clear the audio queue safely
+    } else {
+      console.warn('AudioPlayer instance is not available or clearQueue is not a function.');
+    }
+    setIsProcessing(true); // Start loading indicator
 
-      try {
-        await sendMessageCheck(currentMessage); // Await the sendMessageCheck function
-      } catch (error) {
-        console.error('Error sending message:', error); // Handle any errors
-      }
+    try {
+      await sendMessageCheck(currentMessage); // Await the sendMessageCheck function
+    } catch (error) {
+      console.error('Error sending message:', error); // Handle any errors
+    }
 
-      setCurrentMessage('');
-    
+    setCurrentMessage('');
+
   };
 
   const resetLLM = () => {
@@ -715,15 +776,15 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       </List>);
   };
 
-  
+
   const renderContent = (content) => {
     // Split content while preserving message markers
     const messageBlocks = [];
     const markers = ['<User:>', '<Assistant:>', '<Function Call:>', '<Function Response:>'];
     let currentBlock = { type: 'text', content: '' };
-  
+
     const parts = content.split(new RegExp(`(${markers.join('|')})`, 'g'));
-  
+
     parts.forEach(part => {
       if (markers.includes(part)) {
         if (currentBlock.content.trim() || currentBlock.content.includes('\n')) {
@@ -738,16 +799,16 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
         currentBlock.content += part;
       }
     });
-  
+
     if (currentBlock.content.trim() || currentBlock.content.includes('\n')) {
       messageBlocks.push(currentBlock);
     }
-  
+
     return messageBlocks.map((block, index) => {
       if (block.type === 'text') {
         return <MarkdownRenderer key={index} content={block.content} />;
       }
-      
+
       return (
         <MessageLine
           key={index}
@@ -894,6 +955,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
           {renderLinks()}
         </SwipeableDrawer>
         <CardContent sx={{ pt: 1, pb: 1 }}>
+          <HistoryList histories={histories} onSelectSession={handleSelectSession} />
 
           <Grid container
             direction="row"
