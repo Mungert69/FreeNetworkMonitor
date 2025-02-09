@@ -1,49 +1,14 @@
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
-import './chat.css';
-import PersonIcon from '@mui/icons-material/Person';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import CodeIcon from '@mui/icons-material/Code';
-import ReplyIcon from '@mui/icons-material/Reply';
-import SaveIcon from '@mui/icons-material/Save';
-import StopIcon from '@mui/icons-material/Stop';
-import SendIcon from '@mui/icons-material/Send';
-import CloseIcon from '@mui/icons-material/Close';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff'; // Mute icon
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import MicIcon from '@mui/icons-material/Mic';
-import MicOffIcon from '@mui/icons-material/MicOff';
-import MarkdownRenderer from './MarkdownRenderer';
-
-import { Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import useTheme from '@mui/material/styles/useTheme';
-import styleObject from './styleObject';
-import useClasses from "./useClasses";
 import { v4 as uuidv4 } from 'uuid';
-import Message from './Message';
 import { getLLMServerUrl, convertDate, transcribeAudioApi } from './ServiceAPI';
-import MessageLine from './MessageLine';
 import AudioPlayer from './AudioPlayer'; // Import the new AudioPlayer component
 import useAudioRecorder from './useAudioRecorder'; // Import the custom hook
-import HistoryList from "./HistoryList";
+import ChatContent from './ChatContent';
 
 import React, { useState, useEffect, useRef } from 'react';
 
 function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
-  const theme = useTheme();
-  const [expandedFunction, setExpandedFunction] = useState(null);
-  const audioPlayerRef = useRef(AudioPlayer());
 
-  const handleAccordionChange = (panel) => (event, isExpanded) => {
-    setExpandedFunction(isExpanded ? panel : null);
-  };
+  const audioPlayerRef = useRef(AudioPlayer());
   const [isMuted, setIsMuted] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -53,12 +18,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
   const [showHelpMessage, setShowHelpMessage] = useState(false);
   const [helpMessage, setHelpMessage] = useState('');
-  const [helpMessageIndex, setHelpMessageIndex] = useState(0);
-  const [firstMessageShown, setFirstMessageShown] = useState(false);
   const [histories, setHistories] = useState([]);
-
-
-
   const webSocketRef = useRef(null);
   const outputContainerRef = useRef(null);
   const llmRunnerTypeRef = useRef('TurboLLM');
@@ -67,13 +27,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM'); // Initial state
   const [currentMessage, setCurrentMessage] = useState('');
   const [llmFeedback, setLlmFeedback] = useState('');
-  const [shouldSpeak, setShouldSpeak] = useState(false);
-  const [currentLine, setCurrentLine] = useState('');
   const [linkData, setLinkData] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const [isLLMBusy, setIsLLMBusy] = useState(false);
-  const classes = useClasses(styleObject(theme, null));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
@@ -148,28 +105,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     }
   };
 
-  const chatStyles = {
-    position: 'fixed',
-    transition: 'all 0.5s ease-in-out',
-    transformOrigin: 'right',
-    ...(isExpanded
-      ? {
-        top: '70px', // Adjust based on your AppBar height
-        left: '64px',
-        right: '20px',
-        bottom: '20px',
-        width: 'calc(100% - 84px)',
-        height: 'calc(100% - 90px)', // Adjust based on your AppBar height
-        maxHeight: 'none'
-      }
-      : {
-        bottom: '20px',
-        right: '20px',
-        width: '320px',
-        height: 'calc(100% - 90px)',
-        maxHeight: 'none',
-      }),
-  };
+  
   const handleSelectSession = (selectedSessionId) => {
     setSessionId(selectedSessionId);
     resetLLM(); // Reset the LLM session with the new session ID
@@ -753,298 +689,52 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   };
 
-  const renderLinks = () => {
-    if (!linkData || linkData.length == 0) return;
-    return (
-      <List>
-        {linkData.map((linkItem) => (
-          <ListItem key={linkItem.link}>
-            <Button onClick={() => { closeExpand(); onHostLinkClick(linkItem); }} sx={{
-              width: '100%', // Full width button
-              justifyContent: 'flex-start',
-              textTransform: 'none',
-              color: theme.palette.primary.main, // Main theme color for text
-              '&:hover': {
-                backgroundColor: theme.palette.action.hover, // Hover background color
-              }
-            }}>
-              {linkItem.DateStarted ? `${linkItem.Address} : ${linkItem.DateStarted}` : linkItem.Address}
+ 
 
-            </Button>
-          </ListItem>
-        ))}
-      </List>);
-  };
-
-
-  const renderContent = (content) => {
-    // Split content while preserving message markers
-    const messageBlocks = [];
-    const markers = ['<User:>', '<Assistant:>', '<Function Call:>', '<Function Response:>'];
-    let currentBlock = { type: 'text', content: '' };
-
-    const parts = content.split(new RegExp(`(${markers.join('|')})`, 'g'));
-
-    parts.forEach(part => {
-      if (markers.includes(part)) {
-        if (currentBlock.content.trim() || currentBlock.content.includes('\n')) {
-          messageBlocks.push(currentBlock);
-        }
-        currentBlock = {
-          type: part.replace(/[<>:]/g, '').replace(' ', ''),
-          content: ''
-        };
-      } else if (part) {
-        // Preserve all newlines and whitespace
-        currentBlock.content += part;
-      }
-    });
-
-    if (currentBlock.content.trim() || currentBlock.content.includes('\n')) {
-      messageBlocks.push(currentBlock);
-    }
-
-    return messageBlocks.map((block, index) => {
-      if (block.type === 'text') {
-        return <MarkdownRenderer key={index} content={block.content} />;
-      }
-
-      return (
-        <MessageLine
-          key={index}
-          line={block.content.replace(/\\`/g, '`')} // Unescape backticks
-          lineType={block.type}
-        />
-      );
-    });
-  };
-
+ 
 
   return (
-    <Box sx={chatStyles}>
-      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-          {loadWarning && (
-            <Box sx={{ mb: 2, p: 1, bgcolor: 'warning.light', borderRadius: 1 }}>
-              <Typography variant="body1" color="black">
-                {loadWarning}
-              </Typography>
-            </Box>
-          )}
+    <ChatContent
+  isExpanded={isExpanded}
+  toggleExpand={toggleExpand}
+  isMuted={isMuted}
+  toggleAudio={toggleAudio}
+  currentMessage={currentMessage}
+  setCurrentMessage={setCurrentMessage}
+  sendMessage={sendMessage}
+  isProcessing={isProcessing}
+  thinkingDots={thinkingDots}
+  isDrawerOpen={isDrawerOpen}
+  toggleDrawer={toggleDrawer}
+  histories={histories}
+  handleSelectSession={handleSelectSession}
+  handleStopRecording ={handleStopRecording }
+  handleStartRecording={handleStartRecording}
+  saveFeedback={saveFeedback}
+  toggleLlmRunnerType={toggleLlmRunnerType}
+  llmFeedback={llmFeedback}
+  linkData={linkData}
+  closeExpand={closeExpand}
+  onHostLinkClick={onHostLinkClick}
+  // The missing props (must be defined in the parent component)
+  loadWarning={loadWarning}  
+  llmRunnerType={llmRunnerType}  
+  isReady={isReady}  
+  isToggleDisabled={isToggleDisabled}  
+  setIsChatOpen={setIsChatOpen}  
+  resetSessionId={resetSessionId}  
+  outputContainerRef={outputContainerRef}  
+  isLLMBusy={isLLMBusy}  
+  isCallingFunction={isCallingFunction}  
+  callingFunctionMessage={callingFunctionMessage}  
+  showHelpMessage={showHelpMessage}  
+  isDashboard={isDashboard}  
+  helpMessage={helpMessage}  
+  stopLLM={stopLLM}  
+  message={message}  
+/>
 
-          <Grid container alignItems="center">
-            <Grid item xs={12} sx={{
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-              padding: theme.spacing(1),
-              borderRadius: theme.shape.borderRadius / 3
-            }} >
-              <Typography variant="h7" >Network Monitor Assistant ({llmRunnerType})</Typography>
-            </Grid>
-            <Grid item xs={12} alignItems="right" >
-              <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} >
-                <Badge color="secondary">
-                  <Tooltip title="Save"
-                    TransitionComponent={Zoom}>
-                    <SaveIcon />
-                  </Tooltip>
-                </Badge>
-
-              </IconButton>
-              <IconButton onClick={toggleLlmRunnerType} color="primary" disabled={isToggleDisabled}>
-                <Badge color="secondary">
-                  <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
-                    <SwapHorizIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              {isDrawerOpen ? null : (
-                <IconButton
-                  onClick={toggleDrawer(true)}
-                  color="primary"
-                  disabled={!isReady}
-
-                >
-                  <Badge color="secondary">
-                    <Tooltip title="Open Links"
-                      TransitionComponent={Zoom}>
-                      <KeyboardArrowUpIcon />
-                    </Tooltip>
-                  </Badge>
-                </IconButton>
-              )}
-              <IconButton onClick={() => setIsChatOpen(false)} color="secondary" >
-                <Badge color="secondary">
-                  <Tooltip title={"Hide Assistant"}
-                    TransitionComponent={Zoom}>
-                    <CloseIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton onClick={toggleExpand} color="primary">
-                <Badge color="secondary">
-                  <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
-                    {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton
-                onClick={() => resetSessionId()}
-                color="error"  // Changed from "primary" to "error"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'error.light',  // Lighter shade of error color on hover
-                  }
-                }}
-              >
-                <Badge color="warning">
-                  <Tooltip title="Reset Session" TransitionComponent={Zoom}>
-                    <RefreshIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton
-                onClick={toggleAudio}
-                color="primary"
-                aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
-              >
-                <Badge color="secondary">
-                  <Tooltip title={isMuted ? "Unmute Audio" : "Mute Audio"} TransitionComponent={Zoom}>
-                    {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-            </Grid>
-          </Grid>
-        </CardContent>
-        <CardContent ref={outputContainerRef} sx={{ flexGrow: 1, overflow: 'auto' }}>
-          {!isReady ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <Box>
-              {renderContent(llmFeedback)}
-            </Box>
-          )}
-          {isProcessing && !isLLMBusy && (
-            <Typography color="primary" sx={{ mt: 2, fontStyle: 'italic' }}>{`Thinking${thinkingDots}`}</Typography>
-          )}
-          {isCallingFunction && (
-            <Typography color="secondary" sx={{ mt: 2, fontWeight: 'bold' }}>{callingFunctionMessage}</Typography>
-          )}
-          {(showHelpMessage && !isDashboard) && (
-            <Typography sx={{ mt: 2, bgcolor: 'action.selected' }}>{helpMessage}</Typography>
-          )}
-        </CardContent>
-        <SwipeableDrawer
-          anchor="bottom"
-          open={isDrawerOpen}
-          onClose={toggleDrawer(false)}
-          onOpen={toggleDrawer(true)}
-          sx={{
-            '& .MuiDrawer-paper': {
-              backgroundColor: theme.palette.background.paper, // Use theme color
-              color: theme.palette.text.primary, // Use theme color for text
-              padding: theme.spacing(2), // Use theme spacing
-              borderTopLeftRadius: '16px', // Rounded corners at the top
-              borderTopRightRadius: '16px',
-            }
-          }}
-        >
-          {renderLinks()}
-        </SwipeableDrawer>
-        <CardContent sx={{ pt: 1, pb: 1 }}>
-          <HistoryList histories={histories} onSelectSession={handleSelectSession} />
-
-          <Grid container
-            direction="row"
-          >
-            <Grid item xs={10}>
-              <TextField
-                fullWidth
-                size="small"
-                variant="outlined"
-                label="Type a message..."
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-
-                    // Call sendMessage and handle any errors
-                    (async () => {
-                      try {
-                        await sendMessage(); // Await the async sendMessage function
-                      } catch (error) {
-                        console.error('Error while sending message:', error);
-                      }
-                    })();
-                  }
-                }}
-                inputProps={{ maxLength: 10000 }}
-              />
-
-            </Grid>
-            <Grid item xs={1}>
-              <IconButton
-                color="primary"
-                onClick={async () => {
-                  try {
-                    await sendMessage(); // Await the async sendMessage function
-                  } catch (error) {
-                    console.error('Error while sending message:', error); // Handle errors
-                  }
-                }}
-                disabled={isLLMBusy || !isReady}
-                aria-label="send message"
-              >
-                <Badge color="primary">
-                  <Tooltip title="Send Message" TransitionComponent={Zoom}>
-                    <SendIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              {/* Record Audio Button */}
-
-              <IconButton
-                color="secondary"
-                onClick={isRecording ? handleStopRecording : handleStartRecording}
-                disabled={isProcessing} // Disable recording while processing
-              >
-                <Badge color="secondary">
-                  <Tooltip title={isRecording ? 'Stop Recording' : 'Start Recording'}>
-                    {isRecording ? <MicOffIcon /> : <MicIcon />}
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-
-            </Grid>
-            <Grid item xs={1}>
-              <IconButton
-                onClick={() => stopLLM()}
-                color="warning"
-                disabled={!isLLMBusy || !isReady}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'warning.light',  // Lighter shade of error color on hover
-                  }
-                }}
-              >
-                <Badge color="warning">
-                  <Tooltip title="Halt Assistant" TransitionComponent={Zoom}>
-                    <StopIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-            </Grid>
-
-
-          </Grid>
-        </CardContent>
-      </Card>
-      <Message message={message} />
-    </Box>
+  
   );
 
 }
