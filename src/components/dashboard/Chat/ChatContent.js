@@ -211,7 +211,7 @@ const ChatContent = ({
                 }}
               >
                 <Badge color="warning">
-                  <Tooltip title="Reset Session" TransitionComponent={Zoom}>
+                  <Tooltip title="Start New Chat" TransitionComponent={Zoom}>
                     <RefreshIcon />
                   </Tooltip>
                 </Badge>
