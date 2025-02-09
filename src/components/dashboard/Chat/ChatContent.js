@@ -23,14 +23,13 @@ import { Paper,Popper,Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardCon
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import Message from './Message';
+import Message from '../Message';
 import HistoryList from "./HistoryList";
-import MarkdownRenderer from './MarkdownRenderer';
-import MessageLine from './MessageLine';
-import { getLLMServerUrl, convertDate, transcribeAudioApi } from './ServiceAPI';
+import MarkdownRenderer from '../MarkdownRenderer';
+import MessageLine from '../MessageLine';
 import useTheme from '@mui/material/styles/useTheme';
-import styleObject from './styleObject';
-import useClasses from "./useClasses";
+import styleObject from '../styleObject';
+import useClasses from "../useClasses";
 import './chat.css';
 
 

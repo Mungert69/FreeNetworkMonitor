@@ -39,7 +39,7 @@ import { Helmet } from 'react-helmet'
 import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
-import Chat from "./Chat";
+import Chat from "./Chat/Chat";
 
 export default function Dashboard() {
   const theme = useTheme();
