@@ -10,6 +10,20 @@ const HistoryList = ({ histories, onSelectSession }) => {
         return null; // Return null if histories is invalid or empty
     }
 
+    // Function to group histories by date
+    const groupHistoriesByDate = (histories) => {
+        return histories.reduce((acc, history) => {
+            const date = new Date(history.StartUnixTime * 1000).toLocaleDateString();
+            if (!acc[date]) {
+                acc[date] = [];
+            }
+            acc[date].push(history);
+            return acc;
+        }, {});
+    };
+
+    const groupedHistories = groupHistoriesByDate(histories);
+
     return (
         <div>
             <p style={{ display: "flex", alignItems: "center" }}>
@@ -20,20 +34,25 @@ const HistoryList = ({ histories, onSelectSession }) => {
             </p>
 
             {isExpanded && (
-                <ul>
-                    {histories.map((history, index) => {
-                        const sessionId = history?.sessionId || "No Session ID";
-                        const name = history?.name || "Unnamed History";
-
-                        return (
-                            <li key={index}>
-                                <strong>Session:</strong> {sessionId} <br />
-                                <strong>Name:</strong> {name}
-                                <button onClick={() => onSelectSession(sessionId)}>Select</button>
-                            </li>
-                        );
-                    })}
-                </ul>
+                <div>
+                    {Object.entries(groupedHistories).map(([date, histories]) => (
+                        <div key={date}>
+                            <h3>{date}</h3>
+                            <ul>
+                                {histories.map((history, index) => {
+                                    const sessionId = history?.SessionId || "No Session ID";
+                                    const name = history?.Name || "Unnamed History";
+                                    return (
+                                        <li key={index}>
+                                            <strong>Name:</strong> {name}
+                                            <button onClick={() => onSelectSession(sessionId)}>Select</button>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
             )}
         </div>
     );
