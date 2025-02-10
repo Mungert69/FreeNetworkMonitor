@@ -104,8 +104,9 @@ export const useWebSocket = ({
   };
   const processHistoryDisplayData = (historyDisplayData) => {
     try {
-      const decodedString = historyDisplayData.replace(/\u00BF/g, '|');  
-      const parsedData = JSON.parse(decodedString);
+      console.log("Got history data:", historyDisplayData);
+       
+      const parsedData = JSON.parse(historyDisplayData);
       if (Array.isArray(parsedData)) {
         chatState.setHistories(parsedData);
       } else {
