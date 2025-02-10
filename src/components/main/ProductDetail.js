@@ -21,7 +21,7 @@ import { Helmet } from 'react-helmet'
 import Blog from './Blog';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
-import Chat from "../dashboard/Chat";
+import Chat from "../dashboard/Chat/Chat";
 import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
