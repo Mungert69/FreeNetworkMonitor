@@ -1,1 +1,0 @@
-const e=0,t="https://10.8.0.3:2153",s=["https://10.8.0.3:2153"],a=["https://10.8.0.3:2082"],p={startSiteId:0,apiLoadBalancerUrl:t,apiBaseUrls:s,apiSubBaseUrls:a};export{s as apiBaseUrls,t as apiLoadBalancerUrl,a as apiSubBaseUrls,p as default,e as startSiteId};

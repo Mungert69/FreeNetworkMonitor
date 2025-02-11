@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://freenetworkmonitor.click/",
-  "version": "0.7.9",
+  "version": "0.8.0",
   "private": true,
   "dependencies": {
     "@emotion/cache": "11.13.0",
@@ -60,12 +60,13 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "prettier": "^3.5.0",
+    "terser": "^5.38.1",
     "vite": "^6.1.0"
   },
   "scripts": {
     "analyze": "source-map-explorer 'dist/assets/*.js'",
     "start": "vite",
-    "startssl": "vite ",
+    "startssl": "VITE_DEBUG=true vite",
     "build": "vite build",
     "serve": "vite preview"
   },

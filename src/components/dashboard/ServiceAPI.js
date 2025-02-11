@@ -3,31 +3,47 @@ import moment from 'moment-timezone';
 import { trackPromise } from 'react-promise-tracker';
 import axiosRetry from 'axios-retry';
 
-// Global state for appsettings (loaded dynamically)
-let appsettings = {};
+let defaultUser='default';
 
-// Function to load app settings dynamically (asynchronously)
-async function loadAppSettings(appsettingsFile) {
-  const appsettingsModules = import.meta.glob('../../*.json');
-  
-  if (appsettingsModules[`../../${appsettingsFile}.json`]) {
-    const appsettingsData = await appsettingsModules[`../../${appsettingsFile}.json`]();
+let appsettings = {};  // Global variable to hold app settings
+
+// Static imports for each possible settings file
+import appsettingsDev from '../../appsettings-dev.json';
+import appsettingsProd from '../../appsettings.json';
+// Add more imports as needed
+
+// Function to load the correct settings file based on the runtime configuration
+function loadAppSettings() {
+  try {
+    // Get the appsettings file name dynamically (e.g., appsettings-dev.json)
+    const { appsettingsFile } = window['runConfig'];  // This comes from your runtime config
     
-    appsettings = appsettingsData;
-  } else {
-    throw new Error(`App settings file ${appsettingsFile}.json not found`);
+    if (!appsettingsFile) {
+      throw new Error("App settings file name not found");
+    }
+
+    // Choose the correct settings file based on the provided config
+    switch (appsettingsFile) {
+      case 'appsettings-dev.json':
+        appsettings = appsettingsDev;
+        break;
+      case 'appsettings.json':
+        appsettings = appsettingsProd;
+        break;
+      // Add other cases for different settings files
+      default:
+        throw new Error(`Unsupported app settings file: ${appsettingsFile}`);
+    }
+
+    console.log('App settings loaded successfully:', appsettings);
+  } catch (error) {
+    console.error('Error loading app settings:', error);
   }
 }
 
-// Call the loadAppSettings function at the start of the app
-const { appsettingsFile } = window['runConfig']; // Get the appsettings file from config
-loadAppSettings(appsettingsFile)  // Replace with your actual appsettings file name
-  .then(() => {
-    console.log('App settings loaded successfully');
-  })
-  .catch((error) => {
-    console.error('Error loading app settings:', error);
-  });
+// Call the function to load settings at the start of your app
+loadAppSettings();
+
 
 // Functions to access app settings values
 export const getStartSiteId = () => {
@@ -77,6 +93,7 @@ const { serverLabel } = window['serverLabel'];
 
 const prompt = 'web query';
 
+// Assuming appsettings is loaded correctly
 const startSiteId = appsettings.startSiteId;
 const apiLoadBalancerUrl = appsettings.apiLoadBalancerUrl;
 const apiAudioUrl = appsettings.apiAudioUrl;
@@ -86,6 +103,31 @@ const clientId = appsettings.clientId;
 const serverUrl = appsettings.serverUrl;
 const redirectUri = appsettings.redirectUri;
 const llmServerUrls = appsettings.llmServerUrls;
+
+// Debugging: Log all variables
+console.log('startSiteId:', startSiteId);
+console.log('apiLoadBalancerUrl:', apiLoadBalancerUrl);
+console.log('apiAudioUrl:', apiAudioUrl);
+console.log('apiBaseUrls:', apiBaseUrls);
+console.log('apiSubscriptionUrl:', apiSubscriptionUrl);
+console.log('clientId:', clientId);
+console.log('serverUrl:', serverUrl);
+console.log('redirectUri:', redirectUri);
+console.log('llmServerUrls:', llmServerUrls);
+
+// Additional checks for arrays (like apiBaseUrls and llmServerUrls)
+if (Array.isArray(apiBaseUrls)) {
+  console.log('First API Base URL:', apiBaseUrls[0]);
+} else {
+  console.error('apiBaseUrls is not an array or is undefined');
+}
+
+if (Array.isArray(llmServerUrls)) {
+  console.log('First LLM Server URL:', llmServerUrls[0]);
+} else {
+  console.error('llmServerUrls is not an array or is undefined');
+}
+
 
 
 

@@ -1,1 +1,0 @@
-const s=["br","gz"],t=[".html",".js",".css",".svg",".png",".jpg",".mp3",".wav",".tff",".woff2"],o="/build",c={algorithms:s,filetypes:t,directory:o};export{s as algorithms,c as default,o as directory,t as filetypes};

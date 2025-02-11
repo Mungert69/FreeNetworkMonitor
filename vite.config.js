@@ -12,9 +12,12 @@ export default defineConfig({
       cert: fs.readFileSync(path.resolve('/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.crt')), // Absolute path
     },
     host: '127.0.0.1',
+    cors: true,  // Enable CORS if needed
   },
   build: {
     outDir: 'dist',
+    sourcemap: process.env.VITE_DEBUG === 'true',  // Enable source maps only in debug mode
+    minify: process.env.VITE_DEBUG === 'true' ? 'esbuild' : 'terser',  // Use minification only in production
   },
   resolve: {
     alias: {
@@ -22,5 +25,8 @@ export default defineConfig({
     },
   },
   base: '/',  // Ensures React Router works in Vite
+  define: {
+    'import.meta.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),  // Define environment for debugging
+  },
 });
 
