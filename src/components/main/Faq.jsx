@@ -15,7 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading-circle';
-import { Helmet } from 'react-helmet'
+import { SuperSEO } from 'react-super-seo';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import useTheme from '@mui/material/styles/useTheme';
@@ -542,10 +542,20 @@ const Faq = () => {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <Helmet>
-                <title>Free Network Monitor FAQ Support</title>
-                <meta name="description" content="This page provides support answers for user of free network monitor." />
-            </Helmet>
+            <SuperSEO
+                title="Free Network Monitor FAQ - Get Answers to Common Questions"
+                description="Find answers to frequently asked questions about Free Network Monitor. Learn how to add hosts, set up alerts, troubleshoot issues, and use advanced features like the Network Monitor Assistant."
+                openGraph={{
+                    ogImage: {
+                        ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
+                        ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+                    },
+                    ogUrl: "https://freenetworkmonitor.click/faq", // Canonical URL
+                    ogType: "website", // Type of content
+                    ogSiteName: "Free Network Monitor", // Site name
+                    ogLocale: "en_US", // Language and locale
+                }}
+            />
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
                     {isLoading && <Loading small={true} />}
@@ -617,9 +627,9 @@ const Faq = () => {
                         >
                             <Grid item  >
                                 <Typography variant="body2" color="textSecondary" align="center">
-                                        <HashLink  to="/#blog-post1"  scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })} className={classes.link}>
-                                            Visual Guide 1 : View Charts
-                                        </HashLink>
+                                    <HashLink to="/#blog-post1" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })} className={classes.link}>
+                                        Visual Guide 1 : View Charts
+                                    </HashLink>
                                 </Typography>
                             </Grid>
                             <Grid item >

@@ -15,7 +15,7 @@ import MainListItems from '../dashboard/MainListItems';
 //import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
-import { Helmet } from 'react-helmet'
+import { SuperSEO } from 'react-super-seo';
 import useClasses from "../dashboard/useClasses";
 import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
@@ -38,12 +38,20 @@ const Pricing = () => {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <Helmet>
-                <title>Free Network Monitor Online Website Monitoring</title>
-                <meta name="description" content="This website provides a free network monitor online service.
-     Providing realtime monitoring, charts and alerts
-     for all your websites and network hosts. Setup is easy and simple. It is free to use."></meta>
-            </Helmet>
+            <SuperSEO
+                title="Free Network Monitor Online Website Monitoring"
+                description="This website provides a free network monitor online service. Providing realtime monitoring, charts and alerts for all your websites and network hosts. Setup is easy and simple. It is free to use."
+                openGraph={{
+                    ogImage: {
+                        ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
+                        ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+                    },
+                    ogUrl: "https://freenetworkmonitor.click/subscription", // Canonical URL
+                    ogType: "website", // Type of content
+                    ogSiteName: "Free Network Monitor", // Site name
+                    ogLocale: "en_US", // Language and locale
+                }}
+            />
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
                     {isLoading && <Loading small={true} />}

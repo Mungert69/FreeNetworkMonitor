@@ -15,7 +15,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MainListItems from "../dashboard/MainListItems";
 import styleObject from "../dashboard/styleObject";
 import Loading from "../../loading-circle";
-import { Helmet } from "react-helmet";
+import { SuperSEO } from 'react-super-seo';
 import Footer from "./Footer";
 import useClasses from "../dashboard/useClasses";
 import useTheme from "@mui/material/styles/useTheme";
@@ -260,10 +260,24 @@ const Download = () => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <Helmet>
-        <title>Download Beta - Free Network Monitor App</title>
-        <meta name="description" content="Join the exclusive beta testing program for the Free Network Monitor Agent and Quantum Secure Agent apps to help shape their future." />
-        </Helmet>
+      <SuperSEO
+    title="Download Free Network Monitor Agent - Beta Tester Portal"
+    description="Join the exclusive beta testing program for the Free Network Monitor Agent. Download the app for Android, Windows, or Docker, and gain access to real-time network monitoring, advanced security tools, and AI-powered insights. Help shape the future of network monitoring!"
+    openGraph={{
+        ogImage: {
+            ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
+            ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+        },
+        ogUrl: "https://freenetworkmonitor.click/download", // Canonical URL
+        ogType: "website", // Type of content
+        ogSiteName: "Free Network Monitor", // Site name
+        ogLocale: "en_US", // Language and locale
+    }}
+    twitter={{
+        cardType: "summary_large_image", // Twitter card type
+        site: "@freenetworkmonitor", // Your Twitter handle
+    }}
+/>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           {isLoading && <Loading small={true} />}

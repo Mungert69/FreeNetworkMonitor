@@ -17,7 +17,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
-import { Helmet } from 'react-helmet'
+import { SuperSEO } from 'react-super-seo';
 import Blog from './Blog';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
@@ -78,10 +78,20 @@ const ProductDetail = () => {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <Helmet>
-                <title>Free Network and Quantum Readiness Monitor Online Website Monitoring</title>
-                <meta name="description" content="Discover our innovative network monitoring tool, equipped with an advanced quantum readiness feature to ensure your website's preparedness for the quantum computing era. Our free, user-friendly monitor offers comprehensive network host availability checks, including HTTP, ICMP, DNS, and SMTP services. Embrace future technology today with our leading-edge quantum-ready network monitor."></meta>
-            </Helmet>
+            <SuperSEO
+    title="Free Network & Quantum Readiness Monitor - Real-Time Monitoring for Modern Networks"
+    description="Monitor your network's health and quantum readiness with the Free Network Monitor. Track HTTP, ICMP, DNS, and SMTP services in real-time. Leverage AI-powered insights, advanced security tools, and quantum-ready checks to future-proof your infrastructure. Start monitoring for free today!"
+    openGraph={{
+        ogImage: {
+            ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
+            ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+        },
+        ogUrl: "https://freenetworkmonitor.click", // Canonical URL
+        ogType: "website", // Type of content
+        ogSiteName: "Free Network Monitor", // Site name
+        ogLocale: "en_US", // Language and locale
+    }}
+/>
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
                     {isLoading && <Loading small={true} />}

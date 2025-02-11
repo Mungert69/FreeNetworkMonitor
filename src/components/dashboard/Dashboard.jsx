@@ -35,7 +35,7 @@ import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import useTheme from '@mui/material/styles/useTheme';
-import { Helmet } from 'react-helmet'
+import { SuperSEO } from 'react-super-seo';
 import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
@@ -285,12 +285,20 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
 
-      <Helmet>
-        <title>Dashboard For Free Network Monitor</title>
-        <meta name="description" content="This is the dashboard for Free Network Monitor. It provides a free online network monitoring service.
-     Providing realtime monitoring, charts and alerts
-     for all your websites and network hosts. Setup is easy and simple. It is free to use."></meta>
-      </Helmet>
+<SuperSEO
+    title="Free Network Monitor Dashboard - Comprehensive Network Monitoring & Security Management"
+    description="Manage your network hosts, conduct security assessments, and run diagnostics with the Free Network Monitor Dashboard. Monitor real-time performance, execute custom commands, and ensure network integrity with advanced tools. Start monitoring for free today!"
+    openGraph={{
+        ogImage: {
+            ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
+            ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+        },
+        ogUrl: "https://freenetworkmonitor.click/dashboard", // Canonical URL
+        ogType: "website", // Type of content
+        ogSiteName: "Free Network Monitor", // Site name
+        ogLocale: "en_US", // Language and locale
+    }}
+/>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
