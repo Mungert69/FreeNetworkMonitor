@@ -1,16 +1,26 @@
-import { useState } from "react";
-import { IconButton } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { List, ListItem, ListItemText, Typography, Paper, Divider, Box, IconButton } from "@mui/material";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline"; // Select icon
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"; // Delete icon
+import { useTheme } from '@mui/material/styles';
 
 const HistoryList = ({ histories, onSelectSession, onDeleteSession, llmType, currentSessionId }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const theme = useTheme();
 
     if (!histories || !Array.isArray(histories) || histories.length === 0) {
-        return null; // Return null if histories is invalid or empty
+        return (
+            <Paper elevation={3} sx={{ p: 2, backgroundColor: theme.palette.background.paper }}>
+                <Typography variant="body1" color="textSecondary">
+                    No chat histories available.
+                </Typography>
+            </Paper>
+        );
     }
 
     const filteredHistories = histories.filter(history => history.llmType === llmType);
+
+    // Separate the current session from the rest
+    const currentSession = filteredHistories.find(history => history.sessionId === currentSessionId);
+    const otherHistories = filteredHistories.filter(history => history.sessionId !== currentSessionId);
 
     // Function to group histories by date
     const groupHistoriesByDate = (histories) => {
@@ -24,46 +34,82 @@ const HistoryList = ({ histories, onSelectSession, onDeleteSession, llmType, cur
         }, {});
     };
 
-    const groupedHistories = groupHistoriesByDate(filteredHistories);
+    const groupedHistories = groupHistoriesByDate(otherHistories);
 
     return (
-        <div>
-            <p style={{ display: "flex", alignItems: "center" }}>
-                User Histories
-                <IconButton onClick={() => setIsExpanded(!isExpanded)}>
-                    {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-            </p>
+        <Paper elevation={3} sx={{ p: 2, backgroundColor: theme.palette.background.paper }}>
+            <Typography variant="h6" sx={{ color: theme.palette.primary.main, mb: 2 }}>
+                Chat Histories for {llmType}
+            </Typography>
 
-            {isExpanded && (
-                <div>
-                    {Object.entries(groupedHistories).map(([date, histories]) => (
-                        <div key={date}>
-                            <h3>{date}</h3>
-                            <ul>
-                                {histories.map((history, index) => {
-                                    const sessionId = history?.sessionId || "No Session ID";
-                                    const name = history?.name || "Unnamed History";
-                                    const userId = history?.userId || "No User ID";
-                                    const llmType = history?.llmType || "No LLM Type";
-                                    const fullSessionId = `${sessionId}_${userId}_${llmType}`; // Construct full sessionId
-                                    const isCurrentSession = sessionId && currentSessionId && sessionId === currentSessionId;
-                                    return (
-                                        <li key={index}>
-                                            <strong>{name}</strong> 
-                                            <button onClick={() => onSelectSession(sessionId)}>Select</button>
-                                              {!isCurrentSession && (
-                                                <button onClick={() => onDeleteSession(fullSessionId)}>Delete</button>
-                                            )}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
+            {/* Render the current session at the top */}
+            {currentSession && (
+                <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle1" sx={{ color: theme.palette.secondary.main, mb: 1 }}>
+                        Current Session
+                    </Typography>
+                    <List>
+                        <ListItem sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+                            <IconButton
+                                onClick={() => onSelectSession(currentSession.sessionId)}
+                                sx={{ mr: 1, color: theme.palette.primary.main }}
+                            >
+                                <PlayCircleOutlineIcon />
+                            </IconButton>
+                            <ListItemText
+                                primary={currentSession.name || "Unnamed History"}
+                                sx={{ color: theme.palette.text.primary, flexGrow: 1 }}
+                            />
+                        </ListItem>
+                    </List>
+                    <Divider sx={{ my: 2 }} />
+                </Box>
             )}
-        </div>
+
+            {/* Render the rest of the histories grouped by date */}
+            {Object.entries(groupedHistories).map(([date, histories]) => (
+                <Box key={date} sx={{ mb: 3 }}>
+                    <Typography variant="subtitle1" sx={{ color: theme.palette.secondary.main, mb: 1 }}>
+                        {date}
+                    </Typography>
+                    <List>
+                        {histories.map((history, index) => {
+                            const sessionId = history?.sessionId || "No Session ID";
+                            const name = history?.name || "Unnamed History";
+                            const userId = history?.userId || "No User ID";
+                            const llmType = history?.llmType || "No LLM Type";
+                            const fullSessionId = `${sessionId}_${userId}_${llmType}`; // Construct full sessionId
+                            return (
+                                <ListItem key={index} sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+                                    {/* Select Icon */}
+                                    <IconButton
+                                        onClick={() => onSelectSession(sessionId)}
+                                        sx={{ mr: 1, color: theme.palette.primary.main }}
+                                    >
+                                        <PlayCircleOutlineIcon />
+                                    </IconButton>
+
+                                    {/* Name Text */}
+                                    <ListItemText
+                                        primary={name}
+                                        sx={{ color: theme.palette.text.primary, flexGrow: 1 }}
+                                    />
+
+                                    {/* Delete Icon (right-justified) */}
+                                    <IconButton
+                                        onClick={() => onDeleteSession(fullSessionId)}
+                                        sx={{ color: theme.palette.error.main }}
+                                    >
+                                        <DeleteOutlineIcon />
+                                    </IconButton>
+                                </ListItem>
+                            );
+                        })}
+                    </List>
+                    <Divider sx={{ my: 2 }} />
+                </Box>
+            ))}
+        </Paper>
     );
 };
 

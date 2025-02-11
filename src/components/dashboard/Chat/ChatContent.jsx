@@ -19,10 +19,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import { Paper,Popper,Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Drawer,Paper,Popper,Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
 import Message from '../Message';
 import HistoryList from "./HistoryList";
 import MarkdownRenderer from '../MarkdownRenderer';
@@ -149,99 +146,109 @@ const ChatContent = ({
               </Typography>
             </Box>
           )}
-
+  
+          {/* Header Section */}
           <Grid container alignItems="center">
             <Grid item xs={12} sx={{
               backgroundColor: theme.palette.primary.main,
               color: theme.palette.getContrastText(theme.palette.primary.main),
               padding: theme.spacing(1),
               borderRadius: theme.shape.borderRadius / 3
-            }} >
-              <Typography variant="h7" >Network Monitor Assistant ({llmRunnerType})</Typography>
+            }}>
+              <Typography variant="h7">Network Monitor Assistant ({llmRunnerType})</Typography>
             </Grid>
-            <Grid item xs={12} alignItems="right" >
-              <IconButton onClick={saveFeedback} color="primary" disabled={!isReady} >
-                <Badge color="secondary">
-                  <Tooltip title="Save" TransitionComponent={Zoom}>
-                    <SaveIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton onClick={toggleLlmRunnerType} color="primary" disabled={isToggleDisabled}>
-                <Badge color="secondary">
-                  <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
-                    <SwapHorizIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              {isDrawerOpen ? null : (
-                <IconButton
-                  onClick={toggleDrawer(true)}
-                  color="primary"
-                  disabled={!isReady}
-                >
+            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {/* Left-Aligned Icons */}
+              <Box>
+                <IconButton onClick={saveFeedback} color="primary" disabled={!isReady}>
                   <Badge color="secondary">
-                    <Tooltip title="Open Links" TransitionComponent={Zoom}>
-                      <KeyboardArrowUpIcon />
+                    <Tooltip title="Save" TransitionComponent={Zoom}>
+                      <SaveIcon />
                     </Tooltip>
                   </Badge>
                 </IconButton>
-              )}
-              <IconButton onClick={() => setIsChatOpen(false)} color="secondary" >
-                <Badge color="secondary">
-                  <Tooltip title={"Hide Assistant"} TransitionComponent={Zoom}>
-                    <CloseIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton onClick={toggleExpand} color="primary">
-                <Badge color="secondary">
-                  <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
-                    {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton
-                onClick={() => resetSessionId()}
-                color="error"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'error.light',
-                  }
-                }}
-              >
-                <Badge color="warning">
-                  <Tooltip title="Start New Chat" TransitionComponent={Zoom}>
-                    <RefreshIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton
-                onClick={toggleAudio}
-                color="primary"
-                aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
-              >
-                <Badge color="secondary">
-                  <Tooltip title={isMuted ? "Unmute Audio" : "Mute Audio"} TransitionComponent={Zoom}>
-                    {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-                  </Tooltip>
-                </Badge>
-              </IconButton>
-              <IconButton
-                ref={historyButtonRef}
-                onClick={toggleHistory}
-                color="primary"
-                aria-label="History"
-              >
-                <Badge color="secondary">
-                  <Tooltip title="History" TransitionComponent={Zoom}>
-                    <HistoryIcon />
-                  </Tooltip>
-                </Badge>
-              </IconButton>
+                <IconButton onClick={toggleLlmRunnerType} color="primary" disabled={isToggleDisabled}>
+                  <Badge color="secondary">
+                    <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
+                      <SwapHorizIcon />
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+                {isDrawerOpen ? null : (
+                  <IconButton
+                    onClick={toggleDrawer(true)}
+                    color="primary"
+                    disabled={!isReady}
+                  >
+                    <Badge color="secondary">
+                      <Tooltip title="Open Links" TransitionComponent={Zoom}>
+                        <KeyboardArrowUpIcon />
+                      </Tooltip>
+                    </Badge>
+                  </IconButton>
+                )}
+                <IconButton onClick={toggleExpand} color="primary">
+                  <Badge color="secondary">
+                    <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
+                      {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  onClick={() => resetSessionId()}
+                  color="error"
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: 'error.light',
+                    }
+                  }}
+                >
+                  <Badge color="warning">
+                    <Tooltip title="Start New Chat" TransitionComponent={Zoom}>
+                      <RefreshIcon />
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  onClick={toggleAudio}
+                  color="primary"
+                  aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+                >
+                  <Badge color="secondary">
+                    <Tooltip title={isMuted ? "Unmute Audio" : "Mute Audio"} TransitionComponent={Zoom}>
+                      {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+              </Box>
+  
+              {/* Right-Aligned Icons */}
+              <Box>
+                <IconButton
+                  ref={historyButtonRef}
+                  onClick={toggleHistory}
+                  color="primary"
+                  aria-label="History"
+                >
+                  <Badge color="secondary">
+                    <Tooltip title="History" TransitionComponent={Zoom}>
+                      <HistoryIcon />
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+                <IconButton onClick={() => setIsChatOpen(false)} color="secondary">
+                  <Badge color="secondary">
+                    <Tooltip title="Hide Assistant" TransitionComponent={Zoom}>
+                      <CloseIcon />
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
+  
+        {/* Chat Content */}
         <CardContent ref={outputContainerRef} sx={{ flexGrow: 1, overflow: 'auto' }}>
           {!isReady ? (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -262,6 +269,8 @@ const ChatContent = ({
             <Typography sx={{ mt: 2, bgcolor: 'action.selected' }}>{helpMessage}</Typography>
           )}
         </CardContent>
+  
+        {/* Links Drawer */}
         <SwipeableDrawer
           anchor="bottom"
           open={isDrawerOpen}
@@ -279,7 +288,8 @@ const ChatContent = ({
         >
           {renderLinks()}
         </SwipeableDrawer>
-        <CardContent sx={{ pt: 1, pb: 1 }}>
+  
+       
           <Popper
             open={isHistoryOpen}
             anchorEl={historyButtonRef.current}
@@ -298,7 +308,10 @@ const ChatContent = ({
               <HistoryList histories={histories} onSelectSession={handleSelectSession} onDeleteSession={handleDeleteSession} llmType={llmRunnerType} currentSessionId={sessionId}/>
             </Paper>
           </Popper>
-
+       
+  
+        {/* Chat Input */}
+        <CardContent sx={{ pt: 1, pb: 1 }}>
           <Grid container direction="row">
             <Grid item xs={10}>
               <TextField
