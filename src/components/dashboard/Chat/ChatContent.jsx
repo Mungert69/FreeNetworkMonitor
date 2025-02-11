@@ -70,6 +70,12 @@ const ChatContent = ({
     setIsHistoryOpen((prev) => !prev);
   };
 
+  const closeChat =() => {
+    setIsChatOpen(false);
+    setIsHistoryOpen(false);
+  }
+
+
   const renderLinks = () => {
     if (!linkData || linkData.length == 0) return;
     return (
@@ -236,7 +242,7 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                <IconButton onClick={() => setIsChatOpen(false)} color="secondary">
+                <IconButton onClick={() => closeChat()} color="secondary">
                   <Badge color="secondary">
                     <Tooltip title="Hide Assistant" TransitionComponent={Zoom}>
                       <CloseIcon />

@@ -42,6 +42,9 @@ import { useFusionAuth } from '@fusionauth/react-sdk';
 import Chat from "./Chat/Chat";
 
 export default function Dashboard() {
+  const publicUrl = import.meta.env.VITE_PUBLIC_URL;
+
+  
   const theme = useTheme();
   const { isLoggedIn,  userInfo,  isFetchingUserInfo } = useFusionAuth();
   const defaultHost = { 'id': 1 };
