@@ -37,9 +37,9 @@ const ChatContent = ({
   loadWarning, llmRunnerType, isReady, isToggleDisabled, isDrawerOpen, toggleDrawer, setIsChatOpen,
   isExpanded, toggleExpand, resetSessionId, isMuted, toggleAudio, outputContainerRef, isProcessing,
   isLLMBusy, thinkingDots, isCallingFunction, callingFunctionMessage, showHelpMessage, isDashboard,
-  helpMessage, histories, handleSelectSession, currentMessage, setCurrentMessage, sendMessage,
+  helpMessage, histories, handleSelectSession,handleDeleteSession, currentMessage, setCurrentMessage,
   isRecording, handleStartRecording, handleStopRecording, stopLLM, message, linkData,saveFeedback,
-  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick
+  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId
 }) => {
     const chatStyles = {
         position: 'fixed',
@@ -295,7 +295,7 @@ const ChatContent = ({
             }}
           >
             <Paper sx={{ p: 2 }}>
-              <HistoryList histories={histories} onSelectSession={handleSelectSession} />
+              <HistoryList histories={histories} onSelectSession={handleSelectSession} onDeleteSession={handleDeleteSession} llmType={llmRunnerType} currentSessionId={sessionId}/>
             </Paper>
           </Popper>
 

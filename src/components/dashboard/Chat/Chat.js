@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChatState } from './useChatState';
 import { useWebSocket } from './useWebSocket';
 
-function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
+function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId}) {
   const chatState=useChatState();
   const {
     // Audio and UI state
@@ -242,6 +242,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setSessionId(selectedSessionId);
     resetLLM(); // Reset the LLM session with the new session ID
   };
+  const handleDeleteSession = async (fullSessionId) => {
+    var message="<|REMOVE_SAVED_SESSION|>"+fullSessionId;
+    await sendMessageCheck(message);
+    
+  };
+
+ 
 
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return;
