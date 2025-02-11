@@ -1,4 +1,4 @@
-import{R as a,j as e,aO as m,D as n,aT as g}from"./index-DzjaIDDW.js";import{c as f,w,Z as y,$ as k,a0 as v,h as b,I as r,a1 as A,a2 as x,j as s,a3 as M,a4 as S,X as l,O as T,a5 as N,a6 as I,G as c}from"./Helmet-CfyFocR3.js";import{F as D}from"./Footer-BydBm_lp.js";import{A as C}from"./auth-nav-pL1RHZUs.js";import{M as j}from"./index-CGglR4Vw.js";const F=`
+import{R as a,j as e,aO as m,D as n,aT as g}from"./index-B82579gH.js";import{c as f,w,Z as y,$ as k,a0 as v,h as b,I as r,a1 as A,a2 as x,j as s,a3 as M,a4 as S,X as l,O as T,a5 as N,a6 as I,G as c}from"./Helmet-D2W3hzl8.js";import{F as D}from"./Footer-kI85zpuO.js";import{A as C}from"./auth-nav-bunG-7Ik.js";import{M as j}from"./index-CHtzSYt7.js";const F=`
 
 Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
 

@@ -11,13 +11,16 @@ const Faq = lazy(() => import('./components/main/Faq'));
 const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
 
-const TRACKING_ID = "G-QZ49HV7DS2"; // OUR_TRACKING_ID
-ReactGA4.initialize(TRACKING_ID, {
-  gaOptions: {
-    cookieFlags: 'SameSite=None;Secure',
-    siteSpeedSampleRate: 50
-  }
-});
+
+if (import.meta.env.MODE === 'production') {
+  const TRACKING_ID = "G-QZ49HV7DS2";
+  ReactGA4.initialize(TRACKING_ID, {
+    gaOptions: {
+      cookieFlags: 'SameSite=None;Secure',
+      siteSpeedSampleRate: 50
+    }
+  });
+}
 
 
 
