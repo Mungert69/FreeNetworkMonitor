@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-export const useChatState = ({userId}) => {
+export const useChatState = () => {
   // Audio and UI state
   const [isMuted, setIsMuted] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -123,7 +123,6 @@ export const useChatState = ({userId}) => {
     sessionId,
     setSessionId,
     getSessionId,
-    userId,
 
     // Refs
     llmRunnerTypeRef,

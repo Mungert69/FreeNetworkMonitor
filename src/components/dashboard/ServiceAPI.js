@@ -3,43 +3,78 @@ import moment from 'moment-timezone';
 import { trackPromise } from 'react-promise-tracker';
 import axiosRetry from 'axios-retry';
 
-const defaultUser = "default";
+// Global state for appsettings (loaded dynamically)
+let appsettings = {};
 
+// Function to load app settings dynamically (asynchronously)
+async function loadAppSettings(appsettingsFile) {
+  const appsettingsModules = import.meta.glob('../../*.json');
+  
+  if (appsettingsModules[`../../${appsettingsFile}.json`]) {
+    const appsettingsData = await appsettingsModules[`../../${appsettingsFile}.json`]();
+    
+    appsettings = appsettingsData;
+  } else {
+    throw new Error(`App settings file ${appsettingsFile}.json not found`);
+  }
+}
+
+// Call the loadAppSettings function at the start of the app
+const { appsettingsFile } = window['runConfig']; // Get the appsettings file from config
+loadAppSettings(appsettingsFile)  // Replace with your actual appsettings file name
+  .then(() => {
+    console.log('App settings loaded successfully');
+  })
+  .catch((error) => {
+    console.error('Error loading app settings:', error);
+  });
+
+// Functions to access app settings values
 export const getStartSiteId = () => {
-    return startSiteId;
+    return appsettings.startSiteId;
 }
+
 export const getServerLabel = () => {
-    return serverLabel;
+    return appsettings.serverLabel;  // Assuming this value exists in appsettings
 }
+
 export const getServerUrlFromSiteId = (siteId) => {
-    return apiBaseUrls[siteId];
+    return appsettings.apiBaseUrls[siteId];
 }
 
 export const getApiSubscriptionUrl = () => {
-    return apiSubscriptionUrl;
+    return appsettings.apiSubscriptionUrl;
 }
+
 export const getClientId = () => {
-    return clientId;
+    return appsettings.clientId;
 }
+
 export const getServerUrl = () => {
-    return serverUrl;
+    return appsettings.serverUrl;
 }
+
 export const getLLMServerUrl = (siteId) => {
     try {
-        return llmServerUrls[siteId];
-    }
-    catch (error) {
-        console.log('ServiceAPI.getLLMServerUrl unable to getllmServerUrl : ' + error);
+        return appsettings.llmServerUrls[siteId];
+    } catch (error) {
+        console.log('ServiceAPI.getLLMServerUrl unable to get llmServerUrl: ' + error);
         return;
     }
-   
 }
+
 export const getRedirectUri = () => {
-    return redirectUri;
+    return appsettings.redirectUri;
 }
-const { appsettingsFile } = window['runConfig'];
+
+// You can use moment and user timezone here as needed
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+console.log('User Timezone:', userTimeZone);
+
+
 const { serverLabel } = window['serverLabel'];
-const appsettings = require('../../' + appsettingsFile);
+
+
 const prompt = 'web query';
 
 const startSiteId = appsettings.startSiteId;
@@ -51,7 +86,7 @@ const clientId = appsettings.clientId;
 const serverUrl = appsettings.serverUrl;
 const redirectUri = appsettings.redirectUri;
 const llmServerUrls = appsettings.llmServerUrls;
-const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 
 
 

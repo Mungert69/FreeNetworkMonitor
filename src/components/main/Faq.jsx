@@ -498,8 +498,10 @@ const data = {
 };
 
 const Faq = () => {
+    const publicUrl = import.meta.env.VITE_PUBLIC_URL;
+
     const theme = useTheme();
-    const classes = useClasses(styleObject(theme, process.env.PUBLIC_URL + '/ping.svg'));
+    const classes = useClasses(styleObject(theme, publicUrl + '/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState(''); // State for search query

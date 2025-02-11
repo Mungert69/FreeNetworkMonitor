@@ -41,7 +41,9 @@ function sendToAnalytics({ id, name, value }) {
 }
 
 const ProductDetail = () => {
-    const classes = useClasses(styleObject(useTheme(), process.env.PUBLIC_URL + '/ping.svg'));
+    const publicUrl = import.meta.env.VITE_PUBLIC_URL;
+
+    const classes = useClasses(styleObject(useTheme(), publicUrl + '/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);

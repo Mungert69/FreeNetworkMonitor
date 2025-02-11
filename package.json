@@ -30,7 +30,6 @@
     "@mui/material": "^5.16.7",
     "@mui/styled-engine": "^5.16.6",
     "@mui/x-date-pickers": "^7.20.0",
-    "@vitejs/plugin-react": "^4.3.4",
     "acorn-import-attributes": "^1.9.5",
     "audiobuffer-to-wav": "^1.0.0",
     "axios": "^1.7.7",
@@ -59,18 +58,17 @@
     "react-promise-tracker": "^2.1.1",
     "react-router-dom": "^6.27.0",
     "react-router-hash-link": "^2.4.3",
-    "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
     "react-syntax-highlighter": "^15.5.0",
     "recharts": "^2.13.0",
     "remark-gfm": "^4.0.0",
     "socket.io-client": "^4.8.0",
     "uuid": "^10.0.0",
-    "vite": "^6.0.5",
     "vite-tsconfig-paths": "^5.1.4",
     "web-vitals": "^4.2.3"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -79,16 +77,17 @@
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "vite": "^6.1.0"
   },
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "GENERATE_SOURCEMAP=false cross-env PORT=8080 HOST=127.0.0.1 react-scripts start",
-    "startssl": "GENERATE_SOURCEMAP=false HTTPS=true cross-env PORT=8443 HOST=127.0.0.1 react-scripts start",
-    "build": " react-scripts build && compress-cra",
-    "eject": "react-scripts eject"
-  },
+  "preinstall": "npx npm-force-resolutions",
+  "analyze": "source-map-explorer 'dist/assets/*.js'",  
+  "start": "vite", 
+  "startssl": "vite ", 
+  "build": "vite build",  
+  "serve": "vite preview"  
+},
   "eslintConfig": {
     "extends": [
       "react-app",
