@@ -240,6 +240,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const handleSelectSession = (selectedSessionId) => {
     setSessionId(selectedSessionId);
+    openMessage.current = "<|REPLAY_HISTORY|>";
     resetLLM(); // Reset the LLM session with the new session ID
   };
   const handleDeleteSession = async (fullSessionId) => {
@@ -354,6 +355,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       toggleAudio={toggleAudio}
       toggleDrawer={toggleDrawer}
       handleSelectSession={handleSelectSession}
+      handleDeleteSession={handleDeleteSession}
       handleStopRecording={handleStopRecording}
       handleStartRecording={handleStartRecording}
       saveFeedback={saveFeedback}
