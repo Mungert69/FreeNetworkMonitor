@@ -133,6 +133,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [isReady]);
 
   useEffect(() => {
+    openMessage.current = "<|REPLAY_HISTORY|>";
     sendMessageCheck('');
     console.log('Initial page load web socket Ping ');
     // connectWebSocket();
