@@ -140,7 +140,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const pingInterval = setInterval(() => {
       if (webSocketRef.current.readyState === WebSocket.OPEN) {
         sendMessageCheck('');
-        console.log('Sent web socket Ping ');
+        //console.log('Sent web socket Ping ');
       }
     }, 5000);
 
@@ -367,6 +367,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       resetSessionId={resetSessionId}
       stopLLM={stopLLM}
       outputContainerRef={outputContainerRef}
+      isRecording={isRecording}
     />
   );
   
