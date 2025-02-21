@@ -44,6 +44,9 @@ function loadAppSettings() {
 // Call the function to load settings at the start of your app
 loadAppSettings();
 
+export const getLlmTypes = () => {
+    return appsettings.llmTypes;
+}
 
 // Functions to access app settings values
 export const getStartSiteId = () => {

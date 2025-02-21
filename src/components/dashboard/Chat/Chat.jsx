@@ -1,5 +1,5 @@
 
-import { getLLMServerUrl, convertDate, transcribeAudioApi } from '../ServiceAPI';
+import { getLLMServerUrl, convertDate, transcribeAudioApi, getLlmTypes } from '../ServiceAPI';
 import AudioPlayer from '../AudioPlayer'; // Import the new AudioPlayer component
 import useAudioRecorder from '../useAudioRecorder'; // Import the custom hook
 import ChatContent from './ChatContent';
@@ -258,7 +258,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setIsToggleDisabled(true);
 
     // Define the type sequence
-    const types = ['FreeLLM', 'TurboLLM', 'HugLLM'];
+    const types = getLlmTypes();
 
     // Update the ref
     const currentRefIndex = types.indexOf(llmRunnerTypeRef.current);

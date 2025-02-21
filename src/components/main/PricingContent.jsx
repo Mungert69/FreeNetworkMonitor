@@ -40,7 +40,7 @@ const tiers = [
       'Local network monitoring with Network Monitor and Quantum Secure Agents',
       'Advanced monitoring with ICMP, HTTP, DNS, Raw Connect, SMTP Ping, and Quantum-Ready checks',
       '150k Max tokens, fill 50k daily for Turbo AI Assistant',
-      'Turbo AI Assistant for enhanced network monitoring and intelligent alerts',
+      'TurboLLM AI Assistant for enhanced network monitoring and intelligent alerts',
       'FreeLLM Assistant for routine commands, basic checks, and troubleshooting',
       'AI-driven recommendations on network performance optimizations and security checks',
       'Email support',
