@@ -1,67 +1,15 @@
 import React, { useRef } from 'react';
+import { Howl } from 'howler';
 
 const AudioPlayer = () => {
   const audioQueueRef = useRef([]); // Queue of audio files
   const isPlayingRef = useRef(false); // Tracks if audio is currently playing
-  const audioRef = useRef(null); // Holds the current Audio object
-  const isPausedRef = useRef(false);
+  const currentSoundRef = useRef(null); // Holds the current Howl instance
 
   const playAudioSequentially = (audioFile) => {
     // Add the new file to the queue
     audioQueueRef.current.push(audioFile);
     if (!isPlayingRef.current) {
-      playNextInQueue();
-    }
-  };
-
-  const pauseAudio = () => {
-    if (audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      isPausedRef.current = true;
-    }
-  };
-
-  const resumeAudio = () => {
-    if (audioRef.current && isPausedRef.current) {
-      audioRef.current.play().catch((err) => {
-        console.error('Error resuming audio playback:', err);
-      });
-      isPausedRef.current = false;
-    }
-  };
-
-  const stopAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current.removeEventListener('ended', onAudioEnd);
-      audioRef.current.removeEventListener('error', onAudioError);
-      audioRef.current = null;
-    }
-    isPlayingRef.current = false;
-  };
-
-  const clearQueue = () => {
-    stopAudio();
-    audioQueueRef.current = [];
-  };
-
-  const onAudioEnd = () => {
-    console.log('Audio playback ended.');
-    // Remove the played file and play the next in the queue
-    audioQueueRef.current.shift();
-    isPlayingRef.current = false;
-    if (audioQueueRef.current.length > 0) {
-      playNextInQueue();
-    }
-  };
-
-  const onAudioError = (error) => {
-    console.error('Audio playback error:', error);
-    // Remove the errored file and play the next in the queue
-    audioQueueRef.current.shift();
-    isPlayingRef.current = false;
-    if (audioQueueRef.current.length > 0) {
       playNextInQueue();
     }
   };
@@ -76,16 +24,47 @@ const AudioPlayer = () => {
     console.log(`Playing audio: ${nextFile}`);
     isPlayingRef.current = true;
 
-    const audio = new Audio(nextFile);
-    audioRef.current = audio;
-
-    audio.addEventListener('ended', onAudioEnd);
-    audio.addEventListener('error', onAudioError);
-
-    audio.play().catch((err) => {
-      console.error('Audio playback failed:', err);
-      onAudioError(err);
+    const sound = new Howl({
+      src: [nextFile],
+      onend: () => {
+        console.log('Audio playback ended.');
+        audioQueueRef.current.shift(); // Remove the played file
+        playNextInQueue(); // Play the next file in the queue
+      },
+      onerror: (error) => {
+        console.error('Audio playback error:', error);
+        audioQueueRef.current.shift(); // Remove the errored file
+        playNextInQueue(); // Play the next file in the queue
+      },
     });
+
+    currentSoundRef.current = sound;
+    sound.play();
+  };
+
+  const pauseAudio = () => {
+    if (currentSoundRef.current && currentSoundRef.current.playing()) {
+      currentSoundRef.current.pause();
+    }
+  };
+
+  const resumeAudio = () => {
+    if (currentSoundRef.current && !currentSoundRef.current.playing()) {
+      currentSoundRef.current.play();
+    }
+  };
+
+  const stopAudio = () => {
+    if (currentSoundRef.current) {
+      currentSoundRef.current.stop();
+      currentSoundRef.current = null;
+    }
+    isPlayingRef.current = false;
+  };
+
+  const clearQueue = () => {
+    stopAudio();
+    audioQueueRef.current = [];
   };
 
   return {

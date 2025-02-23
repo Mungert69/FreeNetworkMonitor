@@ -324,7 +324,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   async function sendMessageCheck(message) {
     await waitForWebSocket(webSocketRef.current);
-    console.log("Sending message =>" + message + "<=");
+    //console.log("Sending message =>" + message + "<=");
     webSocketRef.current.send(message);
   }
 

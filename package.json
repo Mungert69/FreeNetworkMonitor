@@ -4,7 +4,7 @@
   "version": "0.8.0",
   "private": true,
   "overrides": {
-  "esbuild": "0.25.0"
+    "esbuild": "0.25.0"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -22,6 +22,7 @@
     "axios-retry": "^4.5.0",
     "chroma-js": "^3.1.2",
     "flatpickr": "^4.6.13",
+    "howler": "^2.2.4",
     "lodash.debounce": "^4.0.8",
     "markdown-to-jsx": "^7.5.0",
     "moment": "^2.30.1",

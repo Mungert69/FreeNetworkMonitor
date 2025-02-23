@@ -125,7 +125,7 @@ export const useWebSocket = ({
 
   const sendMessage = async (message) => {
     await waitForWebSocket(webSocketRef.current);
-    console.log("Sending message =>" + message + "<=");
+    //console.log("Sending message =>" + message + "<=");
     webSocketRef.current.send(message);
   };
 
