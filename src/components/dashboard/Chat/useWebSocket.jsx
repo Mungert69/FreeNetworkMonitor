@@ -22,12 +22,14 @@ export const useWebSocket = ({
       '<\\|from\\|> assistant\\n<\\|recipient\\|> (?!all).*<\\|content\\|>': '<Function Call:>',
       '<Assistant:><\\|reserved_special_token_249\\|>': '<Function Call:>',
       '<Assistant:><tool_call>': '<Function Call:>',
+      //'<Assistant:><\\|tool_call\\|>': '<Function Call:>',
 
       '<\\|from\\|> assistant\\n<\\|recipient\\|> all\\n<\\|content\\|>': '<Assistant:>',
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n>>>all\\n': '<Assistant:>',
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n': '<Assistant:>',
       '<\\|im_start\\|>assistant\\n': '<Assistant:>',
       '<\\|im_start\\|>assistant<\\|im_sep\\|>\\n': '<Assistant:>',
+      '<\\|assistant\\|>\\n': '<Assistant:>',
 
       '<\\|from\\|> (?!user|assistant).*<\\|recipient\\|> all.*\\n<\\|content\\|>': '<Function Response:> ',
 
@@ -36,7 +38,8 @@ export const useWebSocket = ({
       '<\\|stop\\|>': '\n',
       '<\\|eot_id\\|>': '\n',
       '<\\|eom_id\\|>': '\n',
-      '<\\|im_end\\|>': '\n'
+      '<\\|im_end\\|>': '\n',
+      '<\\|end\\|>': '\n'
     };
 
     let filteredText = text;
