@@ -252,7 +252,7 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
       }
     }, {
       name: 'timeout',
-      label: 'Timeout',
+      label: 'Timeout(ms)',
       options: {
         filter: true,
         customBodyRender: (value, tableMeta, updateValue) => {
