@@ -97,7 +97,7 @@ const styleObject = (theme, imageUrl) => {
         link: {
             margin: '1rem',
             textDecoration: 'none',
-             color: "#6239AB",
+            color: "#6239AB",
             "&:hover": {
                 color: "#607466",
                 textDecoration: "none"
@@ -124,18 +124,18 @@ const styleObject = (theme, imageUrl) => {
             overflowX: 'auto',
             padding: 0,
         },
-      
-     
+
+
         chatOpen: {
             maxHeight: '350px', // Adjust as needed
             overflow: 'auto',
             transition: 'max-height 0.3s ease-out',
         },
 
-     
+
         chatToggleShift: {
             transform: 'translateX(300px)', // Adjust this value based on your layout
-          },
+        },
 
         chatToggle: {
             position: 'fixed', // Fix position relative to the viewport
@@ -160,9 +160,25 @@ const styleObject = (theme, imageUrl) => {
             // other styles for the chat container
         },
 
-
-
-
+        card: {
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '400px', // Set minimum height for all cards
+        },
+        scrollableContent: {
+            overflowY: 'auto',
+            maxHeight: '200px', // Adjust based on your needs
+            paddingRight: theme.spacing(1),
+            // Custom scrollbar (optional)
+            '&::-webkit-scrollbar': {
+                width: '6px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+                backgroundColor: theme.palette.grey[400],
+                borderRadius: '3px',
+            },
+        }
     }
 }
 

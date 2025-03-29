@@ -1,5 +1,7 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
+import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -86,7 +88,35 @@ const tiers = [
   },
 ];
 
+const ScrollableBox = styled(Box)(({ theme }) => ({
+  overflowY: 'auto',
+  maxHeight: '300px',
+  paddingRight: theme.spacing(1),
+  scrollBehavior: 'smooth',
+
+  // Custom scrollbar
+  '&::-webkit-scrollbar': {
+    width: '6px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.divider,
+    borderRadius: '3px',
+  },
+
+  // More subtle fade effect - now in single line
+  maskImage: 'linear-gradient(to bottom, black calc(100% - 2em), transparent 100%)',
+
+  [theme.breakpoints.down('sm')]: {
+    maxHeight: '200px',
+    // Less fade on mobile - single line
+    maskImage: 'linear-gradient(to bottom, black calc(100% - 1.5em), transparent 100%)',
+  },
+}));
+
 function PricingContent({ noRedirect, apiUser }) {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm')); // Added this line
+
   const { isLoggedIn } = useFusionAuth();
 
   const url = (title, userId, email, customerId) => {
@@ -126,10 +156,8 @@ function PricingContent({ noRedirect, apiUser }) {
 
   return (
     <React.Fragment>
-      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
-      <CssBaseline />
-
-      <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
+    
+      <Container disableGutters component="main" sx={{ pt: 8, pb: 6 }}>
         <Typography variant="h2" align="center">
           <img src='/img/logo.png' alt="Free Network Monitor Logo" height="96px" />
         </Typography>
@@ -138,68 +166,109 @@ function PricingContent({ noRedirect, apiUser }) {
           {descriptionText(apiUser.accountType, apiUser.cancelAt)}
         </Typography>
       </Container>
-      <Container maxWidth="md" component="main">
-        <Grid container spacing={5} alignItems="flex-end">
+      <Container component="main">
+        <Grid container spacing={5} alignItems="stretch"> {/* Changed to stretch */}
           {tiers.map((tier) => (
             <Grid
               item
               key={tier.title}
               xs={12}
               sm={tier.title === 'Enterprise' ? 12 : 6}
-              md={4}
+              md={3} // Changed to 3 for better spacing
+              sx={{
+                display: 'flex', // Makes cards equal height
+              }}
             >
-              <Card>
+              <Card sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                height: isSmallScreen ? 'auto' : 'auto', // Fixed height on desktop
+              }}>
                 <CardHeader
                   title={tier.title}
                   subheader={tier.subheader}
-                  titleTypographyProps={{ align: 'center' }}
-                  action={tier.title === 'Professional' ? <StarIcon /> : null}
+                  titleTypographyProps={{ align: 'center', variant: 'h5' }}
+                  action={tier.title === 'Professional' ? <StarIcon color="primary" /> : null}
                   subheaderTypographyProps={{
                     align: 'center',
+                    color: 'primary.main',
+                    fontWeight: 'bold',
                   }}
                   sx={{
                     backgroundColor: (theme) =>
                       theme.palette.mode === 'light'
-                        ? theme.palette.grey[200]
-                        : theme.palette.grey[700],
+                        ? theme.palette.grey[100]
+                        : theme.palette.grey[800],
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
                   }}
                 />
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'baseline',
-                      mb: 2,
-                    }}
-                  >
-                    <Typography component="h2" variant="h3" color="text.primary">
+                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'baseline',
+                    mb: 2,
+                  }}>
+                    <Typography component="h2" variant="h4" color="text.primary">
                       ${tier.price}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
                       /mo
                     </Typography>
                   </Box>
-                  <ul>
-                    {tier.description.map((line) => (
-                      <Typography
-                        component="li"
-                        variant="subtitle1"
-                        align="center"
-                        key={line}
-                      >
-                        {line}
-                      </Typography>
-                    ))}
-                  </ul>
+
+                  <ScrollableBox>
+                    <ul style={{ paddingLeft: theme.spacing(2) }}>
+                      {tier.description.map((line) => (
+                        <Typography
+                          component="li"
+                          variant="body2"
+                          key={line}
+                          sx={{
+                            mb: 1,
+                            '&:before': {
+                              content: '"•"',
+                              color: theme.palette.primary.main,
+                              display: 'inline-block',
+                              width: '1em',
+                              marginLeft: '-1em'
+                            }
+                          }}
+                        >
+                          {line}
+                        </Typography>
+                      ))}
+                    </ul>
+                  </ScrollableBox>
                 </CardContent>
-                <CardActions>
+                <CardActions sx={{
+                  padding: theme.spacing(2),
+                  borderTop: '1px solid',
+                  borderColor: 'divider',
+                }}>
                   {isLoggedIn ? (
-                    <Button href={url(tier.title, apiUser.userID, apiUser.email, apiUser.customerId)} fullWidth variant={tier.buttonVariant}>
+                    <Button
+                      href={url(tier.title, apiUser.userID, apiUser.email, apiUser.customerId)}
+                      fullWidth
+                      variant={tier.buttonVariant}
+                      size="large"
+                      sx={{
+                        whiteSpace: 'normal',
+                        lineHeight: 1.2,
+                        py: 1.5,
+                      }}
+                    >
                       {buttonText(tier, apiUser.accountType, apiUser.customerId)}
                     </Button>
                   ) : (
-                    <LoginButton loginText={'Login First'} redirectUrl={'/Dashboard?initViewSub=true'} />
+                    <LoginButton
+                      loginText={'Login First'}
+                      redirectUrl={'/Dashboard?initViewSub=true'}
+                      fullWidth
+                      size="large"
+                    />
                   )}
                 </CardActions>
               </Card>

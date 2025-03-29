@@ -23,7 +23,7 @@ import FaqList from "react-faq-component";
 import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
-
+import pingImage from '/ping.svg';
 
 const data = {
     title: "FAQ (Find answers to common questions here)",
@@ -501,7 +501,7 @@ const Faq = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
 
     const theme = useTheme();
-    const classes = useClasses(styleObject(theme, publicUrl + '/ping.svg'));
+    const classes = useClasses(styleObject(theme, pingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState(''); // State for search query

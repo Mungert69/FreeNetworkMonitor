@@ -27,6 +27,7 @@ import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
+import pingImage from '/ping.svg';
 function sendToAnalytics({ id, name, value }) {
 
     ReactGA4.event({
@@ -44,7 +45,7 @@ const ProductDetail = () => {
     const blogRef = useRef(null);
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
 
-    const classes = useClasses(styleObject(useTheme(), publicUrl + '/ping.svg'));
+    const classes = useClasses(styleObject(useTheme(), pingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);

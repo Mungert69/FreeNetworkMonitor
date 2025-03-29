@@ -21,11 +21,11 @@ import useTheme from '@mui/material/styles/useTheme';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
-
+import pingImage from '/ping.svg';
 const Pricing = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
 
-    const classes = useClasses(styleObject(useTheme(),  publicUrl+'/ping.svg'));
+    const classes = useClasses(styleObject(useTheme(),  pingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const handleDrawerOpen = () => {
