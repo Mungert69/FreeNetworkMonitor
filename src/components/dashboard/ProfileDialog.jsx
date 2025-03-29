@@ -10,6 +10,16 @@ import StripeCheckOut from '../main/StripeCheckout';
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    [theme.breakpoints.up('sm')]: {
+      width: '100%',
+      maxWidth: '800px', // or whatever maximum width you prefer
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      margin: theme.spacing(2),
+    },
+  },
   '& .MuiDialogContent-root': {
     padding: theme.spacing(5),
   },

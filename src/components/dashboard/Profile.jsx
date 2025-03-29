@@ -121,7 +121,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
         <Divider />
         <CardContent>
           <Grid container spacing={4}>
-            <Grid item md={6} xs={12}>
+            <Grid item md={12} xs={12}>
               <TextField
                 fullWidth
                 helperText={!name ? "Edit your name" : ""}
