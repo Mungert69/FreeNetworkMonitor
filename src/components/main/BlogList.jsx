@@ -71,7 +71,7 @@ function BlogList({ title, posts, classes }) {
                     <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
 
                       <CardContent>
-                        <Typography variant="h7" color="text.secondary">
+                        <Typography component="div" variant="h7" color="text.secondary">
                           <Markdown className="markdown" key={post.hash}>
                             {post.header}
                           </Markdown>
@@ -87,12 +87,12 @@ function BlogList({ title, posts, classes }) {
                     </Box>
                     <CardActions disableSpacing>
                       <CardContent>
-                        <Typography variant="h7" color="text.secondary">
+                        <Typography component="div"  variant="h7" color="text.secondary">
                           <Markdown className="markdown" key={post.hash}>
                             {post.markdown.split('\n')[0]}
                           </Markdown>
                         </Typography>
-                        <Typography variant="h6" color="text.secondary">
+                        <Typography component="div" variant="h6" color="text.secondary">
                           <ExpandMore
                             expand={expanded[post.hash] || false}
                             onClick={() => handleExpandClick(post.hash)}
@@ -103,12 +103,12 @@ function BlogList({ title, posts, classes }) {
                           </ExpandMore>
                         </Typography>
                         <Collapse in={expanded[post.hash] || false} timeout="auto" unmountOnExit>
-                          <Typography variant="h7" color="text.secondary">
+                          <Typography component="div" variant="h7" color="text.secondary">
                             <Markdown className="markdown" key={post.hash}>
                               {post.markdown.split('\n').slice(1).join('\n')}
                             </Markdown>
                           </Typography>
-                          <Typography variant="h6" color="text.secondary">
+                          <Typography component="div" variant="h6" color="text.secondary">
                           <Link display="block" className={classes.link} href={'/blog/posts/' + post.hash}>
                             Read more on blog site...
                           </Link>
@@ -123,10 +123,10 @@ function BlogList({ title, posts, classes }) {
                   <Card >
 
                     <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
+                      <Typography component="div" gutterBottom variant="h5" >
                         <Markdown>{post.header}</Markdown>
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography component="div" variant="body2" color="text.secondary">
                         <Markdown className="markdown" key={post.hash}>
                           {post.markdown}
                         </Markdown>

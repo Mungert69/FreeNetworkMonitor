@@ -1,8 +1,8 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import clsx from 'clsx';
 //combine all the @mui/material imports into one line not including icons
 import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
-import { getStartSiteId,fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
+import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
@@ -41,12 +41,22 @@ function sendToAnalytics({ id, name, value }) {
 }
 
 const ProductDetail = () => {
+    const blogRef = useRef(null);
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
 
     const classes = useClasses(styleObject(useTheme(), publicUrl + '/ping.svg'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
+
+    // Add this ref to track chat state
+    const isChatOpenRef = useRef(isChatOpen);
+    
+    // Keep the ref updated when state changes
+    useEffect(() => {
+        isChatOpenRef.current = isChatOpen;
+    }, [isChatOpen]);
+
     const [siteId, setSiteId] = React.useState(null);
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
@@ -60,38 +70,48 @@ const ProductDetail = () => {
 
     useEffect(() => {
         const firstLoadSiteId = async () => {
-          var siteId = 0;
-          try {
-            console.log("Calling fetchLoadServer for user default");
-            var loadServer = await fetchFirstLoadServer();
-            console.log("Calling getSiteIdfromUrl");
-            siteId = await getSiteIdfromUrl(loadServer);   
-            console.log("Calling setSiteId");
-            await setSiteId(siteId);
-               } catch (e) {
-            console.log("Error in Dashboard failed to get load SiteId for default user");
-          }
+            var siteId = 0;
+            try {
+                console.log("Calling fetchLoadServer for user default");
+                var loadServer = await fetchFirstLoadServer();
+                console.log("Calling getSiteIdfromUrl");
+                siteId = await getSiteIdfromUrl(loadServer);
+                console.log("Calling setSiteId");
+                await setSiteId(siteId);
+            } catch (e) {
+                console.log("Error in Dashboard failed to get load SiteId for default user");
+            }
         }
         firstLoadSiteId();
-      }, []);
-   // reportWebVitals(sendToAnalytics);
+         // New 20-second fallback
+         const chatTimer = setTimeout(() => {
+            if (!isChatOpenRef.current) {
+                console.log('20s timeout - opening chat');
+                setIsChatOpen(true);
+            }
+        }, 15000); // 15 seconds
+
+        return () => clearTimeout(chatTimer);
+    }, []);
+
+  
     return (
         <div className={classes.root}>
             <CssBaseline />
             <SuperSEO
-    title="Free Network & Quantum Readiness Monitor - Real-Time Monitoring for Modern Networks"
-    description="Monitor your network's health and quantum readiness with the Free Network Monitor. Track HTTP, ICMP, DNS, and SMTP services in real-time. Leverage AI-powered insights, advanced security tools, and quantum-ready checks to future-proof your infrastructure. Start monitoring for free today!"
-    openGraph={{
-        ogImage: {
-            ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
-            ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
-        },
-        ogUrl: "https://freenetworkmonitor.click", // Canonical URL
-        ogType: "website", // Type of content
-        ogSiteName: "Free Network Monitor", // Site name
-        ogLocale: "en_US", // Language and locale
-    }}
-/>
+                title="Free Network & Quantum Readiness Monitor - Real-Time Monitoring for Modern Networks"
+                description="Monitor your network's health and quantum readiness with the Free Network Monitor. Track HTTP, ICMP, DNS, and SMTP services in real-time. Leverage AI-powered insights, advanced security tools, and quantum-ready checks to future-proof your infrastructure. Start monitoring for free today!"
+                openGraph={{
+                    ogImage: {
+                        ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
+                        ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+                    },
+                    ogUrl: "https://freenetworkmonitor.click", // Canonical URL
+                    ogType: "website", // Type of content
+                    ogSiteName: "Free Network Monitor", // Site name
+                    ogLocale: "en_US", // Language and locale
+                }}
+            />
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
                     {isLoading && <Loading small={true} />}
@@ -110,9 +130,9 @@ const ProductDetail = () => {
                         Free Network Monitor
                     </Typography>
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
->
-            <ChatIcon />
-          </IconButton>
+                    >
+                        <ChatIcon />
+                    </IconButton>
                     <AuthNav />
 
                 </Toolbar>
@@ -197,7 +217,7 @@ const ProductDetail = () => {
                                         <NetworkPingIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Presenting a cutting-edge network monitor that not only monitors your network services and websites but is now quantum-ready! This pioneering feature ushers in advanced readiness checks for the quantum computing age. This revolutionary leap forward ensures that your network is primed for the future. Regardless of its sophisticated capabilities, our tool remains remarkably user-friendly, offering a simple way to gain an overall understanding of your networks health.
+                                        Introducing our state-of-the-art network monitor with integrated AI capabilities. Our intelligent assistant now handles all monitoring of your network services and websites. the AI assistant conducts advanced preparedness checks for the coming quantum computing era. This innovative approach ensures your network remains future-proof while the AI interface makes complex monitoring remarkably intuitive, providing clear insights into your network's health
                                     </Paper>
                                 </Grid>
 
@@ -212,7 +232,7 @@ const ProductDetail = () => {
                                         <LanguageIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Elevating your network monitoring to the next frontier, our real-time quantum readiness monitor is here to assess your website's preparedness for the quantum computing era. By using our innovative Quantum monitor, you can ensure that your website is not only up to current standards but also ready to embrace the technological advancements of the future. Paired with our robust service monitor, you'll have all the necessary tools to keep your website at the top of its game.
+                                        AI-powered Network Monitor Assistant: The core of our system now intelligently manages hosts, performs comprehensive network scans, and investigates anomalies through simple conversation that trigger actions and GUI navigations. The assistant autonomously conducts Nmap scans, executes Metasploit modules, and performs OpenSSL checks, bringing enterprise-grade penetration testing and security auditing into a streamlined workflow.
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -230,7 +250,7 @@ const ProductDetail = () => {
 
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        In addition to quantum readiness, we have expanded monitoring capabilities to cover essential online services. Our business-critical API monitor includes HTTP for website performance, ICMP for network pinging, DNS for domain lookup, and SMTP for email service monitoring. This vigilant monitor alerts you via email if any of these services aren't responding within the set timeout threshold, ensuring efficient performance of your business-critical services.
+                                        Alongside the Assistant is the GUI dashboard showcasing detailed charts of response data with comprehensive navigation through historical metrics. The time-series graphs allow for precise analysis of historical patterns, enabling identification of performance anomalies or gradual degradation over custom date ranges. Every collected metric is preserved and accessible through this visual interface, creating a complete historical record of your network's performance.
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={12} sm={6} align="center">
@@ -243,34 +263,13 @@ const ProductDetail = () => {
 
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Login with an email address to receive alerts and enjoy peace of mind with 24/7, 365-day monitoring. Our aim is to help ensure your services remain online at all times. With the introduction of our quantum readiness feature, we are more equipped than ever to support your network monitoring needs and elevate them to the next level.
+                                        Simply provide your email address, and the AI assistant handles the entire alert management system, delivering 24/7, 365-day monitoring without requiring you to configure alert parameters through the interface. The assistant continuously learns from your network patterns, offering increasingly personalized monitoring while managing quantum readiness checks in the background, creating a significantly more efficient experience compared to the previous GUI-based approach.
                                     </Paper>
 
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={6} align="center">
-            <Grow
-                in={!isLoading}
-                style={{ transformOrigin: '0 0 0' }}
-                {...(!isLoading ? { timeout: 4000 } : {})}
-            >
-                <AssistantIcon color='secondary' fontSize='large' />
-            </Grow>
-            <Paper className={classes.paper}>
-            AI-powered Network Monitor Assistant: The assistant empowers you to manage hosts, perform in-depth network scans, and investigate network anomalies—all while providing real-time security checks. With the ability to run Nmap scans, Metasploit modules, and OpenSSL checks, it brings advanced penetration testing and security auditing directly into your workflow. Whether you're optimizing performance or securing your infrastructure, the assistant ensures proactive and seamless network management.</Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} align="center">
-            <Grow
-                in={!isLoading}
-                style={{ transformOrigin: '0 0 0' }}
-                {...(!isLoading ? { timeout: 5000 } : {})}
-            >
-                <SecurityIcon color='secondary' fontSize='large' />
-            </Grow>
-            <Paper className={classes.paper}>
-            Security: From vulnerability assessments using Nmap to comprehensive SSL/TLS configuration checks with OpenSSL, the assistant helps keep your network secure and up-to-date. It provides detailed insights for security audits and troubleshooting. With built-in Metasploit functionality, you can perform targeted penetration tests to identify and mitigate vulnerabilities before they become serious threats.</Paper>
-        </Grid>
+
                     </Grid>
                     <hr></hr>
 
@@ -286,7 +285,7 @@ const ProductDetail = () => {
 
                             <IconButton>
                                 <Link className={classes.link}
-                                    href="/Dashboard">Watch how to guides below on how to setup your Free Network Monitor. Then click here to get started..
+                                    href="/Dashboard">Enter Dashboard
                                 </Link>
                             </IconButton>
 
@@ -296,12 +295,12 @@ const ProductDetail = () => {
                     <hr></hr>
                     <hr></hr>
 
-                    <Blog classes={classes} />
+                    <Blog ref={blogRef} classes={classes} />
                     <Footer />
-                  
-                    
+
+
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                    {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+                        {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
                     </div>
                 </Container>
             </main>
