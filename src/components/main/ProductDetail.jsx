@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import clsx from 'clsx';
-//combine all the @mui/material imports into one line not including icons
 import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
 import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
@@ -28,15 +27,14 @@ import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
 import pingImage from '/ping.svg';
-function sendToAnalytics({ id, name, value }) {
 
+function sendToAnalytics({ id, name, value }) {
     ReactGA4.event({
         eventCategory: 'Web Vitals',
         eventAction: name,
-        eventValue: Math.round(name === 'CLS' ? value * 1000 : value), // values must be integers
-        eventLabel: id, // id unique to current page load
-        nonInteraction: true, // avoids affecting bounce rate
-        // Use `sendBeacon()` if the browser supports it.
+        eventValue: Math.round(name === 'CLS' ? value * 1000 : value),
+        eventLabel: id,
+        nonInteraction: true,
         transport: 'beacon',
     });
 }
@@ -44,30 +42,28 @@ function sendToAnalytics({ id, name, value }) {
 const ProductDetail = () => {
     const blogRef = useRef(null);
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
-
     const classes = useClasses(styleObject(useTheme(), pingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
-
-    // Add this ref to track chat state
     const isChatOpenRef = useRef(isChatOpen);
-    
-    // Keep the ref updated when state changes
-    useEffect(() => {
-        isChatOpenRef.current = isChatOpen;
-    }, [isChatOpen]);
-
     const [siteId, setSiteId] = React.useState(null);
+
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    useEffect(() => {
+        isChatOpenRef.current = isChatOpen;
+    }, [isChatOpen]);
 
     useEffect(() => {
         const firstLoadSiteId = async () => {
@@ -84,39 +80,37 @@ const ProductDetail = () => {
             }
         }
         firstLoadSiteId();
-         // New 20-second fallback
-         const chatTimer = setTimeout(() => {
+
+        const chatTimer = setTimeout(() => {
             if (!isChatOpenRef.current) {
                 console.log('20s timeout - opening chat');
                 setIsChatOpen(true);
             }
-        }, 15000); // 15 seconds
+        }, 15000);
 
         return () => clearTimeout(chatTimer);
     }, []);
 
-  
     return (
         <div className={classes.root}>
             <CssBaseline />
             <SuperSEO
-                title="Free Network & Quantum Readiness Monitor - Real-Time Monitoring for Modern Networks"
-                description="Monitor your network's health and quantum readiness with the Free Network Monitor. Track HTTP, ICMP, DNS, and SMTP services in real-time. Leverage AI-powered insights, advanced security tools, and quantum-ready checks to future-proof your infrastructure. Start monitoring for free today!"
+                title="AI Network Monitor: Quantum-Ready Security & Nmap Automation"
+                description="Get 24/7 network monitoring with zero setup. Our AI assistant automates Nmap scans, Metasploit tests, and quantum-readiness checks—with alerts in plain English. Start free: no configuration needed."
                 openGraph={{
                     ogImage: {
-                        ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
-                        ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+                        ogImage: `${publicUrl}/ping.svg`,
+                        ogImageAlt: "AI Network Monitor: Automated Nmap & Quantum Security",
                     },
-                    ogUrl: "https://freenetworkmonitor.click", // Canonical URL
-                    ogType: "website", // Type of content
-                    ogSiteName: "Free Network Monitor", // Site name
-                    ogLocale: "en_US", // Language and locale
+                    ogUrl: "https://freenetworkmonitor.click",
+                    ogType: "website",
+                    ogSiteName: "Free Network Monitor",
+                    ogLocale: "en_US",
                 }}
             />
             <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
                     {isLoading && <Loading small={true} />}
-
                     <IconButton
                         edge="start"
                         color="inherit"
@@ -130,12 +124,10 @@ const ProductDetail = () => {
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
-                    <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
-                    >
+                    <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
                         <ChatIcon />
                     </IconButton>
                     <AuthNav />
-
                 </Toolbar>
             </AppBar>
 
@@ -148,21 +140,19 @@ const ProductDetail = () => {
             >
                 <div className={classes.toolbarIcon}>
                     <IconButton onClick={handleDrawerClose} size="large">
-
                         <ChevronLeftIcon />
                     </IconButton>
                 </div>
-
                 <Divider />
                 <List><MainListItems classes={classes} /></List>
                 <Divider />
-
             </Drawer>
+
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={6}>
-                        <Grid item xs={12}  >
+                        <Grid item xs={12}>
                             <Grid container
                                 direction="row"
                                 justifyContent="space-evenly"
@@ -174,42 +164,33 @@ const ProductDetail = () => {
                                         justifyContent="space-around"
                                         alignItems="center"
                                     >
-                                        <Grid item  >
+                                        <Grid item>
                                             <Typography color='primary' variant="h2">
                                                 Free Network Monitor
                                             </Typography>
                                         </Grid>
-                                        <Grid item >
+                                        <Grid item>
                                             <Typography color='secondary' variant="h4">
                                                 Are You Ready For Quantum...
                                             </Typography>
                                         </Grid>
-
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} align="center" >
-                                    <Box
-                                        sx={{
-                                            width: 270,
-                                            height: 230,
-                                        }}
-                                    >
+                                <Grid item xs={12} sm={6} align="center">
+                                    <Box sx={{ width: 270, height: 230 }}>
                                         <CardMedia component='video'
                                             className={classes.media}
                                             image={"/img/monitor-screen.webm"}
                                             loop
                                             autoPlay />
-
                                     </Box>
                                 </Grid>
-
                             </Grid>
                         </Grid>
 
                         <Grid item xs={12} sm={12} md={6}>
-                            <Grid container spacing={3} >
-                                <Grid item xs={12} sm={6} align="center" >
-
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
                                         style={{ transformOrigin: '0 0 0' }}
@@ -218,13 +199,18 @@ const ProductDetail = () => {
                                         <NetworkPingIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Introducing our state-of-the-art network monitor with integrated AI capabilities. Our intelligent assistant now handles all monitoring of your network services and websites. the AI assistant conducts advanced preparedness checks for the coming quantum computing era. This innovative approach ensures your network remains future-proof while the AI interface makes complex monitoring remarkably intuitive, providing clear insights into your network's health
+                                        <Typography variant="h6" gutterBottom>AI-Powered Network Protection</Typography>
+                                        Our monitoring system automatically:
+                                        <ul>
+                                            <li>Scans for vulnerabilities (Nmap, Metasploit, OpenSSL)</li>
+                                            <li>Checks quantum computing readiness</li>
+                                            <li>Provides plain-English security insights</li>
+                                        </ul>
+                                        No configuration needed - the AI learns your network's normal behavior.
                                     </Paper>
                                 </Grid>
 
-                                <Grid item xs={12} sm={6} align="center" >
-
-
+                                <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
                                         style={{ transformOrigin: '0 0 0' }}
@@ -233,27 +219,41 @@ const ProductDetail = () => {
                                         <LanguageIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        AI-powered Network Monitor Assistant: The core of our system now intelligently manages hosts, performs comprehensive network scans, and investigates anomalies through simple conversation that trigger actions and GUI navigations. The assistant autonomously conducts Nmap scans, executes Metasploit modules, and performs OpenSSL checks, bringing enterprise-grade penetration testing and security auditing into a streamlined workflow.
+                                        <Typography variant="h6" gutterBottom>Enterprise Security Made Simple</Typography>
+                                        <strong>Chat with the AI Assistant</strong> to:
+                                        <ul>
+                                            <li>Run instant penetration tests</li>
+                                            <li>Investigate anomalies</li>
+                                            <li>Trigger security scans</li>
+                                        </ul>
+                                        Get enterprise-grade protection without the complexity.
                                     </Paper>
                                 </Grid>
                             </Grid>
-
                         </Grid>
+
                         <Grid item xs={12} sm={12} md={6}>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} sm={6} align="center" >
+                                <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
                                         style={{ transformOrigin: '0 0 0' }}
                                         {...(!isLoading ? { timeout: 3000 } : {})}
                                     >
                                         <ApiTwoToneIcon color='secondary' fontSize='large' />
-
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Alongside the Assistant is the GUI dashboard showcasing detailed charts of response data with comprehensive navigation through historical metrics. The time-series graphs allow for precise analysis of historical patterns, enabling identification of performance anomalies or gradual degradation over custom date ranges. Every collected metric is preserved and accessible through this visual interface, creating a complete historical record of your network's performance.
+                                        <Typography variant="h6" gutterBottom>Complete Performance History</Typography>
+                                        Our dashboard shows:
+                                        <ul>
+                                            <li>Real-time network health metrics</li>
+                                            <li>Historical trend analysis</li>
+                                            <li>Interactive time-series graphs</li>
+                                        </ul>
+                                        Track gradual degradation or sudden outages with precision.
                                     </Paper>
                                 </Grid>
+
                                 <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
@@ -261,21 +261,23 @@ const ProductDetail = () => {
                                         {...(!isLoading ? { timeout: 3000 } : {})}
                                     >
                                         <EmailIcon color='secondary' fontSize='large' />
-
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        Simply provide your email address, and the AI assistant handles the entire alert management system, delivering 24/7, 365-day monitoring without requiring you to configure alert parameters through the interface. The assistant continuously learns from your network patterns, offering increasingly personalized monitoring while managing quantum readiness checks in the background, creating a significantly more efficient experience compared to the previous GUI-based approach.
+                                        <Typography variant="h6" gutterBottom>Smart Alert System</Typography>
+                                        Just provide your email to get:
+                                        <ul>
+                                            <li>24/7 automated monitoring</li>
+                                            <li>AI-curated alerts (no spam)</li>
+                                            <li>Quantum vulnerability reports</li>
+                                        </ul>
+                                        The system learns and improves over time.
                                     </Paper>
-
                                 </Grid>
                             </Grid>
                         </Grid>
-
                     </Grid>
-                    <hr></hr>
 
-
-                    <hr></hr>
+                    <hr />
                     <Grid container
                         spacing={6}
                         direction="column"
@@ -283,29 +285,26 @@ const ProductDetail = () => {
                         alignItems="center"
                     >
                         <Grid item>
-
                             <IconButton>
                                 <Link className={classes.link}
                                     href="/Dashboard">Enter Dashboard
                                 </Link>
                             </IconButton>
-
                         </Grid>
                     </Grid>
 
-                    <hr></hr>
-                    <hr></hr>
+                    <hr />
+                    <hr />
 
                     <Blog ref={blogRef} classes={classes} />
                     <Footer />
-
 
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
                         {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
                     </div>
                 </Container>
             </main>
-        </div >
+        </div>
     );
 }
 
