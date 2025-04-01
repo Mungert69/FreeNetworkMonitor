@@ -18,7 +18,7 @@ import Loading from '../../loading-circle';
 import { SuperSEO } from 'react-super-seo';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
-import useTheme from '@mui/material/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import FaqList from "react-faq-component";
 import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';

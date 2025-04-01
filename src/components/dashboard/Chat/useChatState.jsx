@@ -34,6 +34,8 @@ export const useChatState = () => {
   const [histories, setHistories] = useState([]);
   const [linkData, setLinkData] = useState([]);
   const [llmRunnerType, setLlmRunnerType] = useState('TurboLLM');
+  const [isHoveringMessages, setIsHoveringMessages]=useState(false);
+  const [isInputFocused, setIsInputFocused]=useState(false);
 
   // Session management
   const getSessionId = () => {

@@ -27,7 +27,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-import useTheme from '@mui/material/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import { fetchEndpointTypes } from './ServiceAPI';
 
 const muiCache = createCache({

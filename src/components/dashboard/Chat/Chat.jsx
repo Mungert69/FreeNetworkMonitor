@@ -7,39 +7,43 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChatState } from './useChatState';
 import { useWebSocket } from './useWebSocket';
 
-function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId}) {
-  const chatState=useChatState();
+function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
+  const chatState = useChatState();
   const {
     // Audio and UI state
     isMuted, setIsMuted, isExpanded, setIsExpanded, isDrawerOpen, setIsDrawerOpen,
     autoScrollEnabled, setAutoScrollEnabled,
-  
+
     // Processing and loading states
     isReady, setIsReady, loadCount, setLoadCount, loadWarning, setLoadWarning,
     isProcessing, setIsProcessing, isCallingFunction, setIsCallingFunction,
     isLLMBusy, setIsLLMBusy, isToggleDisabled, setIsToggleDisabled,
-  
+
     // Message and feedback states
     thinkingDots, setThinkingDots, callingFunctionMessage, setCallingFunctionMessage,
     showHelpMessage, setShowHelpMessage, helpMessage, setHelpMessage,
     currentMessage, setCurrentMessage, llmFeedback, setLlmFeedback,
     message, setMessage,
-  
+
     // Data states
     histories, setHistories, linkData, setLinkData, llmRunnerType, setLlmRunnerType,
-  
+
     // Session management
     sessionId, setSessionId, getSessionId,
-  
+
+    // Chat scroll states
+    isHoveringMessages, setIsHoveringMessages,
+    isInputFocused, setIsInputFocused,
+
     // Refs
     llmRunnerTypeRef, openMessage, autoClickedRef
   } = chatState;
-  
+
 
   const audioPlayerRef = useRef(AudioPlayer());
   const outputContainerRef = useRef(null);
-  
-  const {stopLLM, resetSessionId, webSocketRef } = useWebSocket({
+
+  const { stopLLM, resetSessionId, webSocketRef } = useWebSocket({
     siteId,
     isDashboard,
     chatState,
@@ -113,15 +117,33 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     return () => clearInterval(intervalId);
   }, [isProcessing, isLLMBusy]);
 
+  const handleScroll = () => {
+    const isNearBottom = Math.abs(
+      outputContainer.scrollHeight - outputContainer.scrollTop - outputContainer.clientHeight
+    ) < 10;
+
+    // Auto-scroll logic:
+    const shouldAutoScroll = isInputFocused || (!isHoveringMessages && isNearBottom);
+    setAutoScrollEnabled(shouldAutoScroll);
+  };
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
     if (!outputContainer) return;
 
+   
+
+    outputContainer.addEventListener('scroll', handleScroll);
+
+    // Auto-scroll when new content appears
     if (autoScrollEnabled) {
       outputContainer.scrollTop = outputContainer.scrollHeight;
     }
-  }, [llmFeedback, autoScrollEnabled]);  
-  
+
+    return () => {
+      outputContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [llmFeedback, autoScrollEnabled, isHoveringMessages, isInputFocused]);
+
   useEffect(() => {
     if (isReady && openMessage.current !== null) {
       if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
@@ -147,21 +169,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     const outputContainer = outputContainerRef.current;
     if (!outputContainer) return;
 
-    const handleScroll = () => {
-      // Check if user is at (or near) bottom
-      const isAtBottom = Math.abs(
-        outputContainer.scrollHeight - outputContainer.scrollTop - outputContainer.clientHeight
-      ) < 10; // 10px threshold, can adjust as needed
-
-      if (isAtBottom) {
-        // If user scrolled back down to bottom, re-enable auto-scrolling
-        setAutoScrollEnabled(true);
-      } else {
-        // If user scrolled up, disable auto-scrolling
-        setAutoScrollEnabled(false);
-      }
-    };
-
+   
     outputContainer.addEventListener('scroll', handleScroll);
 
     return () => {
@@ -245,12 +253,12 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     resetLLM(); // Reset the LLM session with the new session ID
   };
   const handleDeleteSession = async (fullSessionId) => {
-    var message="<|REMOVE_SAVED_SESSION|>"+fullSessionId;
+    var message = "<|REMOVE_SAVED_SESSION|>" + fullSessionId;
     await sendMessageCheck(message);
-    
+
   };
 
- 
+
 
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return;
@@ -370,7 +378,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       isRecording={isRecording}
     />
   );
-  
+
 }
 
 export default Chat;

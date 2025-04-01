@@ -17,7 +17,7 @@ import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
 import { SuperSEO } from 'react-super-seo';
 import useClasses from "../dashboard/useClasses";
-import useTheme from '@mui/material/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';

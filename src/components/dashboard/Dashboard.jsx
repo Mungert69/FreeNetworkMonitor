@@ -34,7 +34,7 @@ import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
-import useTheme from '@mui/material/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import { SuperSEO } from 'react-super-seo';
 import FadeWrapper from './FadeWrapper';
 import ReactGA4 from 'react-ga4';

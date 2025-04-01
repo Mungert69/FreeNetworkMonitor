@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import PersonIcon from '@mui/icons-material/Person';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -24,7 +24,7 @@ import Message from '../Message';
 import HistoryList from "./HistoryList";
 import MarkdownRenderer from '../MarkdownRenderer';
 import MessageLine from '../MessageLine';
-import useTheme from '@mui/material/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import styleObject from '../styleObject';
 import useClasses from "../useClasses";
 import './chat.css';
@@ -36,7 +36,8 @@ const ChatContent = ({
   isLLMBusy, thinkingDots, isCallingFunction, callingFunctionMessage, showHelpMessage, isDashboard,
   helpMessage, histories, handleSelectSession,handleDeleteSession, currentMessage, setCurrentMessage,
   isRecording, handleStartRecording, handleStopRecording, stopLLM, message, linkData,saveFeedback,
-  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId
+  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId,   setIsHoveringMessages,
+   setIsInputFocused,
 }) => {
     const chatStyles = {
         position: 'fixed',
@@ -74,7 +75,20 @@ const ChatContent = ({
     setIsChatOpen(false);
     setIsHistoryOpen(false);
   }
+// Inside your ChatContent component, add:
+useEffect(() => {
+  const handlePrompt = (e) => {
+    setCurrentMessage(e.detail); // Auto-fill the input
+    // Optional: Auto-send the message
+    setTimeout(() => {
+      const sendBtn = document.querySelector('[aria-label="send message"]');
+      if (sendBtn) sendBtn.click();
+    }, 100);
+  };
 
+  window.addEventListener('send-chat-prompt', handlePrompt);
+  return () => window.removeEventListener('send-chat-prompt', handlePrompt);
+}, []);
 
   const renderLinks = () => {
     if (!linkData || linkData.length == 0) return;
@@ -255,7 +269,12 @@ const ChatContent = ({
         </CardContent>
   
         {/* Chat Content */}
-        <CardContent ref={outputContainerRef} sx={{ flexGrow: 1, overflow: 'auto' }}>
+        <CardContent 
+  ref={outputContainerRef}
+  sx={{ flexGrow: 1, overflow: 'auto' }}
+  onMouseEnter={() => setIsHoveringMessages(true)}
+  onMouseLeave={() => setIsHoveringMessages(false)}
+>
           {!isReady ? (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <CircularProgress />
@@ -326,6 +345,8 @@ const ChatContent = ({
                 variant="outlined"
                 label="Type a message..."
                 value={currentMessage}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {

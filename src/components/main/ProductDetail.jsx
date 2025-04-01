@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import clsx from 'clsx';
-import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper } from '@mui/material';
+import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
 import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -21,7 +21,7 @@ import Blog from './Blog';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import Chat from "../dashboard/Chat/Chat";
-import useTheme from '@mui/material/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
@@ -38,6 +38,19 @@ function sendToAnalytics({ id, name, value }) {
         transport: 'beacon',
     });
 }
+// Add this above your ProductDetail component
+const interactiveStyles = {
+    assistantTrigger: {
+        color: 'primary.main',
+        textDecoration: 'underline',
+        cursor: 'pointer',
+        '&:hover': {
+            color: 'primary.dark',
+        }
+    }
+};
+
+
 
 const ProductDetail = () => {
     const blogRef = useRef(null);
@@ -61,6 +74,12 @@ const ProductDetail = () => {
         setOpen(false);
     };
 
+    const sendToAssistant = (setIsChatOpen, prompt) => {
+        setIsChatOpen(true);
+        // You'll need to pass down a prop to handle the prompt (see step 3)
+        window.dispatchEvent(new CustomEvent('send-chat-prompt', { detail: prompt }));
+    };
+
     useEffect(() => {
         isChatOpenRef.current = isChatOpen;
     }, [isChatOpen]);
@@ -81,14 +100,19 @@ const ProductDetail = () => {
         }
         firstLoadSiteId();
 
-        const chatTimer = setTimeout(() => {
-            if (!isChatOpenRef.current) {
-                console.log('20s timeout - opening chat');
-                setIsChatOpen(true);
-            }
-        }, 15000);
+        const isFirstVisit = sessionStorage.getItem('visitedBefore') === null;
 
-        return () => clearTimeout(chatTimer);
+        if (isFirstVisit) {
+            const chatTimer = setTimeout(() => {
+                if (!isChatOpenRef.current) {
+                    sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
+                    // Mark as visited
+                    sessionStorage.setItem('visitedBefore', 'true');
+                }
+            }, 30000);
+
+            return () => clearTimeout(chatTimer);
+        }
     }, []);
 
     return (
@@ -194,7 +218,7 @@ const ProductDetail = () => {
                                     <Grow
                                         in={!isLoading}
                                         style={{ transformOrigin: '0 0 0' }}
-                                        {...(!isLoading ? { timeout: 1000 } : {})}
+                                        {...(!isLoading ? { timeout: 3000 } : {})}
                                     >
                                         <NetworkPingIcon color='secondary' fontSize='large' />
                                     </Grow>
@@ -202,9 +226,58 @@ const ProductDetail = () => {
                                         <Typography variant="h6" gutterBottom>AI-Powered Network Protection</Typography>
                                         Our monitoring system automatically:
                                         <ul>
-                                            <li>Scans for vulnerabilities (Nmap, Metasploit, OpenSSL)</li>
-                                            <li>Checks quantum computing readiness</li>
-                                            <li>Provides plain-English security insights</li>
+                                            <li>
+                                                Scans for vulnerabilities (
+                                                <Tooltip title="Ask about Nmap scans" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "Explain how the secutiry expert performs a nmap scan")}
+                                                    >
+                                                        Nmap
+                                                    </Typography>
+                                                </Tooltip>,
+                                                <Tooltip title="Ask about Metasploit" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "Explain how the penetration expert performs a penetration test with metasploit")}
+                                                    >
+                                                        Metasploit
+                                                    </Typography>
+                                                </Tooltip>,
+                                                <Tooltip title="Ask about OpenSSL" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How can the secutiry expert use openssl to test my security configuration")}
+                                                    >
+                                                        OpenSSL
+                                                    </Typography>
+                                                </Tooltip>)
+                                            </li>
+                                            <li>
+                                                <Tooltip title="Ask about quantum readiness" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "What can the quantum expert do and how does this check my services for quantum readiness")}
+                                                    >
+                                                        Checks quantum computing readiness
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+                                                <Tooltip title="Ask about security insights" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "What kind of plain English security insights can the security expert give")}
+                                                    >
+                                                        Provides plain-English security insights
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
                                         </ul>
                                         No configuration needed - the AI learns your network's normal behavior.
                                     </Paper>
@@ -220,11 +293,49 @@ const ProductDetail = () => {
                                     </Grow>
                                     <Paper className={classes.paper}>
                                         <Typography variant="h6" gutterBottom>Enterprise Security Made Simple</Typography>
-                                        <strong>Chat with the AI Assistant</strong> to:
+                                        <Tooltip title="Ask about the AI Assistant" arrow>
+                                            <Typography
+                                                component="span"
+                                                sx={interactiveStyles.assistantTrigger}
+                                                onClick={() => sendToAssistant(setIsChatOpen, "How do I use the AI Assistant?")}
+                                            >
+                                                <strong>Chat with the AI Assistant</strong>
+                                            </Typography>
+                                        </Tooltip> to:
                                         <ul>
-                                            <li>Run instant penetration tests</li>
-                                            <li>Investigate anomalies</li>
-                                            <li>Trigger security scans</li>
+                                            <li>
+                                                <Tooltip title="Ask about penetration tests" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How do I run an instant penetration test?")}
+                                                    >
+                                                        Run instant penetration tests
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+                                                <Tooltip title="Ask about anomaly detection" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How does anomaly investigation work?")}
+                                                    >
+                                                        Investigate anomalies
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+                                                <Tooltip title="Ask about security scans" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How do I trigger a security scan?")}
+                                                    >
+                                                        Trigger security scans
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
                                         </ul>
                                         Get enterprise-grade protection without the complexity.
                                     </Paper>
@@ -238,7 +349,7 @@ const ProductDetail = () => {
                                     <Grow
                                         in={!isLoading}
                                         style={{ transformOrigin: '0 0 0' }}
-                                        {...(!isLoading ? { timeout: 3000 } : {})}
+                                        {...(!isLoading ? { timeout: 5000 } : {})}
                                     >
                                         <ApiTwoToneIcon color='secondary' fontSize='large' />
                                     </Grow>
@@ -246,9 +357,39 @@ const ProductDetail = () => {
                                         <Typography variant="h6" gutterBottom>Complete Performance History</Typography>
                                         Our dashboard shows:
                                         <ul>
-                                            <li>Real-time network health metrics</li>
-                                            <li>Historical trend analysis</li>
-                                            <li>Interactive time-series graphs</li>
+                                            <li>
+                                                <Tooltip title="Ask about network metrics" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "What network health metrics can the network monitor track after a host is added")}
+                                                    >
+                                                        Real-time network health metrics
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+                                                <Tooltip title="Ask about trend analysis" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How can you show and analyse histroical data for a given host")}
+                                                    >
+                                                        Historical trend analysis
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+
+                                                <Typography
+                                                    component="span"
+                                                    sx={interactiveStyles.assistantTrigger}
+                                                    onClick={() => sendToAssistant(setIsChatOpen, "How do I interpret the time-series graphs?")}
+                                                >
+                                                    Interactive time-series graphs
+                                                </Typography>
+
+                                            </li>
                                         </ul>
                                         Track gradual degradation or sudden outages with precision.
                                     </Paper>
@@ -258,7 +399,7 @@ const ProductDetail = () => {
                                     <Grow
                                         in={!isLoading}
                                         style={{ transformOrigin: '0 0 0' }}
-                                        {...(!isLoading ? { timeout: 3000 } : {})}
+                                        {...(!isLoading ? { timeout: 7000 } : {})}
                                     >
                                         <EmailIcon color='secondary' fontSize='large' />
                                     </Grow>
@@ -266,9 +407,38 @@ const ProductDetail = () => {
                                         <Typography variant="h6" gutterBottom>Smart Alert System</Typography>
                                         Just provide your email to get:
                                         <ul>
-                                            <li>24/7 automated monitoring</li>
-                                            <li>AI-curated alerts (no spam)</li>
-                                            <li>Quantum vulnerability reports</li>
+                                            <li>
+                                                <Tooltip title="Ask about 24/7 monitoring" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How does the network monitoring that you are managing work 24/7")}
+                                                    >
+                                                        24/7 automated monitoring
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+                                                <Tooltip title="Ask about AI alerts" arrow>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={interactiveStyles.assistantTrigger}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "Tell me about the email alerts I will receive if my host goes down")}
+                                                    >
+                                                        AI-curated alerts (no spam)
+                                                    </Typography>
+                                                </Tooltip>
+                                            </li>
+                                            <li>
+                                                <Typography
+                                                    component="span"
+                                                    sx={interactiveStyles.assistantTrigger}
+                                                    onClick={() => sendToAssistant(setIsChatOpen, "How can you test if a service is using a quantum safe tls connection")}
+                                                >
+                                                    Weekly network monitoring performance reports
+                                                </Typography>
+
+                                            </li>
                                         </ul>
                                         The system learns and improves over time.
                                     </Paper>
