@@ -54,14 +54,15 @@ const interactiveStyles = {
 
 const ProductDetail = () => {
     const blogRef = useRef(null);
+      const theme = useTheme();
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
-    const classes = useClasses(styleObject(useTheme(), pingImage));
+    const classes = useClasses(styleObject(theme, pingImage));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const isChatOpenRef = useRef(isChatOpen);
     const [siteId, setSiteId] = React.useState(null);
-
+    const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -156,12 +157,13 @@ const ProductDetail = () => {
             </AppBar>
 
             <Drawer
-                variant="permanent"
-                classes={{
-                    paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-                }}
-                open={open}
-            >
+                   variant={isMediumOrLarger ? "permanent" : "temporary"}
+                   open={open}
+                   onClose={handleDrawerClose}
+                   classes={{
+                     paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+                   }}
+                 >
                 <div className={classes.toolbarIcon}>
                     <IconButton onClick={handleDrawerClose} size="large">
                         <ChevronLeftIcon />
