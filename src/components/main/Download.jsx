@@ -22,6 +22,7 @@ import { useTheme } from '@mui/material/styles';
 import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
 import ReactMarkdown from 'react-markdown';
+import { useMediaQuery } from '@mui/material';
 const markdown = `
 
 Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
@@ -251,6 +252,7 @@ const Download = () => {
 
   const theme = useTheme();
   const classes = useClasses(styleObject(theme, publicUrl+ "/ping.svg"));
+  const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -291,7 +293,7 @@ const Download = () => {
           <AuthNav />
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" classes={{ paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose) }} open={open}>
+      <Drawer  variant={isMediumOrLarger ? "permanent" : "temporary"} classes={{ paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose) }} open={open}>
         <div className={classes.toolbarIcon}>
           <IconButton onClick={handleDrawerClose} size="large">
             <ChevronLeftIcon />

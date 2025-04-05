@@ -22,10 +22,12 @@ import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
 import pingImage from '/ping.svg';
+import { useMediaQuery } from '@mui/material';
 const Pricing = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
-
-    const classes = useClasses(styleObject(useTheme(),  pingImage));
+    const theme = useTheme();
+    const classes = useClasses(styleObject(theme, pingImage));
+    const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const handleDrawerOpen = () => {
@@ -65,8 +67,8 @@ const Pricing = () => {
                         size="large">
                         <MenuIcon />
                     </IconButton>
-                    <LogoLink/>
-                    <Typography sx={{  paddingLeft:4 }}  component="h1" color="inherit" noWrap className={classes.title}>
+                    <LogoLink />
+                    <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
                     <AuthNav />
@@ -75,7 +77,7 @@ const Pricing = () => {
             </AppBar>
 
             <Drawer
-                variant="permanent"
+                 variant={isMediumOrLarger ? "permanent" : "temporary"}
                 classes={{
                     paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
                 }}
@@ -97,11 +99,11 @@ const Pricing = () => {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-           <PricingContent noRedirect={true} apiUser={{}}/>
-           </Container>
-   
-        </main>
-     
+                    <PricingContent noRedirect={true} apiUser={{}} />
+                </Container>
+
+            </main>
+
         </div >
     );
 }

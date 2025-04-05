@@ -8,72 +8,87 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
 import BlogIcon from '@mui/icons-material/Book';
-import DownloadIcon from '@mui/icons-material/GetApp'; 
+import DownloadIcon from '@mui/icons-material/GetApp';
+import Tooltip from '@mui/material/Tooltip';
 
-export  function MainListItems({classes})  {
-
+export function MainListItems({classes}) {
   return (
     <div>
-    <Link className={classes.linkCompact} href="/">
-      <ListItem button key="main">
-        <ListItemIcon>
-          <HomeIcon />
-        </ListItemIcon>
-        <ListItemText primary="Main" />
-      </ListItem>
-    </Link>
-    <Link className={classes.linkCompact} href="/Dashboard">
-      <ListItem button key="dashboard">
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Dashboard" />
-      </ListItem>
-    </Link>
-    <Link className={classes.linkCompact} href="/Faq">
-      <ListItem button key="faq">
-        <ListItemIcon>
-          <FaqIcon />
-        </ListItemIcon>
-        <ListItemText primary="Faq" />
-      </ListItem>
-    </Link>
-    <Link className={classes.linkCompact} href="/Subscription"  >
-      <ListItem button key="subscription">
-        <ListItemIcon>
-          <LoyaltyIcon />
-        </ListItemIcon>
-        <ListItemText primary="Subscription" />
-      </ListItem>
-    </Link>
-    <a href="/blog" style={{
-    margin: '0rem',
-    textDecoration: 'none',
-    color: "#6239AB",
-    "&:hover": {
-        color: "#607466",
-        textDecoration: "none"
-    }
-}}>
-      <ListItem button key="blog">
-        <ListItemIcon>
-          <BlogIcon />
-        </ListItemIcon>
-        <ListItemText primary="Blog" />
-      </ListItem>
-    </a>
-    <Link className={classes.linkCompact} href="/Download"> {/* Link to the DownloadPage */}
-        <ListItem button key="download">
-          <ListItemIcon>
-            <DownloadIcon />
-          </ListItemIcon>
-          <ListItemText primary="Download" />
-        </ListItem>
-      </Link>
-
-  </div>
-
+      <Tooltip title="Main" placement="right">
+        <Link className={classes.linkCompact} href="/">
+          <ListItem button key="main">
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Main" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+      
+      <Tooltip title="Dashboard" placement="right">
+        <Link className={classes.linkCompact} href="/Dashboard">
+          <ListItem button key="dashboard">
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+      
+      <Tooltip title="FAQ" placement="right">
+        <Link className={classes.linkCompact} href="/Faq">
+          <ListItem button key="faq">
+            <ListItemIcon>
+              <FaqIcon />
+            </ListItemIcon>
+            <ListItemText primary="Faq" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+      
+      <Tooltip title="Subscription" placement="right">
+        <Link className={classes.linkCompact} href="/Subscription">
+          <ListItem button key="subscription">
+            <ListItemIcon>
+              <LoyaltyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Subscription" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+      
+      <Tooltip title="Blog" placement="right">
+        <a href="/blog" style={{
+          margin: '0rem',
+          textDecoration: 'none',
+          color: "#6239AB",
+          "&:hover": {
+              color: "#607466",
+              textDecoration: "none"
+          }
+        }}>
+          <ListItem button key="blog">
+            <ListItemIcon>
+              <BlogIcon />
+            </ListItemIcon>
+            <ListItemText primary="Blog" />
+          </ListItem>
+        </a>
+      </Tooltip>
+      
+      <Tooltip title="Download" placement="right">
+        <Link className={classes.linkCompact} href="/Download">
+          <ListItem button key="download">
+            <ListItemIcon>
+              <DownloadIcon />
+            </ListItemIcon>
+            <ListItemText primary="Download" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+    </div>
   );
 }
- 
-export default React.memo(MainListItems); 
+
+export default React.memo(MainListItems);

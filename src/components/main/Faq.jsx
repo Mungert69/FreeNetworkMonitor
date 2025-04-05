@@ -24,6 +24,7 @@ import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
+import { useMediaQuery } from '@mui/material';
 
 const data = {
     title: "FAQ (Find answers to common questions here)",
@@ -502,6 +503,7 @@ const Faq = () => {
 
     const theme = useTheme();
     const classes = useClasses(styleObject(theme, pingImage));
+    const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState(''); // State for search query
@@ -577,7 +579,7 @@ const Faq = () => {
             </AppBar>
 
             <Drawer
-                variant="permanent"
+                 variant={isMediumOrLarger ? "permanent" : "temporary"}
                 classes={{
                     paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
                 }}
