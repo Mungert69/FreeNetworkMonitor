@@ -709,3 +709,4 @@ server.crt
 dotnet
 package-lock.json
 dist/
+.env
