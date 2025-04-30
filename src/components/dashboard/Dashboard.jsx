@@ -29,7 +29,7 @@ import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-import { resetPredictAlertApiCall,convertDate,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer,fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { resetPredictAlertApiCall, convertDate, getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
@@ -44,9 +44,9 @@ import Chat from "./Chat/Chat";
 export default function Dashboard() {
   const publicUrl = import.meta.env.VITE_PUBLIC_URL;
 
-  
+
   const theme = useTheme();
-  const { isLoggedIn,  userInfo,  isFetchingUserInfo } = useFusionAuth();
+  const { isLoggedIn, userInfo, isFetchingUserInfo } = useFusionAuth();
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
   const [viewInfo, setViewInfo] = useState(false);
@@ -89,8 +89,8 @@ export default function Dashboard() {
 
   const handleHostLinkClick = (linkData) => {
     if (linkData.isHostData) {
-     
-      const hostData = { 'id' : linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID' : linkData.UserID };    
+
+      const hostData = { 'id': linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID': linkData.UserID };
       if (hostData !== undefined) {
         setDefaultSearchValue(hostData.address);
         handleSetDataSetId(hostData.dataSetID, hostData.date);
@@ -173,28 +173,28 @@ export default function Dashboard() {
         console.log("Calling getSiteIdfromUrl");
         siteId = await getSiteIdfromUrl(loadServer);
         console.log("Calling addUserApi");
-        var apiUser=await addUserApi(siteId, userInfo);
+        var apiUser = await addUserApi(siteId, userInfo);
         console.log("Calling setSiteId");
         await setSiteId(siteId);
 
         await setApiUser(apiUser);
         console.log(" Current User is " + JSON.stringify(apiUser));
-     
+
         // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
         console.log("Error in Dashboard failed to get access error was" + e + " : user was " + userInfo.sub);
       }
     }
 
-   
+
 
     const checkAuth = async () => {
 
       setIsLoading(true);
       if (isLoggedIn && !isFetchingUserInfo) {
         //await setDefaultUser(false);
-       
-        console.log("isLoggedIn = "+JSON.stringify(isLoggedIn)+" isFetchingUserInfo "+JSON.stringify(isFetchingUserInfo))
+
+        console.log("isLoggedIn = " + JSON.stringify(isLoggedIn) + " isFetchingUserInfo " + JSON.stringify(isFetchingUserInfo))
         ReactGA4.event({
           category: 'User',
           action: 'User Logged In'
@@ -218,10 +218,10 @@ export default function Dashboard() {
       console.log("Calling fetchLoadServer for user default");
       var loadServer = await fetchFirstLoadServer();
       console.log("Calling getSiteIdfromUrl");
-      siteId = await getSiteIdfromUrl(loadServer);   
+      siteId = await getSiteIdfromUrl(loadServer);
       console.log("Calling setSiteId");
       await setSiteId(siteId);
-         } catch (e) {
+    } catch (e) {
       console.log("Error in Dashboard failed to get load SiteId for default user");
     }
   }
@@ -229,10 +229,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
+
+    // Handle assistant parameter
+    if (query.get('assistant') === 'open') {
+      setIsChatOpen(true);
+    }
+
     if (query.get('initViewSub')) {
       setInitViewSub(true);
     }
-   
+
     //firstLoadSiteId();
   }, []);
   useEffect(() => {
@@ -288,20 +294,20 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
 
-<SuperSEO
-    title="Free Network Monitor Dashboard - Comprehensive Network Monitoring & Security Management"
-    description="Manage your network hosts, conduct security assessments, and run diagnostics with the Free Network Monitor Dashboard. Monitor real-time performance, execute custom commands, and ensure network integrity with advanced tools. Start monitoring for free today!"
-    openGraph={{
-        ogImage: {
+      <SuperSEO
+        title="Free Network Monitor Dashboard - Comprehensive Network Monitoring & Security Management"
+        description="Manage your network hosts, conduct security assessments, and run diagnostics with the Free Network Monitor Dashboard. Monitor real-time performance, execute custom commands, and ensure network integrity with advanced tools. Start monitoring for free today!"
+        openGraph={{
+          ogImage: {
             ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
             ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
-        },
-        ogUrl: "https://freenetworkmonitor.click/dashboard", // Canonical URL
-        ogType: "website", // Type of content
-        ogSiteName: "Free Network Monitor", // Site name
-        ogLocale: "en_US", // Language and locale
-    }}
-/>
+          },
+          ogUrl: "https://freenetworkmonitor.click/dashboard", // Canonical URL
+          ogType: "website", // Type of content
+          ogSiteName: "Free Network Monitor", // Site name
+          ogLocale: "en_US", // Language and locale
+        }}
+      />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
@@ -337,7 +343,7 @@ export default function Dashboard() {
               </FadeWrapper>
           }
           <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
->
+          >
             <ChatIcon />
           </IconButton>
 
@@ -372,34 +378,34 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container} >
-            <Grid container spacing={1}>
-              {viewInfo &&
-                <Grid item xs={12} sm={12} md={10} lg={10}>
-                  <Paper className={fixedHeightPaper}>
-                    <Chart
-                      data={chartData}
-                      selectedDate={selectedDate}
-                      hostname={hostData.address}
-                      dataSetId={dataSetId}
-                      dataSets={dataSets}
-                      handleSetDataSetId={handleSetDataSetId}
-                    />
-                  </Paper>
-                </Grid>
-              }
-              {viewInfo &&
-                <Grid item xs={12} sm={12} md={2} lg={2} >
-                  <Paper className={classes.paper}>
-                    <HostDetail hostData={hostData} />
-                  </Paper>
-                </Grid>
-              }
-
-              <Grid item xs={12}>
-
+          <Grid container spacing={1}>
+            {viewInfo &&
+              <Grid item xs={12} sm={12} md={10} lg={10}>
+                <Paper className={fixedHeightPaper}>
+                  <Chart
+                    data={chartData}
+                    selectedDate={selectedDate}
+                    hostname={hostData.address}
+                    dataSetId={dataSetId}
+                    dataSets={dataSets}
+                    handleSetDataSetId={handleSetDataSetId}
+                  />
+                </Paper>
+              </Grid>
+            }
+            {viewInfo &&
+              <Grid item xs={12} sm={12} md={2} lg={2} >
                 <Paper className={classes.paper}>
-                  {toggleTable ?
-                  <HostList siteId={siteId} 
+                  <HostDetail hostData={hostData} />
+                </Paper>
+              </Grid>
+            }
+
+            <Grid item xs={12}>
+
+              <Paper className={classes.paper}>
+                {toggleTable ?
+                  <HostList siteId={siteId}
                     data={listData}
                     clickViewChart={clickViewChart}
                     resetHostAlert={resetHostAlert}
@@ -409,19 +415,19 @@ export default function Dashboard() {
                     handleSetDataSetId={handleSetDataSetId}
                     setDateStart={setDateStart}
                     setDateEnd={setDateEnd} defaultSearchValue={defaultSearchValue} />
-                    :
-                    <React.Fragment>
+                  :
+                  <React.Fragment>
 
-                      <HostListEdit siteId={siteId} processorList={processorList} defaultSearchValue={defaultSearchValue}/>
-                    </React.Fragment>
-                  }
-                </Paper>
+                    <HostListEdit siteId={siteId} processorList={processorList} defaultSearchValue={defaultSearchValue} />
+                  </React.Fragment>
+                }
+              </Paper>
 
-                <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                {siteId !== null && siteId !== undefined && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId}  />}
- </div>
-              </Grid>
+              <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
+                {siteId !== null && siteId !== undefined && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+              </div>
             </Grid>
+          </Grid>
         </Container>
       </main>
     </div>
