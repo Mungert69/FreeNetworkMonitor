@@ -80,6 +80,10 @@ export const useChatState = () => {
     setIsDrawerOpen,
     autoScrollEnabled,
     setAutoScrollEnabled,
+    isHoveringMessages,
+    isInputFocused,
+    setIsHoveringMessages,
+    setIsInputFocused,
 
     // Processing and loading states
     isReady,
@@ -112,6 +116,7 @@ export const useChatState = () => {
     setLlmFeedback,
     message,
     setMessage,
+
 
     // Data states
     histories,

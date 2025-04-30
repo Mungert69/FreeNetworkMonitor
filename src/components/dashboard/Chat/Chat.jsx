@@ -118,6 +118,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [isProcessing, isLLMBusy]);
 
   const handleScroll = () => {
+    const outputContainer = outputContainerRef.current;
     const isNearBottom = Math.abs(
       outputContainer.scrollHeight - outputContainer.scrollTop - outputContainer.clientHeight
     ) < 10;
