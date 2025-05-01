@@ -86,6 +86,12 @@ const ProductDetail = () => {
     }, [isChatOpen]);
 
     useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+
+        // Handle assistant parameter
+        if (query.get('assistant') === 'open') {
+          setIsChatOpen(true);
+        }
         const firstLoadSiteId = async () => {
             var siteId = 0;
             try {
