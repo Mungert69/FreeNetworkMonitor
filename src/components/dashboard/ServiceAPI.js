@@ -44,6 +44,9 @@ function loadAppSettings() {
 // Call the function to load settings at the start of your app
 loadAppSettings();
 
+export const getBaseDomain = () => {
+    return appsettings.baseDomain;
+}
 export const getLlmTypes = () => {
     return appsettings.llmTypes;
 }

@@ -23,6 +23,8 @@ import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
 import ReactMarkdown from 'react-markdown';
 import { useMediaQuery } from '@mui/material';
+import {  getBaseDomain} from './ServiceAPI';
+
 const markdown = `
 
 Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
@@ -52,10 +54,10 @@ Welcome to the Beta Tester Download Portal for the Free Network Monitor Agent, a
 
 ### Simple Authorization and Setup:
 - Authorize the Agent using OAuth authentication to securely link it with your Free Network Monitor account.
-- Effortlessly add hosts to monitor from the Free Network Monitor dashboard, and select whether to use predefined remote agents or your local Agent for monitoring. You can also use the Network Monitor Assistant, on the dashboard [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard), to add and manage hosts.
+- Effortlessly add hosts to monitor from the Free Network Monitor dashboard, and select whether to use predefined remote agents or your local Agent for monitoring. You can also use the Network Monitor Assistant, on the dashboard [Free Network Monitor Dashboard](https://${getBaseDomain()}/dashboard), to add and manage hosts.
 
 ### Real-Time Data and Historical Analysis:
-- View detailed monitoring data directly from the Agent app or the [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard).
+- View detailed monitoring data directly from the Agent app or the [Free Network Monitor Dashboard](https://${getBaseDomain()}/dashboard).
 - Use visual indicators such as pulsing circles and color-coded status icons to quickly assess the health and performance of monitored devices.
 
 ## Choose your platform:
@@ -108,7 +110,7 @@ After installing the app:
 
 2. **Authorization**: Your device needs authorization to function as an agent. Click the 'Authorize' button on the main page, which redirects you to the OAuth authentication site. Follow the on-screen instructions to log in to your account. If you do not have an account, you can create one during this process. Close the browser window once you receive a message confirming your agent is authenticated.
 
-3. **Login to Free Network Monitor**: Click this task to be redirected to the [Free Network Monitor Dashboard](https://freenetworkmonitor.click/dashboard). Login with the same email address you used for agent authorization. This is where you'll manage your network monitoring.
+3. **Login to Free Network Monitor**: Click this task to be redirected to the [Free Network Monitor Dashboard](https://${getBaseDomain()}/dashboard). Login with the same email address you used for agent authorization. This is where you'll manage your network monitoring.
 
 4. **Adding Hosts**: After logging into the Free Network Monitor site, navigate to the dashboard. To add a host for monitoring, click the flashing edit icon. For instance, to monitor a local router, input its IP address (e.g., 192.168.1.1) and select 'icmp' as the endpoint type. This action enables you to ping the router, monitoring its availability.
 
@@ -205,7 +207,7 @@ docker logs processor -f
 2. **Retrieve the Authorization URL**: Look for a log entry similar to the following:
 
 \`\`\`
-https://authnew.freenetworkmonitor.click:2096/oauth2/device?client_id=de064977-4bde-4426-81f7-4354041fe58b&tenantId=a4d7499b-557c-d132-7d6f-0a575402a781&user_code=2PBLYP
+https://authnew.${getBaseDomain()}:2096/oauth2/device?client_id=de064977-4bde-4426-81f7-4354041fe58b&tenantId=a4d7499b-557c-d132-7d6f-0a575402a781&user_code=2PBLYP
 \`\`\`
 
 Copy and paste this URL into a web browser to start the authentication process.
@@ -222,7 +224,7 @@ MessageAPI : SetAuthKey :  SetAuthKey :  Success : Set AuthKey and saved NetConn
 
 Once the agent is authorized, you can start adding hosts to monitor:
 
-1. **Monitor Hosts**: Add hosts to monitor via the Free Network Monitor Service dashboard at [https://freenetworkmonitor.click/dashboard](https://freenetworkmonitor.click/dashboard). Login with the same email address you used to authorize the agent.
+1. **Monitor Hosts**: Add hosts to monitor via the Free Network Monitor Service dashboard at [https://${getBaseDomain()}/dashboard](https://${getBaseDomain()}/dashboard). Login with the same email address you used to authorize the agent.
 
 2. **Adding Hosts**: Once logged into the Free Network Monitor site, go to the dashboard and add a host that you want to monitor, click the flashing edit icon. You might wish to monitor a local router at the IP address 192.168.1.1 using the endpoint type 'icmp' to ping the local router, thereby monitoring its availability.
 
@@ -270,7 +272,7 @@ const Download = () => {
             ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
             ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
         },
-        ogUrl: "https://freenetworkmonitor.click/download", // Canonical URL
+        ogUrl: "https://${getBaseDomain()}/download", // Canonical URL
         ogType: "website", // Type of content
         ogSiteName: "Free Network Monitor", // Site name
         ogLocale: "en_US", // Language and locale

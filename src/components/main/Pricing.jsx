@@ -23,6 +23,7 @@ import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
 import pingImage from '/ping.svg';
 import { useMediaQuery } from '@mui/material';
+import {  getBaseDomain} from './ServiceAPI';
 const Pricing = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
     const theme = useTheme();
@@ -48,7 +49,7 @@ const Pricing = () => {
                         ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
                         ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
                     },
-                    ogUrl: "https://freenetworkmonitor.click/subscription", // Canonical URL
+                    ogUrl: `https://${getBaseDomain()}/subscription`, // Canonical URL
                     ogType: "website", // Type of content
                     ogSiteName: "Free Network Monitor", // Site name
                     ogLocale: "en_US", // Language and locale

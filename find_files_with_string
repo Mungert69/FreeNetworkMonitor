@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Usage: ./find_string.sh "search_string" /start/folder/path
+
+search_string="$1"
+start_folder="$2"
+
+if [[ -z "$search_string" || -z "$start_folder" ]]; then
+  echo "Usage: $0 \"search_string\" /start/folder/path"
+  exit 1
+fi
+
+grep -rnw "$start_folder" -e "$search_string"
+

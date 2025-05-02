@@ -24,6 +24,7 @@ import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
+import {  getBaseDomain} from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 
 const data = {
@@ -33,7 +34,7 @@ const data = {
             title: "How do I add websites and hosts to monitor?",
             content: `
                 <p>You must first login to add hosts. Go to the 
-                <a href="https://freenetworkmonitor.click/dashboard" target="_blank">dashboard page</a> and click "Login".</p>
+                <a href="https://${getBaseDomain()}/dashboard" target="_blank">dashboard page</a> and click "Login".</p>
                 <p>If you don't already have an account, create one when prompted. After logging in, click the edit icon at the top left, next to the login icon. For a visual guide, refer to guide number 2 above.</p>
             `,
         },
@@ -47,7 +48,7 @@ const data = {
             title: "How do I add more hosts?",
             content: `
                 <p>The number of hosts you can add is determined by your account type. To add more hosts and enjoy additional benefits, 
-                <a href="https://freenetworkmonitor.click/subscription" target="_blank">upgrade your subscription</a>.</p>
+                <a href="https://${getBaseDomain()}/subscription" target="_blank">upgrade your subscription</a>.</p>
             `,
         },
         {
@@ -60,7 +61,7 @@ const data = {
             title: "How do I get support or ask a question?",
             content: `
                 <p>You can contact us for support or to ask a question by emailing 
-                <strong>support@freenetworkmonitor.click</strong> or <strong>support@mahadeva.co.uk</strong>.</p>
+                <strong>support@${getBaseDomain()}</strong> or <strong>support@mahadeva.co.uk</strong>.</p>
             `,
         },
         {
@@ -69,7 +70,7 @@ const data = {
                 <p>Check that you have email notifications enabled in your profile:</p>
                 <ol>
                     <li>Click the profile icon in the top right of the 
-                    <a href="https://freenetworkmonitor.click/dashboard" target="_blank">dashboard</a>.</li>
+                    <a href="https://${getBaseDomain()}/dashboard" target="_blank">dashboard</a>.</li>
                     <li>Click the bell icon to toggle notifications on and off.</li>
                 </ol>
                 <p>Note: If you unsubscribe from receiving emails via an alert email, this will disable email notifications.</p>
@@ -80,7 +81,7 @@ const data = {
             content: `
                 <p>Only one host alert is sent until you reset that alert:</p>
                 <p>On the 
-                <a href="https://freenetworkmonitor.click/dashboard" target="_blank">dashboard host list</a>, click the red alert icon to reset the alert.</p>
+                <a href="https://${getBaseDomain()}/dashboard" target="_blank">dashboard host list</a>, click the red alert icon to reset the alert.</p>
             `,
         },
         {
@@ -245,7 +246,7 @@ const data = {
             title: "Why can't I run certain functions like penetration tests or network scans?",
             content: `
                 <p>Advanced functions such as penetration tests, security assessments, and network scans are only available in the <strong>Professional</strong> and <strong>Enterprise</strong> plans.</p>
-                <p>If you're on the <strong>Free</strong> or <strong>Standard</strong> plan, these features are restricted. You can upgrade via the <a href="https://freenetworkmonitor.click/subscription">subscription page</a>.</p>
+                <p>If you're on the <strong>Free</strong> or <strong>Standard</strong> plan, these features are restricted. You can upgrade via the <a href="https://${getBaseDomain()}/subscription">subscription page</a>.</p>
             `
         },
         {
@@ -253,7 +254,7 @@ const data = {
             content: `
                 <p>To upgrade your plan:</p>
                 <ol>
-                    <li>Go to the <a href="https://freenetworkmonitor.click/subscription">subscription page</a>.</li>
+                    <li>Go to the <a href="https://${getBaseDomain()}/subscription">subscription page</a>.</li>
                     <li>Select the plan that suits your needs.</li>
                     <li>Follow the instructions to upgrade.</li>
                 </ol>
@@ -416,7 +417,7 @@ const data = {
             content: `
                 <ol>
                     <li>Once the Docker agent is authorized, go to the 
-                    <a href="https://freenetworkmonitor.click/dashboard">Free Network Monitor Dashboard</a> to add hosts.</li>
+                    <a href="https://${getBaseDomain()}/dashboard">Free Network Monitor Dashboard</a> to add hosts.</li>
                     <li>Select a monitor location and the endpoint type (e.g., 'icmp' for ping monitoring), and switch between view and edit modes to monitor your hosts.</li>
                 </ol>
             `,
@@ -552,7 +553,7 @@ const Faq = () => {
                         ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
                         ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
                     },
-                    ogUrl: "https://freenetworkmonitor.click/faq", // Canonical URL
+                    ogUrl: "https://${getBaseDomain()}/faq", // Canonical URL
                     ogType: "website", // Type of content
                     ogSiteName: "Free Network Monitor", // Site name
                     ogLocale: "en_US", // Language and locale

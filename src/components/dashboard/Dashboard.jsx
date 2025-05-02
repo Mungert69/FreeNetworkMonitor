@@ -29,7 +29,7 @@ import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
-import { resetPredictAlertApiCall, convertDate, getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { resetPredictAlertApiCall, convertDate, getBaseDomain,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
@@ -302,7 +302,7 @@ export default function Dashboard() {
             ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
             ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
           },
-          ogUrl: "https://freenetworkmonitor.click/dashboard", // Canonical URL
+          ogUrl: `https://${getBaseDomain()}/dashboard`, // Canonical URL
           ogType: "website", // Type of content
           ogSiteName: "Free Network Monitor", // Site name
           ogLocale: "en_US", // Language and locale

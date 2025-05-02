@@ -9,7 +9,7 @@
             "request": "launch",
             "reAttach": true,
             "name": "Launch localhost",
-            "url": "https://devwww.freenetworkmonitor.click",
+            "url": "https://devwww.readyforquantum.com",
             "webRoot": "${workspaceFolder}"
         },
         {
@@ -21,7 +21,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "https://devwww.freenetworkmonitor.click",
+            "url": "https://devwww.readyforquantum.com",
             "webRoot": "${workspaceFolder}"
         }
     ]

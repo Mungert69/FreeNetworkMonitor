@@ -27,6 +27,7 @@ import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
 import pingImage from '/ping.svg';
+import {  getBaseDomain} from './ServiceAPI';
 
 function sendToAnalytics({ id, name, value }) {
     ReactGA4.event({
@@ -133,7 +134,7 @@ const ProductDetail = () => {
                         ogImage: `${publicUrl}/ping.svg`,
                         ogImageAlt: "AI Network Monitor: Automated Nmap & Quantum Security",
                     },
-                    ogUrl: "https://freenetworkmonitor.click",
+                    ogUrl: `https://${getBaseDomain()}`,
                     ogType: "website",
                     ogSiteName: "Free Network Monitor",
                     ogLocale: "en_US",
