@@ -27,7 +27,7 @@ import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
 import pingImage from '/ping.svg';
-import {  getBaseDomain} from './ServiceAPI';
+import {  getBaseDomain} from '../dashboard/ServiceAPI';
 
 function sendToAnalytics({ id, name, value }) {
     ReactGA4.event({

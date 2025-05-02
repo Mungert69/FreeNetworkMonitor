@@ -24,7 +24,7 @@ import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
-import {  getBaseDomain} from './ServiceAPI';
+import {  getBaseDomain} from '../dashboard/ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 
 const data = {

@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import {  getBaseDomain} from './ServiceAPI';
+import {  getBaseDomain} from '../dashboard/ServiceAPI';
 import React from "react";
 
 

@@ -23,7 +23,7 @@ import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
 import ReactMarkdown from 'react-markdown';
 import { useMediaQuery } from '@mui/material';
-import {  getBaseDomain} from './ServiceAPI';
+import {  getBaseDomain} from '../dashboard/ServiceAPI';
 
 const markdown = `
 

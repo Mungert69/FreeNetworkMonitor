@@ -23,7 +23,7 @@ import LogoLink from './LogoLink';
 import PricingContent from './PricingContent';
 import pingImage from '/ping.svg';
 import { useMediaQuery } from '@mui/material';
-import {  getBaseDomain} from './ServiceAPI';
+import {  getBaseDomain} from '../dashboard/ServiceAPI';
 const Pricing = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
     const theme = useTheme();
