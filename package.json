@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://readyforquantum.com/",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "private": true,
   "overrides": {
     "esbuild": "0.25.0",
@@ -67,7 +67,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "prettier": "^3.5.3",
     "terser": "^5.39.0",
-    "vite": "^6.3.1"
+    "vite": "^6.3.5"
   },
   "scripts": {
     "analyze": "source-map-explorer 'dist/assets/*.js'",

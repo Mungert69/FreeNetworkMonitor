@@ -3,12 +3,7 @@ value=`cat ../secret`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
 npm i --force
 npm run build
-rm -r ./out
-cd ../FreeNetworkMonitorBlog
-git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitorBlog
-npm install 
-npm run export
-cp -r ./out ../FreeNetworkMonitor/
-cd ../FreeNetworkMonitor
+cp -r ../FreeNetworkMonitorBlog/public/images ./out/
+cp -r ../FreeNetworkMonitorBlog/public/blogpics ./out/
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:0.8.2
+docker push mungert/networkmonitorreact-local:0.9.0
