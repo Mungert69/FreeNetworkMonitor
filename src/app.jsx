@@ -10,7 +10,7 @@ const Pricing = lazy(() => import('./components/main/Pricing'));
 const Faq = lazy(() => import('./components/main/Faq'));
 const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
-
+const StartLoginProxy = lazy(() => import('./components/StartLoginProxy'));
 
 if (import.meta.env.MODE === 'production') {
   const TRACKING_ID = "G-QZ49HV7DS2";
@@ -75,6 +75,7 @@ const App = () => {
               <Download />
             </Suspense>
           } />
+           <Route exact path="/start-login-proxy" element={<StartLoginProxy />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
