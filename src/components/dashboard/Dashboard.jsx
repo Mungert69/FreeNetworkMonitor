@@ -230,23 +230,31 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
 
-    if (query.has('openInNewTab')) {
-      setOpenInNewTab(true);
-      console.log("Setting openInNewTab");
-   
-    }
+  // Parse query string
+  const query = new URLSearchParams(window.location.search);
 
-    if (query.get('assistant') === 'open') {
-      setIsChatOpen(true);
-      console.log("Setting assistant=open");
-    }
+  // Parse hash fragment
+  const hash = window.location.hash.slice(1); // Remove the '#'
+  const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
 
-    if (query.has('initViewSub')) {
-      setInitViewSub(true);
-      console.log("Setting initViewSub");
-    }
+  // Check for 'openInNewTab' in either query or hash
+  if (query.has('openInNewTab') || hashParams.has('openInNewTab')) {
+    setOpenInNewTab(true);
+    console.log("Setting openInNewTab");
+  }
+
+  // Check for 'assistant' in either query or hash
+  if (query.get('assistant') === 'open' || hashParams.get('assistant') === 'open') {
+    setIsChatOpen(true);
+    console.log("Setting assistant=open");
+  }
+
+  // Check for 'initViewSub' in either query or hash
+  if (query.has('initViewSub') || hashParams.has('initViewSub')) {
+    setInitViewSub(true);
+    console.log("Setting initViewSub");
+  }
 
     //firstLoadSiteId();
   }, []);
