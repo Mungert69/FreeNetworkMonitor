@@ -8,19 +8,19 @@ import FadeWrapper from './dashboard/FadeWrapper';
 const LoginButton = ({ loginText, openInNewTab = false }) => {
   const { startLogin } = useFusionAuth();
 
-  const handleLogin = () => {
-    if (openInNewTab) {
-      window.open('/start-login-proxy', '_blank', 'noopener,noreferrer');
-    } else {
-      startLogin();
-    }
 
-  }
   return (
     <FadeWrapper toggle={true}>
       <Button variant="contained" color="primary" endIcon={<LoginIcon />}
-        onClick={() => handleLogin()}
-      >{loginText}</Button>
+      onClick={() => {
+        if (openInNewTab) {
+          window.open('/start-login-proxy', '_blank', 'noopener,noreferrer');
+        } else {
+          startLogin();
+        }
+      }}
+    >
+      {loginText}</Button>
     </FadeWrapper>
   );
 };
