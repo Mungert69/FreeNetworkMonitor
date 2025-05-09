@@ -89,6 +89,8 @@ const ProductDetail = () => {
     }, [isChatOpen]);
 
     useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+
         const hash = window.location.hash.slice(1); // Remove the '#'
         const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
             
