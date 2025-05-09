@@ -69,6 +69,8 @@ export default function Dashboard() {
   const [dateEnd, setDateEnd] = React.useState();
   const [processorList, setProcessorList] = React.useState([]);
   const [initViewSub, setInitViewSub] = React.useState(false);
+  const [openInNewTab, setOpenInNewTab] = React.useState(false);
+  
   const [hostListIconText, setHostListIconText] = React.useState("Add Hosts");
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -230,7 +232,10 @@ export default function Dashboard() {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
 
-    // Handle assistant parameter
+    if (query.get('openInNewTab')) {
+      setOpenInNewTab(true);
+    }
+
     if (query.get('assistant') === 'open') {
       setIsChatOpen(true);
     }
@@ -347,7 +352,7 @@ export default function Dashboard() {
             <ChatIcon />
           </IconButton>
 
-          <AuthNav />
+          <AuthNav openInNewTab={openInNewTab}/>
           <IconButton color="inherit" >
             <Badge badgeContent={alertCount} color="error">
               <NotificationsIcon />

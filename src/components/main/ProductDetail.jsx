@@ -64,6 +64,7 @@ const ProductDetail = () => {
     const isChatOpenRef = useRef(isChatOpen);
     const [siteId, setSiteId] = React.useState(null);
     const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
+      const [openInNewTab, setOpenInNewTab] = React.useState(false);
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -93,6 +94,9 @@ const ProductDetail = () => {
         if (query.get('assistant') === 'open') {
           setIsChatOpen(true);
         }
+        if (query.get('openInNewTab')) {
+            setOpenInNewTab(true);
+          }
         const firstLoadSiteId = async () => {
             var siteId = 0;
             try {
@@ -159,7 +163,7 @@ const ProductDetail = () => {
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
                         <ChatIcon />
                     </IconButton>
-                    <AuthNav />
+                    <AuthNav openInNewTab={openInNewTab}/>
                 </Toolbar>
             </AppBar>
 

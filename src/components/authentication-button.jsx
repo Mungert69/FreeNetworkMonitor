@@ -5,10 +5,10 @@ import LogoutButton from "./logout-button";
 
 import {useFusionAuth} from '@fusionauth/react-sdk';
 
-const AuthenticationButton = ({setUserId}) => {
+const AuthenticationButton = ({setUserId, openInNewTab=false}) => {
   const { isLoggedIn } = useFusionAuth();
 
-  return isLoggedIn ? <LogoutButton  /> : <LoginButton loginText={'Login'} redirectUrl={'/Dashboard'}/>;
+  return isLoggedIn ? <LogoutButton  /> : <LoginButton loginText={'Login'} redirectUrl={'/Dashboard'} openInNewTab={openInNewTab}/>;
 };
 
 export default React.memo(AuthenticationButton);

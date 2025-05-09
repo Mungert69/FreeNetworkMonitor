@@ -1,9 +1,9 @@
 import React from "react";
 import AuthenticationButton from "./authentication-button";
 
-const AuthNav = () => (
+const AuthNav = ({openInNewTab=false}) => (
   <div className="navbar-nav ml-auto">
-    <AuthenticationButton  />
+    <AuthenticationButton  openInNewTab={openInNewTab}/>
   </div>
 );
 

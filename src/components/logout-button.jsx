@@ -9,7 +9,7 @@ const LogoutButton = () => {
 
   return (
     <Button variant="contained" color="primary" endIcon={<LogoutIcon />}
-      onClick={startLogout}
+      onClick={() => startLogout()}
     >
       Log Out
     </Button>
