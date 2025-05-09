@@ -232,16 +232,20 @@ export default function Dashboard() {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
 
-    if (query.get('openInNewTab')) {
+    if (query.has('openInNewTab')) {
       setOpenInNewTab(true);
+      console.log("Setting openInNewTab");
+   
     }
 
     if (query.get('assistant') === 'open') {
       setIsChatOpen(true);
+      console.log("Setting assistant=open");
     }
 
-    if (query.get('initViewSub')) {
+    if (query.has('initViewSub')) {
       setInitViewSub(true);
+      console.log("Setting initViewSub");
     }
 
     //firstLoadSiteId();
