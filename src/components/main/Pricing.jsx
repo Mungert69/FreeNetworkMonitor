@@ -31,13 +31,21 @@ const Pricing = () => {
     const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const [open, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+     const [openInNewTab, setOpenInNewTab] = React.useState(false);
     const handleDrawerOpen = () => {
         setOpen(true);
     };
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
+    useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+    
+        if (query.get('openInNewTab')) {
+          setOpenInNewTab(true);
+        }
+    
+      }, []);
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -72,7 +80,7 @@ const Pricing = () => {
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Free Network Monitor
                     </Typography>
-                    <AuthNav />
+                    <AuthNav openInNewTab={openInNewTab}/>
 
                 </Toolbar>
             </AppBar>
