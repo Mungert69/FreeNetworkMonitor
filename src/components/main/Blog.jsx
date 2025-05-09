@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect} from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
@@ -18,13 +18,13 @@ const mainFeaturedPost = {
   title: 'Setup a Quantum Readiness Monitor',
   date: 'Jul 02',
   description:
-   'How to Set Up Your Quantum Readiness Monitor. Are your websites and services safe from quantum cryptographic attacks? Read this guide to test your servers for quantum readiness',
+    'How to Set Up Your Quantum Readiness Monitor. Are your websites and services safe from quantum cryptographic attacks? Read this guide to test your servers for quantum readiness',
   image: '/img/ping.jpg',
   linkText: 'Continue reading…',
   imageText: 'View of Free Network Monitor',
   href: '#blog-post2',
 
-  
+
 };
 const featuredPosts = [
   {
@@ -74,21 +74,16 @@ const getSidebar = (archives) => {
     ]
   };
 };
-export function Blog({ classes }) {
+export function Blog({ classes, hash }) {
   const [archiveDate, setArchiveDate] = useState(new Date());
   const [archives, setArchives] = useState(getArchives());
   const [posts, setPosts] = useState([]);
   const [blogTitles, setBlogTitles] = useState([]);
 
   useEffect(() => {
-    var hash = window.location.hash;
     console.log('Hash is' + hash);
-    if (hash===undefined || hash == null || hash.length === 0) { 
-     return;
-     }
-    // encode hash to be sent via url paramter
-    if (hash.charAt(0) === "#") {
-      hash = hash.substring(1);
+    if (hash === undefined || hash == null || hash.length === 0) {
+      return;
     }
     //let encodedHash = encodeURIComponent(hash);
     async function getBlogDate() {
@@ -105,15 +100,21 @@ export function Blog({ classes }) {
 
 
 
- const scrollToHash = (hash) => {
+  const scrollToHash = (hash) => {
+    try {
+      // After rendering, scroll to the section with the hash value
+      if (hash === undefined || hash == null || hash.length === 0) { return; }
+      console.log('Scrolling to Hash ' + hash);
+      const section = document.querySelector(hash);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
 
-    // After rendering, scroll to the section with the hash value
-    if (hash===undefined || hash==null || hash.length===0) { return; }
-    console.log('Scrolling to Hash ' + hash);
-    const section = document.querySelector(hash);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
     }
+    catch (e) {
+      console.log('Error could not scroll to hash. Error was : ' + e);
+    }
+
 
   }
 
@@ -132,7 +133,7 @@ export function Blog({ classes }) {
       return newArchives;
     }
     catch (e) {
-      console.log('Error could not set Archive Open. Error was : '+e);
+      console.log('Error could not set Archive Open. Error was : ' + e);
     }
   }
   const handleArchiveClick = (date) => {
@@ -155,11 +156,11 @@ export function Blog({ classes }) {
       });
     }
     getBlogs();
-  
+
   }, [archiveDate]);
 
   useLayoutEffect(() => {
-    scrollToHash(window.location.hash);
+    scrollToHash(hash);
   }, [posts]);
 
   return (

@@ -27,7 +27,7 @@ import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
 import ReactGA4 from 'react-ga4';
 import pingImage from '/ping.svg';
-import {  getBaseDomain} from '../dashboard/ServiceAPI';
+import { getBaseDomain } from '../dashboard/ServiceAPI';
 
 function sendToAnalytics({ id, name, value }) {
     ReactGA4.event({
@@ -55,7 +55,7 @@ const interactiveStyles = {
 
 const ProductDetail = () => {
     const blogRef = useRef(null);
-      const theme = useTheme();
+    const theme = useTheme();
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
     const classes = useClasses(styleObject(theme, pingImage));
     const [open, setOpen] = React.useState(false);
@@ -64,7 +64,8 @@ const ProductDetail = () => {
     const isChatOpenRef = useRef(isChatOpen);
     const [siteId, setSiteId] = React.useState(null);
     const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
-      const [openInNewTab, setOpenInNewTab] = React.useState(false);
+    const [openInNewTab, setOpenInNewTab] = React.useState(false);
+    const [blogHash,setBlogHash] =React.useState('');
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -88,15 +89,24 @@ const ProductDetail = () => {
     }, [isChatOpen]);
 
     useEffect(() => {
-        const query = new URLSearchParams(window.location.search);
-
-        // Handle assistant parameter
-        if (query.get('assistant') === 'open') {
-          setIsChatOpen(true);
+        const hash = window.location.hash.slice(1); // Remove the '#'
+        const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
+            
+        if (!hashParams.has('assistant') && !hashParams.has('openInNewTab')) {
+          // Not a reserved login parameter; assume it's a blog post hash or scroll target
+          setBlogHash(hash);
         }
-        if (query.get('openInNewTab')) {
+        // Check for 'openInNewTab' in either query or hash
+        if (query.has('openInNewTab') || hashParams.has('openInNewTab')) {
             setOpenInNewTab(true);
-          }
+            console.log("Setting openInNewTab");
+        }
+
+        // Check for 'assistant' in either query or hash
+        if (query.get('assistant') === 'open' || hashParams.get('assistant') === 'open') {
+            setIsChatOpen(true);
+            console.log("Setting assistant=open");
+        }
         const firstLoadSiteId = async () => {
             var siteId = 0;
             try {
@@ -163,18 +173,18 @@ const ProductDetail = () => {
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
                         <ChatIcon />
                     </IconButton>
-                    <AuthNav openInNewTab={openInNewTab}/>
+                    <AuthNav openInNewTab={openInNewTab} />
                 </Toolbar>
             </AppBar>
 
             <Drawer
-                   variant={isMediumOrLarger ? "permanent" : "temporary"}
-                   open={open}
-                   onClose={handleDrawerClose}
-                   classes={{
-                     paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-                   }}
-                 >
+                variant={isMediumOrLarger ? "permanent" : "temporary"}
+                open={open}
+                onClose={handleDrawerClose}
+                classes={{
+                    paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+                }}
+            >
                 <div className={classes.toolbarIcon}>
                     <IconButton onClick={handleDrawerClose} size="large">
                         <ChevronLeftIcon />
@@ -479,7 +489,7 @@ const ProductDetail = () => {
                     <hr />
                     <hr />
 
-                    <Blog ref={blogRef} classes={classes} />
+                    <Blog ref={blogRef} classes={classes} blogHash={blogHash}  />
                     <Footer />
 
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
