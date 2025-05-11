@@ -1,4 +1,4 @@
-import {React, useEffect} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
@@ -249,7 +249,7 @@ MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 M
 If you encounter any issues or have questions, please feel free to reach out to us at support@mahadeva.co.uk. We're here to help and would love to hear your feedback!
 `;
 
-const Download = () => {
+export default function Download() {
   const publicUrl = import.meta.env.VITE_PUBLIC_URL;
 
   const theme = useTheme();
@@ -263,10 +263,16 @@ const Download = () => {
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
-
-    if (query.get('openInNewTab')) {
-      setOpenInNewTab(true);
+    const hash = window.location.hash.slice(1); // Remove the '#'
+    const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
+        
+   
+    // Check for 'openInNewTab' in either query or hash
+    if (query.has('openInNewTab') || hashParams.has('openInNewTab')) {
+        setOpenInNewTab(true);
+        console.log("Setting openInNewTab");
     }
+
 
   }, []);
   return (
@@ -340,4 +346,3 @@ const Download = () => {
   );
 };
 
-export default React.memo(Download);

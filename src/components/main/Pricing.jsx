@@ -1,4 +1,4 @@
-import {React, useEffect} from "react";
+import React, { useState, useEffect, useRef }  from "react";
 import clsx from 'clsx';
 import CssBaseline from '@mui/material/CssBaseline';
 import Drawer from '@mui/material/Drawer';
@@ -24,7 +24,7 @@ import PricingContent from './PricingContent';
 import pingImage from '/ping.svg';
 import { useMediaQuery } from '@mui/material';
 import {  getBaseDomain} from '../dashboard/ServiceAPI';
-const Pricing = () => {
+export default function Pricing(){
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
     const theme = useTheme();
     const classes = useClasses(styleObject(theme, pingImage));
@@ -41,8 +41,14 @@ const Pricing = () => {
     useEffect(() => {
         const query = new URLSearchParams(window.location.search);
     
-        if (query.get('openInNewTab')) {
-          setOpenInNewTab(true);
+        const hash = window.location.hash.slice(1); // Remove the '#'
+        const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
+            
+       
+        // Check for 'openInNewTab' in either query or hash
+        if (query.has('openInNewTab') || hashParams.has('openInNewTab')) {
+            setOpenInNewTab(true);
+            console.log("Setting openInNewTab");
         }
     
       }, []);
@@ -117,4 +123,3 @@ const Pricing = () => {
     );
 }
 
-export default React.memo(Pricing);
