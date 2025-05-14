@@ -20,6 +20,8 @@ import { SuperSEO } from 'react-super-seo';
 import Blog from './Blog';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
+import { FaDiscord } from "react-icons/fa";
+import Button from '@mui/material/Button';
 import Chat from "../dashboard/Chat/Chat";
 import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
@@ -486,6 +488,32 @@ const ProductDetail = () => {
                                 </Link>
                             </IconButton>
                         </Grid>
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<FaDiscord size={24} />}
+                                href="https://discord.gg/rne7YaK3"
+                                target="_blank"
+                                rel="noopener"
+                                sx={{
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    fontSize: '1.1rem',
+                                    borderRadius: 2,
+                                    boxShadow: 2,
+                                    px: 3,
+                                    py: 1.2,
+                                    backgroundColor: theme => theme.palette.secondary.main,
+                                    color: theme => theme.palette.getContrastText(theme.palette.secondary.main),
+                                    '&:hover': {
+                                        backgroundColor: theme => theme.palette.secondary.dark,
+                                    }
+                                }}
+                            >
+                                Join our Discord
+                            </Button>
+                        </Grid>
                     </Grid>
 
                     <hr />
@@ -499,6 +527,7 @@ const ProductDetail = () => {
                     </div>
                 </Container>
             </main>
+
         </div>
     );
 }
