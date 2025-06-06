@@ -493,7 +493,7 @@ const ProductDetail = () => {
                                 variant="contained"
                                 color="secondary"
                                 startIcon={<FaDiscord size={24} />}
-                                href="https://discord.gg/rne7YaK3"
+                                href="https://discord.gg/pG4gEE4QXz"
                                 target="_blank"
                                 rel="noopener"
                                 sx={{
