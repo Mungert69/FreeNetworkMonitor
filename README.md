@@ -14,7 +14,9 @@ Our local agent monitor app lets you oversee local hosts, while our ChatGPT-powe
 
 ## Live Demo
 
-<a href='https://readyforquantum.com/'>Click here to view live site</a>
+<a href="https://readyforquantum.com/?utm_source=github&utm_medium=referral&utm_campaign=freenetworkmonitor_readme" target="_blank">
+  <img src="https://readyforquantum.com/logo.png" alt="ReadyForQuantum" width="150">
+</a>
 
 Please check it out and leave a review using the Trust Pilot link at the bottom of the landing page. Thanks :)
 
