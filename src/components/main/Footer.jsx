@@ -49,6 +49,9 @@ function Footer(props) {
             </Grid>
           </Grid>
           <Grid item>
+            <ByMeACoffeeLink  />
+          </Grid>    
+          <Grid item>
             <Copyright />
           </Grid>
         </Grid>
