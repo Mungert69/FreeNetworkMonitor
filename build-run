@@ -6,4 +6,4 @@ npm run build
 cp -r ../FreeNetworkMonitorBlog/public/images ./out/
 cp -r ../FreeNetworkMonitorBlog/public/blogpics ./out/
 docker compose -f docker-compose.yml build
-docker push mungert/networkmonitorreact:0.9.0
+docker push mungert/networkmonitorreact:0.9.1

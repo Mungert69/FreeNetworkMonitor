@@ -76,9 +76,9 @@ export  function ProfileDialog({ setOpen, apiUser,siteId, initViewSub, setInitVi
         </DialogContent>
         <DialogActions>
          
-          <Button  onClick={handleSubscription}>
+          {/* <Button  onClick={handleSubscription}>
             {initViewSub ? <span>View Profile</span>:<span>View Subscription</span>}
-          </Button>
+          </Button> */}
 
           <Button autoFocus onClick={handleClose}>
             Close

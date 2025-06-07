@@ -47,17 +47,6 @@ export function MainListItems({classes}) {
         </Link>
       </Tooltip>
       
-      <Tooltip title="Subscription" placement="right">
-        <Link className={classes.linkCompact} href="/Subscription">
-          <ListItem button key="subscription">
-            <ListItemIcon>
-              <LoyaltyIcon />
-            </ListItemIcon>
-            <ListItemText primary="Subscription" />
-          </ListItem>
-        </Link>
-      </Tooltip>
-      
       <Tooltip title="Blog" placement="right">
         <a href="/blog" style={{
           margin: '0rem',
