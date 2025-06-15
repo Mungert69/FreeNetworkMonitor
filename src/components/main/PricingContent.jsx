@@ -36,7 +36,7 @@ const tiers = [
   },
   {
     title: 'Standard',
-    price: '1',
+    price: '2',
     description: [
       'Monitor up to 50 Hosts',
       'Local network monitoring with Network Monitor and Quantum Secure Agents',
@@ -54,13 +54,13 @@ const tiers = [
   {
     title: 'Professional',
     subheader: 'Most popular',
-    price: '3',
+    price: '5',
     description: [
       'All features of the Standard Plan plus:',
       'Monitor up to 300 Hosts with advanced tracking',
       'Conduct local and remote network security assessments and penetration tests using the Network Monitor and Quantum Secure Agents.',
       'Comprehensive health checks (ICMP, HTTP, DNS, Raw Connect, SMTP Ping, Quantum-Ready checks)',
-      '750k Max tokens, fill 250k daily for Turbo AI Assistant',
+      '750k Max tokens, fill 2000k daily for Turbo AI Assistant',
       'Access to advanced Turbo AI Assistant with full network diagnostic capabilities',
       'Security and Penetration Expert LLMs for detailed audits, vulnerability scans, and threat detection',
       'Predictive AI models for identifying and resolving network issues before they happen',
@@ -72,11 +72,11 @@ const tiers = [
   },
   {
     title: 'Enterprise',
-    price: '5',
+    price: '10',
     description: [
       'All features of the Professional Plan plus:',
       'Monitor up to 500 Hosts with dedicated support',
-      '2000k Max tokens, fill 500k daily for Turbo AI Assistant',
+      '5000k Max tokens, fill 1000k daily for Turbo AI Assistant',
       'Exclusive access to the most advanced features of the Turbo AI Assistant for real-time, large-scale monitoring, comprehensive penetration testing, and in-depth network insights.',
       'Includes BusyBox command execution on agents for enhanced functionality and versatility, enabling more comprehensive system management and automation directly from your monitoring agents.',
       'Unlimited FreeLLM Assistant usage for all basic and advanced queries',

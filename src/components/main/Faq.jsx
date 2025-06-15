@@ -268,8 +268,8 @@ const data = {
                 <ul>
                     <li><strong>Free Plan:</strong> 50k max tokens, with 25k added daily.</li>
                     <li><strong>Standard Plan:</strong> 150k max tokens, with 50k added daily.</li>
-                    <li><strong>Professional Plan:</strong> 750k max tokens, with 250k added daily.</li>
-                    <li><strong>Enterprise Plan:</strong> 2000k max tokens, with 500k added daily.</li>
+                    <li><strong>Professional Plan:</strong> 2000k max tokens, with 500k added daily.</li>
+                    <li><strong>Enterprise Plan:</strong> 5000k max tokens, with 1000k added daily.</li>
                 </ul>
                 <p>These limits reset daily, allowing you to run AI-driven tasks.</p>
             `
@@ -292,7 +292,7 @@ const data = {
         {
             title: "What features are included in the Standard Plan?",
             content: `
-                <p>The <strong>Standard Plan</strong> ($1/mo) builds on the Free Plan and includes:</p>
+                <p>The <strong>Standard Plan</strong> ($2/mo) builds on the Free Plan and includes:</p>
                 <ul>
                     <li>Monitor up to 50 hosts.</li>
                     <li>Local network monitoring with Network Monitor Agent.</li>
@@ -310,13 +310,13 @@ const data = {
         {
             title: "What does the Professional Plan offer?",
             content: `
-                <p>The <strong>Professional Plan</strong> ($3/mo) builds on the Standard Plan and includes:</p>
+                <p>The <strong>Professional Plan</strong> ($5/mo) builds on the Standard Plan and includes:</p>
                 <ul>
                     <li>All the features of the Standard Plan plus:</li>
                     <li>Monitor up to 300 hosts.</li>
                     <li>Advanced health check monitors; detect potential issues before they happen.</li>
                     <li>Advanced health checks for ICMP, Http, Dns, Raw Connect and Smtp Ping, includes Quantum Ready checks.</li>
-                    <li>750k Max Turbo AI tokens, fill 250k daily.</li>
+                    <li>2000k Max Turbo AI tokens, fill 500k daily.</li>
                     <li>Priority Email support.</li>
                     <li>2 year full response data retention.</li>
                 </ul>
@@ -326,12 +326,12 @@ const data = {
         {
             title: "What features are in the Enterprise Plan?",
             content: `
-                <p>The <strong>Enterprise Plan</strong> ($5/mo) builds on the Professional Plan and offers:</p>
+                <p>The <strong>Enterprise Plan</strong> ($10/mo) builds on the Professional Plan and offers:</p>
                 <ul>
                     <li>All the features of the Professional Plan plus:</li>
                     <li>Monitor up to 500 hosts.</li>
                     <li>One high priority dedicated monitor service agent in one of our datacenter locations (contact support with your requirements).</li>
-                    <li>2000k Max Turbo AI tokens, fill 500k daily.</li>
+                    <li>5000k Max Turbo AI tokens, fill 1000k daily.</li>
                     <li>Unlimited full response data retention and Data Export.</li>
                 </ul>
                 <p>This plan is designed for large-scale networks that require real-time monitoring and advanced security features.</p>
