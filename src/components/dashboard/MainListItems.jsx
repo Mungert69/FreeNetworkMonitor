@@ -11,7 +11,7 @@ import BlogIcon from '@mui/icons-material/Book';
 import DownloadIcon from '@mui/icons-material/GetApp';
 import Tooltip from '@mui/material/Tooltip';
 
-export function MainListItems({classes}) {
+export function MainListItems({ classes }) {
   return (
     <div>
       <Tooltip title="Main" placement="right">
@@ -24,7 +24,7 @@ export function MainListItems({classes}) {
           </ListItem>
         </Link>
       </Tooltip>
-      
+
       <Tooltip title="Dashboard" placement="right">
         <Link className={classes.linkCompact} href="/Dashboard">
           <ListItem button key="dashboard">
@@ -35,7 +35,7 @@ export function MainListItems({classes}) {
           </ListItem>
         </Link>
       </Tooltip>
-      
+
       <Tooltip title="FAQ" placement="right">
         <Link className={classes.linkCompact} href="/Faq">
           <ListItem button key="faq">
@@ -46,15 +46,15 @@ export function MainListItems({classes}) {
           </ListItem>
         </Link>
       </Tooltip>
-      
+
       <Tooltip title="Blog" placement="right">
         <a href="/blog" style={{
           margin: '0rem',
           textDecoration: 'none',
           color: "#6239AB",
           "&:hover": {
-              color: "#607466",
-              textDecoration: "none"
+            color: "#607466",
+            textDecoration: "none"
           }
         }}>
           <ListItem button key="blog">
@@ -65,7 +65,7 @@ export function MainListItems({classes}) {
           </ListItem>
         </a>
       </Tooltip>
-      
+
       <Tooltip title="Download" placement="right">
         <Link className={classes.linkCompact} href="/Download">
           <ListItem button key="download">
@@ -73,6 +73,17 @@ export function MainListItems({classes}) {
               <DownloadIcon />
             </ListItemIcon>
             <ListItemText primary="Download" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+
+      <Tooltip title="Subscription" placement="right">Add commentMore actions
+        <Link className={classes.linkCompact} href="/Subscription">
+          <ListItem button key="subscription">
+            <ListItemIcon>
+              <LoyaltyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Subscription" />
           </ListItem>
         </Link>
       </Tooltip>

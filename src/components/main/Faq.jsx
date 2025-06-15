@@ -45,6 +45,13 @@ const data = {
             `,
         },
         {
+            title: "How do I add more hosts?",
+            content: `
+                <p>The number of hosts you can add is determined by your account type. To add more hosts and enjoy additional benefits, 
+                <a href="https://${getBaseDomain()}/subscription" target="_blank">upgrade your subscription</a>.</p>
+            `,
+        },
+        {
             title: "The time of events changes when I login in different locations?",
             content: `
                 <p>The timezone of your browser is used to calculate the time of events. On the server, all times are stored as UTC. Therefore, the time of events may appear to change if you log in from different geographical locations. However, alerts will always be sent with UTC as the timestamp.</p>
@@ -234,6 +241,116 @@ const data = {
                 <p><strong>Assistant:</strong> The module has completed. No vulnerabilities were found.</p>
             `
         },
+
+        {
+            title: "Why can't I run certain functions like penetration tests or network scans?",
+            content: `
+                <p>Advanced functions such as penetration tests, security assessments, and network scans are only available in the <strong>Professional</strong> and <strong>Enterprise</strong> plans.</p>
+                <p>If you're on the <strong>Free</strong> or <strong>Standard</strong> plan, these features are restricted. You can upgrade via the <a href="https://${getBaseDomain()}/subscription">subscription page</a>.</p>
+            `
+        },
+        {
+            title: "How do I upgrade my subscription plan?",
+            content: `
+                <p>To upgrade your plan:</p>
+                <ol>
+                    <li>Go to the <a href="https://${getBaseDomain()}/subscription">subscription page</a>.</li>
+                    <li>Select the plan that suits your needs.</li>
+                    <li>Follow the instructions to upgrade.</li>
+                </ol>
+                <p>After upgrading, new features will be available immediately.</p>
+            `
+        },
+        {
+            title: "What are the token limits in each plan?",
+            content: `
+                <p>The AI-powered assistants have token limits, which dictate the amount of data the AI can process daily:</p>
+                <ul>
+                    <li><strong>Free Plan:</strong> 50k max tokens, with 25k added daily.</li>
+                    <li><strong>Standard Plan:</strong> 150k max tokens, with 50k added daily.</li>
+                    <li><strong>Professional Plan:</strong> 750k max tokens, with 250k added daily.</li>
+                    <li><strong>Enterprise Plan:</strong> 2000k max tokens, with 500k added daily.</li>
+                </ul>
+                <p>These limits reset daily, allowing you to run AI-driven tasks.</p>
+            `
+        },
+        {
+            title: "What features are available with the Free Plan?",
+            content: `
+                <p>The <strong>Free Plan</strong> includes:</p>
+                <ul>
+                    <li>Monitor up to 10 hosts.</li>
+                    <li>Network monitors for ICMP, Http, Dns, Raw Connect and Smtp Ping.</li>
+                    <li>50k Max tokens, 25k added daily, for Network Monitor Turbo AI Assistant.</li>
+                    <li>FreeLM Assistant.</li>
+                    <li>1 Month full response data retention.</li>
+                    <li>Must login every 3 months.</li>
+                </ul>
+                <p>To access more hosts and advanced features, upgrade to the <strong>Standard</strong> or higher plan.</p>
+            `
+        },
+        {
+            title: "What features are included in the Standard Plan?",
+            content: `
+                <p>The <strong>Standard Plan</strong> ($1/mo) builds on the Free Plan and includes:</p>
+                <ul>
+                    <li>Monitor up to 50 hosts.</li>
+                    <li>Local network monitoring with Network Monitor Agent.</li>
+                    <li>Network monitors for ICMP, Http, Dns, Raw Connect and Smtp Ping.</li>
+                    <li>Includes Quantum Ready checks.</li>
+                    <li>Email support.</li>
+                    <li>150k Max Turbo AI tokens, fill 50k daily.</li>
+                    <li>FreeLM Assistant.</li>
+                    <li>6 Months full response data retention.</li>
+                    <li>No need to login every 3 months.</li>
+                </ul>
+                <p>This plan is great for users who need more hosts and advanced monitoring capabilities beyond the Free Plan.</p>
+            `
+        },
+        {
+            title: "What does the Professional Plan offer?",
+            content: `
+                <p>The <strong>Professional Plan</strong> ($3/mo) builds on the Standard Plan and includes:</p>
+                <ul>
+                    <li>All the features of the Standard Plan plus:</li>
+                    <li>Monitor up to 300 hosts.</li>
+                    <li>Advanced health check monitors; detect potential issues before they happen.</li>
+                    <li>Advanced health checks for ICMP, Http, Dns, Raw Connect and Smtp Ping, includes Quantum Ready checks.</li>
+                    <li>750k Max Turbo AI tokens, fill 250k daily.</li>
+                    <li>Priority Email support.</li>
+                    <li>2 year full response data retention.</li>
+                </ul>
+                <p>This plan is ideal for users needing enhanced security features and more extensive monitoring.</p>
+            `
+        },
+        {
+            title: "What features are in the Enterprise Plan?",
+            content: `
+                <p>The <strong>Enterprise Plan</strong> ($5/mo) builds on the Professional Plan and offers:</p>
+                <ul>
+                    <li>All the features of the Professional Plan plus:</li>
+                    <li>Monitor up to 500 hosts.</li>
+                    <li>One high priority dedicated monitor service agent in one of our datacenter locations (contact support with your requirements).</li>
+                    <li>2000k Max Turbo AI tokens, fill 500k daily.</li>
+                    <li>Unlimited full response data retention and Data Export.</li>
+                </ul>
+                <p>This plan is designed for large-scale networks that require real-time monitoring and advanced security features.</p>
+            `
+        },
+        {
+            title: "How do I know which plan is right for me?",
+            content: `
+                <p>The best plan depends on your monitoring needs:</p>
+                <ul>
+                    <li><strong>Free Plan:</strong> Suitable for small networks with up to 10 hosts.</li>
+                    <li><strong>Standard Plan:</strong> Ideal for monitoring up to 50 hosts with local network monitoring and Quantum Ready checks.</li>
+                    <li><strong>Professional Plan:</strong> Great for users needing advanced health checks and up to 300 hosts.</li>
+                    <li><strong>Enterprise Plan:</strong> Best for large networks and those requiring advanced features and up to 500 hosts, with dedicated agent options.</li>
+                </ul>
+                <p>You can always upgrade your plan as your network monitoring needs evolve.</p>
+            `
+        },
+
         {
             title: "How do I add websites and hosts to monitor?",
             content: `You must first login to add hosts. Goto the dashboard page and click login.
