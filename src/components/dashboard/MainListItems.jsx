@@ -77,7 +77,7 @@ export function MainListItems({ classes }) {
         </Link>
       </Tooltip>
 
-      <Tooltip title="Subscription" placement="right">Add commentMore actions
+      <Tooltip title="Subscription" placement="right">
         <Link className={classes.linkCompact} href="/Subscription">
           <ListItem button key="subscription">
             <ListItemIcon>
