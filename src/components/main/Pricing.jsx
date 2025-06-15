@@ -56,16 +56,16 @@ export default function Pricing(){
         <div className={classes.root}>
             <CssBaseline />
             <SuperSEO
-                title="Free Network Monitor Online Website Monitoring"
-                description="This website provides a free network monitor online service. Providing realtime monitoring, charts and alerts for all your websites and network hosts. Setup is easy and simple. It is free to use."
+                title="Quantum Network Monitor Online Website Monitoring"
+                description="This website provides a Quantum Network Monitor online service. Providing realtime monitoring, charts and alerts for all your websites and network hosts. Setup is easy and simple. It is free to use."
                 openGraph={{
                     ogImage: {
                         ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
-                        ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+                        ogImageAlt: "Quantum Network Monitor Logo", // Add alt text for the image
                     },
                     ogUrl: `https://${getBaseDomain()}/subscription`, // Canonical URL
                     ogType: "website", // Type of content
-                    ogSiteName: "Free Network Monitor", // Site name
+                    ogSiteName: "Quantum Network Monitor", // Site name
                     ogLocale: "en_US", // Language and locale
                 }}
             />
@@ -84,7 +84,7 @@ export default function Pricing(){
                     </IconButton>
                     <LogoLink />
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-                        Free Network Monitor
+                        Quantum Network Monitor
                     </Typography>
                     <AuthNav openInNewTab={openInNewTab}/>
 

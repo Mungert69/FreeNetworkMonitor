@@ -23,7 +23,7 @@ const LogoLink = () => {
                         component="img"
                         sx={{ width: 48, height: 32 }}
                         image='/img/logo.jpg'
-                        alt="Free Network Monitor Logo"
+                        alt="Quantum Network Monitor Logo"
                     />
                 </Card>
                 </Link>

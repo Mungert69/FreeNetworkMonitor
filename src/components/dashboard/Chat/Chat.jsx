@@ -183,7 +183,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     if (loadCount > 1) {
       setLoadWarning(
         <>
-          Warning: {llmRunnerType} load is high {loadCount} message in queue. Consider trying again later, using TurboLLM or Free Network Monitor GPT at{' '}
+          Warning: {llmRunnerType} load is high {loadCount} message in queue. Consider trying again later, using TurboLLM or Quantum Network Monitor GPT at{' '}
           <a
             href="https://chatgpt.com/g/g-g0XMzU1nM-free-network-monitor"
             target="_blank"

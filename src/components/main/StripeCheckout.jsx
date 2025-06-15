@@ -31,7 +31,7 @@ export function StripeCheckout({ apiUser, siteId }) {
     if (query.get('canceled')) {
       setSuccess(false);
       setMessage(
-        "Order canceled -- continue to use Free Network Monitor and subcribe when you're ready."
+        "Order canceled -- continue to use Quantum Network Monitor and subcribe when you're ready."
       );
     }
   }, [sessionId]);

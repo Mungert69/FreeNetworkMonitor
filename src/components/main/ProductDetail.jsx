@@ -154,7 +154,7 @@ const ProductDetail = () => {
                     },
                     ogUrl: `https://${getBaseDomain()}`,
                     ogType: "website",
-                    ogSiteName: "Free Network Monitor",
+                    ogSiteName: "Quantum Network Monitor",
                     ogLocale: "en_US",
                 }}
             />
@@ -172,7 +172,7 @@ const ProductDetail = () => {
                     </IconButton>
                     <LogoLink />
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-                        Free Network Monitor
+                        Quantum Network Monitor
                     </Typography>
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
                         <ChatIcon />
@@ -217,7 +217,7 @@ const ProductDetail = () => {
                                     >
                                         <Grid item>
                                             <Typography color='primary' variant="h2">
-                                                Free Network Monitor
+                                                Quantum Network Monitor
                                             </Typography>
                                         </Grid>
                                         <Grid item>

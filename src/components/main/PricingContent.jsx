@@ -159,7 +159,7 @@ function PricingContent({ noRedirect, apiUser }) {
     
       <Container disableGutters component="main" sx={{ pt: 8, pb: 6 }}>
         <Typography variant="h2" align="center">
-          <img src='/img/logo.png' alt="Free Network Monitor Logo" height="96px" />
+          <img src='/img/logo.png' alt="Quantum Network Monitor Logo" height="96px" />
         </Typography>
 
         <Typography variant="h5" align="center" color="text.secondary" component="p">

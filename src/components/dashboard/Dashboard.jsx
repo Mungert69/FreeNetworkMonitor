@@ -312,16 +312,16 @@ export default function Dashboard() {
     <div className={classes.root}>
 
       <SuperSEO
-        title="Free Network Monitor Dashboard - Comprehensive Network Monitoring & Security Management"
-        description="Manage your network hosts, conduct security assessments, and run diagnostics with the Free Network Monitor Dashboard. Monitor real-time performance, execute custom commands, and ensure network integrity with advanced tools. Start monitoring for free today!"
+        title="Quantum Network Monitor Dashboard - Comprehensive Network Monitoring & Security Management"
+        description="Manage your network hosts, conduct security assessments, and run diagnostics with the Quantum Network Monitor Dashboard. Monitor real-time performance, execute custom commands, and ensure network integrity with advanced tools. Start monitoring for free today!"
         openGraph={{
           ogImage: {
             ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
-            ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+            ogImageAlt: "Quantum Network Monitor Logo", // Add alt text for the image
           },
           ogUrl: `https://${getBaseDomain()}/dashboard`, // Canonical URL
           ogType: "website", // Type of content
-          ogSiteName: "Free Network Monitor", // Site name
+          ogSiteName: "Quantum Network Monitor", // Site name
           ogLocale: "en_US", // Language and locale
         }}
       />

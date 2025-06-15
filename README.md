@@ -1,4 +1,4 @@
-# Free Network Monitor Online Website Monitoring
+# Quantum Network Monitor Online Website Monitoring
 
 Easy to use web driven network monitor application.
 

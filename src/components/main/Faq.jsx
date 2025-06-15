@@ -364,7 +364,7 @@ const data = {
         {
             title: "How do I install the Network Monitor Agent on Android?",
             content: `
-                <p>You can download the Free Network Monitor Agent app from the 
+                <p>You can download the Quantum Network Monitor Agent app from the 
                 <a href="https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui">Google Play Store</a> 
                 or the <a href="https://play.google.com/store/apps/details?id=click.freenetworkmonitor.quantumsecure">Quantum Secure Agent</a>. 
                 Follow the installation instructions, and after the app is installed, enable the agent and follow the post-installation steps to start monitoring.</p>
@@ -386,7 +386,7 @@ const data = {
                 <ol>
                     <li>Toggle the "Enable Agent" slider to activate the agent.</li>
                     <li>Authorize the agent by logging in through OAuth when prompted.</li>
-                    <li>Login to the Free Network Monitor Dashboard using the same email to manage your monitoring setup.</li>
+                    <li>Login to the Quantum Network Monitor Dashboard using the same email to manage your monitoring setup.</li>
                     <li>Add hosts for monitoring by selecting the appropriate IP addresses and monitor location.</li>
                 </ol>
             `,
@@ -422,7 +422,7 @@ const data = {
             content: `
                 <ol>
                     <li>Once the Docker agent is authorized, go to the 
-                    <a href="https://${getBaseDomain()}/dashboard">Free Network Monitor Dashboard</a> to add hosts.</li>
+                    <a href="https://${getBaseDomain()}/dashboard">Quantum Network Monitor Dashboard</a> to add hosts.</li>
                     <li>Select a monitor location and the endpoint type (e.g., 'icmp' for ping monitoring), and switch between view and edit modes to monitor your hosts.</li>
                 </ol>
             `,
@@ -430,7 +430,7 @@ const data = {
         {
             title: "How do I view monitoring data for hosts?",
             content: `
-                <p>You can view monitoring data through the Free Network Monitor Dashboard or directly in the Agent App. 
+                <p>You can view monitoring data through the Quantum Network Monitor Dashboard or directly in the Agent App. 
                 In the app, host statuses are represented by indicator circles. Click the circle to get more detailed monitoring information, 
                 with visual effects such as pulsing and beacon effects to represent response time and reliability.</p>
             `,
@@ -452,9 +452,9 @@ const data = {
             `,
         },
         {
-            title: "What is an Internet-Based Agent provided by Free Network Monitor?",
+            title: "What is an Internet-Based Agent provided by Quantum Network Monitor?",
             content: `
-                <p>Internet-Based Agents are managed by the Free Network Monitor service and operate from predefined global locations. 
+                <p>Internet-Based Agents are managed by the Quantum Network Monitor service and operate from predefined global locations. 
                 These agents monitor public-facing services like websites or cloud servers and are ideal for tracking availability and performance from different regions.</p>
                 <p>Unlike Local Agents, Internet-Based Agents do not need to be installed or configured by the user and are ready to use via the dashboard.</p>
             `,
@@ -493,9 +493,9 @@ const data = {
             `,
         },
         {
-            title: "What is the difference between the Free Network Monitor Agent and the Quantum Secure Agent?",
+            title: "What is the difference between the Quantum Network Monitor Agent and the Quantum Secure Agent?",
             content: `
-                <p>The Free Network Monitor Agent and the Quantum Secure Agent are nearly identical in functionality. 
+                <p>The Quantum Network Monitor Agent and the Quantum Secure Agent are nearly identical in functionality. 
                 However, the Quantum Secure Agent includes additional features that allow it to scan your local network for devices and monitor whether they are using 
                 quantum-safe TLS KEM (Key Encapsulation Mechanism) encryption. This makes the Quantum Secure Agent ideal for environments where quantum-safe encryption 
                 is a priority for network security.</p>
@@ -551,16 +551,16 @@ const Faq = () => {
         <div className={classes.root}>
             <CssBaseline />
             <SuperSEO
-                title="Free Network Monitor FAQ - Get Answers to Common Questions"
-                description="Find answers to frequently asked questions about Free Network Monitor. Learn how to add hosts, set up alerts, troubleshoot issues, and use advanced features like the Network Monitor Assistant."
+                title="Quantum Network Monitor FAQ - Get Answers to Common Questions"
+                description="Find answers to frequently asked questions about Quantum Network Monitor. Learn how to add hosts, set up alerts, troubleshoot issues, and use advanced features like the Network Monitor Assistant."
                 openGraph={{
                     ogImage: {
                         ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
-                        ogImageAlt: "Free Network Monitor Logo", // Add alt text for the image
+                        ogImageAlt: "Quantum Network Monitor Logo", // Add alt text for the image
                     },
                     ogUrl: "https://${getBaseDomain()}/faq", // Canonical URL
                     ogType: "website", // Type of content
-                    ogSiteName: "Free Network Monitor", // Site name
+                    ogSiteName: "Quantum Network Monitor", // Site name
                     ogLocale: "en_US", // Language and locale
                 }}
             />
@@ -579,7 +579,7 @@ const Faq = () => {
                     </IconButton>
                     <LogoLink />
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-                        Free Network Monitor
+                        Quantum Network Monitor
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -612,7 +612,7 @@ const Faq = () => {
                                     <Grid container direction="column" justifyContent="space-around" alignItems="center">
                                         <Grid item>
                                             <Typography color="primary" variant="h2">
-                                                Free Network Monitor
+                                                Quantum Network Monitor
                                             </Typography>
                                         </Grid>
                                         <Grid item>

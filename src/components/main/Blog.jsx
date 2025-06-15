@@ -21,7 +21,7 @@ const mainFeaturedPost = {
     'How to Set Up Your Quantum Readiness Monitor. Are your websites and services safe from quantum cryptographic attacks? Read this guide to test your servers for quantum readiness',
   image: '/img/ping.jpg',
   linkText: 'Continue reading…',
-  imageText: 'View of Free Network Monitor',
+  imageText: 'View of Quantum Network Monitor',
   href: '#blog-post2',
 
 
@@ -175,7 +175,7 @@ export function Blog({ classes, hash }) {
         </Grid>
         <Grid container spacing={5} sx={{ mt: 3 }}>
           <Element id={'#blog'} name={'#blog'} />
-          <BlogList classes={classes} title="Free Network Monitor Blog" posts={posts} />
+          <BlogList classes={classes} title="Quantum Network Monitor Blog" posts={posts} />
           <Sidebar classes={classes} sidebar={getSidebar(archives)} setArchiveDate={handleArchiveClick} blogTitles={blogTitles} />
         </Grid>
       </main>
