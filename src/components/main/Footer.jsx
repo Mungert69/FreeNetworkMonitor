@@ -1,60 +1,71 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Copyright from './Copyright';
-import MegaLink from './MegaLink';
 import ByMeACoffeeLink from './BuyMeACoffee';
 import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 
-function Footer(props) {
-  const { description, title } = props;
-
-  // Add a CSS class for the Trustpilot image
+function Footer() {
+  // Modern Trustpilot logo style
   const trustpilotImageStyle = {
-    maxWidth: '20%', // Adjust the width as needed
-    height: 'auto', // Maintain aspect ratio
+    maxWidth: 120,
+    height: 'auto',
+    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))',
+    marginRight: 12,
+    verticalAlign: 'middle',
   };
 
   return (
     <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
-      <Container>
-        <Grid
-          container
-          spacing={2}
-          direction="column"
+      <Container maxWidth="md">
+        <Paper
+          elevation={4}
+          sx={{
+            borderRadius: 4,
+            p: { xs: 3, md: 5 },
+            mb: 2,
+            boxShadow: 6,
+            background: "rgba(255,255,255,0.98)",
+          }}
         >
           <Grid
             container
-            spacing={12}
-            direction="row"
-            align="center"
-            justifyContent="space-around"
+            spacing={3}
+            alignItems="center"
+            justifyContent="space-between"
           >
-            <Grid item xs={6}>
-              <Grid container alignItems="center" justifyContent="center" spacing={2}>
-                <Grid item>
-                  <img src="https://cdn.trustpilot.net/brand-assets/4.3.0/logo-white.svg" alt="Trustpilot" style={trustpilotImageStyle} />
-                </Grid>
-                <Grid item>
-                  <Typography variant="body2" color="textSecondary">
-                    <Link href="https://uk.trustpilot.com/review/freenetworkmonitor.click" target="_blank" rel="noopener">
-                      Review us on Trustpilot
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                <img
+                  src="https://cdn.trustpilot.net/brand-assets/4.3.0/logo-white.svg"
+                  alt="Trustpilot"
+                  style={trustpilotImageStyle}
+                />
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  <Link
+                    href="https://uk.trustpilot.com/review/freenetworkmonitor.click"
+                    target="_blank"
+                    rel="noopener"
+                    underline="hover"
+                    color="primary"
+                    sx={{ fontWeight: 600, ml: 1 }}
+                  >
+                    Review us on Trustpilot
+                  </Link>
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'center', md: 'right' } }}>
+              <ByMeACoffeeLink />
             </Grid>
           </Grid>
-          <Grid item>
-            <ByMeACoffeeLink  />
-          </Grid>    
-          <Grid item>
-            <Copyright />
-          </Grid>
-        </Grid>
+        </Paper>
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Copyright />
+        </Box>
       </Container>
     </Box>
   );

@@ -95,43 +95,78 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
     <React.Fragment>
       
       <Title>
-        <Button size="small" onClick={() => navigateDataSet(1)} disabled={!canGoBack}>
-          <ArrowBackIcon />
-        </Button>
-        {`${dateString} Dataset for ${hostname}`}
-        <Button size="small" onClick={() => navigateDataSet(-1)} disabled={!canGoForward}>
-          <ArrowForwardIcon />
-        </Button>
+        <span style={{ fontSize: '1rem', fontWeight: 500 }}>
+          <Button size="small" onClick={() => navigateDataSet(1)} disabled={!canGoBack}>
+            <ArrowBackIcon fontSize="small" />
+          </Button>
+          {`${dateString} Dataset for ${hostname}`}
+          <Button size="small" onClick={() => navigateDataSet(-1)} disabled={!canGoForward}>
+            <ArrowForwardIcon fontSize="small" />
+          </Button>
+        </span>
       </Title>
-      <ResponsiveContainer> 
+      <ResponsiveContainer width="99%" height={150}>
         <LineChart
           data={data}
           margin={{
-            top: 16,
-            right: 16,
-            bottom: 0,
-            left: 24,
+            top: 6,
+            right: 10,
+            bottom: 4,
+            left: 4,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-
+          <CartesianGrid strokeDasharray="2 2" vertical={false} />
           <Tooltip content={customTooltip} animationEasing={false} />
-          <Legend />
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} >
-
-          </XAxis>
-          <YAxis stroke={theme.palette.text.secondary}>
+          {/* Legend removed */}
+          <XAxis
+            dataKey="time"
+            stroke={theme.palette.text.secondary}
+            minTickGap={30}
+            tick={{ fontSize: 11 }}
+            interval={Math.ceil((data?.length || 1) / 6) - 1}
+            padding={{ left: 10, right: 20 }}
+            tickMargin={8}
+            allowDuplicatedCategory={false}
+            allowDataOverflow={false}
+            tickFormatter={(value, index) => {
+              // Only show the last label if it's not overlapping
+              if (index === data.length - 1 && data.length > 1) {
+                return ` ${value} `;
+              }
+              return value;
+            }}
+          />
+          <YAxis
+            stroke={theme.palette.text.secondary}
+            width={28}
+            tick={{ fontSize: 12 }}
+            allowDecimals={false}
+            domain={[0, 'auto']}
+            tickMargin={0}
+          >
             <Label
-              angle={270}
-              position="left"
-              style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
+              angle={-90}
+              position="insideLeft"
+              style={{ textAnchor: 'middle', fill: theme.palette.text.primary, fontSize: 12, fontWeight: 600 }}
             >
-              Response Time ms
+              ms
             </Label>
           </YAxis>
-          <Line type="monotone" dataKey="response" stroke={theme.palette.primary.light} dot={<CustomizedDot />} />
-          <Line type="monotone" dataKey="status" stroke={theme.palette.primary.dark}  />
-                
+          <Line
+            type="monotone"
+            dataKey="response"
+            stroke={theme.palette.primary.light}
+            dot={<CustomizedDot />}
+            strokeWidth={2}
+            isAnimationActive={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="status"
+            stroke={theme.palette.primary.dark}
+            strokeWidth={1}
+            isAnimationActive={false}
+          />
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>

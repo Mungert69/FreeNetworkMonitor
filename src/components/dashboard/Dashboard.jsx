@@ -20,6 +20,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
 import ListSubheader from '@mui/material/ListSubheader';
+import Box from '@mui/material/Box';
 import MainListItems from './MainListItems';
 import Chart from './Chart';
 import HostDetail from './HostDetail';
@@ -70,7 +71,8 @@ export default function Dashboard() {
   const [processorList, setProcessorList] = React.useState([]);
   const [initViewSub, setInitViewSub] = React.useState(false);
   const [openInNewTab, setOpenInNewTab] = React.useState(false);
-  
+  const [isChartCollapsed, setIsChartCollapsed] = useState(false);
+  const [isDetailCollapsed, setIsDetailCollapsed] = useState(false);
   const [hostListIconText, setHostListIconText] = React.useState("Add Hosts");
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -144,6 +146,7 @@ export default function Dashboard() {
     setOpen(false);
   };
   const editIconClick = async () => {
+    setIsChatOpen(false); // Hide the assistant when edit is clicked
     setRealTime(realTime => !realTime);
     await setEditMode();
     // Reload ListData if clicking into view mode. Hide view mode if clicking into edit mode.
@@ -337,12 +340,11 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <LogoLink />
-          <Typography sx={{ display: { xs: 'none', sm: 'block' }, paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-            Network Monitor Dashboard
-          </Typography>
-          <Typography sx={{ display: { xs: 'block', sm: 'none' } }} component="h1" color="inherit" noWrap className={classes.title}>
-            Dashboard
-          </Typography>
+          {isMediumOrLarger && (
+            <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
+              Network Monitor Dashboard
+            </Typography>
+          )}
           {
             !isLoggedIn ? null :
               <FadeWrapper toggle={toggleTable && listData.length === 0}>
@@ -359,12 +361,14 @@ export default function Dashboard() {
                 </IconButton>
               </FadeWrapper>
           }
+          <Box sx={{ flexGrow: 1 }} />
           <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
           >
             <ChatIcon />
           </IconButton>
-
-          <AuthNav openInNewTab={openInNewTab}/>
+          <Box sx={{ ml: 2, display: 'inline-flex', alignItems: 'center' }}>
+            <AuthNav openInNewTab={openInNewTab}/>
+          </Box>
           <IconButton color="inherit" >
             <Badge badgeContent={alertCount} color="error">
               <NotificationsIcon />
@@ -387,40 +391,90 @@ export default function Dashboard() {
             <ChevronLeftIcon />
           </IconButton>
         </div>
-        <Divider />
-        <List><MainListItems classes={classes} /></List>
-        <Divider />
+        <List disablePadding sx={{ pl: 0, pr: 0 }}>
+          <MainListItems classes={classes} />
+        </List>
 
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container} >
-          <Grid container spacing={1}>
+        <Container
+          maxWidth={isMediumOrLarger ? "lg" : false}
+          className={classes.container}
+          disableGutters={!isMediumOrLarger}
+          sx={{
+            px: isMediumOrLarger ? 3 : 0,
+            pt: isMediumOrLarger ? 4 : 0,
+            pb: isMediumOrLarger ? 4 : 0,
+          }}
+        >
+          <Grid container spacing={isMediumOrLarger ? 1 : 0}>
             {viewInfo &&
               <Grid item xs={12} sm={12} md={10} lg={10}>
-                <Paper className={fixedHeightPaper}>
-                  <Chart
-                    data={chartData}
-                    selectedDate={selectedDate}
-                    hostname={hostData.address}
-                    dataSetId={dataSetId}
-                    dataSets={dataSets}
-                    handleSetDataSetId={handleSetDataSetId}
-                  />
+                <Paper className={isChartCollapsed ? classes.paper : fixedHeightPaper}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <IconButton
+                      size="small"
+                      sx={{ mr: 1, p: 0.5 }}
+                      onClick={() => setIsChartCollapsed((prev) => !prev)}
+                      aria-label={isChartCollapsed ? "Expand Chart" : "Collapse Chart"}
+                    >
+                      {isChartCollapsed ? (
+                        <span style={{ fontSize: 14 }}>▼</span>
+                      ) : (
+                        <span style={{ fontSize: 14 }}>▲</span>
+                      )}
+                    </IconButton>
+                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1rem' }}>Chart</Typography>
+                  </Box>
+                  {!isChartCollapsed && (
+                    <Chart
+                      data={chartData}
+                      selectedDate={selectedDate}
+                      hostname={hostData.address}
+                      dataSetId={dataSetId}
+                      dataSets={dataSets}
+                      handleSetDataSetId={handleSetDataSetId}
+                    />
+                  )}
                 </Paper>
               </Grid>
             }
             {viewInfo &&
               <Grid item xs={12} sm={12} md={2} lg={2} >
                 <Paper className={classes.paper}>
-                  <HostDetail hostData={hostData} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <IconButton
+                      size="small"
+                      sx={{ mr: 1, p: 0.5 }}
+                      onClick={() => setIsDetailCollapsed((prev) => !prev)}
+                      aria-label={isDetailCollapsed ? "Expand Detail" : "Collapse Detail"}
+                    >
+                      {isDetailCollapsed ? (
+                        <span style={{ fontSize: 14 }}>▼</span>
+                      ) : (
+                        <span style={{ fontSize: 14 }}>▲</span>
+                      )}
+                    </IconButton>
+                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1rem' }}>Detail</Typography>
+                  </Box>
+                  {!isDetailCollapsed && (
+                    <HostDetail hostData={hostData} />
+                  )}
                 </Paper>
               </Grid>
             }
 
             <Grid item xs={12}>
-
-              <Paper className={classes.paper}>
+              <Paper
+                className={classes.paper}
+                sx={{
+                  p: isMediumOrLarger ? 2 : 0,
+                  m: 0,
+                  boxShadow: isMediumOrLarger ? 1 : 0,
+                  borderRadius: isMediumOrLarger ? 2 : 0,
+                }}
+              >
                 {toggleTable ?
                   <HostList siteId={siteId}
                     data={listData}
@@ -434,12 +488,10 @@ export default function Dashboard() {
                     setDateEnd={setDateEnd} defaultSearchValue={defaultSearchValue} />
                   :
                   <React.Fragment>
-
                     <HostListEdit siteId={siteId} processorList={processorList} defaultSearchValue={defaultSearchValue} />
                   </React.Fragment>
                 }
               </Paper>
-
               <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
                 {siteId !== null && siteId !== undefined && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
               </div>

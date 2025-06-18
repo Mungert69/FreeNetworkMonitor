@@ -5,7 +5,8 @@ import {
   Tooltip,
   MenuItem,
   Badge,
-  IconButton
+  IconButton,
+  useMediaQuery
 } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 
@@ -54,6 +55,7 @@ const iconMap = {
 export const HostList = ({ siteId,data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd,defaultSearchValue }) => {
   
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const getMuiTheme = () => createTheme({
     components: {
       MuiSvgIcon: {
@@ -66,9 +68,9 @@ export const HostList = ({ siteId,data, clickViewChart, resetHostAlert,resetPred
       MuiDataTableBodyCell: {
         styleOverrides: {
           root: {
-            padding: "0px",
-            paddingLeft: "8px",
-            bottomMargin: "0px"
+            padding: isSmallScreen ? "0px 2px" : "4px 8px",
+            fontSize: isSmallScreen ? "0.55rem" : undefined,
+            lineHeight: isSmallScreen ? 1.1 : undefined,
           }
         }
       },
@@ -81,8 +83,23 @@ export const HostList = ({ siteId,data, clickViewChart, resetHostAlert,resetPred
       MuiDataTableCell: {
         styleOverrides: {
           root: {
-            padding: "4px",
-            paddingLeft: "16px",
+            padding: isSmallScreen ? "0px 2px" : "4px 8px",
+            fontSize: isSmallScreen ? "0.55rem" : undefined,
+            lineHeight: isSmallScreen ? 1.1 : undefined,
+          }
+        }
+      },
+      MuiTableHead: {
+        styleOverrides: {
+          root: {
+            fontSize: isSmallScreen ? "0.6rem" : undefined,
+          }
+        }
+      },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            fontSize: isSmallScreen ? "0.5rem" : undefined,
           }
         }
       },
@@ -349,24 +366,38 @@ export const HostList = ({ siteId,data, clickViewChart, resetHostAlert,resetPred
   return (
     <>
       <CacheProvider value={muiCache}>
-     
         <ThemeProvider theme={getMuiTheme()}>
-          
-        {showDataSetsList && (
-      <DataSetsList 
+          {showDataSetsList && (
+            <DataSetsList 
               dataSets={dataSets}
               handleSetDataSetId={handleSetDataSetId}
               setDateStart={setDateStart}
               setDateEnd={setDateEnd}
               onClose={() => setShowDataSetsList(!showDataSetsList) }      
-      />
-    )}
-          <MUIDataTable
-            title={"View Hosts"}
-            data={data}
-            columns={columns}
-            options={options}
-          />
+            />
+          )}
+          <div style={{
+            width: "100%",
+            overflowX: isSmallScreen ? "auto" : "visible"
+          }}>
+            <MUIDataTable
+              title={
+                !isSmallScreen ? (
+                  <span style={{
+                    fontWeight: 600,
+                    fontSize: "1.25rem",
+                    color: theme.palette.secondary.main,
+                    letterSpacing: "-0.5px"
+                  }}>
+                    Hosts
+                  </span>
+                ) : null
+              }
+              data={data}
+              columns={columns}
+              options={options}
+            />
+          </div>
         </ThemeProvider>
       </CacheProvider>
     </>

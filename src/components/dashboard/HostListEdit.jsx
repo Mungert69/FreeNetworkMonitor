@@ -1,7 +1,7 @@
 import MUIDataTable from "mui-datatables";
 import { TablePagination, Grid } from '@mui/material';
 import debounce from 'lodash.debounce';
-
+import { useTheme, useMediaQuery } from '@mui/material';
 import React, { useRef, useState, useEffect,useCallback  } from 'react'
 import {
   FormControlLabel,
@@ -83,6 +83,11 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Edit dialog open state
   const [isEdited, setIsEdited] = useState(false);
 
+ 
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const getMuiTheme = () => createTheme({
     components: {
       MuiSvgIcon: {
@@ -95,9 +100,9 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
       MuiDataTableBodyCell: {
         styleOverrides: {
           root: {
-            padding: "0px",
-            paddingLeft: "8px",
-            bottomMargin: "0px"
+            padding: isSmallScreen ? "0px 1px" : "4px 8px",
+            fontSize: isSmallScreen ? "0.62rem" : undefined,
+            lineHeight: isSmallScreen ? 1.15 : undefined,
           }
         }
       },
@@ -110,19 +115,86 @@ export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
       MuiDataTableCell: {
         styleOverrides: {
           root: {
-            padding: "4px",
-            paddingLeft: "16px",
+            padding: isSmallScreen ? "2px 4px" : "4px 8px",
+            fontSize: isSmallScreen ? "0.62rem" : undefined,
+            lineHeight: isSmallScreen ? 1.15 : undefined,
+          }
+        }
+      },
+      MuiTableHead: {
+        styleOverrides: {
+          root: {
+            fontSize: isSmallScreen ? "0.7rem" : undefined,
+          }
+        }
+      },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            fontSize: isSmallScreen ? "0.62rem" : undefined,
           }
         }
       },
       MuiFormControlLabel: {
         styleOverrides: {
           root: {
-            marginBottom: 0
+            marginBottom: 0,
+            marginTop: isSmallScreen ? 0 : undefined,
+            marginLeft: isSmallScreen ? 0 : undefined,
+            marginRight: isSmallScreen ? 0 : undefined,
+            padding: isSmallScreen ? "0px 1px" : undefined,
+            minHeight: isSmallScreen ? "24px" : undefined,
           }
         }
       },
-
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            fontSize: isSmallScreen ? "0.92rem" : undefined,
+            padding: isSmallScreen ? "3px 8px" : undefined,
+            minHeight: isSmallScreen ? "32px" : undefined,
+            height: isSmallScreen ? "32px" : undefined,
+          },
+          input: {
+            fontSize: isSmallScreen ? "0.92rem" : undefined,
+            padding: isSmallScreen ? "3px 8px" : undefined,
+            minHeight: isSmallScreen ? "32px" : undefined,
+            height: isSmallScreen ? "32px" : undefined,
+          }
+        }
+      },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            fontSize: isSmallScreen ? "0.85rem" : undefined,
+            paddingTop: isSmallScreen ? "4px" : undefined,
+            paddingBottom: isSmallScreen ? "4px" : undefined,
+            paddingLeft: isSmallScreen ? "8px" : undefined,
+            paddingRight: isSmallScreen ? "8px" : undefined,
+            minHeight: isSmallScreen ? "32px" : undefined,
+            height: isSmallScreen ? "32px" : undefined,
+          }
+        }
+      },
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            fontSize: isSmallScreen ? "0.92rem" : undefined,
+            minHeight: isSmallScreen ? "28px" : undefined,
+            paddingTop: isSmallScreen ? "4px" : undefined,
+            paddingBottom: isSmallScreen ? "4px" : undefined,
+            paddingLeft: isSmallScreen ? "8px" : undefined,
+            paddingRight: isSmallScreen ? "8px" : undefined,
+          }
+        }
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: {
+            padding: isSmallScreen ? "2px" : undefined,
+          }
+        }
+      },
     }
   })
   useEffect(() => {
@@ -540,7 +612,7 @@ const handleEditCancel = () => {
       <Message message={message} />
       <CacheProvider value={muiCache}>
         <ThemeProvider theme={getMuiTheme()}>
-            <EditHostDialog
+          <EditHostDialog
             open={isEditDialogOpen}
             onClose={handleEditCancel}
             host={editingHost}
@@ -548,12 +620,17 @@ const handleEditCancel = () => {
             processorList={processorList}
             onSave={handleEditSave}
           />
-          <MUIDataTable
-            title={"Edit Hosts"}
-            data={data}
-            columns={columns}
-            options={options}
-          />
+          <div style={{
+            width: "100%",
+            overflowX: isSmallScreen ? "auto" : "visible"
+          }}>
+            <MUIDataTable
+              title={"Edit Hosts"}
+              data={data}
+              columns={columns}
+              options={options}
+            />
+          </div>
         </ThemeProvider>
       </CacheProvider>
     </>

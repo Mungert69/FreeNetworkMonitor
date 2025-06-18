@@ -19,7 +19,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import { Drawer,Paper,Popper,Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
+import { Drawer, Paper, Popper, Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
 import Message from '../Message';
 import HistoryList from "./HistoryList";
 import MarkdownRenderer from '../MarkdownRenderer';
@@ -34,17 +34,29 @@ const ChatContent = ({
   loadWarning, llmRunnerType, isReady, isToggleDisabled, isDrawerOpen, toggleDrawer, setIsChatOpen,
   isExpanded, toggleExpand, resetSessionId, isMuted, toggleAudio, outputContainerRef, isProcessing,
   isLLMBusy, thinkingDots, isCallingFunction, callingFunctionMessage, showHelpMessage, isDashboard,
-  helpMessage, histories, handleSelectSession,handleDeleteSession, currentMessage, setCurrentMessage,
-  isRecording, handleStartRecording, handleStopRecording, stopLLM, message, linkData,saveFeedback,
-  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId,   setIsHoveringMessages,
-   setIsInputFocused,
+  helpMessage, histories, handleSelectSession, handleDeleteSession, currentMessage, setCurrentMessage,
+  isRecording, handleStartRecording, handleStopRecording, stopLLM, message, linkData, saveFeedback,
+  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
+  setIsInputFocused,
 }) => {
-    const chatStyles = {
-        position: 'fixed',
-        transition: 'all 0.5s ease-in-out',
-        transformOrigin: 'right',
-        ...(isExpanded
-          ? {
+  // Responsive: use full width if screen is small (drawer hidden)
+  const isSmallScreen = window.innerWidth < 900; // or use theme.breakpoints.down('md') with useMediaQuery
+  const chatStyles = {
+    position: 'fixed',
+    transition: 'all 0.5s ease-in-out',
+    transformOrigin: 'right',
+    ...(isExpanded
+      ? isSmallScreen
+        ? {
+            top: '70px',
+            left: 0,
+            right: 0,
+            bottom: '20px',
+            width: '100%',
+            height: 'calc(100% - 90px)',
+            maxHeight: 'none'
+          }
+        : {
             top: '70px', // Adjust based on your AppBar height
             left: '64px',
             right: '20px',
@@ -53,17 +65,17 @@ const ChatContent = ({
             height: 'calc(100% - 90px)', // Adjust based on your AppBar height
             maxHeight: 'none'
           }
-          : {
-            bottom: '20px',
-            right: '20px',
-            width: '320px',
-            height: 'calc(100% - 90px)',
-            maxHeight: 'none',
-          }),
-      };
-    
-    const theme = useTheme();
-      const classes = useClasses(styleObject(theme, null));
+      : {
+        bottom: '20px',
+        right: '20px',
+        width: '320px',
+        height: 'calc(100% - 90px)',
+        maxHeight: 'none',
+      }),
+  };
+
+  const theme = useTheme();
+  const classes = useClasses(styleObject(theme, null));
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const historyButtonRef = useRef(null);
 
@@ -71,24 +83,24 @@ const ChatContent = ({
     setIsHistoryOpen((prev) => !prev);
   };
 
-  const closeChat =() => {
+  const closeChat = () => {
     setIsChatOpen(false);
     setIsHistoryOpen(false);
   }
-// Inside your ChatContent component, add:
-useEffect(() => {
-  const handlePrompt = (e) => {
-    setCurrentMessage(e.detail); // Auto-fill the input
-    // Optional: Auto-send the message
-    setTimeout(() => {
-      const sendBtn = document.querySelector('[aria-label="send message"]');
-      if (sendBtn) sendBtn.click();
-    }, 100);
-  };
+  // Inside your ChatContent component, add:
+  useEffect(() => {
+    const handlePrompt = (e) => {
+      setCurrentMessage(e.detail); // Auto-fill the input
+      // Optional: Auto-send the message
+      setTimeout(() => {
+        const sendBtn = document.querySelector('[aria-label="send message"]');
+        if (sendBtn) sendBtn.click();
+      }, 100);
+    };
 
-  window.addEventListener('send-chat-prompt', handlePrompt);
-  return () => window.removeEventListener('send-chat-prompt', handlePrompt);
-}, []);
+    window.addEventListener('send-chat-prompt', handlePrompt);
+    return () => window.removeEventListener('send-chat-prompt', handlePrompt);
+  }, []);
 
   const renderLinks = () => {
     if (!linkData || linkData.length == 0) return;
@@ -158,7 +170,7 @@ useEffect(() => {
   return (
     <Box sx={chatStyles}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={{ flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
           {loadWarning && (
             <Box sx={{ mb: 2, p: 1, bgcolor: 'warning.light', borderRadius: 1 }}>
               <Typography variant="body1" color="black">
@@ -166,7 +178,7 @@ useEffect(() => {
               </Typography>
             </Box>
           )}
-  
+
           {/* Header Section */}
           <Grid container alignItems="center">
             <Grid item xs={12} sx={{
@@ -241,7 +253,7 @@ useEffect(() => {
                   </Badge>
                 </IconButton>
               </Box>
-  
+
               {/* Right-Aligned Icons */}
               <Box>
                 <IconButton
@@ -267,14 +279,14 @@ useEffect(() => {
             </Grid>
           </Grid>
         </CardContent>
-  
+
         {/* Chat Content */}
-        <CardContent 
-  ref={outputContainerRef}
-  sx={{ flexGrow: 1, overflow: 'auto' }}
-  onMouseEnter={() => setIsHoveringMessages(true)}
-  onMouseLeave={() => setIsHoveringMessages(false)}
->
+        <CardContent
+          ref={outputContainerRef}
+          sx={{ flexGrow: 1, overflow: 'auto', minHeight: 0 }}
+          onMouseEnter={() => setIsHoveringMessages(true)}
+          onMouseLeave={() => setIsHoveringMessages(false)}
+        >
           {!isReady ? (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <CircularProgress />
@@ -294,7 +306,7 @@ useEffect(() => {
             <Typography sx={{ mt: 2, bgcolor: 'action.selected' }}>{helpMessage}</Typography>
           )}
         </CardContent>
-  
+
         {/* Links Drawer */}
         <SwipeableDrawer
           anchor="bottom"
@@ -313,28 +325,28 @@ useEffect(() => {
         >
           {renderLinks()}
         </SwipeableDrawer>
-  
-       
-          <Popper
-            open={isHistoryOpen}
-            anchorEl={historyButtonRef.current}
-            placement="bottom-start"
-            sx={{
-              zIndex: 1200, // Ensure it appears above other elements
-              width: '300px', // Adjust width as needed
-              maxHeight: '400px', // Adjust max height as needed
-              overflow: 'auto',
-              backgroundColor: theme.palette.background.paper,
-              boxShadow: theme.shadows[3],
-              borderRadius: theme.shape.borderRadius,
-            }}
-          >
-            <Paper sx={{ p: 2 }}>
-              <HistoryList histories={histories} onSelectSession={handleSelectSession} onDeleteSession={handleDeleteSession} llmType={llmRunnerType} currentSessionId={sessionId}/>
-            </Paper>
-          </Popper>
-       
-  
+
+
+        <Popper
+          open={isHistoryOpen}
+          anchorEl={historyButtonRef.current}
+          placement="bottom-start"
+          sx={{
+            zIndex: 1200, // Ensure it appears above other elements
+            width: '300px', // Adjust width as needed
+            maxHeight: '400px', // Adjust max height as needed
+            overflow: 'auto',
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[3],
+            borderRadius: theme.shape.borderRadius,
+          }}
+        >
+          <Paper sx={{ p: 2 }}>
+            <HistoryList histories={histories} onSelectSession={handleSelectSession} onDeleteSession={handleDeleteSession} llmType={llmRunnerType} currentSessionId={sessionId} />
+          </Paper>
+        </Popper>
+
+
         {/* Chat Input */}
         <CardContent sx={{ pt: 1, pb: 1 }}>
           <Grid container direction="row">

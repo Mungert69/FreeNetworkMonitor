@@ -1,4 +1,4 @@
-const drawerWidth = 240;
+const drawerWidth = 200;
 const styleObject = (theme, imageUrl) => {
     return {
         root: {
@@ -76,6 +76,7 @@ const styleObject = (theme, imageUrl) => {
         container: {
             paddingTop: theme.spacing(4),
             paddingBottom: theme.spacing(4),
+            // No left/right padding here; let MUI Container handle it
         },
         paper: {
             opacity: 0.9,
@@ -83,6 +84,10 @@ const styleObject = (theme, imageUrl) => {
             display: 'flex',
             overflow: 'auto',
             flexDirection: 'column',
+            [theme.breakpoints.down('sm')]: {
+                paddingLeft: 0,
+                paddingRight: 0,
+            },
         },
         fixedHeight: {
             height: 240,

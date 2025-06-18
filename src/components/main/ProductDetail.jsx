@@ -171,13 +171,19 @@ const ProductDetail = () => {
                         <MenuIcon />
                     </IconButton>
                     <LogoLink />
-                    <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-                        Quantum Network Monitor
-                    </Typography>
+                    {isMediumOrLarger && (
+                        <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
+                            Quantum Network Monitor
+                        </Typography>
+                    )}
+                    
+                    <Box sx={{ flexGrow: 1 }} />
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
                         <ChatIcon />
                     </IconButton>
-                    <AuthNav openInNewTab={openInNewTab} />
+                    <Box sx={{ ml: 2 }}>
+                        <AuthNav openInNewTab={openInNewTab} />
+                    </Box>
                 </Toolbar>
             </AppBar>
 
@@ -194,9 +200,9 @@ const ProductDetail = () => {
                         <ChevronLeftIcon />
                     </IconButton>
                 </div>
-                <Divider />
-                <List><MainListItems classes={classes} /></List>
-                <Divider />
+                <List disablePadding sx={{ pl: 0, pr: 0 }}>
+                    <MainListItems classes={classes} />
+                </List>
             </Drawer>
 
             <main className={classes.content}>
@@ -204,36 +210,47 @@ const ProductDetail = () => {
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={6}>
                         <Grid item xs={12}>
-                            <Grid container
+                            <Grid
+                                container
                                 direction="row"
-                                justifyContent="space-evenly"
+                                justifyContent="space-between"
                                 alignItems="center"
+                                spacing={2}
+                                sx={{ mb: 6 }}
                             >
-                                <Grid align="center">
-                                    <Grid container
-                                        direction="column"
-                                        justifyContent="space-around"
-                                        alignItems="center"
+                                <Grid item xs={12} md={7}>
+                                    <Typography
+                                        color='primary'
+                                        variant="h2"
+                                        sx={{
+                                            fontWeight: 800,
+                                            mb: 2,
+                                            fontSize: { xs: "2.2rem", md: "3.2rem" },
+                                            letterSpacing: "-1px",
+                                        }}
                                     >
-                                        <Grid item>
-                                            <Typography color='primary' variant="h2">
-                                                Quantum Network Monitor
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                            <Typography color='secondary' variant="h4">
-                                                Are You Ready For Quantum...
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
+                                        Quantum Network Monitor
+                                    </Typography>
+                                    <Typography
+                                        color='secondary'
+                                        variant="h4"
+                                        sx={{
+                                            fontWeight: 500,
+                                            mb: 3,
+                                            fontSize: { xs: "1.2rem", md: "2rem" },
+                                        }}
+                                    >
+                                        Are You Ready For Quantum Security?
+                                    </Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={6} align="center">
-                                    <Box sx={{ width: 270, height: 230 }}>
+                                <Grid item xs={12} md={5} align="center">
+                                    <Box sx={{ width: { xs: 220, md: 320 }, height: { xs: 180, md: 260 }, mx: "auto" }}>
                                         <CardMedia component='video'
                                             className={classes.media}
                                             image={"/img/monitor-screen.webm"}
                                             loop
-                                            autoPlay />
+                                            autoPlay
+                                        />
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -249,7 +266,21 @@ const ProductDetail = () => {
                                     >
                                         <NetworkPingIcon color='secondary' fontSize='large' />
                                     </Grow>
-                                    <Paper className={classes.paper}>
+                                    <Paper
+
+
+
+                                                                                                                                                             className={classes.paper}
+                                        elevation={3}
+                                        sx={{
+                                            borderRadius: 3,
+                                            p: 2.5,
+                                            minHeight: 260,
+                                            boxShadow: 4,
+                                            background: "rgba(255,255,255,0.98)",
+                                        }}
+                                    
+                                    >
                                         <Typography variant="h6" gutterBottom>AI-Powered Network Protection</Typography>
                                         Our monitoring system automatically:
                                         <ul>
@@ -474,19 +505,32 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
 
-                    <hr />
-                    <Grid container
-                        spacing={6}
+                    <Divider sx={{ my: 6 }} />
+                    <Grid
+                        container
+                        spacing={4}
                         direction="column"
-                        justifyContent="space-evenly"
+                        justifyContent="center"
                         alignItems="center"
+                        sx={{ mt: 2, mb: 4 }}
                     >
                         <Grid item>
-                            <IconButton>
-                                <Link className={classes.link}
-                                    href="/Dashboard">Enter Dashboard
-                                </Link>
-                            </IconButton>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                sx={{
+                                    borderRadius: 3,
+                                    px: 4,
+                                    py: 1.5,
+                                    fontWeight: 700,
+                                    fontSize: "1.2rem",
+                                    boxShadow: 3,
+                                }}
+                                href="/Dashboard"
+                            >
+                                Enter Dashboard
+                            </Button>
                         </Grid>
                         <Grid item>
                             <Button
@@ -516,10 +560,6 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
 
-                    <hr />
-                    <hr />
-
-                    <Blog ref={blogRef} classes={classes} blogHash={blogHash}  />
                     <Footer />
 
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
