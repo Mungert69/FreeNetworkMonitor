@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import clsx from 'clsx';
-import { CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
+import { TextField, CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
 import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -67,7 +67,9 @@ const ProductDetail = () => {
     const [siteId, setSiteId] = React.useState(null);
     const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const [openInNewTab, setOpenInNewTab] = React.useState(false);
-    const [blogHash,setBlogHash] =React.useState('');
+    const [blogHash, setBlogHash] = React.useState('');
+    const [serverAddress, setServerAddress] = useState('');
+    const [quantumCheck, setQuantumCheck] = useState('');
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -95,10 +97,10 @@ const ProductDetail = () => {
 
         const hash = window.location.hash.slice(1); // Remove the '#'
         const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
-            
+
         if (!hashParams.has('assistant') && !hashParams.has('openInNewTab')) {
-          // Not a reserved login parameter; assume it's a blog post hash or scroll target
-          setBlogHash(hash);
+            // Not a reserved login parameter; assume it's a blog post hash or scroll target
+            setBlogHash(hash);
         }
         // Check for 'openInNewTab' in either query or hash
         if (query.has('openInNewTab') || hashParams.has('openInNewTab')) {
@@ -176,7 +178,7 @@ const ProductDetail = () => {
                             Quantum Network Monitor
                         </Typography>
                     )}
-                    
+
                     <Box sx={{ flexGrow: 1 }} />
                     <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
                         <ChatIcon />
@@ -270,7 +272,7 @@ const ProductDetail = () => {
 
 
 
-                                                                                                                                                             className={classes.paper}
+                                        className={classes.paper}
                                         elevation={3}
                                         sx={{
                                             borderRadius: 3,
@@ -279,7 +281,7 @@ const ProductDetail = () => {
                                             boxShadow: 4,
                                             background: "rgba(255,255,255,0.98)",
                                         }}
-                                    
+
                                     >
                                         <Typography variant="h6" gutterBottom>AI-Powered Network Protection</Typography>
                                         Our monitoring system automatically:
@@ -504,7 +506,55 @@ const ProductDetail = () => {
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Divider sx={{ my: 6 }} />
+                    <Grid container spacing={4}>
+                        <Grid item xs={12} md={6}>
+                            <Paper className={classes.paper}>
+                                <NetworkPingIcon fontSize="large" color="primary" />
+                                <Typography variant="h6">AI-Powered Network Protection</Typography>
+                                <TextField
+                                    fullWidth
+                                    label="Server Address"
+                                    variant="outlined"
+                                    value={serverAddress}
+                                    onChange={(e) => setServerAddress(e.target.value)}
+                                    sx={{ mt: 2 }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ mt: 2 }}
+                                    onClick={() => sendToAssistant(setIsChatOpen, `Run security check on server: ${serverAddress}`)}
+                                >
+                                    Check Server Security
+                                </Button>
 
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                            <Paper className={classes.paper}>
+                                <LanguageIcon fontSize="large" color="secondary" />
+                                <Typography variant="h6">Quantum Security Check</Typography>
+                                <TextField
+                                    fullWidth
+                                    label="Service URL"
+                                    variant="outlined"
+                                    value={quantumCheck}
+                                    onChange={(e) => setQuantumCheck(e.target.value)}
+                                    sx={{ mt: 2 }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    sx={{ mt: 2 }}
+                                    onClick={() => sendToAssistant(setIsChatOpen, `Check quantum readiness for: ${quantumCheck}`)}
+                                >
+                                    Check Quantum Readiness
+                                </Button>
+                            </Paper>
+                        </Grid>
+                    </Grid>
                     <Divider sx={{ my: 6 }} />
                     <Grid
                         container
