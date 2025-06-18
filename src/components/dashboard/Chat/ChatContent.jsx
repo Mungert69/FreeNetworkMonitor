@@ -167,6 +167,16 @@ const ChatContent = ({
   };
 
 
+  // Ref for the chat input
+  const chatInputRef = useRef(null);
+
+  // Scroll to bottom handler
+  const handleInputMouseEnter = () => {
+    if (outputContainerRef && outputContainerRef.current) {
+      outputContainerRef.current.scrollTop = outputContainerRef.current.scrollHeight;
+    }
+  };
+
   return (
     <Box sx={chatStyles}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -373,6 +383,8 @@ const ChatContent = ({
                   }
                 }}
                 inputProps={{ maxLength: 10000 }}
+                inputRef={chatInputRef}
+                onMouseEnter={handleInputMouseEnter}
               />
             </Grid>
             <Grid item xs={1}>
