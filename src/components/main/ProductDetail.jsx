@@ -524,7 +524,7 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
-                                    onClick={() => sendToAssistant(setIsChatOpen, `Run security check on server: ${serverAddress} I have confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
+                                    onClick={() => sendToAssistant(setIsChatOpen, `Run security check on server: ${serverAddress} I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Server Security
                                 </Button>
@@ -548,7 +548,7 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="secondary"
                                     sx={{ mt: 2 }}
-                                    onClick={() => sendToAssistant(setIsChatOpen, `Check quantum readiness for: ${quantumCheck}  I have confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
+                                    onClick={() => sendToAssistant(setIsChatOpen, `Check quantum readiness for: ${quantumCheck}  I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Quantum Readiness
                                 </Button>
