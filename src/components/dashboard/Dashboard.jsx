@@ -38,7 +38,7 @@ import useClasses from "./useClasses";
 import { useTheme } from '@mui/material/styles';
 import { SuperSEO } from 'react-super-seo';
 import FadeWrapper from './FadeWrapper';
-import ReactGA4 from 'react-ga4';
+import { ga4Event } from '../../ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 import Chat from "./Chat/Chat";
 
@@ -200,7 +200,7 @@ export default function Dashboard() {
         //await setDefaultUser(false);
 
         console.log("isLoggedIn = " + JSON.stringify(isLoggedIn) + " isFetchingUserInfo " + JSON.stringify(isFetchingUserInfo))
-        ReactGA4.event({
+        ga4Event({
           category: 'User',
           action: 'User Logged In'
         });

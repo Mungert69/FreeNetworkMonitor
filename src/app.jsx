@@ -12,7 +12,9 @@ const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
-if (import.meta.env.MODE === 'production') {
+const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
+
+if (!isDevServerLabel) {
   const TRACKING_ID = "G-QZ49HV7DS2";
   ReactGA4.initialize(TRACKING_ID, {
     gaOptions: {

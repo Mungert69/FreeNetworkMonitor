@@ -2,7 +2,6 @@ import React from "react";
 import Button from "@mui/material/Button";
 import LoginIcon from '@mui/icons-material/Login';
 import { useFusionAuth } from '@fusionauth/react-sdk';
-import ReactGA4 from 'react-ga4';
 import FadeWrapper from './dashboard/FadeWrapper';
 
 const LoginButton = ({ loginText, openInNewTab = false }) => {

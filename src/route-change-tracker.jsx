@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import ReactGA4 from 'react-ga4';
+import { sendGA4Event } from './ga4';
 
 const RouteChangeTracker = () => {
   const location = useLocation();
 
   useEffect(() => {
-    ReactGA4.send({ hitType: "pageview", page: location.pathname });
+    sendGA4Event({ hitType: "pageview", page: location.pathname });
   }, [location]);
 
   return null;

@@ -27,12 +27,12 @@ import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
-import ReactGA4 from 'react-ga4';
+import { ga4Event } from '../../ga4';
 import pingImage from '/ping.svg';
 import { getBaseDomain } from '../dashboard/ServiceAPI';
 
 function sendToAnalytics({ id, name, value }) {
-    ReactGA4.event({
+    ga4Event({
         eventCategory: 'Web Vitals',
         eventAction: name,
         eventValue: Math.round(name === 'CLS' ? value * 1000 : value),
