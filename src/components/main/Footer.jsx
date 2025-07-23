@@ -59,7 +59,35 @@ function Footer() {
               </Box>
             </Grid>
             <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'center', md: 'right' } }}>
-              <ByMeACoffeeLink />
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: { xs: 'center', md: 'flex-end' },
+                gap: 2,
+              }}>
+                <ByMeACoffeeLink />
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    ml: 2,
+                  }}
+                >
+                  <iframe
+                    src="https://github.com/sponsors/Mungert69/button"
+                    title="Sponsor Mungert69"
+                    height="32"
+                    width="114"
+                    style={{
+                      border: 0,
+                      borderRadius: 6,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                      background: 'transparent',
+                    }}
+                  ></iframe>
+                </Box>
+              </Box>
             </Grid>
           </Grid>
         </Paper>
