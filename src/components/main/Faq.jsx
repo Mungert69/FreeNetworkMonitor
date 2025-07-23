@@ -24,7 +24,7 @@ import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
-import {  getBaseDomain} from '../dashboard/ServiceAPI';
+import { getBaseDomain } from '../dashboard/ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 
 const data = {
@@ -503,6 +503,29 @@ const data = {
         }
     ],
 };
+const downloadFAQAsJson = () => {
+    const simplified = data.rows.map(row => ({
+        input: row.title,
+        output: stripHtml(row.content)
+    }));
+
+    const blob = new Blob([JSON.stringify(simplified, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'faq.json';
+    a.click();
+
+    URL.revokeObjectURL(url);
+};
+
+// Helper to strip HTML from content
+const stripHtml = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+};
 
 const Faq = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
@@ -585,7 +608,7 @@ const Faq = () => {
             </AppBar>
 
             <Drawer
-                 variant={isMediumOrLarger ? "permanent" : "temporary"}
+                variant={isMediumOrLarger ? "permanent" : "temporary"}
                 classes={{
                     paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
                 }}
@@ -663,6 +686,7 @@ const Faq = () => {
                             />
                         </Grid>
                     </Grid>
+                   
 
                     <hr />
 
@@ -670,6 +694,9 @@ const Faq = () => {
                     <FaqList data={filteredData} styles={styles} config={config} />
 
                     <hr />
+                     <Grid container justifyContent="center" style={{ marginTop: 20 }}>
+                        <button onClick={downloadFAQAsJson}>📥 Download FAQ as JSON</button>
+                    </Grid>
                     <Footer />
                 </Container>
             </main>
