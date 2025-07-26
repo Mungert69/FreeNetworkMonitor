@@ -524,7 +524,7 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
-                                    onClick={() => sendToAssistant(setIsChatOpen, `Using the Security Expert run a security check my server: ${serverAddress} I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
+                                    onClick={() => sendToAssistant(setIsChatOpen, `Using the Security Expert run a security check on my server: ${serverAddress} I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Server Security
                                 </Button>
