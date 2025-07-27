@@ -293,7 +293,7 @@ const ProductDetail = () => {
                                         }}
 
                                     >
-                                        <Typography variant="h6" gutterBottom>AI-Powered Network Protection</Typography>
+                                        <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
                                         Our monitoring system automatically:
                                         <ul>
                                             <li>
@@ -364,7 +364,7 @@ const ProductDetail = () => {
                                         <LanguageIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        <Typography variant="h6" gutterBottom>Enterprise Security Made Simple</Typography>
+                                        <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>Enterprise Security Made Simple</Typography>
                                         <Tooltip title="Ask about the AI Assistant" arrow>
                                             <Typography
                                                 component="span"
@@ -429,7 +429,7 @@ const ProductDetail = () => {
                                         <ApiTwoToneIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        <Typography variant="h6" gutterBottom>Complete Performance History</Typography>
+                                        <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>Complete Performance History</Typography>
                                         Our dashboard shows:
                                         <ul>
                                             <li>
@@ -482,7 +482,7 @@ const ProductDetail = () => {
                                         <EmailIcon color='secondary' fontSize='large' />
                                     </Grow>
                                     <Paper className={classes.paper}>
-                                        <Typography variant="h6" gutterBottom>Smart Alert System</Typography>
+                                        <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>Smart Alert System</Typography>
                                         Just provide your email to get:
                                         <ul>
                                             <li>
@@ -532,7 +532,7 @@ const ProductDetail = () => {
                         <Grid item xs={12} md={6}>
                             <Paper className={classes.paper}>
                                 <NetworkPingIcon fontSize="large" color="primary" />
-                                <Typography variant="h6">AI-Powered Network Protection</Typography>
+                                <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
                                 <TextField
                                     fullWidth
                                     label="Server Address"
@@ -557,7 +557,7 @@ const ProductDetail = () => {
                         <Grid item xs={12} md={6}>
                             <Paper className={classes.paper}>
                                 <LanguageIcon fontSize="large" color="secondary" />
-                                <Typography variant="h6">Quantum Security Check</Typography>
+                                <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>Quantum Security Check</Typography>
                                 <TextField
                                     fullWidth
                                     label="Service URL"
