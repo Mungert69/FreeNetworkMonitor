@@ -287,7 +287,7 @@ export default function Download() {
             ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
             ogImageAlt: "Quantum Network Monitor Logo", // Add alt text for the image
         },
-        ogUrl: "https://${getBaseDomain()}/download", // Canonical URL
+        ogUrl: `https://${getBaseDomain()}/download`, // Canonical URL
         ogType: "website", // Type of content
         ogSiteName: "Quantum Network Monitor", // Site name
         ogLocale: "en_US", // Language and locale
