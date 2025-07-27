@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import clsx from 'clsx';
 import { TextField, CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
 import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
@@ -22,7 +22,9 @@ import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import { FaDiscord } from "react-icons/fa";
 import Button from '@mui/material/Button';
-import Chat from "../dashboard/Chat/Chat";
+
+const Chat = lazy(() => import('../dashboard/Chat/Chat'));
+
 import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
@@ -166,7 +168,7 @@ const ProductDetail = () => {
                     <IconButton
                         edge="start"
                         color="inherit"
-                        aria-label="open drawer"
+                        aria-label="Open navigation drawer"
                         onClick={handleDrawerOpen}
                         className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
                         size="large">
@@ -180,7 +182,11 @@ const ProductDetail = () => {
                     )}
 
                     <Box sx={{ flexGrow: 1 }} />
-                    <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
+                    <IconButton
+                        onClick={toggleChatView}
+                        className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
+                        aria-label={isChatOpen ? "Close chat assistant" : "Open chat assistant"}
+                    >
                         <ChatIcon />
                     </IconButton>
                     <Box sx={{ ml: 2 }}>
@@ -198,7 +204,11 @@ const ProductDetail = () => {
                 }}
             >
                 <div className={classes.toolbarIcon}>
-                    <IconButton onClick={handleDrawerClose} size="large">
+                    <IconButton
+                        onClick={handleDrawerClose}
+                        size="large"
+                        aria-label="Close navigation drawer"
+                    >
                         <ChevronLeftIcon />
                     </IconButton>
                 </div>
@@ -235,7 +245,7 @@ const ProductDetail = () => {
                                     </Typography>
                                     <Typography
                                         color='secondary'
-                                        variant="h4"
+                                        variant="h3"
                                         sx={{
                                             fontWeight: 500,
                                             mb: 3,
@@ -339,7 +349,9 @@ const ProductDetail = () => {
                                                 </Tooltip>
                                             </li>
                                         </ul>
-                                        No configuration needed - the AI learns your network's normal behavior.
+                                        <Typography variant="body2" sx={{ mt: 1 }}>
+                                            No configuration needed - the AI learns your network's normal behavior.
+                                        </Typography>
                                     </Paper>
                                 </Grid>
 
@@ -397,7 +409,10 @@ const ProductDetail = () => {
                                                 </Tooltip>
                                             </li>
                                         </ul>
-                                        Get enterprise-grade protection without the complexity.
+                                        <Typography variant="body2" sx={{ mt: 1 }}>
+                                            Get enterprise-grade protection without the complexity.
+                                        </Typography>
+
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -451,7 +466,10 @@ const ProductDetail = () => {
 
                                             </li>
                                         </ul>
-                                        Track gradual degradation or sudden outages with precision.
+                                        <Typography variant="body2" sx={{ mt: 1 }}>
+                                            Track gradual degradation or sudden outages with precision.
+                                        </Typography>
+
                                     </Paper>
                                 </Grid>
 
@@ -500,7 +518,10 @@ const ProductDetail = () => {
 
                                             </li>
                                         </ul>
-                                        The system learns and improves over time.
+                                        <Typography variant="body2" sx={{ mt: 1 }}>
+                                            The system learns and improves over time.
+                                        </Typography>
+
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -524,6 +545,7 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
+                                    aria-label="Check server security with AI assistant"
                                     onClick={() => sendToAssistant(setIsChatOpen, `Using the Security Expert run a security check on my server: ${serverAddress} I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Server Security
@@ -548,6 +570,7 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="secondary"
                                     sx={{ mt: 2 }}
+                                    aria-label="Check quantum readiness with AI assistant"
                                     onClick={() => sendToAssistant(setIsChatOpen, `Check quantum readiness using the Quantum Expert on my server ${quantumCheck}  .I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Quantum Readiness
@@ -578,6 +601,7 @@ const ProductDetail = () => {
                                     boxShadow: 3,
                                 }}
                                 href="/Dashboard"
+                                aria-label="Enter Dashboard"
                             >
                                 Enter Dashboard
                             </Button>
@@ -590,6 +614,7 @@ const ProductDetail = () => {
                                 href="https://discord.gg/pG4gEE4QXz"
                                 target="_blank"
                                 rel="noopener"
+                                aria-label="Join our Discord community"
                                 sx={{
                                     textTransform: 'none',
                                     fontWeight: 600,
@@ -613,7 +638,16 @@ const ProductDetail = () => {
                     <Footer />
 
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        {siteId !== null && siteId !== undefined && <Chat isDashboard={false} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+                        {siteId !== null && siteId !== undefined && (
+                            <Suspense fallback={<div>Loading chat...</div>}>
+                                <Chat
+                                    isDashboard={false}
+                                    initRunnerType={'TurboLLM'}
+                                    setIsChatOpen={setIsChatOpen}
+                                    siteId={siteId}
+                                />
+                            </Suspense>
+                        )}
                     </div>
                 </Container>
             </main>
