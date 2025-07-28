@@ -11,13 +11,15 @@ const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
-//const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
-const isDevServerLabel=false;
+const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
+
 
 const TRACKING_ID = "G-QZ49HV7DS2";
 
 const loadGA4 = async () => {
-  if (isDevServerLabel) return;
+  if (isDevServerLabel) {
+    return;
+  }
   const { default: ReactGA4 } = await import('react-ga4');
   ReactGA4.initialize(TRACKING_ID, {
     gaOptions: {
@@ -42,8 +44,9 @@ const App = () => {
     if (getCookieConsentValue("react-cookie-consent") === "true") {
       loadGA4();
       console.log("Cookie consent is true")
+    } else {
+      console.log("Cookie consent is false");
     }
-    else   console.log("Cookie consent is false");
   }, []);
 
   return (
