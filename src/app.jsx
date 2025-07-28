@@ -17,6 +17,29 @@ const TRACKING_ID = "G-QZ49HV7DS2";
 
 const loadGA4 = async () => {
   if (isDevServerLabel) return;
+
+  // Inject GA4 script if not already present
+  if (!document.querySelector(`script[src^="https://www.googletagmanager.com/gtag/js?id=${TRACKING_ID}"]`)) {
+    const script = document.createElement('script');
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${TRACKING_ID}`;
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  // Wait for the script to load before initializing react-ga4
+  const waitForScript = () =>
+    new Promise((resolve) => {
+      if (window.gtag) return resolve();
+      const check = setInterval(() => {
+        if (window.gtag) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+  await waitForScript();
+
   const { default: ReactGA4 } = await import('react-ga4');
   ReactGA4.initialize(TRACKING_ID, {
     gaOptions: {
