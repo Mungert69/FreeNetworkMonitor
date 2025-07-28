@@ -11,35 +11,13 @@ const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
-const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
+//const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
+const isDevServerLabel=false;
 
 const TRACKING_ID = "G-QZ49HV7DS2";
 
 const loadGA4 = async () => {
   if (isDevServerLabel) return;
-
-  // Inject GA4 script if not already present
-  if (!document.querySelector(`script[src^="https://www.googletagmanager.com/gtag/js?id=${TRACKING_ID}"]`)) {
-    const script = document.createElement('script');
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${TRACKING_ID}`;
-    script.async = true;
-    document.head.appendChild(script);
-  }
-
-  // Wait for the script to load before initializing react-ga4
-  const waitForScript = () =>
-    new Promise((resolve) => {
-      if (window.gtag) return resolve();
-      const check = setInterval(() => {
-        if (window.gtag) {
-          clearInterval(check);
-          resolve();
-        }
-      }, 50);
-    });
-
-  await waitForScript();
-
   const { default: ReactGA4 } = await import('react-ga4');
   ReactGA4.initialize(TRACKING_ID, {
     gaOptions: {
@@ -47,6 +25,7 @@ const loadGA4 = async () => {
       siteSpeedSampleRate: 50
     }
   });
+  console.log("GA4 script loaded");
 };
 
 const App = () => {
@@ -59,9 +38,12 @@ const App = () => {
 
   // On mount, check if consent cookie is already set
   useEffect(() => {
-    if (getCookieConsentValue() === "true") {
+    // Explicitly check the cookie name
+    if (getCookieConsentValue("react-cookie-consent") === "true") {
       loadGA4();
+      console.log("Cookie consent is true")
     }
+    else   console.log("Cookie consent is false");
   }, []);
 
   return (
@@ -70,8 +52,9 @@ const App = () => {
         <CookieConsent
           location="bottom"
           buttonText="Agree"
-          sameSite='lax'
           cookieName="react-cookie-consent"
+          sameSite="None"
+          secure={true}
           style={{ background: "#2B373B", color: "#FFFFFF" }}
           buttonStyle={{
             background: "#FFD700",
