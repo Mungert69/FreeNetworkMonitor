@@ -545,8 +545,8 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
-                                    aria-label="Check server security with AI assistant"
-                                    onClick={() => sendToAssistant(setIsChatOpen, `Using the Security Expert run a security check on my server: ${serverAddress} I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
+                                    aria-label="Basic security check with AI assistant"
+                                    onClick={() => sendToAssistant(setIsChatOpen, `Using the Security Expert run a security check on my server: ${serverAddress} checking only common ports and ssl certificates. I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Server Security
                                 </Button>
@@ -570,7 +570,7 @@ const ProductDetail = () => {
                                     variant="contained"
                                     color="secondary"
                                     sx={{ mt: 2 }}
-                                    aria-label="Check quantum readiness with AI assistant"
+                                    aria-label="Test quantum ready tls negotiation with AI assistant"
                                     onClick={() => sendToAssistant(setIsChatOpen, `Check quantum readiness using the Quantum Expert on my server ${quantumCheck}  .I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
                                 >
                                     Check Quantum Readiness
