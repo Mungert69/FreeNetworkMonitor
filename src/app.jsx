@@ -13,41 +13,17 @@ const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
 const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
 
-
-const TRACKING_ID = "G-QZ49HV7DS2";
-
-const loadGA4 = async () => {
-  if (isDevServerLabel) {
-    return;
-  }
-  const { default: ReactGA4 } = await import('react-ga4');
+if (!isDevServerLabel) {
+  const TRACKING_ID = "G-QZ49HV7DS2";
   ReactGA4.initialize(TRACKING_ID, {
     gaOptions: {
       cookieFlags: 'SameSite=None;Secure',
       siteSpeedSampleRate: 50
     }
   });
-  console.log("GA4 script loaded");
-};
-
+}
 const App = () => {
   const renderLoader = () => <LoadingCircle indicatorSize={100} thickness={2} />;
-
-  // Lazy-load GA4 only after consent
-  const handleCookieAccept = useCallback(() => {
-    loadGA4();
-  }, []);
-
-  // On mount, check if consent cookie is already set
-  useEffect(() => {
-    // Explicitly check the cookie name
-    if (getCookieConsentValue("react-cookie-consent") === "true") {
-      loadGA4();
-      console.log("Cookie consent is true")
-    } else {
-      console.log("Cookie consent is false");
-    }
-  }, []);
 
   return (
     <div>
