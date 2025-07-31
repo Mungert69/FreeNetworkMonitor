@@ -18,7 +18,7 @@ if (!isDevServerLabel) {
   ReactGA4.initialize(TRACKING_ID, {
     gaOptions: {
       cookieFlags: 'SameSite=None;Secure',
-      siteSpeedSampleRate: 50
+      siteSpeedSampleRate: 100
     }
   });
 }
