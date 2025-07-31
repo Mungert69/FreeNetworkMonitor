@@ -50,7 +50,6 @@ const App = () => {
           }}
           linkStyle={{ color: "#FFD700", textDecoration: "underline", fontWeight: 700 }}
           expires={1500}
-          onAccept={handleCookieAccept}
         >
           <span style={{ fontWeight: 500 }}>
             This website uses cookies to enhance the user experience.{" "}
