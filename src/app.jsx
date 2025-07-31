@@ -3,6 +3,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { LoadingCircle } from "./loading-circle";
 import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
 import RouteChangeTracker from './route-change-tracker';
+import ReactGA4 from 'react-ga4';
 
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const Pricing = lazy(() => import('./components/main/Pricing'));
