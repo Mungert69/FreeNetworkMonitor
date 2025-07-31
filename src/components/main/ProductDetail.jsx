@@ -257,11 +257,11 @@ const ProductDetail = () => {
                                 </Grid>
                                 <Grid item xs={12} md={5} align="center">
                                     <Box sx={{ width: { xs: 220, md: 320 }, height: { xs: 180, md: 260 }, mx: "auto" }}>
-                                        <CardMedia component='video'
-                                            className={classes.media}
-                                            image={"/img/monitor-screen.webm"}
-                                            loop
-                                            autoPlay
+                                        <img
+                                            src="/img/monitor-screen.jpg"
+                                            alt="AI Network Monitor main visual"
+                                            style={{ width: "100%", height: "auto", borderRadius: 8 }}
+                                            fetchpriority="high"
                                         />
                                     </Box>
                                 </Grid>

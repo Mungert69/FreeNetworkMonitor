@@ -14,16 +14,20 @@ const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
 const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
 
-if (!isDevServerLabel) {
-  const TRACKING_ID = "G-QZ49HV7DS2";
-  ReactGA4.initialize(TRACKING_ID, {
-    gaOptions: {
-      cookieFlags: 'SameSite=None;Secure',
-      siteSpeedSampleRate: 100
-    }
-  });
-}
 const App = () => {
+React.useEffect(() => {
+  if (!isDevServerLabel) {
+    const TRACKING_ID = "G-QZ49HV7DS2";
+    ReactGA4.initialize(TRACKING_ID, {
+      gaOptions: {
+        cookieFlags: 'SameSite=None;Secure',
+        siteSpeedSampleRate: 100
+      }
+    });
+    ReactGA4.send({ hitType: "pageview", page: window.location.pathname + window.location.search });
+  }
+}, []);
+
   const renderLoader = () => <LoadingCircle indicatorSize={100} thickness={2} />;
 
   return (
