@@ -257,11 +257,14 @@ const ProductDetail = () => {
                                 </Grid>
                                 <Grid item xs={12} md={5} align="center">
                                     <Box sx={{ width: { xs: 220, md: 320 }, height: { xs: 180, md: 260 }, mx: "auto" }}>
-                                        <img
-                                            src="/img/monitor-screen.jpg"
-                                            alt="AI Network Monitor main visual"
-                                            style={{ width: "100%", height: "auto", borderRadius: 8 }}
-                                            fetchpriority="high"
+                                        <video
+                                            src="/img/monitor-screen.webm"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                            style={{ width: "100%", height: "100%", borderRadius: 8, display: "block", border: "none", outline: "none" }}
+                                            aria-label="AI Network Monitor main visual"
                                         />
                                     </Box>
                                 </Grid>
