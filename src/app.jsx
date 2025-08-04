@@ -12,23 +12,46 @@ const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
-const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
+const TRACKING_ID = "G-QZ49HV7DS2";
+const isDevServerLabel = window?.serverLabel?.serverLabel === "dev";
 
 const App = () => {
-React.useEffect(() => {
-  if (!isDevServerLabel) {
-    const TRACKING_ID = "G-QZ49HV7DS2";
+
+  const [consentGiven, setConsentGiven] = useState(false);
+
+  // 1. Initialize GA4 immediately (but block cookies until consent)
+  useEffect(() => {
+    if (isDevServerLabel) return;
+
     ReactGA4.initialize(TRACKING_ID, {
       gaOptions: {
-        cookieFlags: 'SameSite=None;Secure',
-        siteSpeedSampleRate: 100
-      }
+        cookieFlags: "SameSite=None;Secure",
+        siteSpeedSampleRate: 100,
+      },
     });
-    ReactGA4.send({ hitType: "pageview", page: window.location.pathname + window.location.search });
-  }
-}, []);
+
+    // Deny cookies until user accepts
+    window.gtag?.("consent", "default", {
+      analytics_storage: "denied",
+    });
+  }, []);
+
+  // 2. Handle cookie accept → grant consent and trigger initial pageview
+  const handleAccept = () => {
+    window.gtag?.("consent", "update", {
+      analytics_storage: "granted",
+    });
+
+    ReactGA4.send({
+      hitType: "pageview",
+      page: window.location.pathname + window.location.search,
+    });
+
+    setConsentGiven(true);
+  };
 
   const renderLoader = () => <LoadingCircle indicatorSize={100} thickness={2} />;
+
 
   return (
     <div>
@@ -37,6 +60,7 @@ React.useEffect(() => {
           location="bottom"
           buttonText="Agree"
           cookieName="react-cookie-consent"
+          onAccept={handleAccept}
           sameSite="None"
           secure={true}
           style={{ background: "#2B373B", color: "#FFFFFF" }}
@@ -57,7 +81,7 @@ React.useEffect(() => {
         >
           <span style={{ fontWeight: 500 }}>
             This website uses cookies to enhance the user experience.{" "}
-            By clicking agree or continuing to use this site you agree to the use of cookies. 
+            By clicking agree or continuing to use this site you agree to the use of cookies.
             For full cookie policy click{" "}
             <a
               href="https://readyforquantum.com/cookiepolicy.html"
@@ -73,7 +97,7 @@ React.useEffect(() => {
               }}
             >
               Cookie Policy
-            </a>. 
+            </a>.
             To view our privacy policy click{" "}
             <a
               href="https://readyforquantum.com/privacypolicy.html"
@@ -92,8 +116,8 @@ React.useEffect(() => {
             </a>.
           </span>
         </CookieConsent>
-        <RouteChangeTracker />
-       
+        {consentGiven && <RouteChangeTracker />}
+
         <Routes>
           <Route path="/blog" element={<Navigate to="/blog/index.html" replace />} />
           <Route exact path="/" element={
@@ -116,12 +140,12 @@ React.useEffect(() => {
               <Pricing />
             </Suspense>
           } />
-            <Route exact path="/download" element={
+          <Route exact path="/download" element={
             <Suspense fallback={renderLoader()}>
               <Download />
             </Suspense>
           } />
-           <Route exact path="/start-login-proxy" element={<StartLoginProxy />} />
+          <Route exact path="/start-login-proxy" element={<StartLoginProxy />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
