@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useEffect } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { LoadingCircle } from "./loading-circle";
 import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
