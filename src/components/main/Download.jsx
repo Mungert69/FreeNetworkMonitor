@@ -37,7 +37,7 @@ Welcome to the Beta Tester Download Portal for the Quantum Network Monitor Agent
 - Monitor local network devices, even those behind firewalls or on private IP ranges (like 192.168.x.x), by utilizing the Agent installed on your local machine.
 
 ### Multi-Platform Support:
-- Available for Windows (via Windows Store), enabling network monitoring across different platforms.
+- Available for Android (via Google Play Store) and Windows (via Windows Store), enabling network monitoring across different platforms.
 - The Docker version offers full functionality on Linux, macOS, and Windows, providing a containerized solution for secure and robust monitoring without platform-specific limitations.
 
 ### AI-Powered Integration:
@@ -61,6 +61,30 @@ Welcome to the Beta Tester Download Portal for the Quantum Network Monitor Agent
 - Use visual indicators such as pulsing circles and color-coded status icons to quickly assess the health and performance of monitored devices.
 
 ## Choose your platform:
+
+### Android Download Instructions
+
+**Exclusive Beta Testing Invitation**
+
+As a beta tester, you will have exclusive access to download the Quantum Network Monitor Agent app from the Google Play Store.
+
+**How to Download:**
+
+1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store.
+   
+   [Quantum Network Monitor Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui) 
+ 
+   [Quantum Secure Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.quantumsecure)
+
+2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
+
+
+
+**Beta Tester Rewards:**
+
+In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Quantum Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
+
+> **Note:** Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. The Metasploit framework is not available for Android. If you don't want these limitations in your agent then use the fully featured Windows or docker versions below.  
 
 ## Windows Install Instructions
 
@@ -149,7 +173,6 @@ To set up the Quantum Network Monitor Agent within Docker, follow these steps:
 1. **Create a Docker Compose File**: Create a \`docker-compose.yml\` file with the following content:
 
 \`\`\`yaml
-version: "3.8"
 
 services:
   networkmonitorprocessor:
@@ -223,7 +246,7 @@ MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 M
 
 ## Support
 
-If you encounter any issues or have questions, please feel free to reach out to us at support@mahadeva.co.uk.
+If you encounter any issues or have questions, please feel free to reach out to us at support@mahadeva.co.uk. We're here to help and would love to hear your feedback!
 `;
 
 export default function Download() {
@@ -322,4 +345,3 @@ export default function Download() {
     </div>
   );
 };
-
