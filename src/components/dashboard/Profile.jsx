@@ -225,10 +225,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
           </Grid>
           {/* 🔑 New Passkey section inside the same CardContent */}
           <Divider sx={{ my: 3 }} />
-          <Typography variant="h6" gutterBottom>
-            Manage your passkeys
-          </Typography>
-          <PasskeyManager />
+          <PasskeyManager siteId={siteId}/>
         </CardContent>
         <Divider />
         <CardActions>
