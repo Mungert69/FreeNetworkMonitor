@@ -1,5 +1,5 @@
 // PasskeyManager.jsx
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 import {
@@ -12,22 +12,28 @@ import {
   Tooltip,
   CircularProgress,
   Divider,
-  Paper
+  Paper,
+  IconButton
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { getServerUrlFromSiteId } from './ServiceAPI';
 
 function PasskeyManager({ siteId }) {
   const { userInfo } = useFusionAuth();
 
-  const [status, setStatus] = useState(null); // { severity: 'success'|'error'|'info', message: string }
+  const [status, setStatus] = useState(null); // { severity, message }
   const [loading, setLoading] = useState(false);
+  const [listLoading, setListLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [displayName, setDisplayName] = useState(
     userInfo?.name || userInfo?.email || userInfo?.preferred_username || 'My Passkey'
   );
+  const [credentials, setCredentials] = useState([]); // server returns WebAuthnCredentialDetails[]
 
   // Use 0 when siteId is null/undefined
   const effectiveSiteId = useMemo(() => siteId ?? 0, [siteId]);
@@ -55,6 +61,63 @@ function PasskeyManager({ siteId }) {
     return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }, []);
 
+  const backendBase = useMemo(() => getServerUrlFromSiteId(effectiveSiteId), [effectiveSiteId]);
+  const userId = userInfo?.sub;
+
+  // ---- list / delete API calls ----
+  const loadPasskeys = useCallback(async () => {
+    if (!userId) return;
+    setListLoading(true);
+    try {
+      const resp = await fetch(`${backendBase}/auth/webauthn/list/${userId}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`List failed (${resp.status}): ${text}`);
+      }
+      const data = await resp.json();
+      // data is WebAuthnCredentialDetails[] from server
+      setCredentials(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+      setStatus({ severity: 'error', message: err.message || 'Failed to load passkeys.' });
+    } finally {
+      setListLoading(false);
+    }
+  }, [backendBase, userId]);
+
+  const deletePasskey = useCallback(async (credentialIdGuid) => {
+    if (!userId || !credentialIdGuid) return;
+    setDeletingId(credentialIdGuid);
+    try {
+      const resp = await fetch(`${backendBase}/auth/webauthn/delete/${userId}/${credentialIdGuid}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (resp.status === 404) {
+        setStatus({ severity: 'warning', message: 'Passkey not found (already deleted?).' });
+      } else if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`Delete failed (${resp.status}): ${text}`);
+      } else {
+        setStatus({ severity: 'success', message: 'Passkey deleted.' });
+        await loadPasskeys();
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus({ severity: 'error', message: err.message || 'Failed to delete passkey.' });
+    } finally {
+      setDeletingId(null);
+    }
+  }, [backendBase, userId, loadPasskeys]);
+
+  useEffect(() => {
+    loadPasskeys();
+  }, [loadPasskeys]);
+
+  // ---- registration flow ----
   const registerPasskey = useCallback(async () => {
     if (!userInfo) {
       setStatus({ severity: 'error', message: 'No user is logged in.' });
@@ -72,17 +135,14 @@ function PasskeyManager({ siteId }) {
     setStatus({ severity: 'info', message: 'Starting passkey registration…' });
 
     try {
-      const backendBase = getServerUrlFromSiteId(effectiveSiteId);
-
       // 1) Start registration
       const startResp = await fetch(`${backendBase}/auth/webauthn/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          userId: userInfo.sub,
+          userId: userId,
           displayName: displayName?.trim() || 'My Passkey'
-          // name: "MacBook Pro" // optional
         })
       });
 
@@ -109,18 +169,33 @@ function PasskeyManager({ siteId }) {
       const credential = await navigator.credentials.create({ publicKey });
       if (!credential) throw new Error('navigator.credentials.create returned null');
 
+      // Optional/Best-effort: extensions & transports
+      const clientExtensionResults = credential.getClientExtensionResults?.() || undefined;
+      // Try both: new spec has response.getTransports(), some impls have credential.getTransports()
+      const transports =
+        credential.response?.getTransports?.() ||
+        credential.getTransports?.() ||
+        undefined;
+
+      // Ensure credProps.rk exists when we send extensions (prevents server null handling)
+      if (clientExtensionResults && clientExtensionResults.credProps && typeof clientExtensionResults.credProps.rk !== 'boolean') {
+        clientExtensionResults.credProps.rk = false;
+      }
+
       // 3) Complete registration
       const completePayload = {
-        userId: userInfo.sub,
+        userId: userId,
         credential: {
           id: credential.id,
-          rawId: arrayBufferToBase64url(credential.rawId),
           type: credential.type,
           response: {
             attestationObject: arrayBufferToBase64url(credential.response.attestationObject),
             clientDataJSON:    arrayBufferToBase64url(credential.response.clientDataJSON),
           },
-        },
+          // Only include if present; backend already defaults extensions if null
+          ...(clientExtensionResults ? { clientExtensionResults } : {}),
+          ...(Array.isArray(transports) && transports.length ? { transports } : {})
+        }
       };
 
       const completeResp = await fetch(`${backendBase}/auth/webauthn/complete`, {
@@ -136,8 +211,8 @@ function PasskeyManager({ siteId }) {
       }
 
       setStatus({ severity: 'success', message: 'Passkey registered successfully.' });
+      await loadPasskeys();
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err);
       setStatus({ severity: 'error', message: err.message || 'Registration failed.' });
     } finally {
@@ -147,10 +222,18 @@ function PasskeyManager({ siteId }) {
     arrayBufferToBase64url,
     base64urlToArrayBuffer,
     displayName,
-    effectiveSiteId,
+    backendBase,
+    userId,
     userInfo,
-    webAuthnSupported
+    webAuthnSupported,
+    loadPasskeys
   ]);
+
+  const truncate = (s, left = 8, right = 6) => {
+    if (!s) return '';
+    if (s.length <= left + right + 3) return s;
+    return `${s.slice(0, left)}…${s.slice(-right)}`;
+  };
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -158,6 +241,14 @@ function PasskeyManager({ siteId }) {
         <Stack direction="row" spacing={1} alignItems="center">
           <SecurityIcon fontSize="small" />
           <Typography variant="h6">Manage your passkeys</Typography>
+          <Box flex={1} />
+          <Tooltip title="Refresh list">
+            <span>
+              <IconButton onClick={loadPasskeys} disabled={listLoading}>
+                {listLoading ? <CircularProgress size={18} /> : <RefreshIcon />}
+              </IconButton>
+            </span>
+          </Tooltip>
         </Stack>
 
         {!webAuthnSupported && (
@@ -205,6 +296,45 @@ function PasskeyManager({ siteId }) {
         )}
 
         <Divider />
+
+        {/* List of existing passkeys */}
+        <Stack spacing={1}>
+          <Typography variant="subtitle1">Your passkeys</Typography>
+          {credentials.length === 0 && !listLoading && (
+            <Typography variant="body2" color="text.secondary">
+              You don’t have any passkeys yet.
+            </Typography>
+          )}
+          {credentials.map((c) => (
+            <Paper key={c.id} variant="outlined" sx={{ p: 1.5 }}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Box>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                    {c.displayName || c.name || 'Unnamed passkey'}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    RP: {c.relyingPartyId} • ID: {truncate(c.credentialId)}
+                  </Typography>
+                </Box>
+                <Box flex={1} />
+                <Tooltip title="Delete passkey">
+                  <span>
+                    <Button
+                      size="small"
+                      variant="text"
+                      color="error"
+                      startIcon={deletingId === c.id ? <CircularProgress size={16} /> : <DeleteOutlineIcon />}
+                      onClick={() => deletePasskey(c.id)}
+                      disabled={deletingId === c.id}
+                    >
+                      Delete
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
 
         <Box>
           <Typography variant="body2" color="text.secondary">
