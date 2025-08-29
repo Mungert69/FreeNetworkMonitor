@@ -26,6 +26,7 @@ import {
   colors
 } from "@mui/material";
 import Message from './Message';
+import PasskeyManager from './PasskeyManager';
 import Snackbar from '@mui/material/Snackbar';
 
 import { updateApiUser, resendVerifyEmail, handleDownload } from './ServiceAPI';
@@ -51,7 +52,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
     });
     setDisableEmail(apiUser.disableEmail);
   }, [apiUser]);
-  
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -222,6 +223,12 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
             </Grid>
 
           </Grid>
+          {/* 🔑 New Passkey section inside the same CardContent */}
+          <Divider sx={{ my: 3 }} />
+          <Typography variant="h6" gutterBottom>
+            Manage your passkeys
+          </Typography>
+          <PasskeyManager />
         </CardContent>
         <Divider />
         <CardActions>

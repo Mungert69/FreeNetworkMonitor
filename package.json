@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "private": true,
   "overrides": {
-    "esbuild": "0.25.0",
-    "prismjs": "1.30.0"
+    "esbuild": "^0.25.0",
+    "prismjs": "^1.30.0",
+     "@eslint/plugin-kit": "^0.3.4"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
