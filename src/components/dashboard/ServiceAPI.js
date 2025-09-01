@@ -976,5 +976,34 @@ export const transcribeAudioApi = async (audioBlob) => {
     }
 };
 
+  // ServiceAPI.js
+export const fetchTiers = async (baseUrlId) => {
+  let data = [];
+  axiosRetry(axios, { retries: 3 });
+  const result = await trackPromise(
+    axios({
+      method: 'get',
+      url: apiBaseUrls[baseUrlId] + '/UserConfig/Tiers',
+      withCredentials: true, // keep if your API checks cookies; remove if public
+      headers: { 'Content-Type': 'application/json' },
+    }).catch((error) => {
+      console.log('ServiceAPI.fetchTiers Axios Error was : ' + error);
+      return;
+    })
+  );
+
+  try {
+    // API returns { success, message, data } — we want the array in .data
+    data = result?.data?.data ?? [];
+  } catch (error) {
+    console.log('ServiceAPI.fetchTiers Mapping Data Error was : ' + error);
+    if (result && result.data?.message) console.log('Api Result.Message was ' + result.data.message);
+    return [];
+  }
+
+  console.log('ServiceAPI.fetchTiers fetched ' + data.length + ' tiers');
+  return data;
+};
+
 
 
