@@ -23,8 +23,11 @@ import {
   FormHelperText,
   FormControlLabel,
   Typography,
-  colors
+  colors,
+  IconButton,
+  Popover
 } from "@mui/material";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Message from './Message';
 import PasskeyManager from './PasskeyManager';
 import Snackbar from '@mui/material/Snackbar';
@@ -44,6 +47,16 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
   const [open, setOpen] = useState(false);
   const { name, picture } = state;
   const [isLoading, setIsLoading] = useState(false);
+
+  // For Email Verified popover
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleHelpClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleHelpClose = () => {
+    setAnchorEl(null);
+  };
+  const helpOpen = Boolean(anchorEl);
 
   useEffect(() => {
     setState({
@@ -147,22 +160,25 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
             </Grid>
 
             <Grid item md={6} xs={12}>
-              {apiUser.email_verified ? <FormControlLabel sx={{ display: 'flex', alignItems: 'center' }}
-                align='center'
-                control={
-                  <Checkbox icon={<NotificationsActiveIcon />}
-                    checkedIcon={<NotificationsOffIcon />} checked={disableEmail} onChange={handleChangeBool} />
-                }
-                label="Send email notifications"
-
-              /> : <Button
-                type="submit"
-                variant="contained"
-                onClick={handleSubmitVerifyEmail}
-              >
-                Resend verification email
-              </Button>}
-
+              {apiUser.email_verified ? (
+                <FormControlLabel sx={{ display: 'flex', alignItems: 'center' }}
+                  align='center'
+                  control={
+                    <Checkbox icon={<NotificationsActiveIcon />}
+                      checkedIcon={<NotificationsOffIcon />} checked={disableEmail} onChange={handleChangeBool} />
+                  }
+                  label="Send email notifications"
+                />
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="warning"
+                  onClick={handleSubmitVerifyEmail}
+                >
+                  Resend verification email
+                </Button>
+              )}
             </Grid>
 
 
@@ -176,14 +192,53 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
               />
             </Grid>
 
-            <Grid item md={3} xs={12}>
+            <Grid item md={3} xs={12} sx={{ display: 'flex', alignItems: 'center' }}>
               <TextField
                 fullWidth
                 label="Email Verified"
                 value={apiUser.email_verified}
                 variant="outlined"
                 disabled={true}
+                error={!apiUser.email_verified}
+                sx={!apiUser.email_verified ? {
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: theme => theme.palette.error.main,
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: theme => theme.palette.error.main,
+                  },
+                  '& .MuiInputBase-input.Mui-disabled': {
+                    WebkitTextFillColor: theme => theme.palette.error.main,
+                  }
+                } : {}}
               />
+              {!apiUser.email_verified && (
+                <>
+                  <IconButton
+                    aria-label="Why verify email?"
+                    onClick={handleHelpClick}
+                    size="small"
+                    sx={{ ml: 1 }}
+                  >
+                    <HelpOutlineIcon color="error" />
+                  </IconButton>
+                  <Popover
+                    open={helpOpen}
+                    anchorEl={anchorEl}
+                    onClose={handleHelpClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <Typography sx={{ p: 2, maxWidth: 220 }}>
+                      You must verify your email to receive alerts.
+                    </Typography>
+                  </Popover>
+                </>
+              )}
             </Grid>
             <Grid item md={9} xs={12}>
               <TextField
