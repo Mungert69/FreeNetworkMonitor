@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://readyforquantum.com/",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "overrides": {
     "esbuild": "^0.25.0",
