@@ -22,6 +22,8 @@ import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import { FaDiscord } from "react-icons/fa";
 import Button from '@mui/material/Button';
+import BlogArticle from './BlogArticle';
+
 
 const Chat = lazy(() => import('../dashboard/Chat/Chat'));
 
@@ -637,7 +639,11 @@ const ProductDetail = () => {
                             </Button>
                         </Grid>
                     </Grid>
-
+                    <Divider sx={{ my: 6 }} />
+                    <Box sx={{ mt: 6 }}>
+                        <BlogArticle title="Quantum-Safe TLS: Practical Guide & Playbook" />
+                    </Box>
+                    <Divider sx={{ my: 6 }} />
                     <Footer />
 
                     <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>

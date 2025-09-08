@@ -6,7 +6,7 @@
   "overrides": {
     "esbuild": "^0.25.0",
     "prismjs": "^1.30.0",
-     "@eslint/plugin-kit": "^0.3.4"
+    "@eslint/plugin-kit": "^0.3.4"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -51,6 +51,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.15.1",
     "remark-gfm": "^4.0.1",
+    "remark-slug": "^7.0.1",
     "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.17",
     "uuid": "^11.1.0",
