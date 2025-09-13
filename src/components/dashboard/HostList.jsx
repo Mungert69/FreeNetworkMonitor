@@ -22,6 +22,7 @@ import QuantumIcon from '@mui/icons-material/Flare'; // Replace with actual Quan
 import NmapIcon from '@mui/icons-material/Search'; // Placeholder icon
 import NmapVulnIcon from '@mui/icons-material/BugReport'; // Placeholder icon
 import CrawlSiteIcon from '@mui/icons-material/Public'; // Placeholder icon
+import HugIcon from '@mui/icons-material/AccessAlarm'; // Placeholder icon
 import DataSetsList from './DataSetsList';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -48,6 +49,7 @@ const iconMap = {
   NmapIcon: <NmapIcon />,
   NmapVulnIcon: <NmapVulnIcon />,
   CrawlSiteIcon: <CrawlSiteIcon />,
+  HugIcon: <HugIcon />,
   // Add other icons as necessary
   ErrorIcon: <ErrorIcon />
 };
