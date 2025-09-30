@@ -8,4 +8,4 @@ mkdir -p ./out/blogpics
 cp -r ../FreeNetworkMonitorBlog/public/images ./out/
 cp -r ../FreeNetworkMonitorBlog/public/blogpics ./out/
 docker compose -f docker-compose.yml build
-docker push mungert/networkmonitorreact:1.0.1
+docker push mungert/networkmonitorreact:1.0.2
