@@ -16,7 +16,7 @@ import { useMediaQuery } from '@mui/material';
 import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
-import { SuperSEO } from 'react-super-seo';
+import Seo from '../Seo';
 import Blog from './Blog';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
@@ -150,7 +150,7 @@ const ProductDetail = () => {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <SuperSEO
+            <Seo
                 title="AI Network Monitor: Quantum-Ready Security & Nmap Automation"
                 description="Get 24/7 network monitoring with zero setup. Our AI assistant automates Nmap scans, Metasploit tests, and quantum-readiness checks—with alerts in plain English. Start free: no configuration needed."
                 openGraph={{

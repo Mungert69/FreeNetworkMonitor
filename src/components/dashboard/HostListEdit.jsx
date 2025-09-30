@@ -86,6 +86,7 @@ const HostListEditToolbar = ({
             <IconButton
               color="primary"
               size="small"
+              aria-label="Save host list"
               onClick={onSave}
               disabled={disableActions}
             >
@@ -101,6 +102,7 @@ const HostListEditToolbar = ({
           <IconButton
             color="primary"
             size="small"
+            aria-label="Add host"
             onClick={onAdd}
             disabled={disableActions}
           >
@@ -112,7 +114,12 @@ const HostListEditToolbar = ({
       </Tooltip>
       <Tooltip title="Click for help">
         <span>
-          <IconButton color="primary" size="small" onClick={onHelp}>
+          <IconButton
+            color="primary"
+            size="small"
+            aria-label="Open help dialog"
+            onClick={onHelp}
+          >
             <Badge color="secondary" variant="dot" overlap="circular">
               <HelpIcon />
             </Badge>

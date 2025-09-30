@@ -15,7 +15,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MainListItems from "../dashboard/MainListItems";
 import styleObject from "../dashboard/styleObject";
 import Loading from "../../loading-circle";
-import { SuperSEO } from 'react-super-seo';
+import Seo from '../Seo';
 import Footer from "./Footer";
 import useClasses from "../dashboard/useClasses";
 import { useTheme } from '@mui/material/styles';
@@ -278,24 +278,24 @@ export default function Download() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <SuperSEO
-    title="Download Quantum Network Monitor Agent - Beta Tester Portal"
-    description="Join the exclusive beta testing program for the Quantum Network Monitor Agent. Download the app for Android, Windows, or Docker, and gain access to real-time network monitoring, advanced security tools, and AI-powered insights. Help shape the future of network monitoring!"
-    openGraph={{
-        ogImage: {
+      <Seo
+        title="Download Quantum Network Monitor Agent - Beta Tester Portal"
+        description="Join the exclusive beta testing program for the Quantum Network Monitor Agent. Download the app for Android, Windows, or Docker, and gain access to real-time network monitoring, advanced security tools, and AI-powered insights. Help shape the future of network monitoring!"
+        openGraph={{
+          ogImage: {
             ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
             ogImageAlt: "Quantum Network Monitor Logo", // Add alt text for the image
-        },
-        ogUrl: `https://${getBaseDomain()}/download`, // Canonical URL
-        ogType: "website", // Type of content
-        ogSiteName: "Quantum Network Monitor", // Site name
-        ogLocale: "en_US", // Language and locale
-    }}
-    twitter={{
-        cardType: "summary_large_image", // Twitter card type
-        site: "@freenetworkmonitor", // Your Twitter handle
-    }}
-/>
+          },
+          ogUrl: `https://${getBaseDomain()}/download`, // Canonical URL
+          ogType: "website", // Type of content
+          ogSiteName: "Quantum Network Monitor", // Site name
+          ogLocale: "en_US", // Language and locale
+        }}
+        twitter={{
+          cardType: 'summary_large_image',
+          site: '@freenetworkmonitor',
+        }}
+      />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           {isLoading && <Loading small={true} />}

@@ -15,7 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading-circle';
-import { SuperSEO } from 'react-super-seo';
+import Seo from '../Seo';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import { useTheme } from '@mui/material/styles';
@@ -578,7 +578,7 @@ const Faq = () => {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <SuperSEO
+            <Seo
                 title="Quantum Network Monitor FAQ - Get Answers to Common Questions"
                 description="Find answers to frequently asked questions about Quantum Network Monitor. Learn how to add hosts, set up alerts, troubleshoot issues, and use advanced features like the Network Monitor Assistant."
                 openGraph={{

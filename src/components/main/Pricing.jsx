@@ -15,7 +15,7 @@ import MainListItems from '../dashboard/MainListItems';
 //import PingImage from '../../img/ping.svg';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
-import { SuperSEO } from 'react-super-seo';
+import Seo from '../Seo';
 import useClasses from "../dashboard/useClasses";
 import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
@@ -55,7 +55,7 @@ export default function Pricing(){
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <SuperSEO
+            <Seo
                 title="Quantum Network Monitor Online Website Monitoring"
                 description="This website provides a Quantum Network Monitor online service. Providing realtime monitoring, charts and alerts for all your websites and network hosts. Setup is easy and simple. It is free to use."
                 openGraph={{
@@ -122,4 +122,3 @@ export default function Pricing(){
         </div >
     );
 }
-

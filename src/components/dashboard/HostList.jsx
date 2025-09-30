@@ -77,7 +77,12 @@ const HostListToolbar = ({ onToggleDataSets }) => (
     <Box>
       <Tooltip title="Select Dataset">
         <span>
-          <IconButton color="primary" size="small" onClick={onToggleDataSets}>
+          <IconButton
+            color="primary"
+            size="small"
+            aria-label="Select dataset"
+            onClick={onToggleDataSets}
+          >
             <Badge color="secondary" variant="dot" overlap="circular">
               <StorageIcon />
             </Badge>

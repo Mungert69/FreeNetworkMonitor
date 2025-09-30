@@ -36,7 +36,7 @@ import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
 import { useTheme } from '@mui/material/styles';
-import { SuperSEO } from 'react-super-seo';
+import Seo from '../Seo';
 import FadeWrapper from './FadeWrapper';
 import { ga4Event } from '../../ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
@@ -314,7 +314,7 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
 
-      <SuperSEO
+      <Seo
         title="Quantum Network Monitor Dashboard - Comprehensive Network Monitoring & Security Management"
         description="Manage your network hosts, conduct security assessments, and run diagnostics with the Quantum Network Monitor Dashboard. Monitor real-time performance, execute custom commands, and ensure network integrity with advanced tools. Start monitoring for free today!"
         openGraph={{

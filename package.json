@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://readyforquantum.com/",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "overrides": {
     "esbuild": "^0.25.0",
@@ -43,7 +43,6 @@
     "react-router-dom": "^7.6.0",
     "react-router-hash-link": "^2.4.3",
     "react-scroll": "^1.9.3",
-    "react-super-seo": "^1.1.10",
     "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.15.1",
     "remark-gfm": "^4.0.1",
