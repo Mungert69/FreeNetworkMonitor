@@ -3,17 +3,40 @@ import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
 
+const isVitest = Boolean(process.env.VITEST);
+const certificateKeyPath = '/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.key';
+const certificatePath = '/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.crt';
+
+const httpsConfig = (() => {
+  if (isVitest) {
+    return undefined;
+  }
+
+  const keyExists = fs.existsSync(certificateKeyPath);
+  const certExists = fs.existsSync(certificatePath);
+
+  if (keyExists && certExists) {
+    return {
+      key: fs.readFileSync(path.resolve(certificateKeyPath)),
+      cert: fs.readFileSync(path.resolve(certificatePath)),
+    };
+  }
+
+  return undefined;
+})();
+
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 8443,  // You can change this to your desired port
-    https: {
-      key: fs.readFileSync(path.resolve('/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.key')), // Absolute path
-      cert: fs.readFileSync(path.resolve('/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.crt')), // Absolute path
-    },
-    host: '127.0.0.1',
-    cors: true,  // Enable CORS if needed
-  },
+  ...(isVitest
+    ? {}
+    : {
+        server: {
+          port: 8443, // You can change this to your desired port
+          host: '127.0.0.1',
+          cors: true, // Enable CORS if needed
+          ...(httpsConfig ? { https: httpsConfig } : {}),
+        },
+      }),
   build: {
     outDir: 'dist',
     sourcemap: process.env.VITE_DEBUG === 'true',  // Enable source maps only in debug mode
@@ -28,5 +51,11 @@ export default defineConfig({
   define: {
     'import.meta.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),  // Define environment for debugging
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './setupTests.js',
+    css: true,
+    globals: true,
+    restoreMocks: true,
+  },
 });
-

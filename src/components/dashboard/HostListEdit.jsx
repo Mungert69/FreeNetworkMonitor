@@ -1,27 +1,18 @@
-import MUIDataTable from "mui-datatables";
-import { TablePagination, Grid } from '@mui/material';
-import debounce from 'lodash.debounce';
-import { useTheme, useMediaQuery } from '@mui/material';
-import React, { useRef, useState, useEffect,useCallback  } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  FormControlLabel,
-  TextField,
-  Select,
-  MenuItem,
-  Checkbox
+  Badge,
+  Box,
+  IconButton,
+  Tooltip,
+  useMediaQuery
 } from '@mui/material';
-import { fetchEditHostData, saveHostData, addHostApi, delHostApi,fetchEndpointTypes } from './ServiceAPI';
-import IconButton from '@mui/material/IconButton';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import Badge from '@mui/material/Badge';
+import { useTheme } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
-// Import necessary MUI Icons
+import ErrorIcon from '@mui/icons-material/Error';
 import PingIcon from '@mui/icons-material/Speed';
 import HttpIcon from '@mui/icons-material/Http';
 import HttpsIcon from '@mui/icons-material/Https';
@@ -30,610 +21,535 @@ import LanguageIcon from '@mui/icons-material/Language';
 import LinkIcon from '@mui/icons-material/Link';
 import DnsIcon from '@mui/icons-material/Dns';
 import EmailIcon from '@mui/icons-material/Email';
-import QuantumIcon from '@mui/icons-material/Flare'; // Replace with actual Quantum icon
-import NmapIcon from '@mui/icons-material/Search'; // Placeholder icon
-import NmapVulnIcon from '@mui/icons-material/BugReport'; // Placeholder icon
-import CrawlSiteIcon from '@mui/icons-material/Public'; // Placeholder icon
-import ErrorIcon from '@mui/icons-material/Error'; // Error Icon
-import EditHostDialog from './EditHostDialog'; // Import the dialog component
-
+import QuantumIcon from '@mui/icons-material/Flare';
+import NmapIcon from '@mui/icons-material/Search';
+import NmapVulnIcon from '@mui/icons-material/BugReport';
+import CrawlSiteIcon from '@mui/icons-material/Public';
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridToolbarContainer,
+  GridToolbarQuickFilter
+} from '@mui/x-data-grid';
 import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CacheProvider } from "@emotion/react";
-import createCache from "@emotion/cache";
 import Message from './Message';
+import EditHostDialog from './EditHostDialog';
 import { useFusionAuth } from '@fusionauth/react-sdk';
-const muiCache = createCache({
-  "key": "mui",
-  "prepend": true
-});
-// Mapping of icon names to actual MUI Icon components
-const iconMap = {
-  PingIcon: <PingIcon />,
-  HttpIcon: <HttpIcon />,
-  HttpsIcon: <HttpsIcon />,
-  HtmlIcon: <HtmlIcon />,
-  LanguageIcon: <LanguageIcon />,
-  LinkIcon: <LinkIcon />,
-  DnsIcon: <DnsIcon />,
-  EmailIcon: <EmailIcon />,
-  QuantumIcon: <QuantumIcon />,
-  NmapIcon: <NmapIcon />,
-  NmapVulnIcon: <NmapVulnIcon />,
-  CrawlSiteIcon: <CrawlSiteIcon />,
-  // Add other icons as necessary
-  ErrorIcon: <ErrorIcon />
+import {
+  fetchEditHostData,
+  saveHostData,
+  addHostApi,
+  delHostApi,
+  fetchEndpointTypes,
+} from './ServiceAPI';
+
+const iconComponentMap = {
+  PingIcon,
+  HttpIcon,
+  HttpsIcon,
+  HtmlIcon,
+  LanguageIcon,
+  LinkIcon,
+  DnsIcon,
+  EmailIcon,
+  QuantumIcon,
+  NmapIcon,
+  NmapVulnIcon,
+  CrawlSiteIcon,
 };
 
+const STORAGE_KEY_PREFIX = 'host-list-edit-grid-';
 
+const HostListEditToolbar = ({
+  onSave,
+  onAdd,
+  onHelp,
+  isEdited,
+  disableActions,
+}) => (
+  <GridToolbarContainer
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      gap: 1,
+      py: 0.75,
+      px: 1,
+    }}
+  >
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+      <FadeWrapper toggle={isEdited}>
+        <Tooltip title="Save Host List">
+          <span>
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={onSave}
+              disabled={disableActions}
+            >
+              <Badge color="secondary" variant="dot" overlap="circular">
+                <SaveIcon />
+              </Badge>
+            </IconButton>
+          </span>
+        </Tooltip>
+      </FadeWrapper>
+      <Tooltip title="Add new Host">
+        <span>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={onAdd}
+            disabled={disableActions}
+          >
+            <Badge color="secondary" variant="dot" overlap="circular">
+              <AddIcon />
+            </Badge>
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Tooltip title="Click for help">
+        <span>
+          <IconButton color="primary" size="small" onClick={onHelp}>
+            <Badge color="secondary" variant="dot" overlap="circular">
+              <HelpIcon />
+            </Badge>
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
+    <GridToolbarQuickFilter
+      variant="outlined"
+      size="small"
+      debounceMs={300}
+      placeholder="Search hosts"
+    />
+  </GridToolbarContainer>
+);
 
-export const HostListEdit = ({ siteId, processorList,defaultSearchValue }) => {
+export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   const { userInfo } = useFusionAuth();
-  const [selectedId, setSelectedId] = React.useState();
-  const [data, setData] = React.useState([]);
-  const [reset, setReset] = React.useState(true);
-  const [openHelp, setOpenHelp] = React.useState(false);
-  const [displayEdit, setDisplayEdit] = React.useState(true);
-  const [message, setMessage] = React.useState({ info: 'init', success: false, text: "Interal Error" });
-  const paginationRef = useRef(null);
-  const [endpointTypes, setEndpointTypes] = useState([]); // Store endpoint types
-  const [endpointTypeMap, setEndpointTypeMap] = useState({}); // Map for easy lookup
-  const [editingHost, setEditingHost] = useState(null); // Host being edited
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Edit dialog open state
-  const [isEdited, setIsEdited] = useState(false);
-
- 
-
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [data, setData] = useState([]);
+  const [resetToggle, setResetToggle] = useState(true);
+  const [openHelp, setOpenHelp] = useState(false);
+  const [message, setMessage] = useState({ info: 'init', success: false, text: 'Internal Error' });
+  const [displayEdit, setDisplayEdit] = useState(true);
+  const [isEdited, setIsEdited] = useState(false);
+  const [editingHost, setEditingHost] = useState(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [endpointTypes, setEndpointTypes] = useState([]);
+  const [endpointTypeMap, setEndpointTypeMap] = useState({});
 
-  const getMuiTheme = () => createTheme({
-    components: {
-      MuiSvgIcon: {
-        styleOverrides: {
-          root: {
-            color: '#607466'
-          }
-        }
-      },
-      MuiDataTableBodyCell: {
-        styleOverrides: {
-          root: {
-            padding: isSmallScreen ? "0px 1px" : "4px 8px",
-            fontSize: isSmallScreen ? "0.62rem" : undefined,
-            lineHeight: isSmallScreen ? 1.15 : undefined,
-          }
-        }
-      },
-      MuiDataTable: {
-        styleOverrides: {
-          root: {
-          }
-        }
-      },
-      MuiDataTableCell: {
-        styleOverrides: {
-          root: {
-            padding: isSmallScreen ? "2px 4px" : "4px 8px",
-            fontSize: isSmallScreen ? "0.62rem" : undefined,
-            lineHeight: isSmallScreen ? 1.15 : undefined,
-          }
-        }
-      },
-      MuiTableHead: {
-        styleOverrides: {
-          root: {
-            fontSize: isSmallScreen ? "0.7rem" : undefined,
-          }
-        }
-      },
-      MuiTableRow: {
-        styleOverrides: {
-          root: {
-            fontSize: isSmallScreen ? "0.62rem" : undefined,
-          }
-        }
-      },
-      MuiFormControlLabel: {
-        styleOverrides: {
-          root: {
-            marginBottom: 0,
-            marginTop: isSmallScreen ? 0 : undefined,
-            marginLeft: isSmallScreen ? 0 : undefined,
-            marginRight: isSmallScreen ? 0 : undefined,
-            padding: isSmallScreen ? "0px 1px" : undefined,
-            minHeight: isSmallScreen ? "24px" : undefined,
-          }
-        }
-      },
-      MuiInputBase: {
-        styleOverrides: {
-          root: {
-            fontSize: isSmallScreen ? "0.92rem" : undefined,
-            padding: isSmallScreen ? "3px 8px" : undefined,
-            minHeight: isSmallScreen ? "32px" : undefined,
-            height: isSmallScreen ? "32px" : undefined,
-          },
-          input: {
-            fontSize: isSmallScreen ? "0.92rem" : undefined,
-            padding: isSmallScreen ? "3px 8px" : undefined,
-            minHeight: isSmallScreen ? "32px" : undefined,
-            height: isSmallScreen ? "32px" : undefined,
-          }
-        }
-      },
-      MuiSelect: {
-        styleOverrides: {
-          select: {
-            fontSize: isSmallScreen ? "0.85rem" : undefined,
-            paddingTop: isSmallScreen ? "4px" : undefined,
-            paddingBottom: isSmallScreen ? "4px" : undefined,
-            paddingLeft: isSmallScreen ? "8px" : undefined,
-            paddingRight: isSmallScreen ? "8px" : undefined,
-            minHeight: isSmallScreen ? "32px" : undefined,
-            height: isSmallScreen ? "32px" : undefined,
-          }
-        }
-      },
-      MuiMenuItem: {
-        styleOverrides: {
-          root: {
-            fontSize: isSmallScreen ? "0.92rem" : undefined,
-            minHeight: isSmallScreen ? "28px" : undefined,
-            paddingTop: isSmallScreen ? "4px" : undefined,
-            paddingBottom: isSmallScreen ? "4px" : undefined,
-            paddingLeft: isSmallScreen ? "8px" : undefined,
-            paddingRight: isSmallScreen ? "8px" : undefined,
-          }
-        }
-      },
-      MuiCheckbox: {
-        styleOverrides: {
-          root: {
-            padding: isSmallScreen ? "2px" : undefined,
-          }
-        }
-      },
+  const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
+  const persistedState = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return null;
     }
-  })
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      console.warn('Unable to parse HostListEdit grid state from storage', error);
+      return null;
+    }
+  }, [storageKey]);
+
+  const [filterModel, setFilterModel] = useState(() => {
+    if (defaultSearchValue) {
+      return { items: [], quickFilterValues: [defaultSearchValue] };
+    }
+    return persistedState?.filterModel ?? { items: [], quickFilterValues: [] };
+  });
+
+  const [sortModel, setSortModel] = useState(
+    () => persistedState?.sortModel ?? [{ field: 'address', sort: 'asc' }],
+  );
+
+  const [paginationModel, setPaginationModel] = useState(
+    () => persistedState?.paginationModel ?? { pageSize: 25, page: 0 },
+  );
+
+  useEffect(() => {
+    if (!defaultSearchValue) {
+      return;
+    }
+    setFilterModel((prev) => {
+      const matchesDefault =
+        prev.quickFilterValues &&
+        prev.quickFilterValues.length === 1 &&
+        prev.quickFilterValues[0] === defaultSearchValue;
+      if (matchesDefault) {
+        return prev;
+      }
+      return { ...prev, quickFilterValues: [defaultSearchValue] };
+    });
+  }, [defaultSearchValue]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ filterModel, sortModel, paginationModel }),
+    );
+  }, [filterModel, sortModel, paginationModel, storageKey]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [returndata, endpointData] = await Promise.all([
+        const [hostData, endpointData] = await Promise.all([
           fetchEditHostData(siteId, userInfo),
-          fetchEndpointTypes(siteId) // Fetch endpoint types
+          fetchEndpointTypes(siteId),
         ]);
 
         if (endpointData) {
-          setEndpointTypes(endpointData);
-          // Create a map for easy lookup by internalType
-          const map = {};
-          endpointData.forEach(type => {
-            map[type.internalType.toLowerCase()] = type;
-          });
+          const map = endpointData.reduce((acc, entry) => {
+            if (entry?.internalType) {
+              acc[entry.internalType.toLowerCase()] = entry;
+            }
+            return acc;
+          }, {});
           setEndpointTypeMap(map);
+          setEndpointTypes(endpointData);
         }
 
-        if (returndata) {
-          setData(returndata);
+        if (hostData) {
+          setData(hostData);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching host list data', error);
         setMessage({ text: 'Failed to fetch data.', success: false, info: false });
       }
     };
 
     fetchData();
-  }, [reset]);
+  }, [resetToggle, siteId, userInfo]);
 
-  const debouncedUpdate = useCallback(
-    debounce((rowIndex, field, value) => {
-      setData(prevData => {
-        const updatedData = [...prevData];
-        updatedData[rowIndex] = { ...updatedData[rowIndex], [field]: value };
-        return updatedData;
-      });
-      setIsEdited(true);
-    }, 300), // 300ms delay
-    []
-  );
-  
-  const columns = [
-    {
-      name: "edit",
-      label: "Edit",
-      options: {
-        filter: false,
-        sort: false,
-        empty: true,
-        customBodyRenderLite: (dataIndex) => {
-          const row = data[dataIndex];
-          return (
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {/* Edit Host Button */}
-              <Tooltip title="Edit Host">
-                <span>
-                  <IconButton
-                    onClick={() => {
-                      setEditingHost(row);
-                      setIsEditDialogOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </div>
-          );
-        }
-      }
-    },
-    {
-      name: 'id',
-      options: {
-        display: false
-      }
-    },
-    {
-      name: 'address',
-      label: 'Host Address',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'address');
-          return (<FormControlLabel
-            value={value}
-            control={<TextField value={value} style={{ width: '300px' }} />}
-            onChange={event => {
-              const row = tableMeta.rowIndex;
-              debouncedUpdate(row, 'address', event.target.value);
-              updateValue(event.target.value);
-            }
-            }
-          />);
-        }
-      }
-    }, {
-      name: 'endPointType',
-      label: 'End Point',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          const rowIndex = tableMeta.rowIndex;
-          return (
-            <Select
-              value={value}
-              onChange={event => {
-                const row = tableMeta.rowIndex;
-                debouncedUpdate(row, 'endPointType', event.target.value);
-                updateValue(event.target.value);
-              }}
-              style={{ width: '200px' }}
-            >
-              {endpointTypes.map((type) => (
-                <MenuItem key={type.internalType} value={type.internalType}>
-                  {type.name}
-                </MenuItem>
-              ))}
-            </Select>
-          );
-        }
-      }
-    }, {
-      name: 'timeout',
-      label: 'Timeout (ms)',
-      options: {
-        filter: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'timeout');
-          return (
-            <FormControlLabel
-              label=""
-              value={value}
-              control={<TextField value={value} style={{ width: '80px' }} />}
-              onChange={event => {
-                const row = tableMeta.rowIndex;
-                debouncedUpdate(row, 'timeout', event.target.value);
-                updateValue(event.target.value);
+  const processorMap = useMemo(() => {
+    const map = new Map();
+    (processorList ?? []).forEach((processor) => {
+      map.set(processor.appID, processor.location);
+    });
+    return map;
+  }, [processorList]);
 
-              }}
-            />
-          );
-        }
-      }
-    }, {
-      name: 'port',
-      label: 'Port',
-      options: {
-        filter: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'timeout');
-          return (
-            <FormControlLabel
-              label=""
-              value={value}
-              control={<TextField value={value} style={{ width: '80px' }} />}
-              onChange={event => {
-                const row = tableMeta.rowIndex;
-                debouncedUpdate(row, 'port', event.target.value);
-                updateValue(event.target.value);
-              }}
-            />
-          );
-        }
-      }
-    }
-    , {
-      name: 'enabled',
-      label: 'Enabled',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'enabled');
-          return (
-            <FormControlLabel
-              align='center'
-              control={
-                <Checkbox checked={value} onChange={event => {
-                  const row = tableMeta.rowIndex;
-                  debouncedUpdate(row, 'enabled', event.target.checked);
-                  updateValue(event.target.checked);
-                }} />
-              }
-            />);
-        }
-      }
-    },
-    {
-      name: 'appID',
-      label: 'Monitor Location',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          //updateData(tableMeta, data, setData, value, 'endPointType');
-          return (
-            <FormControlLabel
-              label=""
-              value={value}
-              control={
-                <Select
-                  value={value}
-                  onChange={event => {
-                    const row = tableMeta.rowIndex;
-                    debouncedUpdate(row, 'appID', event.target.value);
-                    updateValue(event.target.value);
-                  }}
-                >
-                  {
-                    processorList
-                      .filter(row =>
-                        !row.isAtMaxLoad &&
-                        (!row.disabledEndPointTypes ||
-                          !row.disabledEndPointTypes.includes(data[tableMeta.rowIndex].endPointType))
-                      )
-                      .map(row => <MenuItem value={row.appID}>{row.location}</MenuItem>)
-                  }
-
-
-                </Select>
-              }
-            />
-          );
-        }
-      }
-    },
-    {
-      name: "",
-      options: {
-        filter: false,
-        sort: false,
-        empty: true,
-        customBodyRenderLite: (tableMeta) => {
-          return (  <div style={{ display: 'flex', justifyContent: 'center', width: '50px' }}>
-      
-            <IconButton color="inherit" size="large">
-              <Badge color="secondary">
-                <Tooltip title="Delete Host">
-                  <DeleteIcon onClick={() => {
-                    var temp = data;
-                    const id = data[tableMeta].id;
-                    delHost(id);
-                  }} />
-                </Tooltip>
-              </Badge>
-            </IconButton>
-            </div>
-          );
-        }
-      }
-    }
-  ];
-  const options = {
-
-    filter: true,
-    filterType: 'dropdown',
-    customToolbar: () => (<HeaderElements />),
-    jumpToPage: true,
-    selectableRows: false,
-    textLabels: {
-      // Customize the search placeholder text
-      body: {
-        noMatch: "No matching records found",
-        toolTip: "Sort",
-        columnHeaderTooltip: column => `Sort for ${column.label}`
-      },
-      toolbar: {
-        search: "Search hosts" // Customize the search placeholder text here
-      }
-    },
-    searchText: defaultSearchValue // Populate the search field with default value
-  };
-
-  const handleEditSave = async (editedHost) => {
-    try {
-      // Update the data array with the edited host
-      const updatedData = data.map(host => 
-        host.id === editedHost.id ? { ...host, ...editedHost } : host
-      );
-      setData(updatedData);  
-      // Save the updated data
-      await saveData(updatedData);
-      
-      // Reset the edited state to stop the Save Icon from flashing
-      setIsEdited(false);
-      
-      // Close the dialog
-      setIsEditDialogOpen(false);
-      setEditingHost(null);
-      
-      console.log('Host updated and saved:', editedHost);
-    } catch (error) {
-      console.error('Error saving edited host:', error);
-      setMessage({ text: 'Failed to save edited host.', success: false, info: false });
-      
-      // Optionally, keep the Save Icon flashing to indicate unsaved changes
-      setIsEdited(true);
-    }
-  };
-  
-
-// Handle canceling the Edit Dialog
-const handleEditCancel = () => {
-  setIsEditDialogOpen(false);
-  setEditingHost(null);
-};
-
-
-  const HeaderElements = () => (
-    <>
-       <FadeWrapper toggle={isEdited}>
-      <IconButton color="inherit" size="large">
-        <Badge color="secondary">
-          <Tooltip title="Save Host List">
-            <SaveIcon onClick={() => saveData(data)} />
-          </Tooltip>
-        </Badge>
-      </IconButton>
-    </FadeWrapper>
-      <FadeWrapper toggle={data.length === 0}>
-        <IconButton color="inherit" size="large" 	>
-          <Badge color="secondary" >
-            <Tooltip title="Add new Host">
-              <AddIcon onClick={() => addHost()} />
-            </Tooltip>
-          </Badge>
-        </IconButton>
-      </FadeWrapper>
-      <IconButton color="inherit" size="large">
-        <Badge color="secondary">
-          <Tooltip title="Click for help">
-            <HelpIcon onClick={() => setOpenHelp(true)} />
-          </Tooltip>
-        </Badge>
-      </IconButton>
-    </>
+  const processorOptionsByRow = useCallback(
+    (row) =>
+      (processorList ?? [])
+        .filter((processor) => {
+          if (processor.isAtMaxLoad) {
+            return false;
+          }
+          if (!processor.disabledEndPointTypes || processor.disabledEndPointTypes.length === 0) {
+            return true;
+          }
+          return !processor.disabledEndPointTypes.includes(row.endPointType);
+        })
+        .map((processor) => ({ value: processor.appID, label: processor.location })),
+    [processorList],
   );
 
-  const [searchText, setSearchText] = useState('');
-  const searchInputRef = useRef(null);
+  const rows = useMemo(
+    () =>
+      (data ?? []).map((row) => ({
+        ...row,
+        id: row.id ?? row.monitorIPID ?? `${row.address}-${row.appID ?? ''}`,
+      })),
+    [data],
+  );
 
-  useEffect(() => {
-    if (defaultSearchValue) {
-      setSearchText(defaultSearchValue);
-      // Focus and trigger the search input
-      if (searchInputRef.current) {
-        searchInputRef.current.value = defaultSearchValue;
-        searchInputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-        searchInputRef.current.focus();
-        searchInputRef.current.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
+  const handleProcessRowUpdate = useCallback((newRow, oldRow) => {
+    const updatedRow = { ...oldRow, ...newRow };
+    setData((prev) => prev.map((row) => (row.id === oldRow.id ? updatedRow : row)));
+    setIsEdited(true);
+    return updatedRow;
+  }, []);
+
+  const handleProcessRowUpdateError = useCallback((error) => {
+    console.error('Row update failed', error);
+  }, []);
+
+  const openEditDialog = useCallback((row) => {
+    setEditingHost(row);
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const closeEditDialog = useCallback(() => {
+    setIsEditDialogOpen(false);
+    setEditingHost(null);
+  }, []);
+
+  const saveData = useCallback(
+    async (hosts) => {
+      const hostsToPersist = hosts ?? data;
+      setDisplayEdit(false);
+      setMessage({ text: 'Please wait. Saving can take up to one minute...', info: false });
+      try {
+        const sanitizedData = hostsToPersist.map(({ edit, ...host }) => host);
+        const response = await saveHostData(siteId, sanitizedData);
+        setMessage(response);
+        if (response.success) {
+          setIsEdited(false);
+        }
+      } catch (error) {
+        console.error('Error saving data', error);
+        setMessage({ text: 'Failed to save data.', success: false, info: false });
+      } finally {
+        setDisplayEdit(true);
       }
-    }
-  }, [defaultSearchValue]);
+    },
+    [data, siteId],
+  );
 
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-  };
-
-  const saveData = async (data) => {
-    setDisplayEdit(false);
-    setMessage({ text: 'Please wait. Saving can take up to one minute...', info: false });
-    
-    try {
-      const sanitizedData = data.map(({ edit, ...host }) => host);
-      const response = await saveHostData(siteId, sanitizedData);
-      setMessage(response);
-      
-      // Reset the edit flag after saving
-      if (response.success) {
+  const handleEditSave = useCallback(
+    async (editedHost) => {
+      try {
+        const updatedData = data.map((row) =>
+          row.id === editedHost.id ? { ...row, ...editedHost } : row,
+        );
+        setData(updatedData);
+        setIsEdited(true);
+        await saveData(updatedData);
         setIsEdited(false);
+        closeEditDialog();
+      } catch (error) {
+        console.error('Error saving edited host', error);
+        setMessage({ text: 'Failed to save edited host.', success: false, info: false });
+        setIsEdited(true);
       }
-    } catch (error) {
-      console.error('Error saving data:', error);
-      setMessage({ text: 'Failed to save data.', success: false, info: false });
-    } finally {
-      setDisplayEdit(true);
-    }
-  };
-  
-  const addHost = async () => {
+    },
+    [closeEditDialog, data, saveData],
+  );
+
+  const handleSaveClick = useCallback(() => {
+    saveData(data);
+  }, [data, saveData]);
+
+  const addHost = useCallback(async () => {
     if (!displayEdit) {
-      var message = { text: 'Please save before adding another host.', success: false };
-      setMessage(message);
+      setMessage({ text: 'Please save before adding another host.', success: false });
       return;
     }
     setDisplayEdit(false);
-    var message = { text: 'Plesae wait..', info: true };
-    await setMessage(message);
-    message = await addHostApi(siteId, userInfo, data);
-    await setMessage(message);
-    setDisplayEdit(true);
-    setReset(!reset);
-  }
-  const delHost = async (selectedId) => {
-    if (selectedId === undefined) return;
-    setDisplayEdit(false);
-    var message = { text: 'Please wait..', info: true };
-    await setMessage(message);
-    message = await delHostApi(siteId, userInfo, selectedId);
-    await setSelectedId(undefined);
-    await setMessage(message);
-    setDisplayEdit(true);
-    setReset(!reset);
-  }
+    setMessage({ text: 'Please wait...', info: true });
+    try {
+      const messageResponse = await addHostApi(siteId, userInfo, data);
+      setMessage(messageResponse);
+      setResetToggle((prev) => !prev);
+    } catch (error) {
+      console.error('Error adding host', error);
+      setMessage({ text: 'Failed to add host.', success: false, info: false });
+    } finally {
+      setDisplayEdit(true);
+    }
+  }, [data, displayEdit, siteId, userInfo]);
+
+  const delHost = useCallback(
+    async (id) => {
+      if (!id) {
+        return;
+      }
+      setDisplayEdit(false);
+      setMessage({ text: 'Please wait...', info: true });
+      try {
+        const response = await delHostApi(siteId, userInfo, id);
+        setMessage(response);
+        setResetToggle((prev) => !prev);
+      } catch (error) {
+        console.error('Error deleting host', error);
+        setMessage({ text: 'Failed to delete host.', success: false, info: false });
+      } finally {
+        setDisplayEdit(true);
+      }
+    },
+    [siteId, userInfo],
+  );
+
+  const columns = useMemo(() => {
+    const endpointOptions = endpointTypes.map((type) => ({
+      value: type.internalType,
+      label: type.name,
+    }));
+
+    return [
+      {
+        field: 'actions',
+        headerName: '',
+        type: 'actions',
+        width: isSmallScreen ? 90 : 110,
+        getActions: (params) => {
+          const row = params.row;
+          return [
+            <GridActionsCellItem
+              key="edit"
+              icon={
+                <Tooltip title="Edit Host">
+                  <EditIcon />
+                </Tooltip>
+              }
+              label="Edit Host"
+              onClick={() => openEditDialog(row)}
+              showInMenu={false}
+            />,
+            <GridActionsCellItem
+              key="delete"
+              icon={
+                <Tooltip title="Delete Host">
+                  <DeleteIcon />
+                </Tooltip>
+              }
+              label="Delete Host"
+              onClick={() => delHost(row.id)}
+              showInMenu={false}
+            />,
+          ];
+        },
+        sortable: false,
+        filterable: false,
+      },
+      {
+        field: 'address',
+        headerName: 'Host Address',
+        flex: 1.3,
+        minWidth: 220,
+        editable: true,
+      },
+      {
+        field: 'endPointType',
+        headerName: 'End Point',
+        flex: 1,
+        minWidth: 180,
+        editable: true,
+        type: 'singleSelect',
+        valueOptions: endpointOptions,
+        renderCell: (params) => {
+          const internalType = `${params.value ?? ''}`.toLowerCase();
+          const endpointType = endpointTypeMap[internalType];
+          if (!endpointType) {
+            return (
+              <Tooltip title="Endpoint type unavailable">
+                <ErrorIcon color="warning" fontSize="small" />
+              </Tooltip>
+            );
+          }
+          const IconComponent = iconComponentMap[endpointType.icon] ?? ErrorIcon;
+          return (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <IconComponent color="primary" fontSize="small" />
+              <span>{endpointType.name}</span>
+            </Box>
+          );
+        },
+        valueFormatter: ({ value }) => {
+          const endpointType = endpointTypeMap[`${value ?? ''}`.toLowerCase()];
+          return endpointType?.name || value || '';
+        },
+      },
+      {
+        field: 'timeout',
+        headerName: 'Timeout (ms)',
+        width: 140,
+        type: 'number',
+        editable: true,
+      },
+      {
+        field: 'port',
+        headerName: 'Port',
+        width: 110,
+        type: 'number',
+        editable: true,
+      },
+      {
+        field: 'enabled',
+        headerName: 'Enabled',
+        width: 120,
+        type: 'boolean',
+        editable: true,
+      },
+      {
+        field: 'appID',
+        headerName: 'Monitor Location',
+        flex: 1,
+        minWidth: 200,
+        editable: true,
+        type: 'singleSelect',
+        valueOptions: ({ row }) => processorOptionsByRow(row),
+        valueFormatter: ({ value }) => processorMap.get(value) || value || '',
+      },
+    ];
+  }, [
+    delHost,
+    endpointTypeMap,
+    endpointTypes,
+    isSmallScreen,
+    openEditDialog,
+    processorMap,
+    processorOptionsByRow,
+  ]);
 
   return (
     <>
       {openHelp ? <HelpDialog setOpen={setOpenHelp} /> : null}
       <Message message={message} />
-      <CacheProvider value={muiCache}>
-        <ThemeProvider theme={getMuiTheme()}>
-          <EditHostDialog
-            open={isEditDialogOpen}
-            onClose={handleEditCancel}
-            host={editingHost}
-            endpointTypes={endpointTypes}
-            processorList={processorList}
-            onSave={handleEditSave}
-          />
-          <div style={{
-            width: "100%",
-            overflowX: isSmallScreen ? "auto" : "visible"
-          }}>
-            <MUIDataTable
-              title={"Edit Hosts"}
-              data={data}
-              columns={columns}
-              options={options}
-            />
-          </div>
-        </ThemeProvider>
-      </CacheProvider>
+      <EditHostDialog
+        open={isEditDialogOpen}
+        onClose={closeEditDialog}
+        host={editingHost}
+        endpointTypes={endpointTypes}
+        processorList={processorList}
+        onSave={handleEditSave}
+      />
+      <Box sx={{ width: '100%', height: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          autoHeight
+          disableRowSelectionOnClick
+          density={isSmallScreen ? 'compact' : 'standard'}
+          processRowUpdate={handleProcessRowUpdate}
+          onProcessRowUpdateError={handleProcessRowUpdateError}
+          filterModel={filterModel}
+          onFilterModelChange={setFilterModel}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          pageSizeOptions={[10, 25, 50, 100]}
+          getRowId={(row) => row.id}
+          slots={{
+            toolbar: HostListEditToolbar,
+          }}
+          slotProps={{
+            toolbar: {
+              onSave: handleSaveClick,
+              onAdd: addHost,
+              onHelp: () => setOpenHelp(true),
+              isEdited,
+              disableActions: !displayEdit,
+            },
+          }}
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: theme.palette.grey[100],
+              fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
+            },
+            '& .MuiDataGrid-cell': {
+              fontSize: isSmallScreen ? '0.7rem' : '0.875rem',
+            },
+            '& .MuiDataGrid-toolbarContainer': {
+              padding: theme.spacing(1),
+            },
+          }}
+        />
+      </Box>
     </>
   );
-}
+};
+
 export default React.memo(HostListEdit);

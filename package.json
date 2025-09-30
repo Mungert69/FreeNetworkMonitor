@@ -29,9 +29,9 @@
     "markdown-to-jsx": "^7.7.4",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.48",
-    "mui-datatables": "^4.3.0",
     "mui-image": "^1.0.7",
     "notistack": "^3.0.2",
+    "@mui/x-data-grid": "^7.28.2",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
     "react-cookie-consent": "^9.0.0",
@@ -59,6 +59,9 @@
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
@@ -68,16 +71,22 @@
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "jsdom": "^25.0.1",
+    "msw": "^2.6.5",
     "prettier": "^3.5.3",
     "terser": "^5.39.0",
-    "vite": "^6.3.6"
+    "vite": "^6.3.6",
+    "vitest": "^2.1.5"
   },
   "scripts": {
     "analyze": "source-map-explorer 'dist/assets/*.js'",
     "start": "vite",
     "startssl": "VITE_DEBUG=true vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "eslintConfig": {
     "extends": [

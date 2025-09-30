@@ -1,408 +1,402 @@
-import MUIDataTable from "mui-datatables";
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
-  Tooltip,
-  MenuItem,
   Badge,
+  Box,
   IconButton,
+  Tooltip,
   useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import StorageIcon from '@mui/icons-material/Storage';
-
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ErrorIcon from '@mui/icons-material/Error';
+import PingIcon from '@mui/icons-material/Speed';
 import HttpIcon from '@mui/icons-material/Http';
 import HttpsIcon from '@mui/icons-material/Https';
 import LinkIcon from '@mui/icons-material/Link';
 import HtmlIcon from '@mui/icons-material/Html';
 import LanguageIcon from '@mui/icons-material/Language';
-import PingIcon from '@mui/icons-material/Speed';
 import DnsIcon from '@mui/icons-material/Dns';
 import EmailIcon from '@mui/icons-material/Email';
-import QuantumIcon from '@mui/icons-material/Flare'; // Replace with actual Quantum icon
-import NmapIcon from '@mui/icons-material/Search'; // Placeholder icon
-import NmapVulnIcon from '@mui/icons-material/BugReport'; // Placeholder icon
-import CrawlSiteIcon from '@mui/icons-material/Public'; // Placeholder icon
-import HugIcon from '@mui/icons-material/AccessAlarm'; // Placeholder icon
+import QuantumIcon from '@mui/icons-material/Flare';
+import NmapIcon from '@mui/icons-material/Search';
+import NmapVulnIcon from '@mui/icons-material/BugReport';
+import CrawlSiteIcon from '@mui/icons-material/Public';
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter
+} from '@mui/x-data-grid';
 import DataSetsList from './DataSetsList';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import ErrorIcon from '@mui/icons-material/Error';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CacheProvider } from "@emotion/react";
-import createCache from "@emotion/cache";
-import { useTheme } from '@mui/material/styles';
 import { fetchEndpointTypes } from './ServiceAPI';
 
-const muiCache = createCache({
-  "key": "mui",
-  "prepend": true
-});
-const iconMap = {
-  PingIcon: <PingIcon />,
-  HttpIcon: <HttpIcon />,
-  HttpsIcon: <HttpsIcon />,
-  HtmlIcon: <HtmlIcon />,
-  LanguageIcon: <LanguageIcon />,
-  LinkIcon: <LinkIcon />,
-  DnsIcon: <DnsIcon />,
-  EmailIcon: <EmailIcon />,
-  QuantumIcon: <QuantumIcon />,
-  NmapIcon: <NmapIcon />,
-  NmapVulnIcon: <NmapVulnIcon />,
-  CrawlSiteIcon: <CrawlSiteIcon />,
-  HugIcon: <HugIcon />,
-  // Add other icons as necessary
-  ErrorIcon: <ErrorIcon />
+const iconComponentMap = {
+  PingIcon,
+  HttpIcon,
+  HttpsIcon,
+  HtmlIcon,
+  LanguageIcon,
+  LinkIcon,
+  DnsIcon,
+  EmailIcon,
+  QuantumIcon,
+  NmapIcon,
+  NmapVulnIcon,
+  CrawlSiteIcon,
 };
 
-export const HostList = ({ siteId,data, clickViewChart, resetHostAlert,resetPredictAlert, processorList,dataSets,handleSetDataSetId,setDateStart,setDateEnd,defaultSearchValue }) => {
-  
+const STORAGE_KEY_PREFIX = 'host-list-grid-state-';
+
+const formatNumber = (value) => {
+  if (value === null || value === undefined || value === '') {
+    return '';
+  }
+  if (Number.isNaN(Number(value))) {
+    return value;
+  }
+  return Number(value).toLocaleString();
+};
+
+const HostListToolbar = ({ onToggleDataSets }) => (
+  <GridToolbarContainer
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      gap: 1,
+      py: 0.75,
+      px: 1,
+    }}
+  >
+    <Box>
+      <Tooltip title="Select Dataset">
+        <span>
+          <IconButton color="primary" size="small" onClick={onToggleDataSets}>
+            <Badge color="secondary" variant="dot" overlap="circular">
+              <StorageIcon />
+            </Badge>
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
+      <GridToolbarExport />
+      <GridToolbarQuickFilter variant="outlined" size="small" placeholder="Search hosts" />
+    </Box>
+  </GridToolbarContainer>
+);
+
+export const HostList = ({
+  siteId,
+  data,
+  clickViewChart,
+  resetHostAlert,
+  resetPredictAlert,
+  processorList,
+  dataSets,
+  handleSetDataSetId,
+  setDateStart,
+  setDateEnd,
+  defaultSearchValue,
+}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const getMuiTheme = () => createTheme({
-    components: {
-      MuiSvgIcon: {
-        styleOverrides: {
-          root: {
-            color: '#607466'
-          }
-        }
-      },
-      MuiDataTableBodyCell: {
-        styleOverrides: {
-          root: {
-            padding: isSmallScreen ? "0px 2px" : "4px 8px",
-            fontSize: isSmallScreen ? "0.55rem" : undefined,
-            lineHeight: isSmallScreen ? 1.1 : undefined,
-          }
-        }
-      },
-      MuiDataTable: {
-        styleOverrides: {
-          root: {
-          }
-        }
-      },
-      MuiDataTableCell: {
-        styleOverrides: {
-          root: {
-            padding: isSmallScreen ? "0px 2px" : "4px 8px",
-            fontSize: isSmallScreen ? "0.55rem" : undefined,
-            lineHeight: isSmallScreen ? 1.1 : undefined,
-          }
-        }
-      },
-      MuiTableHead: {
-        styleOverrides: {
-          root: {
-            fontSize: isSmallScreen ? "0.6rem" : undefined,
-          }
-        }
-      },
-      MuiTableRow: {
-        styleOverrides: {
-          root: {
-            fontSize: isSmallScreen ? "0.5rem" : undefined,
-          }
-        }
-      },
-      MuiFormControlLabel: {
-        styleOverrides: {
-          root: {
-            marginBottom: 0
-          }
-        }
-      },
-
-    }
-  })
-  const [endpointTypes, setEndpointTypes] = useState([]);
-  const [endpointTypeMap, setEndpointTypeMap] = useState({});
   const [showDataSetsList, setShowDataSetsList] = useState(false);
+  const [endpointTypeMap, setEndpointTypeMap] = useState({});
+
+  const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
+  const persistedState = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      console.warn('Unable to parse HostList grid state from storage', error);
+      return null;
+    }
+  }, [storageKey]);
+
+  const [filterModel, setFilterModel] = useState(() => {
+    if (defaultSearchValue) {
+      return { items: [], quickFilterValues: [defaultSearchValue] };
+    }
+    return persistedState?.filterModel ?? { items: [], quickFilterValues: [] };
+  });
+
+  const [sortModel, setSortModel] = useState(
+    () => persistedState?.sortModel ?? [{ field: 'address', sort: 'asc' }],
+  );
+
+  const [paginationModel, setPaginationModel] = useState(
+    () => persistedState?.paginationModel ?? { pageSize: 25, page: 0 },
+  );
+
+  useEffect(() => {
+    if (!defaultSearchValue) {
+      return;
+    }
+
+    setFilterModel((prev) => {
+      const matchesDefault =
+        prev.quickFilterValues &&
+        prev.quickFilterValues.length === 1 &&
+        prev.quickFilterValues[0] === defaultSearchValue;
+      if (matchesDefault) {
+        return prev;
+      }
+      return { ...prev, quickFilterValues: [defaultSearchValue] };
+    });
+  }, [defaultSearchValue]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ filterModel, sortModel, paginationModel }),
+    );
+  }, [filterModel, sortModel, paginationModel, storageKey]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [endpointData] = await Promise.all([
-          fetchEndpointTypes(siteId) // Fetch endpoint types
-        ]);
-
+        const endpointData = await fetchEndpointTypes(siteId);
         if (endpointData) {
-          setEndpointTypes(endpointData);
-          // Create a map for easy lookup by internalType
-          const map = {};
-          endpointData.forEach(type => {
-            map[type.internalType.toLowerCase()] = type;
-          });
+          const map = endpointData.reduce((acc, entry) => {
+            if (entry?.internalType) {
+              acc[entry.internalType.toLowerCase()] = entry;
+            }
+            return acc;
+          }, {});
           setEndpointTypeMap(map);
         }
- 
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching endpoint types', error);
       }
     };
+
     fetchData();
   }, [siteId]);
 
-  const columns = [
-    {
-      name: "",
-      options: {
-        filter: false,
-        sort: false,
-        empty: true,
-        customBodyRenderLite: (tableMeta) => {
-          //const row = tableMeta.rowIndex;
-          //var tempData = data;
-          //var rowData=tempData[row];
-          var row = data[tableMeta];
-          return (
-            <>
-              <Tooltip title="View Chart">
-                <span>
-                  <Button onClick={() => clickViewChart(row)} >
-                    <BarChartIcon color='action' />
-                  </Button>
-                </span>
-              </Tooltip>
-              <Tooltip title="Reset Alert">
-                <span>
-                  {row.alertFlag ?
-                    <Button onClick={() => resetHostAlert(row.monitorIPID)} >
-                     <ErrorIcon sx={{ color: theme.palette.error.main }} />
-                    </Button>
-                    : null}
+  const processorMap = useMemo(() => {
+    const map = new Map();
+    (processorList ?? []).forEach((processor) => {
+      map.set(processor.appID, processor.location);
+    });
+    return map;
+  }, [processorList]);
 
-                </span>
-              </Tooltip>
-              <Tooltip title="Reset Predict Alert">
-                <span>
-                  {row.predictAlertFlag ?
-                    <Button onClick={() => resetPredictAlert(row.monitorIPID)} >
-                     <ErrorIcon sx={{ color: theme.palette.warning.main }} />
-                    </Button>
-                    : null}
+  const rows = useMemo(
+    () =>
+      (data ?? []).map((row) => ({
+        ...row,
+        id: row.monitorIPID ?? row.id ?? `${row.address}-${row.appID ?? ''}`,
+      })),
+    [data],
+  );
 
-                </span>
-              </Tooltip>
-            </>
-          );
-        }
-      }
-    },
-    {
-      name: 'address',
-      label: 'Host Address',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].address;
-          return (<>{value} </>);
-        }
-      }
-    },{
-      name: 'endPointType',
-      label: 'Endpoint Type',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRenderLite: (dataIndex) => {
-          const internalType = data[dataIndex].endPointType.toLowerCase();
+  const columns = useMemo(
+    () => [
+      {
+        field: 'actions',
+        headerName: '',
+        type: 'actions',
+        width: isSmallScreen ? 100 : 140,
+        getActions: (params) => {
+          const row = params.row;
+          const actions = [
+            <GridActionsCellItem
+              key="view"
+              icon={
+                <Tooltip title="View Chart">
+                  <BarChartIcon color="action" />
+                </Tooltip>
+              }
+              label="View Chart"
+              onClick={() => clickViewChart(row)}
+              showInMenu={false}
+            />,
+          ];
+
+          if (row.alertFlag) {
+            actions.push(
+              <GridActionsCellItem
+                key="reset-alert"
+                icon={
+                  <Tooltip title="Reset Alert">
+                    <ErrorIcon sx={{ color: theme.palette.error.main }} />
+                  </Tooltip>
+                }
+                label="Reset Alert"
+                onClick={() => resetHostAlert(row.monitorIPID)}
+                showInMenu={false}
+              />,
+            );
+          }
+
+          if (row.predictAlertFlag) {
+            actions.push(
+              <GridActionsCellItem
+                key="reset-predict"
+                icon={
+                  <Tooltip title="Reset Predict Alert">
+                    <ErrorIcon sx={{ color: theme.palette.warning.main }} />
+                  </Tooltip>
+                }
+                label="Reset Predict Alert"
+                onClick={() => resetPredictAlert(row.monitorIPID)}
+                showInMenu={false}
+              />,
+            );
+          }
+
+          return actions;
+        },
+        sortable: false,
+        filterable: false,
+      },
+      {
+        field: 'address',
+        headerName: 'Host Address',
+        flex: 1.25,
+        minWidth: 180,
+      },
+      {
+        field: 'endPointType',
+        headerName: 'Endpoint Type',
+        align: 'center',
+        headerAlign: 'center',
+        width: 130,
+        sortable: true,
+        renderCell: (params) => {
+          const internalType = `${params.value ?? ''}`.toLowerCase();
           const endpointType = endpointTypeMap[internalType];
 
           if (!endpointType) {
             return (
-              <Tooltip title="Could not find Endpoint">
-                <span>
-                  <ErrorIcon />
-                </span>
+              <Tooltip title="Endpoint type unavailable">
+                <ErrorIcon color="warning" />
               </Tooltip>
             );
           }
 
-          const { icon, name, description } = endpointType;
-
-          const iconComponent = iconMap[icon] || <ErrorIcon />;
-
+          const IconComponent = iconComponentMap[endpointType.icon] ?? ErrorIcon;
 
           return (
-            <Tooltip title={description || name}>
-              <span>
-                {iconComponent}
-              </span>
+            <Tooltip title={endpointType.description || endpointType.name}>
+              <Box component="span" sx={{ display: 'inline-flex' }}>
+                <IconComponent color="primary" fontSize="small" />
+              </Box>
             </Tooltip>
           );
-        }
-      }
-    }, {
-      name: 'packetsSent',
-      label: 'Data Sent',
-      options: {
-        filter: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].packetsSent;
-          return (<>{value}</>);
-        }
-      }
-    },
-    {
-      name: 'packetsLost',
-      label: 'Data Lost',
-      options: {
-        filter: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].packetsLost;
-          return (<>{value}</>);
-        }
-      }
-    }
-    , {
-      name: 'percentageLost',
-      label: '% Lost',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].percentageLost;
-          return (<>{value}</>);
-        }
-      }
-    },
-    {
-      name: 'roundTripAverage',
-      label: 'Average ms',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].roundTripAverage;
-          return (<>{value}</>);
-        }
-      }
-    },
-    {
-      name: 'appID',
-      label: 'Monitor Location',
-      options: {
-        filter: true,
-        sort: true,
-        customBodyRenderLite: (dataIndex) => {
-          const value = data[dataIndex].appID;
-          return (<>
-            {processorList == null ? null : processorList.map(m => {
-              if (m.appID == value) return m.location;
-            })
-            }
-          </>
-          );
-        }
-      }
-    }
-
-  ];
-  const options = {
-
-    filter: true,
-    filterType: 'dropdown',
-    customToolbar: () => (<HeaderElements />),
-    jumpToPage: true,
-    selectableRows: false,
-  
-    searchText: defaultSearchValue, // Populate the search field with default value
-
-    onTableChange: (action, tableState) => {
-      // Save the current table state to local storage when the table changes
-      if (action === 'filterChange' || action === 'columnSortChange' || action === 'changeRowsPerPage' || action === 'changePage' || action === 'resetFilters') {
-        localStorage.setItem('myTableState', JSON.stringify(tableState));
-      }
-    },
-    onTableInit: (action, tableState) => {
-      // Load the saved table state from local storage when the table initializes
-      const savedState = JSON.parse(localStorage.getItem('myTableState'));
-      if (savedState) {
-        tableState = { ...tableState, ...savedState };
-      }
-    }
-
-  };
-
-  const HeaderElements = () => (
-    <>
-      {/* Existing toolbar elements */}
-      <IconButton color="inherit" size="large">
-        <Badge color="secondary">
-          <Tooltip title="Select Dataset">
-            <StorageIcon onClick={() => setShowDataSetsList(!showDataSetsList)}/>
-          </Tooltip>
-        </Badge>
-      </IconButton>
-      {/* Rest of the toolbar elements */}
-    </>
+        },
+        valueFormatter: (params) => params.value,
+      },
+      {
+        field: 'packetsSent',
+        headerName: 'Data Sent',
+        type: 'number',
+        width: 120,
+        valueFormatter: ({ value }) => formatNumber(value),
+      },
+      {
+        field: 'packetsLost',
+        headerName: 'Data Lost',
+        type: 'number',
+        width: 120,
+        valueFormatter: ({ value }) => formatNumber(value),
+      },
+      {
+        field: 'percentageLost',
+        headerName: '% Lost',
+        width: 100,
+        valueFormatter: ({ value }) =>
+          value === null || value === undefined || value === ''
+            ? ''
+            : `${value}`,
+      },
+      {
+        field: 'roundTripAverage',
+        headerName: 'Average ms',
+        width: 130,
+        valueFormatter: ({ value }) => formatNumber(value),
+      },
+      {
+        field: 'appID',
+        headerName: 'Monitor Location',
+        flex: 1,
+        minWidth: 160,
+        valueGetter: ({ value }) => processorMap.get(value) || value,
+      },
+    ],
+    [
+      clickViewChart,
+      endpointTypeMap,
+      isSmallScreen,
+      processorMap,
+      resetHostAlert,
+      resetPredictAlert,
+      theme,
+    ],
   );
-  
-  const onDataSetSelect =  () => {
-    // setDisplayDataSets(true);
-    // Where to display DataSetList compoment if this is set here?
-
-  }
-  const [searchText, setSearchText] = useState('');
-  const searchInputRef = useRef(null);
-
-  useEffect(() => {
-    if (defaultSearchValue) {
-      setSearchText(defaultSearchValue);
-      // Focus and trigger the search input
-      if (searchInputRef.current) {
-        searchInputRef.current.value = defaultSearchValue;
-        searchInputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-        searchInputRef.current.focus();
-        searchInputRef.current.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
-      }
-    }
-  }, [defaultSearchValue]);
-
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-  };
 
   return (
     <>
-      <CacheProvider value={muiCache}>
-        <ThemeProvider theme={getMuiTheme()}>
-          {showDataSetsList && (
-            <DataSetsList 
-              dataSets={dataSets}
-              handleSetDataSetId={handleSetDataSetId}
-              setDateStart={setDateStart}
-              setDateEnd={setDateEnd}
-              onClose={() => setShowDataSetsList(!showDataSetsList) }      
-            />
-          )}
-          <div style={{
-            width: "100%",
-            overflowX: isSmallScreen ? "auto" : "visible"
-          }}>
-            <MUIDataTable
-              title={
-                !isSmallScreen ? (
-                  <span style={{
-                    fontWeight: 600,
-                    fontSize: "1.25rem",
-                    color: theme.palette.secondary.main,
-                    letterSpacing: "-0.5px"
-                  }}>
-                    Hosts
-                  </span>
-                ) : null
-              }
-              data={data}
-              columns={columns}
-              options={options}
-            />
-          </div>
-        </ThemeProvider>
-      </CacheProvider>
+      {showDataSetsList && (
+        <DataSetsList
+          dataSets={dataSets}
+          handleSetDataSetId={handleSetDataSetId}
+          setDateStart={setDateStart}
+          setDateEnd={setDateEnd}
+          onClose={() => setShowDataSetsList(false)}
+        />
+      )}
+      <Box sx={{ width: '100%', height: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          autoHeight
+          disableRowSelectionOnClick
+          density={isSmallScreen ? 'compact' : 'standard'}
+          filterModel={filterModel}
+          onFilterModelChange={setFilterModel}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          pageSizeOptions={[10, 25, 50, 100]}
+          getRowId={(row) => row.id}
+          slots={{ toolbar: HostListToolbar }}
+          slotProps={{ toolbar: { onToggleDataSets: () => setShowDataSetsList(true) } }}
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: theme.palette.grey[100],
+              fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
+            },
+            '& .MuiDataGrid-cell': {
+              fontSize: isSmallScreen ? '0.7rem' : '0.875rem',
+            },
+            '& .MuiDataGrid-toolbarContainer': {
+              padding: theme.spacing(1),
+            },
+          }}
+        />
+      </Box>
     </>
   );
-}
+};
+
 export default React.memo(HostList);
