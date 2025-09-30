@@ -19,13 +19,17 @@ import { SuperSEO } from 'react-super-seo';
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import { useTheme } from '@mui/material/styles';
-import FaqList from "react-faq-component";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
 import { getBaseDomain } from '../dashboard/ServiceAPI';
 import { useMediaQuery } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Box from '@mui/material/Box';
 
 const data = {
     title: "FAQ (Find answers to common questions here)",
@@ -522,9 +526,10 @@ const downloadFAQAsJson = () => {
 
 // Helper to strip HTML from content
 const stripHtml = (html) => {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
+    if (!html) {
+        return '';
+    }
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 };
 
 const Faq = () => {
@@ -545,30 +550,30 @@ const Faq = () => {
         setOpen(false);
     };
 
-    // Filter FAQs based on search query
-    const filteredFaqs = data.rows.filter((faq) =>
-        faq.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faq.content.toLowerCase().includes(searchQuery.toLowerCase())
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    const filteredFaqs = React.useMemo(() => {
+        if (!normalizedQuery) {
+            return data.rows;
+        }
+        return data.rows.filter((faq) => {
+            const plainContent = stripHtml(faq.content).toLowerCase();
+            return (
+                faq.title.toLowerCase().includes(normalizedQuery) ||
+                plainContent.includes(normalizedQuery)
+            );
+        });
+    }, [normalizedQuery]);
+
+    const accordionPalette = React.useMemo(
+        () => ({
+            background: 'rgba(255,255,255,0.8)',
+            title: theme.palette.primary.dark,
+            content: theme.palette.primary.light,
+            icon: theme.palette.error.light,
+        }),
+        [theme],
     );
-
-    const filteredData = {
-        ...data,
-        rows: filteredFaqs,
-    };
-
-    const styles = {
-        bgColor: 'rgba(255,255,255,0.8)',
-        titleTextColor: theme.palette.secondary.light,
-        rowTitleColor: theme.palette.primary.dark,
-        rowContentColor: theme.palette.primary.light,
-        arrowColor: theme.palette.error.light,
-    };
-
-    const config = {
-        animate: true,
-        arrowIcon: "v",
-        tabFocus: true
-    };
 
     return (
         <div className={classes.root}>
@@ -691,7 +696,54 @@ const Faq = () => {
                     <hr />
 
                     {/* Filtered FAQ List */}
-                    <FaqList data={filteredData} styles={styles} config={config} />
+                    <Grid container justifyContent="center">
+                        <Grid item xs={12} md={10}>
+                            {filteredFaqs.length === 0 ? (
+                                <Typography align="center" color="textSecondary" sx={{ py: 4 }}>
+                                    No FAQs match your search yet. Try a different keyword.
+                                </Typography>
+                            ) : (
+                                filteredFaqs.map((faq, index) => (
+                                    <Accordion
+                                        key={`${faq.title}-${index}`}
+                                        disableGutters
+                                        elevation={0}
+                                        square
+                                        sx={{
+                                            backgroundColor: accordionPalette.background,
+                                            mb: 1.5,
+                                            borderRadius: 2,
+                                            '&:before': { display: 'none' },
+                                        }}
+                                    >
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon sx={{ color: accordionPalette.icon }} />}
+                                        >
+                                            <Typography
+                                                variant="subtitle1"
+                                                sx={{
+                                                    fontWeight: 600,
+                                                    color: accordionPalette.title,
+                                                }}
+                                            >
+                                                {faq.title}
+                                            </Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Box
+                                                sx={{
+                                                    color: accordionPalette.content,
+                                                    width: '100%',
+                                                    textAlign: 'left',
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: faq.content }}
+                                            />
+                                        </AccordionDetails>
+                                    </Accordion>
+                                ))
+                            )}
+                        </Grid>
+                    </Grid>
 
                     <hr />
                      <Grid container justifyContent="center" style={{ marginTop: 20 }}>
