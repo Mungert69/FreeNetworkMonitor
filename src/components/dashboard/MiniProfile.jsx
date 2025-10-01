@@ -15,7 +15,7 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUs
           if (initViewSub) {
                setOpenProfile(true);
              }
-        }, []);
+        }, [initViewSub]);
      if (apiUser!==undefined ) {
           return (
                <div>
