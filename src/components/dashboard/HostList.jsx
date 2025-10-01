@@ -524,6 +524,7 @@ export const HostList = ({
           getRowId={(row) =>
             row?.monitorIPID ?? row?.id ?? `${row?.address ?? 'row'}-${row?.appID ?? ''}`
           }
+          showToolbar
           slots={{ toolbar: HostListToolbar }}
           slotProps={{ toolbar: { onToggleDataSets: () => setShowDataSetsList((prev) => !prev) } }}
           sx={{

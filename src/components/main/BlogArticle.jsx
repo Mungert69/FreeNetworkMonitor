@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkSlug from 'remark-slug';
+import rehypeSlug from 'rehype-slug';
 import { Box, Paper, Divider, Typography, Link as MUILink, Container } from '@mui/material';
 import blogContent from './blog.md?raw';
 
@@ -121,7 +121,11 @@ const BlogArticle = ({
         <Divider sx={{ mb: 2 }} />
         {/* Body text uses primary.main by default; links colored slightly darker */}
         <Box sx={{ color: bodyColor, '& a': { color: linkColor } }}>
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkSlug]} components={components}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeSlug]}
+            components={components}
+          >
             {blogContent}
           </ReactMarkdown>
         </Box>

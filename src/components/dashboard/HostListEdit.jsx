@@ -540,6 +540,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
             row?.monitorIPID ??
             `${row?.address ?? 'row'}-${row?.appID ?? ''}`
           }
+          showToolbar
           slots={{
             toolbar: HostListEditToolbar,
           }}
