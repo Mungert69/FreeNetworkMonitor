@@ -27,13 +27,25 @@ const markdownComponents = {
   li: ({ node, ...props }) => <MarkdownListItem {...props} />,
 };
 
-export function Markdown(props) {
+export function Markdown({ className, remarkPlugins, components, ...props }) {
+  const combinedComponents = React.useMemo(
+    () => ({ ...markdownComponents, ...components }),
+    [components],
+  );
+
+  const combinedRemarkPlugins = React.useMemo(
+    () => [remarkGfm, ...(remarkPlugins ?? [])],
+    [remarkPlugins],
+  );
+
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={markdownComponents}
-      {...props}
-    />
+    <Box className={className}>
+      <ReactMarkdown
+        remarkPlugins={combinedRemarkPlugins}
+        components={combinedComponents}
+        {...props}
+      />
+    </Box>
   );
 }
 
