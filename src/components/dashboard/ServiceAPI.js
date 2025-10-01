@@ -319,15 +319,23 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
         console.log('ServiceAPI.fetchChartData Axios Error was : ' + error);
     }));
     try {
-        result.data.data.map((row) => {
-            data.push({ 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.responseTime, 'status': row.status })
-        });
-        console.log('ServiceAPI.fetchChartData Got chart data for MonitorPingInfo with ID  : ' + monitorPingInfoId);
+        const responseData = result?.data?.data;
+        if (!Array.isArray(responseData)) {
+            console.log('ServiceAPI.fetchChartData received no data array', {
+                monitorPingInfoId,
+                responseData,
+            });
+        } else {
+            responseData.map((row) => {
+                data.push({ 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.responseTime, 'status': row.status })
+            });
+            console.log('ServiceAPI.fetchChartData Got chart data for MonitorPingInfo with ID  : ' + monitorPingInfoId + ' count : ' + data.length);
+        }
 
     }
     catch (error) {
         console.log('ServiceAPI.fetchChartData Mapping Data Error was : ' + error);
-        if (result != undefined && result.data.message !== undefined)
+        if (result != undefined && result.data?.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
         data.push({ 'time': convertDate(moment(), 'HH:mm:ss'), 'response': -1, 'status': 'No Data' })
 
@@ -1004,6 +1012,5 @@ export const fetchTiers = async (baseUrlId) => {
   console.log('ServiceAPI.fetchTiers fetched ' + data.length + ' tiers');
   return data;
 };
-
 
 

@@ -50,17 +50,51 @@ const iconComponentMap = {
   CrawlSiteIcon,
 };
 
-const STORAGE_KEY_PREFIX = 'host-list-grid-state-';
-
 const formatNumber = (value) => {
   if (value === null || value === undefined || value === '') {
     return '';
   }
-  if (Number.isNaN(Number(value))) {
+  const numeric = Number(value);
+  if (Number.isNaN(numeric)) {
     return value;
   }
-  return Number(value).toLocaleString();
+  return numeric.toLocaleString();
 };
+
+const parseNumericValue = (value) => {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  const cleaned = String(value).replace(/[^0-9.-]+/g, '');
+  if (cleaned === '') {
+    return null;
+  }
+  const numeric = Number(cleaned);
+  return Number.isNaN(numeric) ? null : numeric;
+};
+
+const numericValueGetter = ({ row, field }) => parseNumericValue(row?.[field]);
+
+const numericValueFormatter = (params = {}) => formatNumber(params?.value);
+
+const percentageValueFormatter = (params = {}) => {
+  const value = params?.value;
+  if (value === null || value === undefined || value === '') {
+    return '';
+  }
+  return `${formatNumber(value)}%`;
+};
+
+const createDefaultSortModel = () => [{ field: 'address', sort: 'asc' }];
+const createDefaultPaginationModel = () => ({ pageSize: 25, page: 0 });
+
+const getDefaultFilterModel = (searchValue) =>
+  searchValue
+    ? { items: [], quickFilterValues: [searchValue] }
+    : { items: [], quickFilterValues: [] };
 
 const HostListToolbar = ({ onToggleDataSets }) => (
   <GridToolbarContainer
@@ -118,61 +152,26 @@ export const HostList = ({
   const [showDataSetsList, setShowDataSetsList] = useState(false);
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
 
-  const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
-  const persistedState = useMemo(() => {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-    try {
-      const raw = window.localStorage.getItem(storageKey);
-      return raw ? JSON.parse(raw) : null;
-    } catch (error) {
-      console.warn('Unable to parse HostList grid state from storage', error);
-      return null;
-    }
-  }, [storageKey]);
+  const [filterModel, setFilterModel] = useState(() => getDefaultFilterModel(defaultSearchValue));
 
-  const [filterModel, setFilterModel] = useState(() => {
-    if (defaultSearchValue) {
-      return { items: [], quickFilterValues: [defaultSearchValue] };
-    }
-    return persistedState?.filterModel ?? { items: [], quickFilterValues: [] };
-  });
+  const [sortModel, setSortModel] = useState(() => createDefaultSortModel());
 
-  const [sortModel, setSortModel] = useState(
-    () => persistedState?.sortModel ?? [{ field: 'address', sort: 'asc' }],
-  );
-
-  const [paginationModel, setPaginationModel] = useState(
-    () => persistedState?.paginationModel ?? { pageSize: 25, page: 0 },
-  );
+  const [paginationModel, setPaginationModel] = useState(() => createDefaultPaginationModel());
 
   useEffect(() => {
-    if (!defaultSearchValue) {
-      return;
-    }
-
-    setFilterModel((prev) => {
-      const matchesDefault =
-        prev.quickFilterValues &&
-        prev.quickFilterValues.length === 1 &&
-        prev.quickFilterValues[0] === defaultSearchValue;
-      if (matchesDefault) {
-        return prev;
-      }
-      return { ...prev, quickFilterValues: [defaultSearchValue] };
+    const rowCount = Array.isArray(data) ? data.length : 0;
+    console.debug('HostList debug: received data props', {
+      siteId,
+      rowCount,
+      sample: rowCount > 0 ? data.slice(0, Math.min(3, rowCount)) : [],
+      defaultSearchValue,
     });
-  }, [defaultSearchValue]);
+  }, [data, siteId, defaultSearchValue]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    window.localStorage.setItem(
-      storageKey,
-      JSON.stringify({ filterModel, sortModel, paginationModel }),
-    );
-  }, [filterModel, sortModel, paginationModel, storageKey]);
+    setFilterModel(getDefaultFilterModel(defaultSearchValue));
+    setPaginationModel(createDefaultPaginationModel());
+  }, [defaultSearchValue]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -198,9 +197,27 @@ export const HostList = ({
   const processorMap = useMemo(() => {
     const map = new Map();
     (processorList ?? []).forEach((processor) => {
-      map.set(processor.appID, processor.location);
+      if (processor?.appID) {
+        map.set(processor.appID, processor.location ?? processor.appID);
+      }
     });
     return map;
+  }, [processorList]);
+
+  const monitorLocationOptions = useMemo(() => {
+    const options = [];
+    const seen = new Set();
+    (processorList ?? []).forEach(({ location }) => {
+      if (!location) {
+        return;
+      }
+      const normalized = String(location);
+      if (!seen.has(normalized)) {
+        seen.add(normalized);
+        options.push(normalized);
+      }
+    });
+    return options;
   }, [processorList]);
 
   const rows = useMemo(
@@ -211,6 +228,21 @@ export const HostList = ({
       })),
     [data],
   );
+
+  useEffect(() => {
+    console.debug('HostList debug: computed rows for grid', {
+      rowCount: rows.length,
+      sample: rows.length > 0 ? rows.slice(0, Math.min(3, rows.length)) : [],
+    });
+  }, [rows]);
+
+  useEffect(() => {
+    const count = processorList?.length ?? 0;
+    console.debug('HostList debug: processor list updated', {
+      count,
+      sample: count > 0 ? processorList.slice(0, Math.min(3, count)) : [],
+    });
+  }, [processorList]);
 
   const columns = useMemo(
     () => [
@@ -314,36 +346,42 @@ export const HostList = ({
         headerName: 'Data Sent',
         type: 'number',
         width: 120,
-        valueFormatter: ({ value }) => formatNumber(value),
+        valueGetter: numericValueGetter,
+        valueFormatter: numericValueFormatter,
       },
       {
         field: 'packetsLost',
         headerName: 'Data Lost',
         type: 'number',
         width: 120,
-        valueFormatter: ({ value }) => formatNumber(value),
+        valueGetter: numericValueGetter,
+        valueFormatter: numericValueFormatter,
       },
       {
         field: 'percentageLost',
         headerName: '% Lost',
         width: 100,
-        valueFormatter: ({ value }) =>
-          value === null || value === undefined || value === ''
-            ? ''
-            : `${value}`,
+        type: 'number',
+        valueGetter: numericValueGetter,
+        valueFormatter: percentageValueFormatter,
       },
       {
         field: 'roundTripAverage',
         headerName: 'Average ms',
         width: 130,
-        valueFormatter: ({ value }) => formatNumber(value),
+        type: 'number',
+        valueGetter: numericValueGetter,
+        valueFormatter: numericValueFormatter,
       },
       {
         field: 'appID',
         headerName: 'Monitor Location',
         flex: 1,
         minWidth: 160,
-        valueGetter: ({ value }) => processorMap.get(value) || value,
+        type: 'singleSelect',
+        valueOptions: monitorLocationOptions,
+        valueGetter: ({ row }) => processorMap.get(row?.appID) || row?.appID || '',
+        sortComparator: (value1, value2) => String(value1).localeCompare(String(value2)),
       },
     ],
     [
@@ -356,6 +394,14 @@ export const HostList = ({
       theme,
     ],
   );
+
+  useEffect(() => {
+    console.debug('HostList debug: grid state changed', {
+      filterModel,
+      sortModel,
+      paginationModel,
+    });
+  }, [filterModel, sortModel, paginationModel]);
 
   return (
     <>
