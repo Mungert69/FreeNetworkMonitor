@@ -73,7 +73,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'dist/assets/*.js'",
     "start": "vite",
-    "startssl": "VITE_DEBUG=true vite",
+    "startssl": "VITE_DEBUG=true vite --host localhost --port 8443",
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest --run",

@@ -221,60 +221,65 @@ const ProductDetail = () => {
 
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
-                    <Grid container spacing={6}>
-                        <Grid item xs={12}>
-                            <Grid
-                                container
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center"
-                                spacing={2}
-                                sx={{ mb: 6 }}
+                <Container className={classes.container}>
+                    {/* Hero Section */}
+                    <Grid
+                        container
+                        spacing={12}
+                        alignItems="center"
+                        justifyContent="center"
+                        sx={{ mb: { xs: 4, md: 8 } }}
+                    >
+                        <Grid item xs={12} md={7} sx={{ textAlign: { xs: "center", md: "left" } }}>
+                            <Typography
+                                color='primary'
+                                variant="h2"
+                                sx={{
+                                    fontWeight: 800,
+                                    mb: 2,
+                                    fontSize: { xs: "2.2rem", md: "3.2rem" },
+                                    letterSpacing: "-1px",
+                                }}
                             >
-                                <Grid item xs={12} md={7}>
-                                    <Typography
-                                        color='primary'
-                                        variant="h2"
-                                        sx={{
-                                            fontWeight: 800,
-                                            mb: 2,
-                                            fontSize: { xs: "2.2rem", md: "3.2rem" },
-                                            letterSpacing: "-1px",
-                                        }}
-                                    >
-                                        Quantum Network Monitor
-                                    </Typography>
-                                    <Typography
-                                        color='secondary'
-                                        variant="h3"
-                                        sx={{
-                                            fontWeight: 500,
-                                            mb: 3,
-                                            fontSize: { xs: "1.2rem", md: "2rem" },
-                                        }}
-                                    >
-                                        Are You Ready For Quantum Security?
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12} md={5} align="center">
-                                    <Box sx={{ width: { xs: 220, md: 320 }, height: { xs: 180, md: 260 }, mx: "auto" }}>
-                                        <video
-                                            src="/img/monitor-screen.webm"
-                                            autoPlay
-                                            loop
-                                            muted
-                                            playsInline
-                                            style={{ width: "100%", height: "100%", borderRadius: 8, display: "block", border: "none", outline: "none" }}
-                                            aria-label="AI Network Monitor main visual"
-                                        />
-                                    </Box>
-                                </Grid>
-                            </Grid>
+                                Quantum Network Monitor
+                            </Typography>
+                            <Typography
+                                color='secondary'
+                                variant="h3"
+                                sx={{
+                                    fontWeight: 500,
+                                    mb: 3,
+                                    fontSize: { xs: "1.2rem", md: "2rem" },
+                                }}
+                            >
+                                Are You Ready For Quantum Security?
+                            </Typography>
                         </Grid>
+                        <Grid item xs={12} md={5} sx={{ display: "flex", justifyContent: "center" }}>
+                            <Box sx={{ width: { xs: 220, md: 320 }, height: { xs: 180, md: 260 } }}>
+                                <video
+                                    src="/img/monitor-screen.webm"
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    style={{ width: "100%", height: "100%", borderRadius: 8, display: "block", border: "none", outline: "none" }}
+                                    aria-label="AI Network Monitor main visual"
+                                />
+                            </Box>
+                        </Grid>
+                    </Grid>
 
-                        <Grid item xs={12} sm={12} md={6}>
-                            <Grid container spacing={3}>
+                    {/* Features Section */}
+                    <Grid
+                        container
+                        spacing={6}
+                        justifyContent="center"
+                        alignItems="stretch"
+                        sx={{ mb: { xs: 4, md: 8 } }}
+                    >
+                        <Grid item xs={12} md={6}>
+                            <Grid container spacing={6} justifyContent="center" alignItems="stretch">
                                 <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
@@ -283,21 +288,7 @@ const ProductDetail = () => {
                                     >
                                         <NetworkPingIcon color='secondary' fontSize='large' />
                                     </Grow>
-                                    <Paper
-
-
-
-                                        className={classes.paper}
-                                        elevation={3}
-                                        sx={{
-                                            borderRadius: 3,
-                                            p: 2.5,
-                                            minHeight: 260,
-                                            boxShadow: 4,
-                                            background: "rgba(255,255,255,0.98)",
-                                        }}
-
-                                    >
+                                    <Paper className={classes.paper}>
                                         <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
                                         Our monitoring system automatically:
                                         <ul>
@@ -417,14 +408,13 @@ const ProductDetail = () => {
                                         <Typography variant="body2" sx={{ mt: 1 }}>
                                             Get enterprise-grade protection without the complexity.
                                         </Typography>
-
                                     </Paper>
                                 </Grid>
                             </Grid>
                         </Grid>
 
-                        <Grid item xs={12} sm={12} md={6}>
-                            <Grid container spacing={3}>
+                        <Grid item xs={12} md={6}>
+                            <Grid container spacing={3} justifyContent="center" alignItems="stretch">
                                 <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
@@ -460,7 +450,6 @@ const ProductDetail = () => {
                                                 </Tooltip>
                                             </li>
                                             <li>
-
                                                 <Typography
                                                     component="span"
                                                     sx={interactiveStyles.assistantTrigger}
@@ -468,16 +457,13 @@ const ProductDetail = () => {
                                                 >
                                                     Interactive time-series graphs
                                                 </Typography>
-
                                             </li>
                                         </ul>
                                         <Typography variant="body2" sx={{ mt: 1 }}>
                                             Track gradual degradation or sudden outages with precision.
                                         </Typography>
-
                                     </Paper>
                                 </Grid>
-
                                 <Grid item xs={12} sm={6} align="center">
                                     <Grow
                                         in={!isLoading}
@@ -520,20 +506,26 @@ const ProductDetail = () => {
                                                 >
                                                     Weekly network monitoring performance reports
                                                 </Typography>
-
                                             </li>
                                         </ul>
                                         <Typography variant="body2" sx={{ mt: 1 }}>
                                             The system learns and improves over time.
                                         </Typography>
-
                                     </Paper>
                                 </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
+
+                    {/* Call-to-Action Section */}
                     <Divider sx={{ my: 6 }} />
-                    <Grid container spacing={4}>
+                    <Grid
+                        container
+                        spacing={4}
+                        justifyContent="center"
+                        alignItems="stretch"
+                        sx={{ mb: { xs: 4, md: 8 } }}
+                    >
                         <Grid item xs={12} md={6}>
                             <Paper className={classes.paper}>
                                 <NetworkPingIcon fontSize="large" color="primary" />
@@ -555,10 +547,8 @@ const ProductDetail = () => {
                                 >
                                     Check Server Security
                                 </Button>
-
                             </Paper>
                         </Grid>
-
                         <Grid item xs={12} md={6}>
                             <Paper className={classes.paper}>
                                 <LanguageIcon fontSize="large" color="secondary" />
@@ -584,9 +574,10 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
                     <Divider sx={{ my: 6 }} />
+                    {/* Action Buttons Section */}
                     <Grid
                         container
-                        spacing={4}
+                        spacing={2}
                         direction="column"
                         justifyContent="center"
                         alignItems="center"

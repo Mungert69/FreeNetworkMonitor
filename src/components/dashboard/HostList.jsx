@@ -331,7 +331,7 @@ export const HostList = ({
         headerName: '',
         sortable: false,
         filterable: false,
-        width: isSmallScreen ? 150 : 180,
+        width: isSmallScreen ? 50 : 90,
         renderCell: ({ row }) => (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
             <Tooltip title="View Chart">
@@ -417,7 +417,7 @@ export const HostList = ({
         field: 'packetsSent',
         headerName: 'Data Sent',
         type: 'number',
-        width: 120,
+        width: 100,
         valueGetter: ({ row }) => parseNumericValue(row?.packetsSent),
         renderCell: ({ row }) => formatNumber(row?.packetsSent),
       },
@@ -425,7 +425,7 @@ export const HostList = ({
         field: 'packetsLost',
         headerName: 'Data Lost',
         type: 'number',
-        width: 120,
+        width: 100,
         valueGetter: ({ row }) => parseNumericValue(row?.packetsLost),
         renderCell: ({ row }) => formatNumber(row?.packetsLost),
       },

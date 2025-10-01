@@ -79,14 +79,22 @@ const styleObject = (theme, imageUrl) => {
             // No left/right padding here; let MUI Container handle it
         },
         paper: {
-            opacity: 0.9,
-            padding: theme.spacing(2),
+            opacity: 0.97,
+            padding: theme.spacing(3),
+            paddingTop: theme.spacing(4),
+            paddingBottom: theme.spacing(4),
             display: 'flex',
             overflow: 'auto',
             flexDirection: 'column',
+            borderRadius: 8,
+            // More natural, subtle shadow
+            boxShadow: '0 4px 16px 0 rgba(98,57,171,0.10), 0 1.5px 6px 0 rgba(0,0,0,0.10)',
+            background: "rgba(255,255,255,0.98)",
             [theme.breakpoints.down('sm')]: {
-                paddingLeft: 0,
-                paddingRight: 0,
+                paddingLeft: theme.spacing(1),
+                paddingRight: theme.spacing(1),
+                paddingTop: theme.spacing(2),
+                paddingBottom: theme.spacing(2),
             },
         },
         fixedHeight: {

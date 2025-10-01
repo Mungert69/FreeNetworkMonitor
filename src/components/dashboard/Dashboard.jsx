@@ -399,20 +399,20 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container
-          maxWidth={isMediumOrLarger ? "lg" : false}
+          
           className={classes.container}
           disableGutters={!isMediumOrLarger}
           sx={{
-            px: isMediumOrLarger ? 3 : 0,
-            pt: isMediumOrLarger ? 4 : 0,
-            pb: isMediumOrLarger ? 4 : 0,
+            px: isMediumOrLarger ? 3 : 1,
+            pt: isMediumOrLarger ? 4 : 1,
+            pb: isMediumOrLarger ? 4 : 1,
           }}
         >
-          <Grid container spacing={isMediumOrLarger ? 1 : 0}>
+          <Grid container spacing={isMediumOrLarger ? 4 : 2}>
             {viewInfo &&
               <Grid item xs={12} sm={12} md={10} lg={10}>
-                <Paper className={isChartCollapsed ? classes.paper : fixedHeightPaper}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Paper className={classes.paper } >
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} >
                     <IconButton
                       size="small"
                       sx={{ mr: 1, p: 0.5 }}
@@ -428,14 +428,16 @@ export default function Dashboard() {
                     <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1rem' }}>Chart</Typography>
                   </Box>
                   {!isChartCollapsed && (
-                    <Chart
-                      data={chartData}
-                      selectedDate={selectedDate}
-                      hostname={hostData.address}
-                      dataSetId={dataSetId}
-                      dataSets={dataSets}
-                      handleSetDataSetId={handleSetDataSetId}
-                    />
+                    <Box sx={{ width: '100%', flex: 1, minWidth: 0 }}>
+                      <Chart
+                        data={chartData}
+                        selectedDate={selectedDate}
+                        hostname={hostData.address}
+                        dataSetId={dataSetId}
+                        dataSets={dataSets}
+                        handleSetDataSetId={handleSetDataSetId}
+                      />
+                    </Box>
                   )}
                 </Paper>
               </Grid>
@@ -469,10 +471,10 @@ export default function Dashboard() {
               <Paper
                 className={classes.paper}
                 sx={{
-                  p: isMediumOrLarger ? 2 : 0,
+                  p: isMediumOrLarger ? 2 : 1,
                   m: 0,
-                  boxShadow: isMediumOrLarger ? 1 : 0,
-                  borderRadius: isMediumOrLarger ? 2 : 0,
+                  boxShadow: isMediumOrLarger ? 2 : 1,
+                  borderRadius: isMediumOrLarger ? 3 : 1,
                 }}
               >
                 {toggleTable ?

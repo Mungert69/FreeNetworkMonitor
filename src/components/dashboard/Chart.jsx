@@ -105,7 +105,7 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
           </Button>
         </span>
       </Title>
-      <ResponsiveContainer width="99%" height={150}>
+      <ResponsiveContainer width="99%" height={170}>
         <LineChart
           data={data}
           margin={{

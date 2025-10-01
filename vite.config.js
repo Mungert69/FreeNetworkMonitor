@@ -4,8 +4,8 @@ import fs from 'fs';
 import path from 'path';
 
 const isVitest = Boolean(process.env.VITEST);
-const certificateKeyPath = '/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.key';
-const certificatePath = '/home/mahadeva/code/securefiles/mail/server-freenetworkmonitor.crt';
+const certificateKeyPath = '/home/mahadeva/code/securefiles/dev/server-readyforquantum.key';
+const certificatePath = '/home/mahadeva/code/securefiles/dev/server-readyforquantum.crt';
 
 const httpsConfig = (() => {
   if (isVitest) {
