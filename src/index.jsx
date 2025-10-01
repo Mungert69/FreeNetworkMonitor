@@ -29,6 +29,13 @@ const theme = createTheme({
     error:   { main: '#eb5160' },
     warning: { main: '#d4a10d' },
   },
+  components: {
+    MuiGrid: {
+      defaultProps: {
+        disableEqualOverflow: true,
+      },
+    },
+  },
 }); // ← you were missing this closing brace & paren
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
