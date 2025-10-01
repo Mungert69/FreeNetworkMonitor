@@ -240,33 +240,40 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   const processorMap = useMemo(() => {
     const map = new Map();
     (processorList ?? []).forEach((processor) => {
-      map.set(processor.appID, processor.location);
+      if (processor?.appID !== undefined && processor?.appID !== null) {
+        map.set(String(processor.appID), processor.location ?? String(processor.appID));
+      }
     });
     return map;
   }, [processorList]);
 
   const processorOptionsByRow = useCallback(
-    (row) =>
-      (processorList ?? [])
+    (row) => {
+      const normalizedEndpoint = `${row?.endPointType ?? ''}`.toLowerCase();
+
+      return (processorList ?? [])
         .filter((processor) => {
-          if (processor.isAtMaxLoad) {
+          if (processor?.isAtMaxLoad) {
             return false;
           }
-          if (!processor.disabledEndPointTypes || processor.disabledEndPointTypes.length === 0) {
+          const disabledTypes = (processor?.disabledEndPointTypes ?? []).map((type) =>
+            `${type ?? ''}`.toLowerCase(),
+          );
+          if (disabledTypes.length === 0) {
             return true;
           }
-          return !processor.disabledEndPointTypes.includes(row.endPointType);
+          return !disabledTypes.includes(normalizedEndpoint);
         })
-        .map((processor) => ({ value: processor.appID, label: processor.location })),
+        .map((processor) => ({
+          value: String(processor.appID),
+          label: processor.location ?? String(processor.appID),
+        }));
+    },
     [processorList],
   );
 
   const rows = useMemo(
-    () =>
-      (data ?? []).map((row) => ({
-        ...row,
-        id: row.id ?? row.monitorIPID ?? `${row.address}-${row.appID ?? ''}`,
-      })),
+    () => (Array.isArray(data) ? data : []),
     [data],
   );
 
@@ -486,7 +493,8 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         editable: true,
         type: 'singleSelect',
         valueOptions: ({ row }) => processorOptionsByRow(row),
-        valueFormatter: ({ value }) => processorMap.get(value) || value || '',
+        valueFormatter: ({ value }) => processorMap.get(String(value)) || value || '',
+        renderCell: ({ value }) => processorMap.get(String(value)) || value || '',
       },
     ];
   }, [
@@ -527,7 +535,11 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           pageSizeOptions={[10, 25, 50, 100]}
-          getRowId={(row) => row.id}
+          getRowId={(row) =>
+            row?.id ??
+            row?.monitorIPID ??
+            `${row?.address ?? 'row'}-${row?.appID ?? ''}`
+          }
           slots={{
             toolbar: HostListEditToolbar,
           }}

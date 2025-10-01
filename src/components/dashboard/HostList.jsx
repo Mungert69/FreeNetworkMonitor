@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Badge,
   Box,
+  Button,
   IconButton,
   Tooltip,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import StorageIcon from '@mui/icons-material/Storage';
@@ -22,18 +23,25 @@ import QuantumIcon from '@mui/icons-material/Flare';
 import NmapIcon from '@mui/icons-material/Search';
 import NmapVulnIcon from '@mui/icons-material/BugReport';
 import CrawlSiteIcon from '@mui/icons-material/Public';
+import HugIcon from '@mui/icons-material/AccessAlarm';
 import {
   DataGrid,
-  GridActionsCellItem,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
   GridToolbarExport,
   GridToolbarFilterButton,
-  GridToolbarQuickFilter
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
 import DataSetsList from './DataSetsList';
 import { fetchEndpointTypes } from './ServiceAPI';
+
+const muiCache = createCache({
+  key: 'mui',
+  prepend: true,
+});
 
 const iconComponentMap = {
   PingIcon,
@@ -48,13 +56,18 @@ const iconComponentMap = {
   NmapIcon,
   NmapVulnIcon,
   CrawlSiteIcon,
+  HugIcon,
 };
+
+const STORAGE_KEY_PREFIX = 'host-list-grid-state-';
 
 const formatNumber = (value) => {
   if (value === null || value === undefined || value === '') {
     return '';
   }
-  const numeric = Number(value);
+  const numeric = Number(
+    typeof value === 'number' ? value : String(value).replace(/[^0-9.-]+/g, ''),
+  );
   if (Number.isNaN(numeric)) {
     return value;
   }
@@ -76,25 +89,36 @@ const parseNumericValue = (value) => {
   return Number.isNaN(numeric) ? null : numeric;
 };
 
-const numericValueGetter = ({ row, field }) => parseNumericValue(row?.[field]);
-
-const numericValueFormatter = (params = {}) => formatNumber(params?.value);
-
-const percentageValueFormatter = (params = {}) => {
-  const value = params?.value;
-  if (value === null || value === undefined || value === '') {
-    return '';
+const arraysAreEqual = (a = [], b = []) => {
+  if (a.length !== b.length) {
+    return false;
   }
-  return `${formatNumber(value)}%`;
+  for (let i = 0; i < a.length; i += 1) {
+    if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) {
+      return false;
+    }
+  }
+  return true;
 };
+
+const filterModelsEqual = (a, b) =>
+  arraysAreEqual(a?.items ?? [], b?.items ?? []) &&
+  arraysAreEqual(a?.quickFilterValues ?? [], b?.quickFilterValues ?? []);
 
 const createDefaultSortModel = () => [{ field: 'address', sort: 'asc' }];
 const createDefaultPaginationModel = () => ({ pageSize: 25, page: 0 });
 
-const getDefaultFilterModel = (searchValue) =>
-  searchValue
-    ? { items: [], quickFilterValues: [searchValue] }
-    : { items: [], quickFilterValues: [] };
+const getDefaultFilterModel = (searchValue) => ({
+  items: [],
+  quickFilterValues: searchValue ? [searchValue] : [],
+});
+
+const sanitizeFilterModel = (model) => ({
+  items: Array.isArray(model?.items) ? model.items : [],
+  quickFilterValues: Array.isArray(model?.quickFilterValues)
+    ? model.quickFilterValues
+    : [],
+});
 
 const HostListToolbar = ({ onToggleDataSets }) => (
   <GridToolbarContainer
@@ -152,26 +176,101 @@ export const HostList = ({
   const [showDataSetsList, setShowDataSetsList] = useState(false);
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
 
-  const [filterModel, setFilterModel] = useState(() => getDefaultFilterModel(defaultSearchValue));
+  const storageKey = useMemo(
+    () => `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`,
+    [siteId],
+  );
 
+  const [filterModel, setFilterModel] = useState(() =>
+    sanitizeFilterModel(getDefaultFilterModel(defaultSearchValue)),
+  );
   const [sortModel, setSortModel] = useState(() => createDefaultSortModel());
-
-  const [paginationModel, setPaginationModel] = useState(() => createDefaultPaginationModel());
+  const [paginationModel, setPaginationModel] = useState(() =>
+    createDefaultPaginationModel(),
+  );
+  const [density, setDensity] = useState(isSmallScreen ? 'compact' : 'standard');
 
   useEffect(() => {
-    const rowCount = Array.isArray(data) ? data.length : 0;
-    console.debug('HostList debug: received data props', {
-      siteId,
-      rowCount,
-      sample: rowCount > 0 ? data.slice(0, Math.min(3, rowCount)) : [],
-      defaultSearchValue,
+    setDensity(isSmallScreen ? 'compact' : 'standard');
+  }, [isSmallScreen]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw) {
+        setFilterModel((prev) => {
+          const next = sanitizeFilterModel(getDefaultFilterModel(''));
+          return filterModelsEqual(prev, next) ? prev : next;
+        });
+        setSortModel((prev) => {
+          const next = createDefaultSortModel();
+          return arraysAreEqual(prev, next) ? prev : next;
+        });
+        setPaginationModel((prev) => {
+          const next = createDefaultPaginationModel();
+          return prev.page === next.page && prev.pageSize === next.pageSize ? prev : next;
+        });
+        return;
+      }
+
+      const parsed = JSON.parse(raw);
+
+      if (parsed.filterModel) {
+        const nextFilter = sanitizeFilterModel(parsed.filterModel);
+        setFilterModel((prev) => (filterModelsEqual(prev, nextFilter) ? prev : nextFilter));
+      }
+
+      if (parsed.sortModel) {
+        setSortModel((prev) =>
+          arraysAreEqual(prev, parsed.sortModel) ? prev : parsed.sortModel,
+        );
+      }
+
+      if (parsed.paginationModel) {
+        setPaginationModel((prev) => {
+          const next = parsed.paginationModel;
+          if (prev.page === next.page && prev.pageSize === next.pageSize) {
+            return prev;
+          }
+          return next;
+        });
+      }
+    } catch (error) {
+      console.warn('HostList unable to load persisted grid state', error);
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    setFilterModel((prev) => {
+      const nextQuickValues = defaultSearchValue ? [defaultSearchValue] : [];
+      const currentQuickValues = prev.quickFilterValues ?? [];
+      const isSame =
+        currentQuickValues.length === nextQuickValues.length &&
+        currentQuickValues.every((value, index) => value === nextQuickValues[index]);
+      if (isSame) {
+        return prev;
+      }
+      return {
+        ...prev,
+        quickFilterValues: nextQuickValues,
+      };
     });
-  }, [data, siteId, defaultSearchValue]);
+  }, [defaultSearchValue]);
 
   useEffect(() => {
-    setFilterModel(getDefaultFilterModel(defaultSearchValue));
-    setPaginationModel(createDefaultPaginationModel());
-  }, [defaultSearchValue]);
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const stateToPersist = {
+      filterModel,
+      sortModel,
+      paginationModel,
+    };
+    window.localStorage.setItem(storageKey, JSON.stringify(stateToPersist));
+  }, [filterModel, sortModel, paginationModel, storageKey]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -187,7 +286,7 @@ export const HostList = ({
           setEndpointTypeMap(map);
         }
       } catch (error) {
-        console.error('Error fetching endpoint types', error);
+        console.error('HostList failed to fetch endpoint types', error);
       }
     };
 
@@ -221,88 +320,62 @@ export const HostList = ({
   }, [processorList]);
 
   const rows = useMemo(
-    () =>
-      (data ?? []).map((row) => ({
-        ...row,
-        id: row.monitorIPID ?? row.id ?? `${row.address}-${row.appID ?? ''}`,
-      })),
+    () => (Array.isArray(data) ? data : []),
     [data],
   );
-
-  useEffect(() => {
-    console.debug('HostList debug: computed rows for grid', {
-      rowCount: rows.length,
-      sample: rows.length > 0 ? rows.slice(0, Math.min(3, rows.length)) : [],
-    });
-  }, [rows]);
-
-  useEffect(() => {
-    const count = processorList?.length ?? 0;
-    console.debug('HostList debug: processor list updated', {
-      count,
-      sample: count > 0 ? processorList.slice(0, Math.min(3, count)) : [],
-    });
-  }, [processorList]);
 
   const columns = useMemo(
     () => [
       {
         field: 'actions',
         headerName: '',
-        type: 'actions',
-        width: isSmallScreen ? 100 : 140,
-        getActions: (params) => {
-          const row = params.row;
-          const actions = [
-            <GridActionsCellItem
-              key="view"
-              icon={
-                <Tooltip title="View Chart">
-                  <BarChartIcon color="action" />
-                </Tooltip>
-              }
-              label="View Chart"
-              onClick={() => clickViewChart(row)}
-              showInMenu={false}
-            />,
-          ];
-
-          if (row.alertFlag) {
-            actions.push(
-              <GridActionsCellItem
-                key="reset-alert"
-                icon={
-                  <Tooltip title="Reset Alert">
-                    <ErrorIcon sx={{ color: theme.palette.error.main }} />
-                  </Tooltip>
-                }
-                label="Reset Alert"
-                onClick={() => resetHostAlert(row.monitorIPID)}
-                showInMenu={false}
-              />,
-            );
-          }
-
-          if (row.predictAlertFlag) {
-            actions.push(
-              <GridActionsCellItem
-                key="reset-predict"
-                icon={
-                  <Tooltip title="Reset Predict Alert">
-                    <ErrorIcon sx={{ color: theme.palette.warning.main }} />
-                  </Tooltip>
-                }
-                label="Reset Predict Alert"
-                onClick={() => resetPredictAlert(row.monitorIPID)}
-                showInMenu={false}
-              />,
-            );
-          }
-
-          return actions;
-        },
         sortable: false,
         filterable: false,
+        width: isSmallScreen ? 150 : 180,
+        renderCell: ({ row }) => (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+            <Tooltip title="View Chart">
+              <span>
+                <Button
+                  size="small"
+                  onClick={() => clickViewChart(row)}
+                  aria-label="View Chart"
+                  sx={{ minWidth: 32, px: 0.5 }}
+                >
+                  <BarChartIcon color="action" fontSize="small" />
+                </Button>
+              </span>
+            </Tooltip>
+            {row.alertFlag && (
+              <Tooltip title="Reset Alert">
+                <span>
+                  <Button
+                    size="small"
+                    onClick={() => resetHostAlert(row.monitorIPID)}
+                    aria-label="Reset Alert"
+                    sx={{ minWidth: 32, px: 0.5 }}
+                  >
+                    <ErrorIcon sx={{ color: theme.palette.error.main }} fontSize="small" />
+                  </Button>
+                </span>
+              </Tooltip>
+            )}
+            {row.predictAlertFlag && (
+              <Tooltip title="Reset Predict Alert">
+                <span>
+                  <Button
+                    size="small"
+                    onClick={() => resetPredictAlert(row.monitorIPID)}
+                    aria-label="Reset Predict Alert"
+                    sx={{ minWidth: 32, px: 0.5 }}
+                  >
+                    <ErrorIcon sx={{ color: theme.palette.warning.main }} fontSize="small" />
+                  </Button>
+                </span>
+              </Tooltip>
+            )}
+          </Box>
+        ),
       },
       {
         field: 'address',
@@ -317,14 +390,14 @@ export const HostList = ({
         headerAlign: 'center',
         width: 130,
         sortable: true,
-        renderCell: (params) => {
-          const internalType = `${params.value ?? ''}`.toLowerCase();
+        renderCell: ({ value }) => {
+          const internalType = `${value ?? ''}`.toLowerCase();
           const endpointType = endpointTypeMap[internalType];
 
           if (!endpointType) {
             return (
               <Tooltip title="Endpoint type unavailable">
-                <ErrorIcon color="warning" />
+                <ErrorIcon color="warning" fontSize="small" />
               </Tooltip>
             );
           }
@@ -339,39 +412,44 @@ export const HostList = ({
             </Tooltip>
           );
         },
-        valueFormatter: (params) => params.value,
       },
       {
         field: 'packetsSent',
         headerName: 'Data Sent',
         type: 'number',
         width: 120,
-        valueGetter: numericValueGetter,
-        valueFormatter: numericValueFormatter,
+        valueGetter: ({ row }) => parseNumericValue(row?.packetsSent),
+        renderCell: ({ row }) => formatNumber(row?.packetsSent),
       },
       {
         field: 'packetsLost',
         headerName: 'Data Lost',
         type: 'number',
         width: 120,
-        valueGetter: numericValueGetter,
-        valueFormatter: numericValueFormatter,
+        valueGetter: ({ row }) => parseNumericValue(row?.packetsLost),
+        renderCell: ({ row }) => formatNumber(row?.packetsLost),
       },
       {
         field: 'percentageLost',
         headerName: '% Lost',
         width: 100,
         type: 'number',
-        valueGetter: numericValueGetter,
-        valueFormatter: percentageValueFormatter,
+        valueGetter: ({ row }) => parseNumericValue(row?.percentageLost),
+        renderCell: ({ row }) => {
+          const value = row?.percentageLost;
+          if (value === null || value === undefined || value === '') {
+            return '';
+          }
+          return `${formatNumber(value)}%`;
+        },
       },
       {
         field: 'roundTripAverage',
         headerName: 'Average ms',
         width: 130,
         type: 'number',
-        valueGetter: numericValueGetter,
-        valueFormatter: numericValueFormatter,
+        valueGetter: ({ row }) => parseNumericValue(row?.roundTripAverage),
+        renderCell: ({ row }) => formatNumber(row?.roundTripAverage),
       },
       {
         field: 'appID',
@@ -381,30 +459,33 @@ export const HostList = ({
         type: 'singleSelect',
         valueOptions: monitorLocationOptions,
         valueGetter: ({ row }) => processorMap.get(row?.appID) || row?.appID || '',
-        sortComparator: (value1, value2) => String(value1).localeCompare(String(value2)),
+        sortComparator: (value1, value2) =>
+          String(value1 || '').localeCompare(String(value2 || ''), undefined, {
+            sensitivity: 'base',
+          }),
+        renderCell: ({ row }) => processorMap.get(row?.appID) || row?.appID || '',
       },
     ],
     [
       clickViewChart,
       endpointTypeMap,
       isSmallScreen,
+      monitorLocationOptions,
       processorMap,
       resetHostAlert,
       resetPredictAlert,
-      theme,
+      theme.palette.error.main,
+      theme.palette.warning.main,
     ],
   );
 
-  useEffect(() => {
-    console.debug('HostList debug: grid state changed', {
-      filterModel,
-      sortModel,
-      paginationModel,
-    });
-  }, [filterModel, sortModel, paginationModel]);
+  const handleFilterModelChange = (model) => {
+    const sanitized = sanitizeFilterModel(model);
+    setFilterModel((prev) => (filterModelsEqual(prev, sanitized) ? prev : sanitized));
+  };
 
   return (
-    <>
+    <CacheProvider value={muiCache}>
       {showDataSetsList && (
         <DataSetsList
           dataSets={dataSets}
@@ -414,23 +495,37 @@ export const HostList = ({
           onClose={() => setShowDataSetsList(false)}
         />
       )}
-      <Box sx={{ width: '100%', height: '100%' }}>
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+        }}
+      >
         <DataGrid
           rows={rows}
           columns={columns}
           autoHeight
           disableRowSelectionOnClick
-          density={isSmallScreen ? 'compact' : 'standard'}
+          density={density}
+          onDensityChange={(newDensity) => setDensity(newDensity)}
           filterModel={filterModel}
-          onFilterModelChange={setFilterModel}
+          onFilterModelChange={handleFilterModelChange}
           sortModel={sortModel}
-          onSortModelChange={setSortModel}
+          onSortModelChange={(model) =>
+            setSortModel((prev) => (arraysAreEqual(prev, model) ? prev : model))
+          }
           paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
+          onPaginationModelChange={(model) =>
+            setPaginationModel((prev) =>
+              prev.page === model.page && prev.pageSize === model.pageSize ? prev : model,
+            )
+          }
           pageSizeOptions={[10, 25, 50, 100]}
-          getRowId={(row) => row.id}
+          getRowId={(row) =>
+            row?.monitorIPID ?? row?.id ?? `${row?.address ?? 'row'}-${row?.appID ?? ''}`
+          }
           slots={{ toolbar: HostListToolbar }}
-          slotProps={{ toolbar: { onToggleDataSets: () => setShowDataSetsList(true) } }}
+          slotProps={{ toolbar: { onToggleDataSets: () => setShowDataSetsList((prev) => !prev) } }}
           sx={{
             border: 'none',
             '& .MuiDataGrid-columnHeaders': {
@@ -446,7 +541,7 @@ export const HostList = ({
           }}
         />
       </Box>
-    </>
+    </CacheProvider>
   );
 };
 

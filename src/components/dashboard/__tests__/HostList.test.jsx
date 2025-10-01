@@ -87,6 +87,11 @@ describe('HostList', () => {
     expect(await screen.findByRole('columnheader', { name: /host address/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /monitor location/i })).toBeInTheDocument();
 
+    // Numeric columns should format values for display
+    expect(await screen.findByText('100')).toBeInTheDocument();
+    expect(screen.getByText('2%')).toBeInTheDocument();
+    expect(screen.getByText('New York')).toBeInTheDocument();
+
     const viewChartButton = (await screen.findAllByLabelText(/view chart/i)).find(
       (el) => el.tagName === 'BUTTON',
     );
