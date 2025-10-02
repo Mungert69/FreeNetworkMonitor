@@ -190,26 +190,53 @@ const ChatContent = ({
           )}
 
           {/* Header Section */}
-          <Grid container alignItems="center">
-            <Grid item xs={12} sx={{
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-              padding: theme.spacing(1),
-              borderRadius: theme.shape.borderRadius / 3
-            }}>
-              <Typography variant="h7">Network Monitor Assistant ({llmRunnerType})</Typography>
-            </Grid>
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              {/* Left-Aligned Icons */}
-              <Box>
-                <IconButton onClick={saveFeedback} color="primary" disabled={!isReady}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.getContrastText(theme.palette.primary.main),
+                padding: theme.spacing(1),
+                borderRadius: theme.shape.borderRadius / 3,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                flexWrap: { xs: 'wrap', md: 'nowrap' },
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: 600,
+                  flexGrow: 1,
+                  minWidth: 0,
+                }}
+              >
+                Network Monitor Assistant ({llmRunnerType})
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  flexWrap: 'wrap',
+                  justifyContent: { xs: 'space-between', md: 'flex-end' },
+                  width: { xs: '100%', md: 'auto' },
+                }}
+              >
+                <IconButton onClick={saveFeedback} color="inherit" disabled={!isReady}>
                   <Badge color="secondary">
                     <Tooltip title="Save" TransitionComponent={Zoom}>
                       <SaveIcon />
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                <IconButton onClick={toggleLlmRunnerType} color="primary" disabled={isToggleDisabled}>
+                <IconButton onClick={toggleLlmRunnerType} color="inherit" disabled={isToggleDisabled}>
                   <Badge color="secondary">
                     <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
                       <SwapHorizIcon />
@@ -219,7 +246,7 @@ const ChatContent = ({
                 {isDrawerOpen ? null : (
                   <IconButton
                     onClick={toggleDrawer(true)}
-                    color="primary"
+                    color="inherit"
                     disabled={!isReady}
                   >
                     <Badge color="secondary">
@@ -229,7 +256,7 @@ const ChatContent = ({
                     </Badge>
                   </IconButton>
                 )}
-                <IconButton onClick={toggleExpand} color="primary">
+                <IconButton onClick={toggleExpand} color="inherit">
                   <Badge color="secondary">
                     <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
                       {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
@@ -238,10 +265,10 @@ const ChatContent = ({
                 </IconButton>
                 <IconButton
                   onClick={() => resetSessionId()}
-                  color="error"
+                  color="inherit"
                   sx={{
                     '&:hover': {
-                      backgroundColor: 'error.light',
+                      backgroundColor: 'rgba(255,255,255,0.12)',
                     }
                   }}
                 >
@@ -253,7 +280,7 @@ const ChatContent = ({
                 </IconButton>
                 <IconButton
                   onClick={toggleAudio}
-                  color="primary"
+                  color="inherit"
                   aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
                 >
                   <Badge color="secondary">
@@ -262,14 +289,10 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
-              </Box>
-
-              {/* Right-Aligned Icons */}
-              <Box>
                 <IconButton
                   ref={historyButtonRef}
                   onClick={toggleHistory}
-                  color="primary"
+                  color="inherit"
                   aria-label="History"
                 >
                   <Badge color="secondary">
@@ -278,7 +301,7 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                <IconButton onClick={() => closeChat()} color="secondary">
+                <IconButton onClick={() => closeChat()} color="inherit">
                   <Badge color="secondary">
                     <Tooltip title="Hide Assistant" TransitionComponent={Zoom}>
                       <CloseIcon />
@@ -286,8 +309,8 @@ const ChatContent = ({
                   </Badge>
                 </IconButton>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
 
         {/* Chat Content */}
@@ -359,35 +382,51 @@ const ChatContent = ({
 
         {/* Chat Input */}
         <CardContent sx={{ pt: 1, pb: 1 }}>
-          <Grid container direction="row">
-            <Grid item xs={10}>
-              <TextField
-                fullWidth
-                size="small"
-                variant="outlined"
-                label="Type a message..."
-                value={currentMessage}
-                onFocus={() => setIsInputFocused(true)}
-                onBlur={() => setIsInputFocused(false)}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    (async () => {
-                      try {
-                        await sendMessage();
-                      } catch (error) {
-                        console.error('Error while sending message:', error);
-                      }
-                    })();
-                  }
-                }}
-                inputProps={{ maxLength: 10000 }}
-                inputRef={chatInputRef}
-                onMouseEnter={handleInputMouseEnter}
-              />
-            </Grid>
-            <Grid item xs={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              flexWrap: { xs: 'wrap', sm: 'nowrap' },
+            }}
+          >
+            <TextField
+              fullWidth
+              size="small"
+              variant="outlined"
+              label="Type a message..."
+              value={currentMessage}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  (async () => {
+                    try {
+                      await sendMessage();
+                    } catch (error) {
+                      console.error('Error while sending message:', error);
+                    }
+                  })();
+                }
+              }}
+              inputProps={{ maxLength: 10000 }}
+              inputRef={chatInputRef}
+              onMouseEnter={handleInputMouseEnter}
+              sx={{
+                flexGrow: 1,
+                minWidth: { xs: '100%', sm: 0 },
+              }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                flexShrink: 0,
+              }}
+            >
               <IconButton
                 color="primary"
                 onClick={async () => {
@@ -417,8 +456,6 @@ const ChatContent = ({
                   </Tooltip>
                 </Badge>
               </IconButton>
-            </Grid>
-            <Grid item xs={1}>
               <IconButton
                 onClick={() => stopLLM()}
                 color="warning"
@@ -435,8 +472,8 @@ const ChatContent = ({
                   </Tooltip>
                 </Badge>
               </IconButton>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
       <Message message={message} />
