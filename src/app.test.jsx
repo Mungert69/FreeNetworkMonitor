@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import App from './app';
-import ReactGA4 from 'react-ga4';
+//import ReactGA4 from 'react-ga4';
 
 const createMockComponent = (text) => () => <div>{text}</div>;
 
@@ -32,7 +32,7 @@ vi.mock('./components/start-login-proxy', () => ({
   default: createMockComponent('Start Login Proxy Mock'),
 }));
 
-vi.mock('react-ga4', () => {
+/*vi.mock('react-ga4', () => {
   const initialize = vi.fn();
   const send = vi.fn();
   const event = vi.fn();
@@ -43,7 +43,7 @@ vi.mock('react-ga4', () => {
     send,
     event,
   };
-});
+});*/
 
 describe('App', () => {
   beforeEach(() => {
@@ -71,11 +71,11 @@ describe('App', () => {
 
     await user.click(screen.getByText('Agree'));
 
-    await waitFor(() => {
+   /* await waitFor(() => {
       expect(ReactGA4.send).toHaveBeenCalledWith(
         expect.objectContaining({ hitType: 'pageview' })
       );
-    });
+    });*/
 
     expect(window.gtag).toHaveBeenCalledWith(
       'consent',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import clsx from 'clsx';
 
 import Drawer from '@mui/material/Drawer';
@@ -25,10 +25,6 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import MainListItems from './MainListItems';
-import Chart from './Chart';
-import HostList from './HostList';
-//import HostListEdit from './HostListEdit';
-import HostListEdit from './HostListEdit';
 import Loading from '../../loading';
 import LogoLink from '../main/LogoLink';
 import MiniProfile from './MiniProfile';
@@ -40,10 +36,14 @@ import useClasses from "./useClasses";
 import { alpha, useTheme } from '@mui/material/styles';
 import Seo from '../Seo';
 import FadeWrapper from './FadeWrapper';
-import { ga4Event } from '../../ga4';
+//import { ga4Event } from '../../ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
-import Chat from "./Chat/Chat";
 import CloseIcon from '@mui/icons-material/Close';
+
+const Chart = lazy(() => import('./Chart'));
+const HostList = lazy(() => import('./HostList'));
+const HostListEdit = lazy(() => import('./HostListEdit'));
+const Chat = lazy(() => import('./Chat/Chat'));
 
 const FullScreenDialogTransition = React.forwardRef(function FullScreenDialogTransition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -208,10 +208,10 @@ export default function Dashboard() {
         //await setDefaultUser(false);
 
         console.log("isLoggedIn = " + JSON.stringify(isLoggedIn) + " isFetchingUserInfo " + JSON.stringify(isFetchingUserInfo))
-        ga4Event({
+        /*ga4Event({
           category: 'User',
           action: 'User Logged In'
-        });
+        });*/
         await getAccess();
       }
       else {
@@ -427,25 +427,43 @@ export default function Dashboard() {
                   borderRadius: isMediumOrLarger ? 3 : 1,
                 }}
               >
-                {toggleTable ?
-                  <HostList siteId={siteId}
-                    data={listData}
-                    clickViewChart={clickViewChart}
-                    resetHostAlert={resetHostAlert}
-                    resetPredictAlert={resetPredictAlert}
-                    processorList={processorList}
-                    dataSets={dataSets}
-                    handleSetDataSetId={handleSetDataSetId}
-                    setDateStart={setDateStart}
-                    setDateEnd={setDateEnd} defaultSearchValue={defaultSearchValue} />
-                  :
-                  <React.Fragment>
-                    <HostListEdit siteId={siteId} processorList={processorList} defaultSearchValue={defaultSearchValue} />
-                  </React.Fragment>
-                }
+                <Suspense fallback={<Loading />}>
+                  {toggleTable ? (
+                    <HostList
+                      siteId={siteId}
+                      data={listData}
+                      clickViewChart={clickViewChart}
+                      resetHostAlert={resetHostAlert}
+                      resetPredictAlert={resetPredictAlert}
+                      processorList={processorList}
+                      dataSets={dataSets}
+                      handleSetDataSetId={handleSetDataSetId}
+                      setDateStart={setDateStart}
+                      setDateEnd={setDateEnd}
+                      defaultSearchValue={defaultSearchValue}
+                    />
+                  ) : (
+                    <HostListEdit
+                      siteId={siteId}
+                      processorList={processorList}
+                      defaultSearchValue={defaultSearchValue}
+                    />
+                  )}
+                </Suspense>
               </Paper>
               <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                {siteId !== null && siteId !== undefined && <Chat key={chatKey} onHostLinkClick={handleHostLinkClick} isDashboard={true} initRunnerType={'TurboLLM'} setIsChatOpen={setIsChatOpen} siteId={siteId} />}
+                {siteId !== null && siteId !== undefined && (
+                  <Suspense fallback={<Loading />}>
+                    <Chat
+                      key={chatKey}
+                      onHostLinkClick={handleHostLinkClick}
+                      isDashboard
+                      initRunnerType="TurboLLM"
+                      setIsChatOpen={setIsChatOpen}
+                      siteId={siteId}
+                    />
+                  </Suspense>
+                )}
               </div>
             </Grid>
           </Grid>
@@ -488,16 +506,18 @@ export default function Dashboard() {
             >
               <CloseIcon />
             </IconButton>
-            <Chart
-              data={chartData}
-              selectedDate={selectedDate}
-              hostname={hostData.address}
-              dataSetId={dataSetId}
-              dataSets={dataSets}
-              handleSetDataSetId={handleSetDataSetId}
-              hostDetail={hostData}
-              fullScreen
-            />
+            <Suspense fallback={<Loading />}>
+              <Chart
+                data={chartData}
+                selectedDate={selectedDate}
+                hostname={hostData.address}
+                dataSetId={dataSetId}
+                dataSets={dataSets}
+                handleSetDataSetId={handleSetDataSetId}
+                hostDetail={hostData}
+                fullScreen
+              />
+            </Suspense>
           </DialogContent>
         </Dialog>
       </main>

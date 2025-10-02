@@ -31,19 +31,19 @@ import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
 import reportWebVitals from '../../reportWebVitals';
-import { ga4Event } from '../../ga4';
+//import { ga4Event } from '../../ga4';
 import pingImage from '/ping.svg';
 import { getBaseDomain } from '../dashboard/ServiceAPI';
 
 function sendToAnalytics({ id, name, value }) {
-    ga4Event({
+    /*ga4Event({
         eventCategory: 'Web Vitals',
         eventAction: name,
         eventValue: Math.round(name === 'CLS' ? value * 1000 : value),
         eventLabel: id,
         nonInteraction: true,
         transport: 'beacon',
-    });
+    });*/
 }
 // Add this above your ProductDetail component
 const interactiveStyles = {

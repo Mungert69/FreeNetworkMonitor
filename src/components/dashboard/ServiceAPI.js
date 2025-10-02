@@ -1,9 +1,18 @@
 import axios from 'axios';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { trackPromise } from 'react-promise-tracker';
 import axiosRetry from 'axios-retry';
 
 let defaultUser='default';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
+dayjs.extend(customParseFormat);
 
 let appsettings = {};  // Global variable to hold app settings
 
@@ -89,8 +98,9 @@ export const getRedirectUri = () => {
     return appsettings.redirectUri;
 }
 
-// You can use moment and user timezone here as needed
-const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+// You can use dayjs and user timezone here as needed
+const resolvedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const userTimeZone = resolvedTimeZone || dayjs.tz.guess();
 console.log('User Timezone:', userTimeZone);
 
 
@@ -138,18 +148,58 @@ if (Array.isArray(llmServerUrls)) {
 
 
 
+const DATE_INPUT_FORMATS = [
+  'YYYY-MM-DD HH:mm:ss',
+  'YYYY-MM-DD HH:mm',
+  'YYYY-MM-DDTHH:mm:ss',
+  'YYYY-MM-DDTHH:mm:ss.SSS',
+];
+
+const toDayjsUtc = (value) => {
+  if (value === undefined || value === null || value === '') {
+    return dayjs.invalid();
+  }
+
+  if (dayjs.isDayjs(value)) {
+    return typeof value.isUTC === 'function' && value.isUTC() ? value : value.utc();
+  }
+
+  if (value instanceof Date || typeof value === 'number') {
+    return dayjs(value).utc();
+  }
+
+  if (typeof value === 'string') {
+    let parsed = dayjs.utc(value);
+    if (!parsed.isValid()) {
+      for (const format of DATE_INPUT_FORMATS) {
+        parsed = dayjs.utc(value, format, true);
+        if (parsed.isValid()) {
+          break;
+        }
+      }
+    }
+
+    if (parsed.isValid()) {
+      return parsed;
+    }
+
+    const fallback = dayjs(value);
+    return fallback.isValid() ? fallback.utc() : dayjs.invalid();
+  }
+
+  const fallback = dayjs(value);
+  return fallback.isValid() ? fallback.utc() : dayjs.invalid();
+};
+
 export const convertDate = (date, format) => {
- 
-  // Create a Moment.js object from the input UTC date
-  const momentObj = moment.utc(date, 'YYYY-MM-DD HH:mm:ss');
+  const targetZone = userTimeZone || dayjs.tz.guess();
+  const utcDate = toDayjsUtc(date);
 
-  // Convert the Moment.js object to the user's local time zone
-  const localMomentObj = momentObj.tz(userTimeZone);
+  if (!utcDate.isValid()) {
+    return '';
+  }
 
-  // Format the Moment.js object with the provided format
-  const momentString = localMomentObj.format(format);
-
-  return momentString;
+  return utcDate.tz(targetZone).format(format);
 };
 export const getSiteIdfromUrl = (url) => {
     var siteId;
@@ -337,7 +387,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
         console.log('ServiceAPI.fetchChartData Mapping Data Error was : ' + error);
         if (result != undefined && result.data?.message !== undefined)
             console.log('Api Result.Message was ' + result.data.message);
-        data.push({ 'time': convertDate(moment(), 'HH:mm:ss'), 'response': -1, 'status': 'No Data' })
+        data.push({ 'time': convertDate(dayjs(), 'HH:mm:ss'), 'response': -1, 'status': 'No Data' })
 
     }
     setChartData(data);
@@ -442,15 +492,15 @@ export const fetchDataSetsByDate = async (baseUrlId, setDataSets, dateStart, dat
     // No auth for now.
     // Set dateEnd to current date if not set.
     if (dateEnd === undefined) {
-        dateEnd = moment();
+        dateEnd = dayjs();
     }
     // Set dateStart to current date minus one month if not set.
     if (dateStart === undefined) {
-        dateStart = moment().subtract(14, 'days');
+        dateStart = dayjs().subtract(14, 'day');
     }
-    dateEnd = moment(dateEnd).endOf('day');
-    dateStart = moment(dateStart).startOf('day');
-    var sentData = { DateStart: moment.utc(dateStart).format(), DateEnd: moment.utc(dateEnd).format(), Prompt: prompt };
+    dateEnd = dayjs(dateEnd).endOf('day');
+    dateStart = dayjs(dateStart).startOf('day');
+    var sentData = { DateStart: dayjs.utc(dateStart).format(), DateEnd: dayjs.utc(dateEnd).format(), Prompt: prompt };
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
@@ -1012,5 +1062,3 @@ export const fetchTiers = async (baseUrlId) => {
   console.log('ServiceAPI.fetchTiers fetched ' + data.length + ' tiers');
   return data;
 };
-
-

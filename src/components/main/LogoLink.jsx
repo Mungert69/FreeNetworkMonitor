@@ -22,7 +22,7 @@ const LogoLink = () => {
                     <CardMedia
                         component="img"
                         sx={{ width: 48, height: 32 }}
-                        image='/img/logo.jpg'
+                        image='/logo.svg'
                         alt="Quantum Network Monitor Logo"
                     />
                 </Card>

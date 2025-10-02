@@ -3,7 +3,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { LoadingCircle } from "./loading-circle";
 import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
 import RouteChangeTracker from './route-change-tracker';
-import ReactGA4 from 'react-ga4';
+//import ReactGA4 from 'react-ga4';
 
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const Pricing = lazy(() => import('./components/main/Pricing'));
@@ -12,7 +12,7 @@ const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
-const TRACKING_ID = "G-QZ49HV7DS2";
+//const TRACKING_ID = "G-XXXXXXXXXX"; // Replace with your GA4 tracking ID
 const isDevServerLabel = window?.serverLabel?.serverLabel === "dev";
 
 const App = () => {
@@ -23,12 +23,12 @@ const App = () => {
   useEffect(() => {
     if (isDevServerLabel) return;
 
-    ReactGA4.initialize(TRACKING_ID, {
+    /*ReactGA4.initialize(TRACKING_ID, {
       gaOptions: {
         cookieFlags: "SameSite=None;Secure",
         siteSpeedSampleRate: 100,
       },
-    });
+    });*/
 
     // Deny cookies until user accepts
     window.gtag?.("consent", "default", {
@@ -42,10 +42,10 @@ const App = () => {
       analytics_storage: "granted",
     });
 
-    ReactGA4.send({
+    /*ReactGA4.send({
       hitType: "pageview",
       page: window.location.pathname + window.location.search,
-    });
+    });*/
 
     setConsentGiven(true);
   };

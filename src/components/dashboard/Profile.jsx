@@ -32,10 +32,7 @@ import PasskeyManager from './PasskeyManager';
 import { updateApiUser, resendVerifyEmail, handleDownload } from './ServiceAPI';
 
 const Profile = ({ apiUser, siteId, getUserInfo }) => {
-  const [state, setState] = React.useState({
-    name: apiUser.name,
-    picture: apiUser.picture,
-  });
+  const [state, setState] = React.useState({ name: apiUser.name, picture: apiUser.picture });
   const [disableEmail, setDisableEmail] = React.useState(apiUser.disableEmail);
   const [message, setMessage] = React.useState({ info: 'init' });
   const [downloadLink, setDownloadLink] = useState(null);
@@ -73,17 +70,15 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
     setMessage(msg);
   };
 
-  const handleChangeText = (e) =>
-    setState({ ...state, [e.target.name]: e.target.value });
-  const handleChangePicture = (e) =>
-    setState({ ...state, [e.target.name]: e.target.value });
+  const handleChangeText = (e) => setState({ ...state, [e.target.name]: e.target.value });
+  const handleChangePicture = (e) => setState({ ...state, [e.target.name]: e.target.value });
   const handleChangeBool = (e) => setDisableEmail(e.target.checked);
 
   // Desktop column widths
-  const LONG = 8;   // long text fields
-  const SHORT = 4;  // short fields or controls
+  const LONG = 8;
+  const SHORT = 4;
 
-  // Shared style so long fields wrap nicely with no inner scrollbars
+  // Long fields wrap (no inner scrollbars)
   const longFieldSx = {
     '& .MuiInputBase-input': {
       fontFamily: 'monospace',
@@ -122,7 +117,13 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
         <CardHeader />
         <Divider />
         <CardContent>
-          <Grid container spacing={3} alignItems="flex-start">
+          <Grid
+            container
+            columns={{ xs: 12, sm: 12, md: 12, lg: 12 }}
+            spacing={3}
+            alignItems="flex-start"
+            sx={{ width: '100%' }}
+          >
             {/* Row 1: short + long */}
             <Grid item xs={12} md={SHORT}>
               <TextField
@@ -283,7 +284,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
 
         <Divider />
         <CardActions>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} columns={{ xs: 12, sm: 12, md: 12, lg: 12 }} sx={{ width: '100%' }}>
             <Grid item xs={12} md={6}>
               <Button fullWidth type="submit" variant="contained" onClick={handleSubmit}>
                 Save Changes
@@ -294,9 +295,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
                 fullWidth
                 type="button"
                 variant="contained"
-                onClick={() =>
-                  handleDownload(siteId, setMessage, setDownloadLink, setOpen, setIsLoading)
-                }
+                onClick={() => handleDownload(siteId, setMessage, setDownloadLink, setOpen, setIsLoading)}
                 disabled={isLoading}
               >
                 {isLoading ? 'Processing...' : 'Generate Data Download'}
@@ -311,7 +310,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
 
 Profile.propTypes = {
   className: PropTypes.string,
-  apiUser: PropTypes.object.isRequired,
+  apiUser: PropTypes.object.isRequired
 };
 
 export default React.memo(Profile);

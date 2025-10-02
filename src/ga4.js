@@ -1,4 +1,4 @@
-import ReactGA4 from 'react-ga4';
+/*import ReactGA4 from 'react-ga4';
 
 export function sendGA4Event(event) {
   const isDevServerLabel = window?.serverLabel?.serverLabel === 'dev';
@@ -12,4 +12,4 @@ export function ga4Event(event) {
   if (!isDevServerLabel) {
     ReactGA4.event(event);
   }
-}
+}*/

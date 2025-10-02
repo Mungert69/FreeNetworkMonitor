@@ -11,12 +11,10 @@ import {
   Button,
   Grid,
   TextField,
-  Select,
   MenuItem,
   FormControlLabel,
   Checkbox,
-  Tooltip,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 
 
@@ -79,44 +77,21 @@ const getMuiTheme = (isSmallScreen) => createTheme({
     MuiInputBase: {
       styleOverrides: {
         root: {
-          fontSize: isSmallScreen ? "0.92rem" : undefined,
-          padding: isSmallScreen ? "3px 8px" : undefined,
-          minHeight: isSmallScreen ? "32px" : undefined,
-          height: isSmallScreen ? "32px" : undefined,
+          fontSize: isSmallScreen ? "0.94rem" : undefined,
           backgroundColor: "#fff",
           color: "#222",
         },
         input: {
-          fontSize: isSmallScreen ? "0.92rem" : undefined,
-          padding: isSmallScreen ? "3px 8px" : undefined,
-          minHeight: isSmallScreen ? "32px" : undefined,
-          height: isSmallScreen ? "32px" : undefined,
+          fontSize: isSmallScreen ? "0.94rem" : undefined,
           backgroundColor: "#fff",
           color: "#222",
-        }
-      }
-    },
-    MuiSelect: {
-      styleOverrides: {
-        select: {
-          fontSize: isSmallScreen ? "0.92rem" : undefined,
-          padding: isSmallScreen ? "8px 8px" : undefined,
-          minHeight: isSmallScreen ? "32px" : undefined,
-          height: isSmallScreen ? "32px" : undefined,
-          backgroundColor: "#fff",
-          color: "#222",
-        }
-      }
+        },
+      },
     },
     MuiMenuItem: {
       styleOverrides: {
         root: {
-          fontSize: isSmallScreen ? "0.92rem" : undefined,
-          minHeight: isSmallScreen ? "32px" : undefined,
-          paddingTop: isSmallScreen ? "4px" : undefined,
-          paddingBottom: isSmallScreen ? "4px" : undefined,
-          paddingLeft: isSmallScreen ? "8px" : undefined,
-          paddingRight: isSmallScreen ? "8px" : undefined,
+          fontSize: isSmallScreen ? "0.94rem" : undefined,
           color: "#222",
           backgroundColor: "#fff",
           '&.Mui-selected': {
@@ -145,13 +120,8 @@ const getMuiTheme = (isSmallScreen) => createTheme({
       styleOverrides: {
         root: {
           marginBottom: 0,
-          marginTop: isSmallScreen ? 0 : undefined,
-          marginLeft: isSmallScreen ? 0 : undefined,
-          marginRight: isSmallScreen ? 0 : undefined,
-          padding: isSmallScreen ? "0px 1px" : undefined,
-          minHeight: isSmallScreen ? "24px" : undefined,
           color: "#607466",
-        }
+        },
       }
     },
    
@@ -203,27 +173,35 @@ const EditHostDialog = ({
                 value={editedHost.address}
                 onChange={(e) => handleChange('address', e.target.value)}
                 fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Enter host address"
+                margin="dense"
               />
             </Grid>
 
             {/* Endpoint Type */}
             <Grid item xs={12}>
-              <Select
+              <TextField
                 label="Endpoint Type"
-                value={editedHost.endPointType}
+                value={editedHost.endPointType ?? ''}
                 onChange={(e) => handleChange('endPointType', e.target.value)}
                 fullWidth
-                displayEmpty
+                select
+                SelectProps={{
+                  displayEmpty: true,
+                }}
+                InputLabelProps={{ shrink: true }}
+                margin="dense"
               >
                 <MenuItem value="">
                   <em>Select Endpoint Type</em>
                 </MenuItem>
-                {endpointTypes.map((type) => (
+                {(endpointTypes ?? []).map((type) => (
                   <MenuItem key={type.internalType} value={type.internalType}>
                     {type.name}
                   </MenuItem>
                 ))}
-              </Select>
+              </TextField>
             </Grid>
 
             {/* Timeout */}
@@ -234,6 +212,9 @@ const EditHostDialog = ({
                 value={editedHost.timeout}
                 onChange={(e) => handleChange('timeout', e.target.value)}
                 fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Enter timeout"
+                margin="dense"
               />
             </Grid>
 
@@ -245,6 +226,9 @@ const EditHostDialog = ({
                 value={editedHost.port}
                 onChange={(e) => handleChange('port', e.target.value)}
                 fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Enter port"
+                margin="dense"
               />
             </Grid>
 
@@ -263,31 +247,38 @@ const EditHostDialog = ({
 
             {/* Monitor Location */}
             <Grid item xs={12}>
-              <Select
+              <TextField
                 label="Monitor Location"
-                value={editedHost.appID}
+                value={editedHost.appID ?? ''}
                 onChange={(e) => handleChange('appID', e.target.value)}
                 fullWidth
-                displayEmpty
+                select
+                SelectProps={{
+                  displayEmpty: true,
+                }}
+                InputLabelProps={{ shrink: true }}
+                margin="dense"
               >
                 <MenuItem value="">
                   <em>Select Monitor Location</em>
                 </MenuItem>
-                {processorList
-                  .filter(
-                    (row) =>
+                {(processorList ?? [])
+                  .filter((row) => {
+                    const disabledTypes = (row.disabledEndPointTypes || []).map((type) =>
+                      String(type ?? '').toLowerCase(),
+                    );
+                    const normalizedEndpoint = String(editedHost.endPointType ?? '').toLowerCase();
+                    return (
                       !row.isAtMaxLoad &&
-                      (!row.disabledEndPointTypes ||
-                        !row.disabledEndPointTypes.includes(
-                          editedHost.endPointType
-                        ))
-                  )
+                      (disabledTypes.length === 0 || !disabledTypes.includes(normalizedEndpoint))
+                    );
+                  })
                   .map((row) => (
                     <MenuItem key={row.appID} value={row.appID}>
                       {row.location}
                     </MenuItem>
                   ))}
-              </Select>
+              </TextField>
             </Grid>
           </Grid>
         </DialogContent>
