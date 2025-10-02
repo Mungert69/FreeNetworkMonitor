@@ -1,71 +1,177 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Legend } from 'recharts';
-import Title from './Title';
-import Paper from '@mui/material/Paper';
+import { alpha, useTheme } from '@mui/material/styles';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Area } from 'recharts';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Collapse from '@mui/material/Collapse';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const customTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    var response = payload[0].payload?.response;
-    var status = payload[0].payload?.status;
-    // split status into an array of words.
-    //var statusArray = status.split(" ");
-    // split status into an array of words by spave or full stop.
-    var statusArray = status.split(/[ .]/);
-
-    // Take three words at a time from statusArray and create new array.
-    var statusArray3 = [];
-    for (var i = 0; i < statusArray.length; i += 3) {
-      statusArray3.push(statusArray.slice(i, i + 3).join(" "));
-    }
-    // display a new <p> for each item in statusArray3.
-    var statusArray3Display = statusArray3.map((item, index) => {
-      return <span>{item}<br /></span>;
-    });
-  
-    var showResponse=true;
-    // if responce is -1 then set showResponce to false
-    if (response === -1) {
-      showResponse = false;
-    }
-
-    return (
-      <Paper  sx={{
-       opacity: 0.7,
-      }}>
-         <p >{`${payload[0].payload?.time}`}</p>
-       {showResponse && <p >{`${response}`} ms</p>}
-      {statusArray3Display} 
-      </Paper>
-    )
-   }
-
-  return null
-}
-
-const CustomizedDot = (props) => {
-  const { cx, cy, stroke, payload, value } = props;
-
-  if (value < 0) {
-    return (
-      <svg x={cx - 5} y={cy - 5} width={10} height={10} fill="red" viewBox="0 0 1024 1024">
-        <path d="M517.12 53.248q95.232 0 179.2 36.352t145.92 98.304 98.304 145.92 36.352 179.2-36.352 179.2-98.304 145.92-145.92 98.304-179.2 36.352-179.2-36.352-145.92-98.304-98.304-145.92-36.352-179.2 36.352-179.2 98.304-145.92 145.92-98.304 179.2-36.352zM663.552 261.12q-15.36 0-28.16 6.656t-23.04 18.432-15.872 27.648-5.632 33.28q0 35.84 21.504 61.44t51.2 25.6 51.2-25.6 21.504-61.44q0-17.408-5.632-33.28t-15.872-27.648-23.04-18.432-28.16-6.656zM373.76 261.12q-29.696 0-50.688 25.088t-20.992 60.928 20.992 61.44 50.688 25.6 50.176-25.6 20.48-61.44-20.48-60.928-50.176-25.088zM520.192 602.112q-51.2 0-97.28 9.728t-82.944 27.648-62.464 41.472-35.84 51.2q-1.024 1.024-1.024 2.048-1.024 3.072-1.024 8.704t2.56 11.776 7.168 11.264 12.8 6.144q25.6-27.648 62.464-50.176 31.744-19.456 79.36-35.328t114.176-15.872q67.584 0 116.736 15.872t81.92 35.328q37.888 22.528 63.488 50.176 17.408-5.12 19.968-18.944t0.512-18.944-3.072-7.168-1.024-3.072q-26.624-55.296-100.352-88.576t-176.128-33.28z" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg x={cx - 5} y={cy - 5} width={10} height={10} fill="green" viewBox="0 0 1024 1024">
-      <path d="M512 1009.984c-274.912 0-497.76-222.848-497.76-497.76s222.848-497.76 497.76-497.76c274.912 0 497.76 222.848 497.76 497.76s-222.848 497.76-497.76 497.76zM340.768 295.936c-39.488 0-71.52 32.8-71.52 73.248s32.032 73.248 71.52 73.248c39.488 0 71.52-32.8 71.52-73.248s-32.032-73.248-71.52-73.248zM686.176 296.704c-39.488 0-71.52 32.8-71.52 73.248s32.032 73.248 71.52 73.248c39.488 0 71.52-32.8 71.52-73.248s-32.032-73.248-71.52-73.248zM772.928 555.392c-18.752-8.864-40.928-0.576-49.632 18.528-40.224 88.576-120.256 143.552-208.832 143.552-85.952 0-164.864-52.64-205.952-137.376-9.184-18.912-31.648-26.592-50.08-17.28-18.464 9.408-21.216 21.472-15.936 32.64 52.8 111.424 155.232 186.784 269.76 186.784 117.984 0 217.12-70.944 269.76-186.784 8.672-19.136 9.568-31.2-9.12-40.096z" />
-    </svg>
-  );
-};
-
-export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId }) {
+export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
   const theme = useTheme();
+
+  const hasData = Array.isArray(data) && data.length > 0;
+  const [isStatusExpanded, setIsStatusExpanded] = React.useState(false);
+  const [areDetailsVisible, setAreDetailsVisible] = React.useState(false);
+
+  const chartHeight = fullScreen ? 'max(360px, calc(100vh - 320px))' : 'clamp(260px, 45vh, 400px)';
+
+  const summary = React.useMemo(() => {
+    if (!hasData) {
+      return { average: null, max: null, min: null };
+    }
+
+    const validPoints = data.filter((point) => typeof point.response === 'number' && point.response >= 0);
+    if (!validPoints.length) {
+      return { average: null, max: null, min: null };
+    }
+
+    const total = validPoints.reduce((acc, point) => acc + point.response, 0);
+    const average = Math.round((total / validPoints.length) * 10) / 10;
+    const max = Math.max(...validPoints.map((point) => point.response));
+    const min = Math.min(...validPoints.map((point) => point.response));
+
+    return { average, max, min };
+  }, [data, hasData]);
+
+  const chunkStatus = React.useCallback((rawStatus) => {
+    if (!rawStatus || typeof rawStatus !== 'string') {
+      return [];
+    }
+
+    const words = rawStatus
+      .split(/[ .]/)
+      .map((word) => word.trim())
+      .filter(Boolean);
+
+    const formatted = [];
+    for (let i = 0; i < words.length; i += 3) {
+      formatted.push(words.slice(i, i + 3).join(' '));
+    }
+
+    return formatted;
+  }, []);
+
+  const renderTooltip = React.useCallback(({ active, payload }) => {
+    if (!active || !payload || !payload.length) {
+      return null;
+    }
+
+    const { response, status, time } = payload[0].payload ?? {};
+    const statusLines = chunkStatus(status);
+    const showResponse = response !== -1 && response !== undefined;
+
+    return (
+      <Box
+        sx={{
+          px: 1.5,
+          py: 1,
+          minWidth: 200,
+          borderRadius: 2,
+          backgroundColor: alpha(theme.palette.background.paper, 0.92),
+          backdropFilter: 'blur(6px)',
+          boxShadow: '0px 12px 32px rgba(15, 23, 42, 0.18)',
+        }}
+      >
+        <Typography variant="caption" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
+          {time}
+        </Typography>
+        {showResponse && (
+          <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
+            {`${response} ms`}
+          </Typography>
+        )}
+        {statusLines.map((line, idx) => (
+          <Typography
+            variant="caption"
+            sx={{ display: 'block', color: theme.palette.text.secondary }}
+            key={`${line}-${idx}`}
+          >
+            {line}
+          </Typography>
+        ))}
+      </Box>
+    );
+  }, [chunkStatus, theme]);
+
+  const renderDot = React.useCallback(
+    ({ cx, cy, value }) => {
+      if (cx == null || cy == null) {
+        return null;
+      }
+
+      const numericValue = Number(value);
+      const successColor = theme.palette.success?.main || theme.palette.primary.main;
+      const errorColor = theme.palette.error?.main || theme.palette.warning?.main || '#d32f2f';
+      const baseColor = numericValue < 0 ? errorColor : successColor;
+
+      return (
+        <g>
+          <circle cx={cx} cy={cy} r={6} fill={alpha(baseColor, 0.18)} />
+          <circle
+            cx={cx}
+            cy={cy}
+            r={3.6}
+            fill={baseColor}
+            stroke={theme.palette.background.paper}
+            strokeWidth={1.6}
+          />
+        </g>
+      );
+    },
+    [theme]
+  );
+
+  const navButtonSx = React.useMemo(
+    () => ({
+      border: `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
+      backgroundColor: alpha(theme.palette.primary.main, 0.06),
+      transition: 'all 0.2s ease-in-out',
+      '&:hover': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.14),
+      },
+      '&.Mui-disabled': {
+        opacity: 0.3,
+        backgroundColor: alpha(theme.palette.action.disabledBackground, 0.4),
+      },
+    }),
+    [theme]
+  );
+
+  const details = React.useMemo(() => {
+    const fallbackDate = selectedDate ? selectedDate.toString() : null;
+
+    if (!hostDetail) {
+      return {
+        datasetStarted: fallbackDate,
+        packetsSent: null,
+        packetsLost: null,
+        packetLossPercent: null,
+        statusText: null,
+      };
+    }
+
+    const rawStatus = hostDetail.status
+      ?? hostDetail.monitorStatus?.status
+      ?? (typeof hostDetail.monitorStatus === 'string' ? hostDetail.monitorStatus : null);
+
+    const statusText = typeof rawStatus === 'string' ? rawStatus.trim() || null : rawStatus;
+
+    return {
+      datasetStarted: hostDetail.date ?? fallbackDate,
+      packetsSent: hostDetail.packetsSent ?? hostDetail.PacketsSent ?? null,
+      packetsLost: hostDetail.packetsLost ?? hostDetail.PacketsLost ?? null,
+      packetLossPercent: hostDetail.percentageLost ?? hostDetail.PacketsLostPercentage ?? null,
+      statusText,
+    };
+  }, [hostDetail, selectedDate]);
+
+  React.useEffect(() => {
+    setIsStatusExpanded(false);
+  }, [details.statusText]);
 
   const currentIndex = dataSets.findIndex(ds => ds.id === dataSetId);
   const canGoBack = currentIndex < dataSets.length - 1;
@@ -81,96 +187,306 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
 
   const dateString = selectedDate ? selectedDate.toString() : "Current";
 
-  /*var dateString;
-  if ( selectedDate===undefined) { 
-    dateString="Current";
-  }
-  else {
-    dateString=selectedDate.toString();
-  }*/
-
-  
-
   return (
-    <React.Fragment>
-      
-      <Title>
-        <span style={{ fontSize: '1rem', fontWeight: 500 }}>
-          <Button size="small" onClick={() => navigateDataSet(1)} disabled={!canGoBack}>
-            <ArrowBackIcon fontSize="small" />
-          </Button>
-          {`${dateString} Dataset for ${hostname}`}
-          <Button size="small" onClick={() => navigateDataSet(-1)} disabled={!canGoForward}>
-            <ArrowForwardIcon fontSize="small" />
-          </Button>
-        </span>
-      </Title>
-      <ResponsiveContainer width="99%" height={170}>
-        <LineChart
-          data={data}
-          margin={{
-            top: 6,
-            right: 10,
-            bottom: 4,
-            left: 4,
-          }}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        borderRadius: 4,
+        background: `linear-gradient(145deg, ${alpha(theme.palette.primary.light, 0.18)} 0%, ${alpha(theme.palette.background.paper, 0.92)} 45%, ${alpha(theme.palette.secondary?.light || theme.palette.primary.main, 0.16)} 100%)`,
+        p: { xs: 2, sm: 3 },
+        gap: fullScreen ? 3 : 2,
+      }}
+    >
+      <Stack spacing={fullScreen ? 2 : 1.6} sx={{ flexShrink: 0 }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={{ xs: 1.5, md: 2 }}
+          alignItems={{ xs: 'flex-start', md: 'center' }}
+          justifyContent="space-between"
         >
-          <CartesianGrid strokeDasharray="2 2" vertical={false} />
-          <Tooltip content={customTooltip} animationEasing={false} />
-          {/* Legend removed */}
-          <XAxis
-            dataKey="time"
-            stroke={theme.palette.text.secondary}
-            minTickGap={30}
-            tick={{ fontSize: 11 }}
-            interval={Math.ceil((data?.length || 1) / 6) - 1}
-            padding={{ left: 10, right: 20 }}
-            tickMargin={8}
-            allowDuplicatedCategory={false}
-            allowDataOverflow={false}
-            tickFormatter={(value, index) => {
-              // Only show the last label if it's not overlapping
-              if (index === data.length - 1 && data.length > 1) {
-                return ` ${value} `;
-              }
-              return value;
-            }}
-          />
-          <YAxis
-            stroke={theme.palette.text.secondary}
-            width={28}
-            tick={{ fontSize: 12 }}
-            allowDecimals={false}
-            domain={[0, 'auto']}
-            tickMargin={0}
-          >
-            <Label
-              angle={-90}
-              position="insideLeft"
-              style={{ textAnchor: 'middle', fill: theme.palette.text.primary, fontSize: 12, fontWeight: 600 }}
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="subtitle2" sx={{ color: alpha(theme.palette.text.primary, 0.64), letterSpacing: 0.6 }}>
+              {hostname ? `Latency for ${hostname}` : 'Latency Overview'}
+            </Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary, mt: 0.25 }}>
+              {dateString}
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <IconButton
+              size="small"
+              onClick={() => navigateDataSet(1)}
+              disabled={!canGoBack}
+              sx={navButtonSx}
+              aria-label="Previous dataset"
             >
-              ms
-            </Label>
-          </YAxis>
-          <Line
-            type="monotone"
-            dataKey="response"
-            stroke={theme.palette.primary.light}
-            dot={<CustomizedDot />}
-            strokeWidth={2}
-            isAnimationActive={false}
-          />
-          <Line
-            type="monotone"
-            dataKey="status"
-            stroke={theme.palette.primary.dark}
-            strokeWidth={1}
-            isAnimationActive={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </React.Fragment>
+              <ArrowBackIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => navigateDataSet(-1)}
+              disabled={!canGoForward}
+              sx={navButtonSx}
+              aria-label="Next dataset"
+            >
+              <ArrowForwardIcon fontSize="inherit" />
+            </IconButton>
+            <Button
+              size="small"
+              onClick={() => setAreDetailsVisible(prev => !prev)}
+              sx={{
+                ml: { xs: 0, md: 1 },
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              {areDetailsVisible ? 'Hide details' : 'Show details'}
+            </Button>
+          </Stack>
+        </Stack>
+
+        <Collapse in={areDetailsVisible} timeout="auto" unmountOnExit>
+          <Stack spacing={1.5}>
+            <Stack direction="row" spacing={1.5} flexWrap="wrap">
+              <SummaryTile label="Average" value={summary.average != null ? `${summary.average} ms` : '—'} accent={theme.palette.primary.main} />
+              <SummaryTile label="Peak" value={summary.max != null ? `${summary.max} ms` : '—'} />
+              <SummaryTile label="Best" value={summary.min != null ? `${summary.min} ms` : '—'} />
+            </Stack>
+
+            <Stack direction="row" spacing={1.5} flexWrap="wrap">
+              <InfoTile label="Dataset started" value={details.datasetStarted ?? '—'} />
+              <InfoTile label="Packets sent" value={formatCount(details.packetsSent)} />
+              <InfoTile label="Packets lost" value={formatCount(details.packetsLost)} />
+              <InfoTile label="Loss" value={formatPercentage(details.packetLossPercent)} />
+            </Stack>
+
+            {details.statusText && (
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  backgroundColor: alpha(theme.palette.info.light ?? theme.palette.primary.light, 0.12),
+                  border: `1px solid ${alpha(theme.palette.info.main ?? theme.palette.primary.main, 0.12)}`,
+                  boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
+                  px: { xs: 1.5, sm: 2 },
+                  py: { xs: 1, sm: 1.25 },
+                }}
+              >
+                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, color: alpha(theme.palette.text.secondary, 0.9) }}>
+                    Status details
+                  </Typography>
+                  <Button size="small" onClick={() => setIsStatusExpanded(prev => !prev)}>
+                    {isStatusExpanded ? 'Show less' : 'Show more'}
+                  </Button>
+                </Stack>
+                <Collapse in={isStatusExpanded} collapsedSize={52} timeout="auto">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 0.75,
+                      color: theme.palette.text.primary,
+                      whiteSpace: 'pre-line',
+                    }}
+                  >
+                    {details.statusText}
+                  </Typography>
+                </Collapse>
+              </Box>
+            )}
+          </Stack>
+        </Collapse>
+      </Stack>
+
+      <Box
+        sx={{
+          position: 'relative',
+          flexGrow: 1,
+          width: '100%',
+          height: chartHeight,
+          borderRadius: 3,
+          backgroundColor: alpha(theme.palette.background.paper, 0.78),
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          '& .recharts-tooltip-wrapper': {
+            outline: 'none',
+          },
+        }}
+      >
+        {hasData ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data}
+              margin={{
+                top: 32,
+                right: 32,
+                bottom: 16,
+                left: -4,
+              }}
+            >
+              <defs>
+                <linearGradient id="responseStroke" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor={alpha(theme.palette.primary.main, 0.9)} />
+                  <stop offset="100%" stopColor={alpha(theme.palette.secondary?.main || theme.palette.primary.dark, 0.9)} />
+                </linearGradient>
+                <linearGradient id="statusStroke" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={alpha(theme.palette.info?.main || theme.palette.primary.main, 0.7)} />
+                  <stop offset="100%" stopColor={alpha(theme.palette.info?.light || theme.palette.primary.light, 0.3)} />
+                </linearGradient>
+                <linearGradient id="responseFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={alpha(theme.palette.primary.main, 0.35)} />
+                  <stop offset="90%" stopColor={alpha(theme.palette.primary.main, 0.02)} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke={alpha(theme.palette.divider, 0.24)} strokeDasharray="4 8" vertical={false} />
+              <Tooltip content={renderTooltip} animationEasing={false} cursor={{ stroke: alpha(theme.palette.primary.main, 0.25), strokeWidth: 1 }} />
+              <XAxis
+                dataKey="time"
+                stroke={theme.palette.text.secondary}
+                minTickGap={30}
+                tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
+                axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
+                tickLine={false}
+                interval={Math.ceil((data?.length || 1) / 6) - 1}
+                padding={{ left: 10, right: 20 }}
+                tickMargin={8}
+                allowDuplicatedCategory={false}
+                allowDataOverflow={false}
+                tickFormatter={(value, index) => {
+                  // Only show the last label if it's not overlapping
+                  if (index === data.length - 1 && data.length > 1) {
+                    return ` ${value} `;
+                  }
+                  return value;
+                }}
+              />
+              <YAxis
+                stroke={theme.palette.text.secondary}
+                width={36}
+                tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
+                allowDecimals={false}
+                domain={[0, 'auto']}
+                tickMargin={0}
+                axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
+                tickLine={false}
+              >
+                <Label
+                  angle={-90}
+                  position="insideLeft"
+                  style={{ textAnchor: 'middle', fill: theme.palette.text.primary, fontSize: 12, fontWeight: 600 }}
+                >
+                  ms
+                </Label>
+              </YAxis>
+              <Area
+                type="monotone"
+                dataKey="response"
+                stroke="none"
+                fill="url(#responseFill)"
+                fillOpacity={1}
+                isAnimationActive={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="response"
+                stroke="url(#responseStroke)"
+                dot={renderDot}
+                strokeWidth={2.4}
+                activeDot={{ r: 6, stroke: alpha(theme.palette.primary.dark, 0.3), strokeWidth: 2 }}
+                isAnimationActive={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="status"
+                stroke="url(#statusStroke)"
+                strokeWidth={1.4}
+                strokeDasharray="6 8"
+                dot={false}
+                opacity={0.7}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <Typography variant="body2" sx={{ color: alpha(theme.palette.text.primary, 0.5), fontWeight: 500 }}>
+            No data available for this range
+          </Typography>
+        )}
+      </Box>
+    </Box>
   );
+}
+
+const SummaryTile = React.memo(function SummaryTile({ label, value, accent }) {
+  return (
+    <Box
+      sx={{
+        minWidth: 140,
+        px: 2,
+        py: 1.1,
+        borderRadius: 3,
+        backgroundColor: 'rgba(255,255,255,0.55)',
+        backdropFilter: 'blur(18px)',
+        border: '1px solid rgba(255,255,255,0.42)',
+        boxShadow: '0 10px 24px rgba(15, 23, 42, 0.10)',
+      }}
+    >
+      <Typography variant="caption" sx={{ color: 'text.secondary', letterSpacing: 0.6, textTransform: 'uppercase', fontWeight: 600 }}>
+        {label}
+      </Typography>
+      <Typography variant="h6" sx={{ color: accent || 'text.primary', fontWeight: 700, mt: 0.4 }}>
+        {value}
+      </Typography>
+    </Box>
+  );
+});
+
+const InfoTile = React.memo(function InfoTile({ label, value }) {
+  return (
+    <Box
+      sx={{
+        minWidth: 160,
+        px: 1.8,
+        py: 1,
+        borderRadius: 3,
+        backgroundColor: 'rgba(255,255,255,0.45)',
+        backdropFilter: 'blur(14px)',
+        border: '1px solid rgba(255,255,255,0.36)',
+        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.08)',
+      }}
+    >
+      <Typography variant="caption" sx={{ color: 'text.secondary', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+        {label}
+      </Typography>
+      <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600, mt: 0.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {value ?? '—'}
+      </Typography>
+    </Box>
+  );
+});
+
+function formatCount(value) {
+  if (value == null || Number.isNaN(Number(value))) {
+    return '—';
+  }
+
+  const numeric = Number(value);
+  if (Number.isInteger(numeric)) {
+    return numeric.toLocaleString();
+  }
+  return numeric.toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
+function formatPercentage(value) {
+  if (value == null || Number.isNaN(Number(value))) {
+    return '—';
+  }
+
+  const numeric = Number(value);
+  return `${numeric.toFixed(2)}%`;
 }
 
 export default React.memo(Chart);

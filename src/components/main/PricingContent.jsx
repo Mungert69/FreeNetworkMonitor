@@ -1,6 +1,6 @@
 // PricingContent.jsx
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';              // ⟵ removed `styled`
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,19 +17,7 @@ import LoginButton from '../login-button';
 import { getApiSubscriptionUrl, convertDate, fetchTiers, getStartSiteId } from '../dashboard/ServiceAPI';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 
-const ScrollableBox = styled(Box)(({ theme }) => ({
-  overflowY: 'auto',
-  maxHeight: '300px',
-  paddingRight: theme.spacing(1),
-  scrollBehavior: 'smooth',
-  '&::-webkit-scrollbar': { width: '6px' },
-  '&::-webkit-scrollbar-thumb': { backgroundColor: theme.palette.divider, borderRadius: '3px' },
-  maskImage: 'linear-gradient(to bottom, black calc(100% - 2em), transparent 100%)',
-  [theme.breakpoints.down('sm')]: {
-    maxHeight: '200px',
-    maskImage: 'linear-gradient(to bottom, black calc(100% - 1.5em), transparent 100%)',
-  },
-}));
+// ⟵ removed ScrollableBox
 
 function PricingContent({ noRedirect, apiUser }) {
   const theme = useTheme();
@@ -120,7 +108,12 @@ function PricingContent({ noRedirect, apiUser }) {
       </Container>
 
       <Container component="main">
-        <Grid container spacing={5} alignItems="stretch">
+        <Grid
+          container
+          spacing={5}
+          alignItems="stretch"
+          justifyContent="center"                 // ⟵ center the grid contents
+        >
           {tiers.map((tier) => (
             <Grid
               item
@@ -128,9 +121,16 @@ function PricingContent({ noRedirect, apiUser }) {
               xs={12}
               sm={tier.title === 'Enterprise' ? 12 : 6}
               md={3}
-              sx={{ display: 'flex' }}
+              sx={{ display: 'flex', justifyContent: 'center' }}   // ⟵ center each card
             >
-              <Card sx={{ width: '100%', display: 'flex', flexDirection: 'column', height: isSmallScreen ? 'auto' : 'auto' }}>
+              <Card
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: isSmallScreen ? 'auto' : 'auto',
+                }}
+              >
                 <CardHeader
                   title={tier.title}
                   subheader={tier.subheader}
@@ -151,29 +151,28 @@ function PricingContent({ noRedirect, apiUser }) {
                     <Typography variant="h6" color="text.secondary">/mo</Typography>
                   </Box>
 
-                  <ScrollableBox>
-                    <ul style={{ paddingLeft: theme.spacing(2) }}>
-                      {tier.description?.map((line) => (
-                        <Typography
-                          component="li"
-                          variant="body2"
-                          key={line}
-                          sx={{
-                            mb: 1,
-                            '&:before': {
-                              content: '"•"',
-                              color: theme.palette.primary.main,
-                              display: 'inline-block',
-                              width: '1em',
-                              marginLeft: '-1em',
-                            },
-                          }}
-                        >
-                          {line}
-                        </Typography>
-                      ))}
-                    </ul>
-                  </ScrollableBox>
+                  {/* ⟵ no more ScrollableBox; just a normal list */}
+                  <Box component="ul" sx={{ pl: theme.spacing(2), m: 0 }}>
+                    {tier.description?.map((line) => (
+                      <Typography
+                        component="li"
+                        variant="body2"
+                        key={line}
+                        sx={{
+                          mb: 1,
+                          '&:before': {
+                            content: '"•"',
+                            color: theme.palette.primary.main,
+                            display: 'inline-block',
+                            width: '1em',
+                            marginLeft: '-1em',
+                          },
+                        }}
+                      >
+                        {line}
+                      </Typography>
+                    ))}
+                  </Box>
                 </CardContent>
 
                 <CardActions sx={{ p: theme.spacing(2), borderTop: '1px solid', borderColor: 'divider' }}>

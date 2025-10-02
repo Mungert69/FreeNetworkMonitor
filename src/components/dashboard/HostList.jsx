@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Badge,
   Box,
   Button,
   IconButton,
+  TextField,
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
@@ -33,6 +34,9 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import DataSetsList from './DataSetsList';
@@ -156,6 +160,47 @@ const HostListToolbar = ({ onToggleDataSets }) => (
       <GridToolbarQuickFilter variant="outlined" size="small" placeholder="Search hosts" />
     </Box>
   </GridToolbarContainer>
+);
+
+const HostListMobileToolbar = ({
+  onToggleDataSets,
+  quickFilterValue,
+  onQuickFilterChange,
+}) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 1,
+    }}
+  >
+    <Box>
+      <Tooltip title="Select Dataset">
+        <span>
+          <IconButton
+            color="primary"
+            size="small"
+            aria-label="Select dataset"
+            onClick={onToggleDataSets}
+          >
+            <Badge color="secondary" variant="dot" overlap="circular">
+              <StorageIcon />
+            </Badge>
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
+    <TextField
+      value={quickFilterValue}
+      onChange={(event) => onQuickFilterChange(event.target.value)}
+      variant="outlined"
+      size="small"
+      placeholder="Search hosts"
+      InputProps={{
+        'aria-label': 'Search hosts',
+      }}
+    />
+  </Box>
 );
 
 export const HostList = ({
@@ -479,11 +524,220 @@ export const HostList = ({
     ],
   );
 
+  const quickFilterValue = filterModel?.quickFilterValues?.[0] ?? '';
+
+  const getEndpointTypeName = useCallback(
+    (value) => {
+      if (value === null || value === undefined || value === '') {
+        return '';
+      }
+      const normalized = `${value}`.toLowerCase();
+      const endpointType = endpointTypeMap[normalized];
+      return endpointType?.name || value || '';
+    },
+    [endpointTypeMap],
+  );
+
+  const handleQuickFilterValueChange = useCallback(
+    (value) => {
+      setFilterModel((prev) => {
+        const next = sanitizeFilterModel({
+          ...prev,
+          quickFilterValues: value ? [value] : [],
+        });
+        return filterModelsEqual(prev, next) ? prev : next;
+      });
+      setPaginationModel((prev) =>
+        prev.page === 0
+          ? prev
+          : {
+              ...prev,
+              page: 0,
+            },
+      );
+    },
+    [setFilterModel, setPaginationModel],
+  );
+
+  const filteredRows = useMemo(() => {
+    const quickValues = filterModel?.quickFilterValues ?? [];
+    const normalizedFilters = quickValues
+      .map((value) => (typeof value === 'string' ? value.trim().toLowerCase() : ''))
+      .filter((value) => value.length > 0);
+
+    if (!isSmallScreen || normalizedFilters.length === 0) {
+      return rows;
+    }
+
+    return rows.filter((row) => {
+      if (!row || typeof row !== 'object') {
+        return false;
+      }
+
+      const searchableValues = [
+        row.address,
+        row.endPointType,
+        row.monitorIPID,
+        row.appID,
+        processorMap.get(row?.appID),
+        row.packetsSent,
+        row.packetsLost,
+        row.percentageLost,
+        row.roundTripAverage,
+      ]
+        .flatMap((value) => {
+          if (value === null || value === undefined) {
+            return [];
+          }
+          if (Array.isArray(value)) {
+            return value;
+          }
+          return [value];
+        })
+        .map((value) => String(value).toLowerCase());
+
+      if (searchableValues.length === 0) {
+        return false;
+      }
+
+      return normalizedFilters.every((filterToken) =>
+        searchableValues.some((candidate) => candidate.includes(filterToken)),
+      );
+    });
+  }, [filterModel, isSmallScreen, processorMap, rows]);
+
   const handleFilterModelChange = (model) => {
     const sanitized = sanitizeFilterModel(model);
     setFilterModel((prev) => (filterModelsEqual(prev, sanitized) ? prev : sanitized));
   };
 
+  // Responsive: Show DataGrid on desktop, Card list on small screens
+  if (isSmallScreen) {
+    return (
+      <CacheProvider value={muiCache}>
+        {showDataSetsList && (
+          <DataSetsList
+            dataSets={dataSets}
+            handleSetDataSetId={handleSetDataSetId}
+            setDateStart={setDateStart}
+            setDateEnd={setDateEnd}
+            onClose={() => setShowDataSetsList(false)}
+          />
+        )}
+        <Box sx={{ width: '100%', height: '100%' }}>
+          <Box sx={{ mb: 2 }}>
+            <HostListMobileToolbar
+              onToggleDataSets={() => setShowDataSetsList((prev) => !prev)}
+              quickFilterValue={quickFilterValue}
+              onQuickFilterChange={handleQuickFilterValueChange}
+            />
+          </Box>
+          {filteredRows.length === 0 ? (
+            <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
+              No hosts match your current filters.
+            </Typography>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {filteredRows.map((row) => {
+                const endpointTypeLabel = getEndpointTypeName(row.endPointType);
+                const stats = [
+                  {
+                    label: 'Data Sent',
+                    value: formatNumber(row.packetsSent) || '—',
+                  },
+                  {
+                    label: 'Data Lost',
+                    value: formatNumber(row.packetsLost) || '—',
+                  },
+                  {
+                    label: '% Lost',
+                    value:
+                      row.percentageLost != null && row.percentageLost !== ''
+                        ? `${formatNumber(row.percentageLost)}%`
+                        : '—',
+                  },
+                  {
+                    label: 'Average ms',
+                    value: formatNumber(row.roundTripAverage) || '—',
+                  },
+                ];
+
+                return (
+                  <Card
+                    key={row?.monitorIPID ?? row?.id ?? `${row?.address ?? 'row'}-${row?.appID ?? ''}`}
+                    sx={{ mb: 1 }}
+                  >
+                    <CardContent sx={{ p: 2 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          justifyContent: 'space-between',
+                          gap: 1,
+                          mb: 1.5,
+                        }}
+                      >
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: 700, mb: 0.5 }}
+                            noWrap
+                          >
+                            {row.address}
+                          </Typography>
+                          {endpointTypeLabel && (
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                              Endpoint Type: {endpointTypeLabel}
+                            </Typography>
+                          )}
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            Monitor: {processorMap.get(row?.appID) || row?.appID || '—'}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          {columns[0].renderCell({ row })}
+                        </Box>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: 1,
+                        }}
+                      >
+                        {stats.map((stat) => (
+                          <Box
+                            key={stat.label}
+                            sx={{
+                              flex: '1 1 120px',
+                              minWidth: 120,
+                              borderRadius: 1,
+                              px: 1.25,
+                              py: 1,
+                              backgroundColor: theme.palette.grey[100],
+                            }}
+                          >
+                            <Typography variant="caption" color="text.secondary">
+                              {stat.label}
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {stat.value}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </Box>
+          )}
+        </Box>
+      </CacheProvider>
+    );
+  }
+
+  // Desktop/tablet: show DataGrid
   return (
     <CacheProvider value={muiCache}>
       {showDataSetsList && (

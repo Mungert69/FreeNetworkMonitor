@@ -12,6 +12,8 @@ import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -21,9 +23,9 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
 import ListSubheader from '@mui/material/ListSubheader';
 import Box from '@mui/material/Box';
+import Slide from '@mui/material/Slide';
 import MainListItems from './MainListItems';
 import Chart from './Chart';
-import HostDetail from './HostDetail';
 import HostList from './HostList';
 //import HostListEdit from './HostListEdit';
 import HostListEdit from './HostListEdit';
@@ -35,12 +37,17 @@ import { useMediaQuery } from '@mui/material';
 import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
-import { useTheme } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import Seo from '../Seo';
 import FadeWrapper from './FadeWrapper';
 import { ga4Event } from '../../ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 import Chat from "./Chat/Chat";
+import CloseIcon from '@mui/icons-material/Close';
+
+const FullScreenDialogTransition = React.forwardRef(function FullScreenDialogTransition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function Dashboard() {
   const publicUrl = import.meta.env.VITE_PUBLIC_URL;
@@ -50,7 +57,6 @@ export default function Dashboard() {
   const { isLoggedIn, userInfo, isFetchingUserInfo } = useFusionAuth();
   const defaultHost = { 'id': 1 };
   const [apiUser, setApiUser] = useState({});
-  const [viewInfo, setViewInfo] = useState(false);
   //const [defaultUser, setDefaultUser] = React.useState(true);
   //const [open, setOpen] = React.useState(false);
   const [chartData, setChartData] = React.useState([]);
@@ -71,8 +77,7 @@ export default function Dashboard() {
   const [processorList, setProcessorList] = React.useState([]);
   const [initViewSub, setInitViewSub] = React.useState(false);
   const [openInNewTab, setOpenInNewTab] = React.useState(false);
-  const [isChartCollapsed, setIsChartCollapsed] = useState(false);
-  const [isDetailCollapsed, setIsDetailCollapsed] = useState(false);
+  const [isChartDialogOpen, setIsChartDialogOpen] = useState(false);
   const [hostListIconText, setHostListIconText] = React.useState("Add Hosts");
   const reloadListDataRef = useRef(reloadListData);
   reloadListDataRef.current = reloadListData;
@@ -107,7 +112,7 @@ export default function Dashboard() {
     if (linkData.isHostList) {
       setDefaultSearchValue(linkData.Address);
       setToggleTable(false);
-      setViewInfo(false);
+      closeChartDialog();
       setHostListIconText("View Hosts");
     }
 
@@ -151,7 +156,7 @@ export default function Dashboard() {
     await setEditMode();
     // Reload ListData if clicking into view mode. Hide view mode if clicking into edit mode.
     if (toggleTable) {
-      setViewInfo(false);
+      closeChartDialog();
       setHostListIconText("View Hosts");
     }
     else {
@@ -163,8 +168,11 @@ export default function Dashboard() {
     console.log("Passing host data to chart:", JSON.stringify(hostData));
     // Set hostData to the selected host
     setHostData(hostData);
-    // Set viewInfo to true to show the chart.
-    setViewInfo(true);
+    setIsChartDialogOpen(true);
+  };
+
+  const closeChartDialog = () => {
+    setIsChartDialogOpen(false);
   };
 
 
@@ -409,64 +417,6 @@ export default function Dashboard() {
           }}
         >
           <Grid container spacing={isMediumOrLarger ? 4 : 2}>
-            {viewInfo &&
-              <Grid item xs={12} sm={12} md={10} lg={10}>
-                <Paper className={classes.paper } >
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} >
-                    <IconButton
-                      size="small"
-                      sx={{ mr: 1, p: 0.5 }}
-                      onClick={() => setIsChartCollapsed((prev) => !prev)}
-                      aria-label={isChartCollapsed ? "Expand Chart" : "Collapse Chart"}
-                    >
-                      {isChartCollapsed ? (
-                        <span style={{ fontSize: 14 }}>▼</span>
-                      ) : (
-                        <span style={{ fontSize: 14 }}>▲</span>
-                      )}
-                    </IconButton>
-                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1rem' }}>Chart</Typography>
-                  </Box>
-                  {!isChartCollapsed && (
-                    <Box sx={{ width: '100%', flex: 1, minWidth: 0 }}>
-                      <Chart
-                        data={chartData}
-                        selectedDate={selectedDate}
-                        hostname={hostData.address}
-                        dataSetId={dataSetId}
-                        dataSets={dataSets}
-                        handleSetDataSetId={handleSetDataSetId}
-                      />
-                    </Box>
-                  )}
-                </Paper>
-              </Grid>
-            }
-            {viewInfo &&
-              <Grid item xs={12} sm={12} md={2} lg={2} >
-                <Paper className={classes.paper}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <IconButton
-                      size="small"
-                      sx={{ mr: 1, p: 0.5 }}
-                      onClick={() => setIsDetailCollapsed((prev) => !prev)}
-                      aria-label={isDetailCollapsed ? "Expand Detail" : "Collapse Detail"}
-                    >
-                      {isDetailCollapsed ? (
-                        <span style={{ fontSize: 14 }}>▼</span>
-                      ) : (
-                        <span style={{ fontSize: 14 }}>▲</span>
-                      )}
-                    </IconButton>
-                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '1rem' }}>Detail</Typography>
-                  </Box>
-                  {!isDetailCollapsed && (
-                    <HostDetail hostData={hostData} />
-                  )}
-                </Paper>
-              </Grid>
-            }
-
             <Grid item xs={12}>
               <Paper
                 className={classes.paper}
@@ -500,6 +450,56 @@ export default function Dashboard() {
             </Grid>
           </Grid>
         </Container>
+        <Dialog
+          fullScreen
+          open={isChartDialogOpen}
+          onClose={closeChartDialog}
+          TransitionComponent={FullScreenDialogTransition}
+          PaperProps={{
+            sx: {
+              backgroundColor: theme.palette.background.default,
+              display: 'flex',
+              flexDirection: 'column',
+            },
+          }}
+        >
+          <DialogContent
+            sx={{
+              position: 'relative',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              p: { xs: 2, sm: 4 },
+            }}
+          >
+            <IconButton
+              onClick={closeChartDialog}
+              aria-label="Close chart"
+              sx={{
+                position: 'absolute',
+                top: { xs: 12, sm: 16 },
+                right: { xs: 12, sm: 16 },
+                bgcolor: alpha(theme.palette.background.paper, 0.75),
+                boxShadow: 2,
+                '&:hover': {
+                  bgcolor: alpha(theme.palette.background.paper, 0.95),
+                },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Chart
+              data={chartData}
+              selectedDate={selectedDate}
+              hostname={hostData.address}
+              dataSetId={dataSetId}
+              dataSets={dataSets}
+              handleSetDataSetId={handleSetDataSetId}
+              hostDetail={hostData}
+              fullScreen
+            />
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

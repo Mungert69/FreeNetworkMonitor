@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-import clsx from "clsx";
 import PropTypes from "prop-types";
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
 import {
   Button,
   Card,
@@ -18,28 +14,27 @@ import {
   Grid,
   Divider,
   TextField,
-  FormGroup,
   FormLabel,
-  FormHelperText,
   FormControlLabel,
   Typography,
-  colors,
   IconButton,
-  Popover
+  Popover,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  InputAdornment
 } from "@mui/material";
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
 import Message from './Message';
 import PasskeyManager from './PasskeyManager';
-import Snackbar from '@mui/material/Snackbar';
-
 import { updateApiUser, resendVerifyEmail, handleDownload } from './ServiceAPI';
 
-
-
 const Profile = ({ apiUser, siteId, getUserInfo }) => {
-
   const [state, setState] = React.useState({
-    name: apiUser.name, picture: apiUser.picture
+    name: apiUser.name,
+    picture: apiUser.picture,
   });
   const [disableEmail, setDisableEmail] = React.useState(apiUser.disableEmail);
   const [message, setMessage] = React.useState({ info: 'init' });
@@ -48,94 +43,88 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
   const { name, picture } = state;
   const [isLoading, setIsLoading] = useState(false);
 
-  // For Email Verified popover
+  // Email Verified popover
   const [anchorEl, setAnchorEl] = useState(null);
-  const handleHelpClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleHelpClose = () => {
-    setAnchorEl(null);
-  };
+  const handleHelpClick = (event) => setAnchorEl(event.currentTarget);
+  const handleHelpClose = () => setAnchorEl(null);
   const helpOpen = Boolean(anchorEl);
 
   useEffect(() => {
-    setState({
-      name: apiUser.name,
-      picture: apiUser.picture
-    });
+    setState({ name: apiUser.name, picture: apiUser.picture });
     setDisableEmail(apiUser.disableEmail);
   }, [apiUser]);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClose = () => setOpen(false);
 
   const handleSubmit = async () => {
-    const user = apiUser;
-    user.name = name;
-    user.picture = picture;
-    user.disableEmail = disableEmail;
-    var message = { text: 'Plesae wait. Saving can take up to one minute..', info: false };
-    await setMessage(message);
-    message = await updateApiUser(siteId, user);
+    const user = { ...apiUser, name, picture, disableEmail };
+    let msg = { text: 'Please wait. Saving can take up to one minute…', info: false };
+    setMessage(msg);
+    msg = await updateApiUser(siteId, user);
     await getUserInfo();
-    await setMessage(message);
-
-  }
+    setMessage(msg);
+  };
 
   const handleSubmitVerifyEmail = async () => {
-    const user = apiUser;
-    user.name = name;
-    var message = { text: 'Verfication email sent please check you inbox.', info: false };
-    await setMessage(message);
-    message = await resendVerifyEmail(siteId, user);
-    await setMessage(message);
-
-  }
-
-  const handleChangeText = (event) => {
-    setState({
-      ...state,
-      [event.target.name]: event.target.value,
-    });
-  };
-  const handleChangePicture = (event) => {
-    setState({
-      ...state,
-      [event.target.name]: event.target.value,
-    });
-  };
-  const handleChangeBool = (event) => {
-    setDisableEmail(event.target.checked);
+    const user = { ...apiUser, name };
+    let msg = { text: 'Verification email sent. Please check your inbox.', info: false };
+    setMessage(msg);
+    msg = await resendVerifyEmail(siteId, user);
+    setMessage(msg);
   };
 
+  const handleChangeText = (e) =>
+    setState({ ...state, [e.target.name]: e.target.value });
+  const handleChangePicture = (e) =>
+    setState({ ...state, [e.target.name]: e.target.value });
+  const handleChangeBool = (e) => setDisableEmail(e.target.checked);
+
+  // Desktop column widths
+  const LONG = 8;   // long text fields
+  const SHORT = 4;  // short fields or controls
+
+  // Shared style so long fields wrap nicely with no inner scrollbars
+  const longFieldSx = {
+    '& .MuiInputBase-input': {
+      fontFamily: 'monospace',
+      whiteSpace: 'pre-wrap',
+      overflowWrap: 'anywhere',
+      wordBreak: 'break-word',
+    },
+  };
 
   return (
     <>
       <Message message={message} />
+
+      {/* Download dialog (unchanged) */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{"Download Ready"}</DialogTitle>
+        <DialogTitle>Download Ready</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Your file is ready to download. Click the link below to start the download.
           </DialogContentText>
-          <DialogActions>
-            <Button onClick={handleClose}>Close</Button>
-            <Button href={downloadLink} target="_blank" rel="noopener noreferrer" color="primary">
-              Download File
-            </Button>
-          </DialogActions>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+          <Button href={downloadLink} target="_blank" rel="noopener noreferrer" color="primary">
+            Download File
+          </Button>
+        </DialogActions>
       </Dialog>
-      <FormLabel component="legend">View and update your profile</FormLabel>
 
-      <Card >
+      <FormLabel component="legend" sx={{ display: 'block', mb: 1 }}>
+        View and update your profile
+      </FormLabel>
 
+      {/* Fill parent dialog width */}
+      <Card sx={{ width: '100%' }}>
         <CardHeader />
         <Divider />
         <CardContent>
-          <Grid container spacing={4}>
-            <Grid item md={12} xs={12}>
+          <Grid container spacing={3} alignItems="flex-start">
+            {/* Row 1: short + long */}
+            <Grid item xs={12} md={SHORT}>
               <TextField
                 fullWidth
                 helperText={!name ? "Edit your name" : ""}
@@ -147,7 +136,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
                 onChange={handleChangeText}
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item xs={12} md={LONG}>
               <TextField
                 fullWidth
                 helperText={!picture ? "Edit your Picture Url" : ""}
@@ -156,157 +145,165 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
                 value={picture}
                 variant="outlined"
                 onChange={handleChangePicture}
+                multiline
+                minRows={2}
+                sx={longFieldSx}
               />
             </Grid>
 
-            <Grid item md={6} xs={12}>
-              {apiUser.email_verified ? (
-                <FormControlLabel sx={{ display: 'flex', alignItems: 'center' }}
-                  align='center'
-                  control={
-                    <Checkbox icon={<NotificationsActiveIcon />}
-                      checkedIcon={<NotificationsOffIcon />} checked={disableEmail} onChange={handleChangeBool} />
-                  }
-                  label="Send email notifications"
-                />
-              ) : (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="warning"
-                  onClick={handleSubmitVerifyEmail}
-                >
-                  Resend verification email
-                </Button>
-              )}
-            </Grid>
-
-
-            <Grid item md={9} xs={12}>
+            {/* Row 2: long + short */}
+            <Grid item xs={12} md={LONG}>
               <TextField
                 fullWidth
                 label="Email Address"
                 value={apiUser.email}
                 variant="outlined"
-                disabled={true}
+                disabled
+                multiline
+                minRows={2}
+                sx={longFieldSx}
               />
             </Grid>
-
-            <Grid item md={3} xs={12} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Grid item xs={12} md={SHORT}>
               <TextField
                 fullWidth
                 label="Email Verified"
-                value={apiUser.email_verified}
+                value={apiUser.email_verified ? "Yes" : "No"}
                 variant="outlined"
-                disabled={true}
+                disabled
                 error={!apiUser.email_verified}
-                sx={!apiUser.email_verified ? {
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: theme => theme.palette.error.main,
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: theme => theme.palette.error.main,
-                  },
-                  '& .MuiInputBase-input.Mui-disabled': {
-                    WebkitTextFillColor: theme => theme.palette.error.main,
-                  }
-                } : {}}
+                InputProps={{
+                  endAdornment: !apiUser.email_verified ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="Why verify email?"
+                        onClick={handleHelpClick}
+                        edge="end"
+                        size="small"
+                      >
+                        <HelpOutlineIcon color="error" />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : null
+                }}
+                sx={(theme) =>
+                  !apiUser.email_verified
+                    ? {
+                        '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                          borderColor: theme.palette.error.main,
+                        },
+                        '& .MuiInputLabel-root': { color: theme.palette.error.main },
+                        '& .MuiInputBase-input.Mui-disabled': {
+                          WebkitTextFillColor: theme.palette.error.main,
+                        },
+                      }
+                    : {}
+                }
               />
-              {!apiUser.email_verified && (
-                <>
-                  <IconButton
-                    aria-label="Why verify email?"
-                    onClick={handleHelpClick}
-                    size="small"
-                    sx={{ ml: 1 }}
-                  >
-                    <HelpOutlineIcon color="error" />
-                  </IconButton>
-                  <Popover
-                    open={helpOpen}
-                    anchorEl={anchorEl}
-                    onClose={handleHelpClose}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                  >
-                    <Typography sx={{ p: 2, maxWidth: 220 }}>
-                      You must verify your email to receive alerts.
-                    </Typography>
-                  </Popover>
-                </>
-              )}
+              <Popover
+                open={helpOpen}
+                anchorEl={anchorEl}
+                onClose={handleHelpClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <Typography sx={{ p: 2, maxWidth: 260 }}>
+                  You must verify your email to receive alerts.
+                </Typography>
+              </Popover>
             </Grid>
-            <Grid item md={9} xs={12}>
+
+            {/* Row 3: long + short */}
+            <Grid item xs={12} md={LONG}>
               <TextField
                 fullWidth
                 label="User ID"
                 value={apiUser.userID}
                 variant="outlined"
-                disabled={true}
+                disabled
+                multiline
+                minRows={2}
+                sx={longFieldSx}
               />
             </Grid>
-            <Grid item md={3} xs={12}>
+            <Grid item xs={12} md={SHORT}>
               <TextField
                 fullWidth
-                label=" Account Type"
+                label="Account Type"
                 value={apiUser.accountType}
                 variant="outlined"
-                disabled={true}
+                disabled
               />
             </Grid>
-            <Grid item md={9} xs={12}>
+
+            {/* Row 4: long + short (toggle / action) */}
+            <Grid item xs={12} md={LONG}>
               <TextField
                 fullWidth
                 label="Logon Server"
                 value={apiUser.logonServer}
                 variant="outlined"
-                disabled={true}
+                disabled
+                multiline
+                minRows={2}
+                sx={longFieldSx}
               />
             </Grid>
-            <Grid item md={3} xs={12}>
-              <TextField
-                fullWidth
-                label="Host Limit"
-                value={apiUser.hostLimit}
-                variant="outlined"
-                disabled={true}
-              />
+            <Grid item xs={12} md={SHORT} sx={{ display: 'flex', alignItems: 'center' }}>
+              {apiUser.email_verified ? (
+                <FormControlLabel
+                  sx={{ mt: { xs: 0.5, md: 0.5 } }}
+                  control={
+                    <Checkbox
+                      icon={<NotificationsActiveIcon />}
+                      checkedIcon={<NotificationsOffIcon />}
+                      checked={disableEmail}
+                      onChange={handleChangeBool}
+                    />
+                  }
+                  label="Send email notifications"
+                />
+              ) : (
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="warning"
+                  onClick={handleSubmitVerifyEmail}
+                  fullWidth
+                >
+                  Resend verification email
+                </Button>
+              )}
             </Grid>
-
           </Grid>
-          {/* 🔑 New Passkey section inside the same CardContent */}
+
           <Divider sx={{ my: 3 }} />
-          <PasskeyManager siteId={siteId}/>
+          <PasskeyManager siteId={siteId} />
         </CardContent>
+
         <Divider />
         <CardActions>
-          <Grid container spacing={2} justifyContent="space-between">
-            <Grid item xs={6}>
-              <Button
-                fullWidth
-                type="submit"
-                variant="contained"
-                onClick={handleSubmit}
-              >
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Button fullWidth type="submit" variant="contained" onClick={handleSubmit}>
                 Save Changes
               </Button>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <Button
                 fullWidth
                 type="button"
                 variant="contained"
-                onClick={() => handleDownload(siteId, setMessage, setDownloadLink, setOpen, setIsLoading)}
+                onClick={() =>
+                  handleDownload(siteId, setMessage, setDownloadLink, setOpen, setIsLoading)
+                }
                 disabled={isLoading}
               >
                 {isLoading ? 'Processing...' : 'Generate Data Download'}
               </Button>
             </Grid>
-          </Grid></CardActions>
+          </Grid>
+        </CardActions>
       </Card>
     </>
   );
@@ -314,7 +311,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
 
 Profile.propTypes = {
   className: PropTypes.string,
-  apiUser: PropTypes.object.isRequired
+  apiUser: PropTypes.object.isRequired,
 };
 
 export default React.memo(Profile);
