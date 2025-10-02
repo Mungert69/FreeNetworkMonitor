@@ -3,6 +3,8 @@ import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import { server } from './src/test-utils/msw/server';
 
+vi.mock('@mui/x-data-grid/esm/index.css', () => ({}), { virtual: true });
+
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' });
 });

@@ -45,6 +45,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),  // Correct alias resolution
+      ...(isVitest
+        ? {
+            '@mui/x-data-grid/esm/index.css': path.resolve(
+              __dirname,
+              'src/test-utils/mocks/emptyCss.js',
+            ),
+          }
+        : {}),
     },
   },
   base: '/',  // Ensures React Router works in Vite
@@ -57,5 +65,8 @@ export default defineConfig({
     css: true,
     globals: true,
     restoreMocks: true,
+    deps: {
+      inline: ['@mui/x-data-grid'],
+    },
   },
 });
