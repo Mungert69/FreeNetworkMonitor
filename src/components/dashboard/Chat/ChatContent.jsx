@@ -204,8 +204,8 @@ const ChatContent = ({
                 padding: theme.spacing(1),
                 borderRadius: theme.shape.borderRadius / 3,
                 display: 'flex',
-                alignItems: 'center',
-                gap: 1,
+                alignItems: 'center', // Ensure vertical alignment
+                gap: 1, // Slightly more space between text and icons
                 flexWrap: { xs: 'wrap', md: 'nowrap' },
               }}
             >
@@ -215,6 +215,8 @@ const ChatContent = ({
                   fontWeight: 600,
                   flexGrow: 1,
                   minWidth: 0,
+                  display: 'flex',
+                  alignItems: 'center', // Vertically center text with icons
                 }}
               >
                 Network Monitor Assistant ({llmRunnerType})
@@ -223,20 +225,21 @@ const ChatContent = ({
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
+                  gap: 1, // Slightly more space between icons
                   flexWrap: 'wrap',
-                  justifyContent: { xs: 'space-between', md: 'flex-end' },
+                  justifyContent: 'flex-end' ,
                   width: { xs: '100%', md: 'auto' },
+                  minHeight: 0,
                 }}
               >
-                <IconButton onClick={saveFeedback} color="inherit" disabled={!isReady}>
+                <IconButton onClick={saveFeedback} color="inherit" disabled={!isReady} size="small" sx={{ p: 0.5 }}>
                   <Badge color="secondary">
                     <Tooltip title="Save" TransitionComponent={Zoom}>
                       <SaveIcon />
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                <IconButton onClick={toggleLlmRunnerType} color="inherit" disabled={isToggleDisabled}>
+                <IconButton onClick={toggleLlmRunnerType} color="inherit" disabled={isToggleDisabled} size="small" sx={{ p: 0.5 }}>
                   <Badge color="secondary">
                     <Tooltip title="Toggle LLM Type" TransitionComponent={Zoom}>
                       <SwapHorizIcon />
@@ -248,6 +251,8 @@ const ChatContent = ({
                     onClick={toggleDrawer(true)}
                     color="inherit"
                     disabled={!isReady}
+                    size="small"
+                    sx={{ p: 0.5 }}
                   >
                     <Badge color="secondary">
                       <Tooltip title="Open Links" TransitionComponent={Zoom}>
@@ -256,7 +261,7 @@ const ChatContent = ({
                     </Badge>
                   </IconButton>
                 )}
-                <IconButton onClick={toggleExpand} color="inherit">
+                <IconButton onClick={toggleExpand} color="inherit" size="small" sx={{ p: 0.5 }}>
                   <Badge color="secondary">
                     <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
                       {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
@@ -266,7 +271,9 @@ const ChatContent = ({
                 <IconButton
                   onClick={() => resetSessionId()}
                   color="inherit"
+                  size="small"
                   sx={{
+                    p: 0.5,
                     '&:hover': {
                       backgroundColor: 'rgba(255,255,255,0.12)',
                     }
@@ -282,6 +289,8 @@ const ChatContent = ({
                   onClick={toggleAudio}
                   color="inherit"
                   aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+                  size="small"
+                  sx={{ p: 0.5 }}
                 >
                   <Badge color="secondary">
                     <Tooltip title={isMuted ? "Unmute Audio" : "Mute Audio"} TransitionComponent={Zoom}>
@@ -294,6 +303,8 @@ const ChatContent = ({
                   onClick={toggleHistory}
                   color="inherit"
                   aria-label="History"
+                  size="small"
+                  sx={{ p: 0.5 }}
                 >
                   <Badge color="secondary">
                     <Tooltip title="History" TransitionComponent={Zoom}>
@@ -301,7 +312,7 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                <IconButton onClick={() => closeChat()} color="inherit">
+                <IconButton onClick={() => closeChat()} color="inherit" size="small" sx={{ p: 0.5 }}>
                   <Badge color="secondary">
                     <Tooltip title="Hide Assistant" TransitionComponent={Zoom}>
                       <CloseIcon />
