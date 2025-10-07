@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense, useCallback } from "react";
 import clsx from 'clsx';
 
 import Drawer from '@mui/material/Drawer';
@@ -92,11 +92,40 @@ export default function Dashboard() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatKey, setChatKey] = useState(0);
 
-  const toggleChatView = () => {
-    setIsChatOpen(!isChatOpen);
-  };
+  const toggleChatView = useCallback(() => {
+    setIsChatOpen((prev) => !prev);
+  }, []);
 
-  const handleHostLinkClick = (linkData) => {
+  const handleSetDataSetId = useCallback((id, date) => {
+    setDataSetId(id);
+    setSelectedDate(date);
+  }, []);
+
+  const closeChartDialog = useCallback(() => {
+    setIsChartDialogOpen(false);
+  }, []);
+
+  const clickViewChart = useCallback((hostData) => {
+    console.log("Passing host data to chart:", JSON.stringify(hostData));
+    setHostData(hostData);
+    setIsChartDialogOpen(true);
+  }, []);
+
+  const resetHostAlert = useCallback(
+    async (id) => {
+      await resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
+    },
+    [siteId, reloadListData, apiUser],
+  );
+
+  const resetPredictAlert = useCallback(
+    async (id) => {
+      await resetPredictAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
+    },
+    [siteId, reloadListData, apiUser],
+  );
+
+  const handleHostLinkClick = useCallback((linkData) => {
     if (linkData.isHostData) {
 
       const hostData = { 'id': linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID': linkData.UserID };
@@ -119,7 +148,7 @@ export default function Dashboard() {
     // TODO: Implement the logic to display host-specific data
     // You could potentially change component state to show the chart or the details
     //console.log("Host Link Clicked with host data:", JSON.stringify(hostData));
-  };
+  }, [handleSetDataSetId, clickViewChart, closeChartDialog]);
 
   const getUserInfo = async () => {
 
@@ -127,17 +156,6 @@ export default function Dashboard() {
     await setApiUser(apiUser);
     console.log(" Current User is " + JSON.stringify(apiUser));
   }
-  const handleSetDataSetId = (id, date) => {
-    // change the data set id
-    setDataSetId(id);
-    setSelectedDate(date);
-  };
-  const resetHostAlert = async (id) => {
-    await resetAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
-  };
-  const resetPredictAlert = async (id) => {
-    await resetPredictAlertApiCall(id, siteId, setReloadListData, reloadListData, apiUser);
-  };
   const setEditMode = async () => {
     setDefaultSearchValue('');
     setToggleTable(toggleTable => !toggleTable);
@@ -164,16 +182,6 @@ export default function Dashboard() {
       setHostListIconText("Add Hosts");
     }
   }
-  const clickViewChart = (hostData) => {
-    console.log("Passing host data to chart:", JSON.stringify(hostData));
-    // Set hostData to the selected host
-    setHostData(hostData);
-    setIsChartDialogOpen(true);
-  };
-
-  const closeChartDialog = () => {
-    setIsChartDialogOpen(false);
-  };
 
 
   useEffect(() => {
@@ -437,6 +445,8 @@ export default function Dashboard() {
                       resetPredictAlert={resetPredictAlert}
                       processorList={processorList}
                       dataSets={dataSets}
+                      dataSetId={dataSetId}
+                      selectedDate={selectedDate}
                       handleSetDataSetId={handleSetDataSetId}
                       setDateStart={setDateStart}
                       setDateEnd={setDateEnd}

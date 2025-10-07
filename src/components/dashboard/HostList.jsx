@@ -8,7 +8,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import StorageIcon from '@mui/icons-material/Storage';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -25,6 +25,8 @@ import NmapIcon from '@mui/icons-material/Search';
 import NmapVulnIcon from '@mui/icons-material/BugReport';
 import CrawlSiteIcon from '@mui/icons-material/Public';
 import HugIcon from '@mui/icons-material/AccessAlarm';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {
   DataGrid,
   GridToolbarColumnsButton,
@@ -41,6 +43,7 @@ import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import DataSetsList from './DataSetsList';
 import { fetchEndpointTypes } from './ServiceAPI';
+import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 
 const muiCache = createCache({
   key: 'mui',
@@ -124,7 +127,15 @@ const sanitizeFilterModel = (model) => ({
     : [],
 });
 
-const HostListToolbar = ({ onToggleDataSets }) => (
+const HostListToolbar = ({
+  onToggleDataSets,
+  onNavigateBack,
+  onNavigateForward,
+  canGoBack,
+  canGoForward,
+  dataRangeLabel,
+  navButtonSx,
+}) => (
   <GridToolbarContainer
     sx={{
       display: 'flex',
@@ -136,7 +147,27 @@ const HostListToolbar = ({ onToggleDataSets }) => (
       px: 1,
     }}
   >
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.75,
+        flexWrap: 'wrap',
+      }}
+    >
+      <Tooltip title="Previous dataset">
+        <span>
+          <IconButton
+            size="small"
+            aria-label="Previous dataset"
+            onClick={onNavigateBack}
+            disabled={!canGoBack}
+            sx={navButtonSx}
+          >
+            <ArrowBackIcon fontSize="inherit" />
+          </IconButton>
+        </span>
+      </Tooltip>
       <Tooltip title="Select Dataset">
         <span>
           <IconButton
@@ -151,6 +182,32 @@ const HostListToolbar = ({ onToggleDataSets }) => (
           </IconButton>
         </span>
       </Tooltip>
+      <Tooltip title="Next dataset">
+        <span>
+          <IconButton
+            size="small"
+            aria-label="Next dataset"
+            onClick={onNavigateForward}
+            disabled={!canGoForward}
+            sx={navButtonSx}
+          >
+            <ArrowForwardIcon fontSize="inherit" />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Typography
+        variant="body2"
+        sx={{
+          fontWeight: 600,
+          color: 'text.secondary',
+          maxWidth: 220,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {dataRangeLabel}
+      </Typography>
     </Box>
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
       <GridToolbarColumnsButton />
@@ -166,6 +223,12 @@ const HostListMobileToolbar = ({
   onToggleDataSets,
   quickFilterValue,
   onQuickFilterChange,
+  onNavigateBack,
+  onNavigateForward,
+  canGoBack,
+  canGoForward,
+  dataRangeLabel,
+  navButtonSx,
 }) => (
   <Box
     sx={{
@@ -174,7 +237,27 @@ const HostListMobileToolbar = ({
       gap: 1,
     }}
   >
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 0.75,
+      }}
+    >
+      <Tooltip title="Previous dataset">
+        <span>
+          <IconButton
+            size="small"
+            aria-label="Previous dataset"
+            onClick={onNavigateBack}
+            disabled={!canGoBack}
+            sx={navButtonSx}
+          >
+            <ArrowBackIcon fontSize="inherit" />
+          </IconButton>
+        </span>
+      </Tooltip>
       <Tooltip title="Select Dataset">
         <span>
           <IconButton
@@ -189,6 +272,29 @@ const HostListMobileToolbar = ({
           </IconButton>
         </span>
       </Tooltip>
+      <Tooltip title="Next dataset">
+        <span>
+          <IconButton
+            size="small"
+            aria-label="Next dataset"
+            onClick={onNavigateForward}
+            disabled={!canGoForward}
+            sx={navButtonSx}
+          >
+            <ArrowForwardIcon fontSize="inherit" />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 600,
+          color: 'text.secondary',
+          maxWidth: '100%',
+        }}
+      >
+        {dataRangeLabel}
+      </Typography>
     </Box>
     <TextField
       value={quickFilterValue}
@@ -211,6 +317,8 @@ export const HostList = ({
   resetPredictAlert,
   processorList,
   dataSets,
+  dataSetId,
+  selectedDate,
   handleSetDataSetId,
   setDateStart,
   setDateEnd,
@@ -220,6 +328,37 @@ export const HostList = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [showDataSetsList, setShowDataSetsList] = useState(false);
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
+
+  const {
+    currentDataSet,
+    canGoBack,
+    canGoForward,
+    navigateDataSet,
+  } = useDataSetNavigation(dataSets, dataSetId, handleSetDataSetId);
+
+  const selectedRangeLabel = useMemo(
+    () => formatSelectedDataSetLabel(selectedDate, currentDataSet),
+    [selectedDate, currentDataSet],
+  );
+
+  const handleNavigateBack = useCallback(() => navigateDataSet(1), [navigateDataSet]);
+  const handleNavigateForward = useCallback(() => navigateDataSet(-1), [navigateDataSet]);
+
+  const navButtonSx = useMemo(
+    () => ({
+      border: `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
+      backgroundColor: alpha(theme.palette.primary.main, 0.06),
+      transition: 'all 0.2s ease-in-out',
+      '&:hover': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.14),
+      },
+      '&.Mui-disabled': {
+        opacity: 0.3,
+        backgroundColor: alpha(theme.palette.action.disabledBackground, 0.4),
+      },
+    }),
+    [theme],
+  );
 
   const storageKey = useMemo(
     () => `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`,
@@ -630,6 +769,12 @@ export const HostList = ({
               onToggleDataSets={() => setShowDataSetsList((prev) => !prev)}
               quickFilterValue={quickFilterValue}
               onQuickFilterChange={handleQuickFilterValueChange}
+              onNavigateBack={handleNavigateBack}
+              onNavigateForward={handleNavigateForward}
+              canGoBack={canGoBack}
+              canGoForward={canGoForward}
+              dataRangeLabel={selectedRangeLabel}
+              navButtonSx={navButtonSx}
             />
           </Box>
           {filteredRows.length === 0 ? (
@@ -780,7 +925,17 @@ export const HostList = ({
           }
           showToolbar
           slots={{ toolbar: HostListToolbar }}
-          slotProps={{ toolbar: { onToggleDataSets: () => setShowDataSetsList((prev) => !prev) } }}
+          slotProps={{
+            toolbar: {
+              onToggleDataSets: () => setShowDataSetsList((prev) => !prev),
+              onNavigateBack: handleNavigateBack,
+              onNavigateForward: handleNavigateForward,
+              canGoBack,
+              canGoForward,
+              dataRangeLabel: selectedRangeLabel,
+              navButtonSx,
+            },
+          }}
           sx={{
             border: 'none',
             '& .MuiDataGrid-columnHeaders': {

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Grid, ListItem, ListItemIcon, ListItemText, Tooltip, Paper } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CloseIcon from '@mui/icons-material/Close';
-import { IconButton} from '@mui/material';
+import { IconButton } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { formatDataSetLabel } from './datasetNavigation';
 
 export function DataSetsList({ dataSets, handleSetDataSetId, setDateStart, setDateEnd, onClose }) {
   const [startDate, setStartDate] = useState(null);
@@ -50,22 +51,25 @@ export function DataSetsList({ dataSets, handleSetDataSetId, setDateStart, setDa
         </IconButton>
 
       <Grid container spacing={1}>
-        {dataSets.map((data) => (
-          <Grid item xs={12} sm={6} md={4} key={data.id}>
-            <ListItem button onClick={() => handleSetDataSetId(data.id, data.date)} sx={{ py: 0.5 }}>
-              <Tooltip title={data.id === 0 ? 'Current' : data.date}>
-                <ListItemIcon>
-                  <AssignmentIcon fontSize='small' />
-                </ListItemIcon>
-              </Tooltip>
-              <Tooltip title="View Data Set">
-                <span>
-                  {data.id === 0 ? <ListItemText secondary='Current' /> : <ListItemText secondary={data.date} />}
-                </span>
-              </Tooltip>
-            </ListItem>
-          </Grid>
-        ))}
+        {dataSets.map((data) => {
+          const label = formatDataSetLabel(data);
+          return (
+            <Grid item xs={12} sm={6} md={4} key={data.id}>
+              <ListItem button onClick={() => handleSetDataSetId(data.id, data.date)} sx={{ py: 0.5 }}>
+                <Tooltip title={label}>
+                  <ListItemIcon>
+                    <AssignmentIcon fontSize='small' />
+                  </ListItemIcon>
+                </Tooltip>
+                <Tooltip title="View Data Set">
+                  <span>
+                    <ListItemText secondary={label} />
+                  </span>
+                </Tooltip>
+              </ListItem>
+            </Grid>
+          );
+        })}
       </Grid>
     </Paper>
   );

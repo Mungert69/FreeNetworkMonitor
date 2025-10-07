@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import Collapse from '@mui/material/Collapse';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 
 export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
   const theme = useTheme();
@@ -173,19 +174,14 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
     setIsStatusExpanded(false);
   }, [details.statusText]);
 
-  const currentIndex = dataSets.findIndex(ds => ds.id === dataSetId);
-  const canGoBack = currentIndex < dataSets.length - 1;
-  const canGoForward = currentIndex > 0;
+  const {
+    currentDataSet,
+    canGoBack,
+    canGoForward,
+    navigateDataSet,
+  } = useDataSetNavigation(dataSets, dataSetId, handleSetDataSetId);
 
-  const navigateDataSet = (step) => {
-    const newIndex = currentIndex + step;
-    if (newIndex >= 0 && newIndex < dataSets.length) {
-      const newDataSetId = dataSets[newIndex].id;
-      handleSetDataSetId(newDataSetId, dataSets[newIndex].date);
-    }
-  };
-
-  const dateString = selectedDate ? selectedDate.toString() : "Current";
+  const dateString = formatSelectedDataSetLabel(selectedDate, currentDataSet);
 
   return (
     <Box
