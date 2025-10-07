@@ -123,4 +123,46 @@ describe('HostListEdit', () => {
       expect(screen.queryByTestId('help-dialog')).not.toBeInTheDocument();
     });
   });
+
+  it('places a newly added host at the top of the grid', async () => {
+    const newHostRow = {
+      id: 202,
+      address: 'newhost.com',
+      endPointType: 'HTTP',
+      timeout: '500',
+      port: '443',
+      enabled: false,
+      appID: 'A1',
+    };
+
+    fetchEditHostData.mockImplementation(async () => {
+      if (addHostApi.mock.calls.length > 0) {
+        return [...baseHostRows, newHostRow];
+      }
+      return baseHostRows;
+    });
+
+    renderComponent();
+
+    expect(await screen.findByText('example.com')).toBeInTheDocument();
+
+    const addButton = await screen.findByRole('button', { name: /add host/i });
+    fireEvent.click(addButton);
+
+    await waitFor(() => {
+      expect(addHostApi).toHaveBeenCalledTimes(1);
+    });
+
+    expect(await screen.findByText('newhost.com')).toBeInTheDocument();
+
+    const saveButton = await screen.findByRole('button', { name: /save host list/i });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(saveHostData).toHaveBeenCalledTimes(1);
+    });
+
+    const [, payload] = saveHostData.mock.calls[0];
+    expect(payload[0]).toMatchObject({ address: 'newhost.com' });
+  });
 });

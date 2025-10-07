@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Badge,
   Box,
@@ -180,6 +180,77 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
     () => persistedState?.paginationModel ?? { pageSize: 25, page: 0 },
   );
 
+  const pendingAdditionRef = useRef(false);
+  const lastKnownRowIdsRef = useRef(new Set());
+  const recentlyAddedRowIdsRef = useRef(new Set());
+
+  const getRowIdentifier = useCallback(
+    (row) =>
+      row?.id ??
+      row?.monitorIPID ??
+      `${row?.address ?? 'row'}-${row?.appID ?? ''}`,
+    [],
+  );
+
+  const arrangeRowsForDisplay = useCallback(
+    (incomingRows) => {
+      const rowsArray = Array.isArray(incomingRows) ? incomingRows : [];
+      const previousIds = lastKnownRowIdsRef.current ?? new Set();
+      const nextIds = new Set();
+      const prioritizedIds = new Set(recentlyAddedRowIdsRef.current ?? []);
+      const pendingBeforeProcessing = pendingAdditionRef.current;
+      const newlyDetectedIds = [];
+
+      rowsArray.forEach((row) => {
+        const rowId = getRowIdentifier(row);
+        nextIds.add(rowId);
+        if (pendingBeforeProcessing && !previousIds.has(rowId)) {
+          newlyDetectedIds.push(rowId);
+        }
+      });
+
+      if (pendingBeforeProcessing) {
+        if (newlyDetectedIds.length > 0) {
+          newlyDetectedIds.forEach((id) => prioritizedIds.add(id));
+        } else if (rowsArray.length > 1) {
+          const lastRowId = getRowIdentifier(rowsArray[rowsArray.length - 1]);
+          prioritizedIds.add(lastRowId);
+        }
+      }
+
+      const prioritizedRows = [];
+      const otherRows = [];
+
+      rowsArray.forEach((row) => {
+        const rowId = getRowIdentifier(row);
+        if (prioritizedIds.has(rowId)) {
+          prioritizedRows.push(row);
+        } else {
+          otherRows.push(row);
+        }
+      });
+
+      const hasPrioritizedRows = prioritizedRows.length > 0;
+      const reorderedRows = hasPrioritizedRows ? [...prioritizedRows, ...otherRows] : rowsArray;
+      const newRowsAdded = pendingBeforeProcessing && hasPrioritizedRows;
+
+      if (hasPrioritizedRows && pendingBeforeProcessing) {
+        recentlyAddedRowIdsRef.current = prioritizedIds;
+      } else {
+        recentlyAddedRowIdsRef.current = new Set();
+      }
+
+      lastKnownRowIdsRef.current = nextIds;
+      pendingAdditionRef.current = false;
+
+      return {
+        rows: reorderedRows,
+        newRowsAdded,
+      };
+    },
+    [getRowIdentifier],
+  );
+
   useEffect(() => {
     if (!defaultSearchValue) {
       return;
@@ -226,16 +297,31 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         }
 
         if (hostData) {
-          setData(hostData);
+          const { rows: adjustedRows, newRowsAdded } = arrangeRowsForDisplay(hostData);
+          setData(adjustedRows);
+          if (newRowsAdded) {
+            setSortModel((prevModel) => (Array.isArray(prevModel) && prevModel.length === 0
+              ? prevModel
+              : []));
+          }
+          if (newRowsAdded) {
+            setPaginationModel((prevModel) =>
+              prevModel?.page === 0 ? prevModel : { ...prevModel, page: 0 },
+            );
+          }
+        } else {
+          const { rows: adjustedRows } = arrangeRowsForDisplay([]);
+          setData(adjustedRows);
         }
       } catch (error) {
         console.error('Error fetching host list data', error);
         setMessage({ text: 'Failed to fetch data.', success: false, info: false });
+        pendingAdditionRef.current = false;
       }
     };
 
     fetchData();
-  }, [resetToggle, siteId, userInfo]);
+  }, [arrangeRowsForDisplay, resetToggle, siteId, userInfo]);
 
   const processorMap = useMemo(() => {
     const map = new Map();
@@ -349,6 +435,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
       setMessage({ text: 'Please save before adding another host.', success: false });
       return;
     }
+    pendingAdditionRef.current = true;
     setDisplayEdit(false);
     setMessage({ text: 'Please wait...', info: true });
     try {
@@ -358,6 +445,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
     } catch (error) {
       console.error('Error adding host', error);
       setMessage({ text: 'Failed to add host.', success: false, info: false });
+      pendingAdditionRef.current = false;
     } finally {
       setDisplayEdit(true);
     }
