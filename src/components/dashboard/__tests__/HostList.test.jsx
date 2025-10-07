@@ -46,7 +46,13 @@ const baseProps = {
   clickViewChart: vi.fn(),
   resetHostAlert: vi.fn(),
   resetPredictAlert: vi.fn(),
-  dataSets: [{ id: 7, name: 'Weekly' }],
+  dataSets: [
+    { id: 2, date: '2025-01-04 08:00' },
+    { id: 1, date: '2025-01-03 08:00' },
+    { id: 0, date: undefined },
+  ],
+  dataSetId: 1,
+  selectedDate: '2025-01-03 08:00',
   handleSetDataSetId: vi.fn(),
   setDateStart: vi.fn(),
   setDateEnd: vi.fn(),
@@ -130,5 +136,20 @@ describe('HostList', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('datasets-modal')).not.toBeInTheDocument();
     });
+  });
+
+  it('navigates between datasets using toolbar controls', async () => {
+    renderHostList();
+
+    expect(screen.getAllByText('2025-01-03 08:00')[0]).toBeInTheDocument();
+
+    const previousButton = screen.getByLabelText(/previous dataset/i, { selector: 'button' });
+    const nextButton = screen.getByLabelText(/next dataset/i, { selector: 'button' });
+
+    fireEvent.click(previousButton);
+    fireEvent.click(nextButton);
+
+    expect(baseProps.handleSetDataSetId).toHaveBeenCalledWith(0, undefined);
+    expect(baseProps.handleSetDataSetId).toHaveBeenCalledWith(2, '2025-01-04 08:00');
   });
 });

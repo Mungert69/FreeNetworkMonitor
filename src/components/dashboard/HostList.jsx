@@ -242,7 +242,7 @@ const HostListMobileToolbar = ({
         display: 'flex',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: 0.75,
+        gap: 0.85,
       }}
     >
       <Tooltip title="Previous dataset">
@@ -293,7 +293,7 @@ const HostListMobileToolbar = ({
           maxWidth: '100%',
         }}
       >
-        {dataRangeLabel}
+        {'Dateset :' +dataRangeLabel}
       </Typography>
     </Box>
     <TextField

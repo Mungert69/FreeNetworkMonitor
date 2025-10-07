@@ -9,4 +9,4 @@ mkdir -p ./out/blogpics
 cp -r ../FreeNetworkMonitorBlog/public/images ./out/
 cp -r ../FreeNetworkMonitorBlog/public/blogpics ./out/
 docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:1.1.2
+docker push mungert/networkmonitorreact-local:1.2.0

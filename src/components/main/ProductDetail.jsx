@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
-import clsx from 'clsx';
-import { TextField, CssBaseline, Drawer, Box, CardMedia, Grow, AppBar, Toolbar, List, Typography, Divider, IconButton, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
+import { TextField, CssBaseline, Box, Grow, Typography, Divider, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
 import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
 
-import MenuIcon from '@mui/icons-material/Menu';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 import EmailIcon from '@mui/icons-material/Email';
-import ChatIcon from '@mui/icons-material/Chat';
 import LanguageIcon from '@mui/icons-material/Language';
 import ApiTwoToneIcon from '@mui/icons-material/ApiTwoTone';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AssistantIcon from '@mui/icons-material/Assistant';
 import SecurityIcon from '@mui/icons-material/Security';
 import { useMediaQuery } from '@mui/material';
-import MainListItems from '../dashboard/MainListItems';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
 import Seo from '../Seo';
@@ -23,14 +18,13 @@ import useClasses from "../dashboard/useClasses";
 import { FaDiscord } from "react-icons/fa";
 import Button from '@mui/material/Button';
 import BlogArticle from './BlogArticle';
+import DashboardAppBar from '../dashboard/DashboardAppBar';
+import DashboardDrawer from '../dashboard/DashboardDrawer';
 
 
 const Chat = lazy(() => import('../dashboard/Chat/Chat'));
 
 import { useTheme } from '@mui/material/styles';
-import AuthNav from '../auth-nav';
-import LogoLink from './LogoLink';
-import reportWebVitals from '../../reportWebVitals';
 //import { ga4Event } from '../../ga4';
 import pingImage from '/ping.svg';
 import { getBaseDomain } from '../dashboard/ServiceAPI';
@@ -164,60 +158,24 @@ const ProductDetail = () => {
                     ogLocale: "en_US",
                 }}
             />
-            <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-                <Toolbar className={classes.toolbar}>
-                    {isLoading && <Loading small={true} />}
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="Open navigation drawer"
-                        onClick={handleDrawerOpen}
-                        className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-                        size="large">
-                        <MenuIcon />
-                    </IconButton>
-                    <LogoLink />
-                    {isMediumOrLarger && (
-                        <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-                            Quantum Network Monitor
-                        </Typography>
-                    )}
-
-                    <Box sx={{ flexGrow: 1 }} />
-                    <IconButton
-                        onClick={toggleChatView}
-                        className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
-                        aria-label={isChatOpen ? "Close chat assistant" : "Open chat assistant"}
-                    >
-                        <ChatIcon />
-                    </IconButton>
-                    <Box sx={{ ml: 2 }}>
-                        <AuthNav openInNewTab={openInNewTab} />
-                    </Box>
-                </Toolbar>
-            </AppBar>
-
-            <Drawer
-                variant={isMediumOrLarger ? "permanent" : "temporary"}
+            <DashboardAppBar
+                classes={classes}
                 open={open}
-                onClose={handleDrawerClose}
-                classes={{
-                    paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-                }}
-            >
-                <div className={classes.toolbarIcon}>
-                    <IconButton
-                        onClick={handleDrawerClose}
-                        size="large"
-                        aria-label="Close navigation drawer"
-                    >
-                        <ChevronLeftIcon />
-                    </IconButton>
-                </div>
-                <List disablePadding sx={{ pl: 0, pr: 0 }}>
-                    <MainListItems classes={classes} />
-                </List>
-            </Drawer>
+                handleDrawerOpen={handleDrawerOpen}
+                isMediumOrLarger={isMediumOrLarger}
+                toggleChatView={toggleChatView}
+                isChatOpen={isChatOpen}
+                openInNewTab={openInNewTab}
+                showLoading={isLoading}
+                loadingProps={{ small: true }}
+            />
+
+            <DashboardDrawer
+                classes={classes}
+                open={open}
+                handleDrawerClose={handleDrawerClose}
+                isMediumOrLarger={isMediumOrLarger}
+            />
 
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />

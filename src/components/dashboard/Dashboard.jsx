@@ -1,44 +1,19 @@
-import React, { useState, useEffect, useRef, lazy, Suspense, useCallback } from "react";
-import clsx from 'clsx';
+import React, { useState, useEffect, useRef, lazy, useCallback, useMemo } from "react";
 
-import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChatIcon from '@mui/icons-material/Chat';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import EditIcon from '@mui/icons-material/Edit';
-import ListSubheader from '@mui/material/ListSubheader';
-import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
-import MainListItems from './MainListItems';
 import Loading from '../../loading';
-import LogoLink from '../main/LogoLink';
-import MiniProfile from './MiniProfile';
 import { resetPredictAlertApiCall, convertDate, getBaseDomain,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
-import AuthNav from '../auth-nav';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
-import { alpha, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Seo from '../Seo';
-import FadeWrapper from './FadeWrapper';
 //import { ga4Event } from '../../ga4';
 import { useFusionAuth } from '@fusionauth/react-sdk';
-import CloseIcon from '@mui/icons-material/Close';
+import DashboardAppBar from './DashboardAppBar';
+import DashboardDrawer from './DashboardDrawer';
+import DashboardMainPanel from './DashboardMainPanel';
+import DashboardChartDialog from './DashboardChartDialog';
 
 const Chart = lazy(() => import('./Chart'));
 const HostList = lazy(() => import('./HostList'));
@@ -84,9 +59,6 @@ export default function Dashboard() {
   const dataSetIdRef = useRef(dataSetId);
   dataSetIdRef.current = dataSetId;
   const classes = useClasses(styleObject(theme, null));
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const fixedHeightTallPaper = clsx(classes.paper, classes.fixedHeightTall);
-
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -149,6 +121,73 @@ export default function Dashboard() {
     // You could potentially change component state to show the chart or the details
     //console.log("Host Link Clicked with host data:", JSON.stringify(hostData));
   }, [handleSetDataSetId, clickViewChart, closeChartDialog]);
+
+  const hostListProps = useMemo(
+    () => ({
+      siteId,
+      data: listData,
+      clickViewChart,
+      resetHostAlert,
+      resetPredictAlert,
+      processorList,
+      dataSets,
+      dataSetId,
+      selectedDate,
+      handleSetDataSetId,
+      setDateStart,
+      setDateEnd,
+      defaultSearchValue,
+    }),
+    [
+      siteId,
+      listData,
+      clickViewChart,
+      resetHostAlert,
+      resetPredictAlert,
+      processorList,
+      dataSets,
+      dataSetId,
+      selectedDate,
+      handleSetDataSetId,
+      setDateStart,
+      setDateEnd,
+      defaultSearchValue,
+    ],
+  );
+
+  const hostListEditProps = useMemo(
+    () => ({
+      siteId,
+      processorList,
+      defaultSearchValue,
+    }),
+    [siteId, processorList, defaultSearchValue],
+  );
+
+  const chatProps = useMemo(
+    () => ({
+      onHostLinkClick: handleHostLinkClick,
+      isDashboard: true,
+      initRunnerType: "TurboLLM",
+      setIsChatOpen,
+      siteId,
+    }),
+    [handleHostLinkClick, setIsChatOpen, siteId],
+  );
+
+  const chartProps = useMemo(
+    () => ({
+      data: chartData,
+      selectedDate,
+      hostname: hostData.address,
+      dataSetId,
+      dataSets,
+      handleSetDataSetId,
+      hostDetail: hostData,
+      fullScreen: true,
+    }),
+    [chartData, selectedDate, hostData, dataSetId, dataSets, handleSetDataSetId],
+  );
 
   const getUserInfo = async () => {
 
@@ -344,193 +383,55 @@ export default function Dashboard() {
           ogLocale: "en_US", // Language and locale
         }}
       />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-            size="large">
-            <MenuIcon />
-          </IconButton>
-          <LogoLink />
-          {isMediumOrLarger && (
-            <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-              Network Monitor Dashboard
-            </Typography>
-          )}
-          {
-            !isLoggedIn ? null :
-              <FadeWrapper toggle={toggleTable && listData.length === 0}>
-                <IconButton color="inherit">
-                  <Badge color="secondary">
-                    <Tooltip title={hostListIconText}
-                      TransitionComponent={Zoom}>
-
-                      <EditIcon onClick={() => editIconClick()} />
-
-
-                    </Tooltip>
-                  </Badge>
-                </IconButton>
-              </FadeWrapper>
-          }
-          <Box sx={{ flexGrow: 1 }} />
-          <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}
-          >
-            <ChatIcon />
-          </IconButton>
-          <Box sx={{ ml: 2, display: 'inline-flex', alignItems: 'center' }}>
-            <AuthNav openInNewTab={openInNewTab}/>
-          </Box>
-          <IconButton color="inherit" >
-            <Badge badgeContent={alertCount} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          {!isLoggedIn ? null : <MiniProfile apiUser={apiUser} siteId={siteId} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={getUserInfo} />}
-        </Toolbar>
-        <Loading />
-      </AppBar>
-      <Drawer
-        variant={isMediumOrLarger ? "permanent" : "temporary"}
+      <DashboardAppBar
+        classes={classes}
         open={open}
-        onClose={handleDrawerClose}
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose} size="large">
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <List disablePadding sx={{ pl: 0, pr: 0 }}>
-          <MainListItems classes={classes} />
-        </List>
-
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container
-          
-          className={classes.container}
-          disableGutters={!isMediumOrLarger}
-          sx={{
-            px: isMediumOrLarger ? 3 : 1,
-            pt: isMediumOrLarger ? 4 : 1,
-            pb: isMediumOrLarger ? 4 : 1,
-          }}
-        >
-          <Grid container spacing={isMediumOrLarger ? 4 : 2}>
-            <Grid item xs={12}>
-              <Paper
-                className={classes.paper}
-                sx={{
-                  p: isMediumOrLarger ? 2 : 1,
-                  m: 0,
-                  boxShadow: isMediumOrLarger ? 2 : 1,
-                  borderRadius: isMediumOrLarger ? 3 : 1,
-                }}
-              >
-                <Suspense fallback={<Loading />}>
-                  {toggleTable ? (
-                    <HostList
-                      siteId={siteId}
-                      data={listData}
-                      clickViewChart={clickViewChart}
-                      resetHostAlert={resetHostAlert}
-                      resetPredictAlert={resetPredictAlert}
-                      processorList={processorList}
-                      dataSets={dataSets}
-                      dataSetId={dataSetId}
-                      selectedDate={selectedDate}
-                      handleSetDataSetId={handleSetDataSetId}
-                      setDateStart={setDateStart}
-                      setDateEnd={setDateEnd}
-                      defaultSearchValue={defaultSearchValue}
-                    />
-                  ) : (
-                    <HostListEdit
-                      siteId={siteId}
-                      processorList={processorList}
-                      defaultSearchValue={defaultSearchValue}
-                    />
-                  )}
-                </Suspense>
-              </Paper>
-              <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                {siteId !== null && siteId !== undefined && (
-                  <Suspense fallback={<Loading />}>
-                    <Chat
-                      key={chatKey}
-                      onHostLinkClick={handleHostLinkClick}
-                      isDashboard
-                      initRunnerType="TurboLLM"
-                      setIsChatOpen={setIsChatOpen}
-                      siteId={siteId}
-                    />
-                  </Suspense>
-                )}
-              </div>
-            </Grid>
-          </Grid>
-        </Container>
-        <Dialog
-          fullScreen
-          open={isChartDialogOpen}
-          onClose={closeChartDialog}
-          TransitionComponent={FullScreenDialogTransition}
-          PaperProps={{
-            sx: {
-              backgroundColor: theme.palette.background.default,
-              display: 'flex',
-              flexDirection: 'column',
-            },
-          }}
-        >
-          <DialogContent
-            sx={{
-              position: 'relative',
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              p: { xs: 2, sm: 4 },
-            }}
-          >
-            <IconButton
-              onClick={closeChartDialog}
-              aria-label="Close chart"
-              sx={{
-                position: 'absolute',
-                top: { xs: 12, sm: 16 },
-                right: { xs: 12, sm: 16 },
-                bgcolor: alpha(theme.palette.background.paper, 0.75),
-                boxShadow: 2,
-                '&:hover': {
-                  bgcolor: alpha(theme.palette.background.paper, 0.95),
-                },
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-            <Suspense fallback={<Loading />}>
-              <Chart
-                data={chartData}
-                selectedDate={selectedDate}
-                hostname={hostData.address}
-                dataSetId={dataSetId}
-                dataSets={dataSets}
-                handleSetDataSetId={handleSetDataSetId}
-                hostDetail={hostData}
-                fullScreen
-              />
-            </Suspense>
-          </DialogContent>
-        </Dialog>
-      </main>
+        handleDrawerOpen={handleDrawerOpen}
+        isMediumOrLarger={isMediumOrLarger}
+        isLoggedIn={isLoggedIn}
+        toggleTable={toggleTable}
+        listDataLength={listData.length}
+        hostListIconText={hostListIconText}
+        editIconClick={editIconClick}
+        toggleChatView={toggleChatView}
+        isChatOpen={isChatOpen}
+        openInNewTab={openInNewTab}
+        alertCount={alertCount}
+        apiUser={apiUser}
+        siteId={siteId}
+        initViewSub={initViewSub}
+        setInitViewSub={setInitViewSub}
+        getUserInfo={getUserInfo}
+      />
+      <DashboardDrawer
+        classes={classes}
+        open={open}
+        handleDrawerClose={handleDrawerClose}
+        isMediumOrLarger={isMediumOrLarger}
+      />
+      <DashboardMainPanel
+        classes={classes}
+        isMediumOrLarger={isMediumOrLarger}
+        toggleTable={toggleTable}
+        HostListComponent={HostList}
+        hostListProps={hostListProps}
+        HostListEditComponent={HostListEdit}
+        hostListEditProps={hostListEditProps}
+        loadingFallback={<Loading />}
+        isChatOpen={isChatOpen}
+        chatKey={chatKey}
+        siteId={siteId}
+        ChatComponent={Chat}
+        chatProps={chatProps}
+      />
+      <DashboardChartDialog
+        open={isChartDialogOpen}
+        onClose={closeChartDialog}
+        TransitionComponent={FullScreenDialogTransition}
+        ChartComponent={Chart}
+        chartProps={chartProps}
+        loadingFallback={<Loading />}
+      />
     </div>
   );
 }

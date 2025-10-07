@@ -1,6 +1,6 @@
 services:
   using-volumes:
-    image: mungert/networkmonitorreact:1.1.2
+    image: mungert/networkmonitorreact:1.2.0
     build:
       context: .
       dockerfile: ./Dockerfile
