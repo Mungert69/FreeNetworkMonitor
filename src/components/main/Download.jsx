@@ -84,7 +84,7 @@ As a beta tester, you will have exclusive access to download the Quantum Network
 
 In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Quantum Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
 
-> **Note:** Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. The Metasploit framework is not available for Android. If you don't want these limitations in your agent then use the fully featured Windows or docker versions below.  
+> **Note:** Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. The Metasploit framework is not available for Android. Android 14+ has extra security restrictions that mean executables like chrome headless, busybox, curl etc can not run; this limits many features. If you don't want these limitations in your agent then use the fully featured Windows or docker versions below.  
 
 ## Windows Install Instructions
 
