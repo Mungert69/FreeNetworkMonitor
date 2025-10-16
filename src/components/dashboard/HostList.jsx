@@ -1,30 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Badge,
-  Box,
-  Button,
-  IconButton,
-  TextField,
-  Tooltip,
-  useMediaQuery,
-} from '@mui/material';
+import { Badge, Box, Button, IconButton, TextField, Tooltip, useMediaQuery } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import StorageIcon from '@mui/icons-material/Storage';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
-import PingIcon from '@mui/icons-material/Speed';
-import HttpIcon from '@mui/icons-material/Http';
-import HttpsIcon from '@mui/icons-material/Https';
-import LinkIcon from '@mui/icons-material/Link';
-import HtmlIcon from '@mui/icons-material/Html';
-import LanguageIcon from '@mui/icons-material/Language';
-import DnsIcon from '@mui/icons-material/Dns';
-import EmailIcon from '@mui/icons-material/Email';
-import QuantumIcon from '@mui/icons-material/Flare';
-import NmapIcon from '@mui/icons-material/Search';
-import NmapVulnIcon from '@mui/icons-material/BugReport';
-import CrawlSiteIcon from '@mui/icons-material/Public';
-import HugIcon from '@mui/icons-material/AccessAlarm';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {
@@ -44,27 +23,12 @@ import createCache from '@emotion/cache';
 import DataSetsList from './DataSetsList';
 import { fetchEndpointTypes } from './ServiceAPI';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
+import { getEndpointIcon } from './endpointIcons';
 
 const muiCache = createCache({
   key: 'mui',
   prepend: true,
 });
-
-const iconComponentMap = {
-  PingIcon,
-  HttpIcon,
-  HttpsIcon,
-  HtmlIcon,
-  LanguageIcon,
-  LinkIcon,
-  DnsIcon,
-  EmailIcon,
-  QuantumIcon,
-  NmapIcon,
-  NmapVulnIcon,
-  CrawlSiteIcon,
-  HugIcon,
-};
 
 const STORAGE_KEY_PREFIX = 'host-list-grid-state-';
 
@@ -586,7 +550,7 @@ export const HostList = ({
             );
           }
 
-          const IconComponent = iconComponentMap[endpointType.icon] ?? ErrorIcon;
+          const IconComponent = getEndpointIcon(endpointType.icon) ?? ErrorIcon;
 
           return (
             <Tooltip title={endpointType.description || endpointType.name}>

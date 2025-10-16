@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Badge,
-  Box,
-  IconButton,
-  Tooltip,
-  useMediaQuery
-} from '@mui/material';
+import { Badge, Box, IconButton, Tooltip, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,18 +7,6 @@ import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorIcon from '@mui/icons-material/Error';
-import PingIcon from '@mui/icons-material/Speed';
-import HttpIcon from '@mui/icons-material/Http';
-import HttpsIcon from '@mui/icons-material/Https';
-import HtmlIcon from '@mui/icons-material/Html';
-import LanguageIcon from '@mui/icons-material/Language';
-import LinkIcon from '@mui/icons-material/Link';
-import DnsIcon from '@mui/icons-material/Dns';
-import EmailIcon from '@mui/icons-material/Email';
-import QuantumIcon from '@mui/icons-material/Flare';
-import NmapIcon from '@mui/icons-material/Search';
-import NmapVulnIcon from '@mui/icons-material/BugReport';
-import CrawlSiteIcon from '@mui/icons-material/Public';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -43,21 +25,7 @@ import {
   delHostApi,
   fetchEndpointTypes,
 } from './ServiceAPI';
-
-const iconComponentMap = {
-  PingIcon,
-  HttpIcon,
-  HttpsIcon,
-  HtmlIcon,
-  LanguageIcon,
-  LinkIcon,
-  DnsIcon,
-  EmailIcon,
-  QuantumIcon,
-  NmapIcon,
-  NmapVulnIcon,
-  CrawlSiteIcon,
-};
+import { getEndpointIcon } from './endpointIcons';
 
 const STORAGE_KEY_PREFIX = 'host-list-edit-grid-';
 
@@ -539,7 +507,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
               </Tooltip>
             );
           }
-          const IconComponent = iconComponentMap[endpointType.icon] ?? ErrorIcon;
+          const IconComponent = getEndpointIcon(endpointType.icon) ?? ErrorIcon;
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <IconComponent color="primary" fontSize="small" />
