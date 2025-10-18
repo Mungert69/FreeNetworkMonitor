@@ -19,4 +19,3 @@ Our local agent monitor app lets you oversee local hosts, while our ChatGPT-powe
 </a>
 
 Please check it out and leave a review using the Trust Pilot link at the bottom of the landing page. Thanks :)
-
