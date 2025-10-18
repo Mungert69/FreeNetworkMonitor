@@ -7,8 +7,12 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Collapse from '@mui/material/Collapse';
+import Chip from '@mui/material/Chip';
+import TooltipBase from '@mui/material/Tooltip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import BoltIcon from '@mui/icons-material/Bolt';
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 
 export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
@@ -182,6 +186,24 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
   } = useDataSetNavigation(dataSets, dataSetId, handleSetDataSetId);
 
   const dateString = formatSelectedDataSetLabel(selectedDate, currentDataSet);
+  const isLatestDataSet = React.useMemo(() => Number(dataSetId) === 0, [dataSetId]);
+  const handleSelectLiveData = React.useCallback(() => {
+    handleSetDataSetId(0, undefined);
+  }, [handleSetDataSetId]);
+
+  const chipProps = isLatestDataSet
+    ? {
+        icon: <BoltIcon fontSize="small" />,
+        label: 'Live (current)',
+        color: 'primary',
+        variant: 'filled',
+      }
+    : {
+        icon: <HistoryToggleOffIcon fontSize="small" />,
+        label: dateString,
+        color: 'default',
+        variant: 'outlined',
+      };
 
   return (
     <Box
@@ -206,34 +228,104 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
             <Typography variant="subtitle2" sx={{ color: alpha(theme.palette.text.primary, 0.64), letterSpacing: 0.6 }}>
               {hostname ? `Latency for ${hostname}` : 'Latency Overview'}
             </Typography>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary, mt: 0.25 }}>
-              {dateString}
+            <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary, mt: 0.25, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <span>{chipProps.label}</span>
+              {isLatestDataSet && (
+                <Chip
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                  icon={<BoltIcon fontSize="small" />}
+                  label="Live"
+                  sx={{
+                    '& .MuiChip-icon': { marginLeft: 0.35 },
+                    '& .MuiChip-label': { px: 1, fontWeight: 600 },
+                  }}
+                />
+              )}
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <IconButton
-              size="small"
-              onClick={() => navigateDataSet(1)}
-              disabled={!canGoBack}
-              sx={navButtonSx}
-              aria-label="Previous dataset"
-            >
-              <ArrowBackIcon fontSize="inherit" />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => navigateDataSet(-1)}
-              disabled={!canGoForward}
-              sx={navButtonSx}
-              aria-label="Next dataset"
-            >
-              <ArrowForwardIcon fontSize="inherit" />
-            </IconButton>
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            flexWrap="wrap"
+            justifyContent="flex-end"
+          >
+            <Stack direction="row" spacing={1} alignItems="center">
+              <TooltipBase title="Previous dataset">
+                <span>
+                  <IconButton
+                    size="small"
+                    onClick={() => navigateDataSet(1)}
+                    disabled={!canGoBack}
+                    sx={navButtonSx}
+                    aria-label="Previous dataset"
+                  >
+                    <ArrowBackIcon fontSize="inherit" />
+                  </IconButton>
+                </span>
+              </TooltipBase>
+              <TooltipBase title="Next dataset">
+                <span>
+                  <IconButton
+                    size="small"
+                    onClick={() => navigateDataSet(-1)}
+                    disabled={!canGoForward}
+                    sx={navButtonSx}
+                    aria-label="Next dataset"
+                  >
+                    <ArrowForwardIcon fontSize="inherit" />
+                  </IconButton>
+                </span>
+              </TooltipBase>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: alpha(theme.palette.text.primary, 0.72) }}
+              >
+                Viewing
+              </Typography>
+              <Chip
+                size="small"
+                {...chipProps}
+                sx={{
+                  '& .MuiChip-icon': { marginLeft: 0.45 },
+                  '& .MuiChip-label': {
+                    px: 1.2,
+                    maxWidth: 220,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  },
+                }}
+              />
+              <TooltipBase
+                title={
+                  isLatestDataSet
+                    ? 'You are already viewing the live dataset'
+                    : 'Jump back to the most recent dataset'
+                }
+              >
+                <span>
+                  <Button
+                    size="small"
+                    startIcon={<BoltIcon fontSize="small" />}
+                    variant={isLatestDataSet ? 'outlined' : 'contained'}
+                    color={isLatestDataSet ? 'inherit' : 'primary'}
+                    onClick={handleSelectLiveData}
+                    disabled={isLatestDataSet}
+                    sx={{ textTransform: 'none', fontWeight: 600 }}
+                  >
+                    Back to live
+                  </Button>
+                </span>
+              </TooltipBase>
+            </Stack>
             <Button
               size="small"
               onClick={() => setAreDetailsVisible(prev => !prev)}
               sx={{
-                ml: { xs: 0, md: 1 },
                 textTransform: 'none',
                 fontWeight: 600,
               }}

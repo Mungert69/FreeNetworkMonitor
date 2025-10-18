@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react';
 
 const normalizeDataSets = (dataSets) =>
   Array.isArray(dataSets) ? dataSets.filter(Boolean) : [];
-
 const coerceDataSetId = (value) => {
   if (value === null || value === undefined) {
     return undefined;

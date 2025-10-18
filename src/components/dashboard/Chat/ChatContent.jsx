@@ -40,11 +40,13 @@ const ChatContent = ({
   setIsInputFocused,
 }) => {
   // Responsive: use full width if screen is small (drawer hidden)
+  const theme = useTheme();
   const isSmallScreen = window.innerWidth < 900; // or use theme.breakpoints.down('md') with useMediaQuery
   const chatStyles = {
     position: 'fixed',
     transition: 'all 0.5s ease-in-out',
     transformOrigin: 'right',
+    zIndex: theme.zIndex.modal + 1,
     ...(isExpanded
       ? isSmallScreen
         ? {
@@ -74,7 +76,6 @@ const ChatContent = ({
       }),
   };
 
-  const theme = useTheme();
   const classes = useClasses(styleObject(theme, null));
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const historyButtonRef = useRef(null);

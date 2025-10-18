@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Box, Button, IconButton, TextField, Tooltip, useMediaQuery } from '@mui/material';
+import { Badge, Box, Button, Chip, IconButton, TextField, Tooltip, useMediaQuery } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import StorageIcon from '@mui/icons-material/Storage';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import BoltIcon from '@mui/icons-material/Bolt';
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import {
   DataGrid,
   GridToolbarColumnsButton,
@@ -99,89 +101,156 @@ const HostListToolbar = ({
   canGoForward,
   dataRangeLabel,
   navButtonSx,
-}) => (
-  <GridToolbarContainer
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      flexWrap: 'wrap',
-      gap: 1,
-      py: 0.75,
-      px: 1,
-    }}
-  >
-    <Box
+  onSelectLiveData,
+  isOnLatestDataSet,
+  datasetLabel,
+}) => {
+  const chipProps = isOnLatestDataSet
+    ? {
+        icon: <BoltIcon fontSize="small" />,
+        label: 'Live (current)',
+        color: 'primary',
+        variant: 'filled',
+      }
+    : {
+        icon: <HistoryToggleOffIcon fontSize="small" />,
+        label: datasetLabel ?? dataRangeLabel,
+        color: 'default',
+        variant: 'outlined',
+      };
+
+  return (
+    <GridToolbarContainer
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 0.75,
+        justifyContent: 'space-between',
         flexWrap: 'wrap',
+        gap: 1,
+        py: 0.75,
+        px: 1,
       }}
     >
-      <Tooltip title="Previous dataset">
-        <span>
-          <IconButton
-            size="small"
-            aria-label="Previous dataset"
-            onClick={onNavigateBack}
-            disabled={!canGoBack}
-            sx={navButtonSx}
-          >
-            <ArrowBackIcon fontSize="inherit" />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Select Dataset">
-        <span>
-          <IconButton
-            color="primary"
-            size="small"
-            aria-label="Select dataset"
-            onClick={onToggleDataSets}
-          >
-            <Badge color="secondary" variant="dot" overlap="circular">
-              <StorageIcon />
-            </Badge>
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Next dataset">
-        <span>
-          <IconButton
-            size="small"
-            aria-label="Next dataset"
-            onClick={onNavigateForward}
-            disabled={!canGoForward}
-            sx={navButtonSx}
-          >
-            <ArrowForwardIcon fontSize="inherit" />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Typography
-        variant="body2"
+      <Box
         sx={{
-          fontWeight: 600,
-          color: 'text.secondary',
-          maxWidth: 220,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          flexWrap: 'wrap',
         }}
       >
-        {dataRangeLabel}
-      </Typography>
-    </Box>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarDensitySelector />
-      <GridToolbarExport />
-      <GridToolbarQuickFilter variant="outlined" size="small" placeholder="Search hosts" />
-    </Box>
-  </GridToolbarContainer>
-);
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
+          <Tooltip title="Previous dataset">
+            <span>
+              <IconButton
+                size="small"
+                aria-label="Previous dataset"
+                onClick={onNavigateBack}
+                disabled={!canGoBack}
+                sx={navButtonSx}
+              >
+                <ArrowBackIcon fontSize="inherit" />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Select dataset">
+            <span>
+              <IconButton
+                color="primary"
+                size="small"
+                aria-label="Select dataset"
+                onClick={onToggleDataSets}
+              >
+                <Badge color="secondary" variant="dot" overlap="circular">
+                  <StorageIcon />
+                </Badge>
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Next dataset">
+            <span>
+              <IconButton
+                size="small"
+                aria-label="Next dataset"
+                onClick={onNavigateForward}
+                disabled={!canGoForward}
+                sx={navButtonSx}
+              >
+                <ArrowForwardIcon fontSize="inherit" />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              color: 'text.secondary',
+            }}
+          >
+            Viewing
+          </Typography>
+          <Chip
+            size="small"
+            {...chipProps}
+            sx={{
+              '& .MuiChip-icon': { marginLeft: 0.5 },
+              '& .MuiChip-label': {
+                px: 1.25,
+                maxWidth: 220,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              },
+              mr: isOnLatestDataSet ? 0 : 0.25,
+            }}
+          />
+          <Tooltip
+            title={
+              isOnLatestDataSet
+                ? 'You are already viewing the live dataset'
+                : 'Jump back to the most recent dataset'
+            }
+          >
+            <span>
+              <Button
+                size="small"
+                startIcon={<BoltIcon fontSize="small" />}
+                variant={isOnLatestDataSet ? 'outlined' : 'contained'}
+                color={isOnLatestDataSet ? 'inherit' : 'primary'}
+                onClick={onSelectLiveData}
+                disabled={isOnLatestDataSet}
+                sx={{ textTransform: 'none' }}
+              >
+                Back to live
+              </Button>
+            </span>
+          </Tooltip>
+        </Box>
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <GridToolbarExport />
+        <GridToolbarQuickFilter variant="outlined" size="small" placeholder="Search hosts" />
+      </Box>
+    </GridToolbarContainer>
+  );
+};
 
 const HostListMobileToolbar = ({
   onToggleDataSets,
@@ -193,85 +262,147 @@ const HostListMobileToolbar = ({
   canGoForward,
   dataRangeLabel,
   navButtonSx,
-}) => (
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 1,
-    }}
-  >
+  onSelectLiveData,
+  isOnLatestDataSet,
+  datasetLabel,
+}) => {
+  const chipProps = isOnLatestDataSet
+    ? {
+        icon: <BoltIcon fontSize="small" />,
+        label: 'Live (current)',
+        color: 'primary',
+        variant: 'filled',
+      }
+    : {
+        icon: <HistoryToggleOffIcon fontSize="small" />,
+        label: datasetLabel ?? dataRangeLabel,
+        color: 'default',
+        variant: 'outlined',
+      };
+
+  return (
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 0.85,
+        flexDirection: 'column',
+        gap: 1,
       }}
     >
-      <Tooltip title="Previous dataset">
-        <span>
-          <IconButton
-            size="small"
-            aria-label="Previous dataset"
-            onClick={onNavigateBack}
-            disabled={!canGoBack}
-            sx={navButtonSx}
-          >
-            <ArrowBackIcon fontSize="inherit" />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Select Dataset">
-        <span>
-          <IconButton
-            color="primary"
-            size="small"
-            aria-label="Select dataset"
-            onClick={onToggleDataSets}
-          >
-            <Badge color="secondary" variant="dot" overlap="circular">
-              <StorageIcon />
-            </Badge>
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Next dataset">
-        <span>
-          <IconButton
-            size="small"
-            aria-label="Next dataset"
-            onClick={onNavigateForward}
-            disabled={!canGoForward}
-            sx={navButtonSx}
-          >
-            <ArrowForwardIcon fontSize="inherit" />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Typography
-        variant="caption"
+      <Box
         sx={{
-          fontWeight: 600,
-          color: 'text.secondary',
-          maxWidth: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 1.1,
         }}
       >
-        {'Dateset :' +dataRangeLabel}
-      </Typography>
+        <Tooltip title="Previous dataset">
+          <span>
+            <IconButton
+              size="small"
+              aria-label="Previous dataset"
+              onClick={onNavigateBack}
+              disabled={!canGoBack}
+              sx={navButtonSx}
+            >
+              <ArrowBackIcon fontSize="inherit" />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title="Select dataset">
+          <span>
+            <IconButton
+              color="primary"
+              size="small"
+              aria-label="Select dataset"
+              onClick={onToggleDataSets}
+            >
+              <Badge color="secondary" variant="dot" overlap="circular">
+                <StorageIcon />
+              </Badge>
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title="Next dataset">
+          <span>
+            <IconButton
+              size="small"
+              aria-label="Next dataset"
+              onClick={onNavigateForward}
+              disabled={!canGoForward}
+              sx={navButtonSx}
+            >
+              <ArrowForwardIcon fontSize="inherit" />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: 600,
+            color: 'text.secondary',
+          }}
+        >
+          Viewing
+        </Typography>
+        <Chip
+          size="small"
+          {...chipProps}
+          sx={{
+            '& .MuiChip-icon': { marginLeft: 0.4 },
+            '& .MuiChip-label': {
+              px: 1.1,
+              maxWidth: 220,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            },
+            mr: isOnLatestDataSet ? 0 : 0.2,
+          }}
+        />
+      </Box>
+      <Tooltip
+        title={
+          isOnLatestDataSet
+            ? 'You are already viewing the live dataset'
+            : 'Jump back to the most recent dataset'
+        }
+      >
+        <span>
+          <Button
+            variant={isOnLatestDataSet ? 'outlined' : 'contained'}
+            color={isOnLatestDataSet ? 'inherit' : 'primary'}
+            size="small"
+            startIcon={<BoltIcon fontSize="small" />}
+            onClick={onSelectLiveData}
+            disabled={isOnLatestDataSet}
+            sx={{ textTransform: 'none', alignSelf: 'flex-start' }}
+          >
+            Back to live
+          </Button>
+        </span>
+      </Tooltip>
+      <TextField
+        value={quickFilterValue}
+        onChange={(event) => onQuickFilterChange(event.target.value)}
+        variant="outlined"
+        size="small"
+        placeholder="Search hosts"
+        InputProps={{
+          'aria-label': 'Search hosts',
+        }}
+      />
     </Box>
-    <TextField
-      value={quickFilterValue}
-      onChange={(event) => onQuickFilterChange(event.target.value)}
-      variant="outlined"
-      size="small"
-      placeholder="Search hosts"
-      InputProps={{
-        'aria-label': 'Search hosts',
-      }}
-    />
-  </Box>
-);
+  );
+};
 
 export const HostList = ({
   siteId,
@@ -299,6 +430,23 @@ export const HostList = ({
     canGoForward,
     navigateDataSet,
   } = useDataSetNavigation(dataSets, dataSetId, handleSetDataSetId);
+
+  const isOnLatestDataSet = useMemo(
+    () => {
+      if (dataSetId === undefined || dataSetId === null) {
+        return false;
+      }
+      return Number(dataSetId) === 0;
+    },
+    [dataSetId],
+  );
+
+  const handleSelectLiveData = useCallback(() => {
+    setShowDataSetsList(false);
+    handleSetDataSetId(0, undefined);
+    setDateStart(null);
+    setDateEnd(null);
+  }, [handleSetDataSetId, setDateStart, setDateEnd]);
 
   const selectedRangeLabel = useMemo(
     () => formatSelectedDataSetLabel(selectedDate, currentDataSet),
@@ -734,12 +882,15 @@ export const HostList = ({
               quickFilterValue={quickFilterValue}
               onQuickFilterChange={handleQuickFilterValueChange}
               onNavigateBack={handleNavigateBack}
-              onNavigateForward={handleNavigateForward}
-              canGoBack={canGoBack}
-              canGoForward={canGoForward}
-              dataRangeLabel={selectedRangeLabel}
-              navButtonSx={navButtonSx}
-            />
+          onNavigateForward={handleNavigateForward}
+          canGoBack={canGoBack}
+          canGoForward={canGoForward}
+          dataRangeLabel={selectedRangeLabel}
+          navButtonSx={navButtonSx}
+          onSelectLiveData={handleSelectLiveData}
+          isOnLatestDataSet={isOnLatestDataSet}
+          datasetLabel={selectedRangeLabel}
+        />
           </Box>
           {filteredRows.length === 0 ? (
             <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
@@ -898,6 +1049,9 @@ export const HostList = ({
               canGoForward,
               dataRangeLabel: selectedRangeLabel,
               navButtonSx,
+              onSelectLiveData: handleSelectLiveData,
+              isOnLatestDataSet,
+              datasetLabel: selectedRangeLabel,
             },
           }}
           sx={{
