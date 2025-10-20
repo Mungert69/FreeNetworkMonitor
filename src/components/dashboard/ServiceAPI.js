@@ -969,6 +969,121 @@ export const delHostApi = async (baseUrlId, user, index) => {
     return message;
 }
 
+const monitorModelConfigApiResult = (result) => {
+    const payload = result?.data ?? {};
+    return {
+        success: Boolean(payload.success),
+        message: payload.message,
+        data: payload.data,
+    };
+};
+
+export const fetchMonitorModelConfigs = async (baseUrlId) => {
+    axiosRetry(axios, { retries: 3 });
+    try {
+        const result = await trackPromise(axios({
+            method: 'get',
+            url: apiBaseUrls[baseUrlId] + '/MonitorModelConfig',
+            withCredentials: true,
+        }));
+        const payload = monitorModelConfigApiResult(result);
+        if (!payload.success) {
+            console.log('ServiceAPI.fetchMonitorModelConfigs Api Error was : ' + payload.message);
+        }
+        return payload.data ?? [];
+    } catch (error) {
+        console.log('ServiceAPI.fetchMonitorModelConfigs Error was : ' + error);
+        throw error;
+    }
+};
+
+export const fetchMonitorModelConfig = async (baseUrlId, id) => {
+    if (!id && id !== 0) {
+        return null;
+    }
+    axiosRetry(axios, { retries: 3 });
+    try {
+        const result = await trackPromise(axios({
+            method: 'get',
+            url: apiBaseUrls[baseUrlId] + '/MonitorModelConfig/' + id,
+            withCredentials: true,
+        }));
+        const payload = monitorModelConfigApiResult(result);
+        if (!payload.success) {
+            console.log('ServiceAPI.fetchMonitorModelConfig Api Error was : ' + payload.message);
+        }
+        return payload.data ?? null;
+    } catch (error) {
+        console.log('ServiceAPI.fetchMonitorModelConfig Error was : ' + error);
+        throw error;
+    }
+};
+
+export const createMonitorModelConfig = async (baseUrlId, config) => {
+    axiosRetry(axios, { retries: 3 });
+    try {
+        const result = await trackPromise(axios({
+            method: 'post',
+            url: apiBaseUrls[baseUrlId] + '/MonitorModelConfig',
+            data: config,
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }));
+        const payload = monitorModelConfigApiResult(result);
+        if (!payload.success) {
+            throw new Error(payload.message ?? 'Failed to create monitor model config');
+        }
+        return payload;
+    } catch (error) {
+        console.log('ServiceAPI.createMonitorModelConfig Error was : ' + error);
+        throw error;
+    }
+};
+
+export const updateMonitorModelConfig = async (baseUrlId, id, config) => {
+    axiosRetry(axios, { retries: 3 });
+    try {
+        const result = await trackPromise(axios({
+            method: 'put',
+            url: apiBaseUrls[baseUrlId] + '/MonitorModelConfig/' + id,
+            data: config,
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }));
+        const payload = monitorModelConfigApiResult(result);
+        if (!payload.success) {
+            throw new Error(payload.message ?? 'Failed to update monitor model config');
+        }
+        return payload;
+    } catch (error) {
+        console.log('ServiceAPI.updateMonitorModelConfig Error was : ' + error);
+        throw error;
+    }
+};
+
+export const deleteMonitorModelConfig = async (baseUrlId, id) => {
+    axiosRetry(axios, { retries: 3 });
+    try {
+        const result = await trackPromise(axios({
+            method: 'delete',
+            url: apiBaseUrls[baseUrlId] + '/MonitorModelConfig/' + id,
+            withCredentials: true,
+        }));
+        const payload = monitorModelConfigApiResult(result);
+        if (!payload.success) {
+            throw new Error(payload.message ?? 'Failed to delete monitor model config');
+        }
+        return payload;
+    } catch (error) {
+        console.log('ServiceAPI.deleteMonitorModelConfig Error was : ' + error);
+        throw error;
+    }
+};
+
 
 export const saveHostData = async (baseUrlId, data) => {
 

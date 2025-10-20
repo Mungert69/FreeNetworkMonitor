@@ -27,11 +27,18 @@ vi.mock('../EditHostDialog', () => ({
   default: () => null,
 }));
 
+vi.mock('../EditMonitorModelConfigDialog', () => ({
+  default: () => null,
+}));
+
 const fetchEditHostData = vi.fn();
 const fetchEndpointTypes = vi.fn();
 const saveHostData = vi.fn();
 const addHostApi = vi.fn();
 const delHostApi = vi.fn();
+const createMonitorModelConfig = vi.fn();
+const updateMonitorModelConfig = vi.fn();
+const deleteMonitorModelConfig = vi.fn();
 
 vi.mock('../ServiceAPI', () => ({
   fetchEditHostData: (...args) => fetchEditHostData(...args),
@@ -39,6 +46,9 @@ vi.mock('../ServiceAPI', () => ({
   saveHostData: (...args) => saveHostData(...args),
   addHostApi: (...args) => addHostApi(...args),
   delHostApi: (...args) => delHostApi(...args),
+  createMonitorModelConfig: (...args) => createMonitorModelConfig(...args),
+  updateMonitorModelConfig: (...args) => updateMonitorModelConfig(...args),
+  deleteMonitorModelConfig: (...args) => deleteMonitorModelConfig(...args),
 }));
 
 vi.mock('@fusionauth/react-sdk', () => ({
@@ -87,6 +97,9 @@ describe('HostListEdit', () => {
     saveHostData.mockResolvedValue({ success: true, text: 'Saved' });
     addHostApi.mockResolvedValue({ success: true, text: 'Added' });
     delHostApi.mockResolvedValue({ success: true, text: 'Deleted' });
+    createMonitorModelConfig.mockResolvedValue({ success: true, message: 'Created', data: { ID: 123 } });
+    updateMonitorModelConfig.mockResolvedValue({ success: true, message: 'Updated', data: { ID: 101 } });
+    deleteMonitorModelConfig.mockResolvedValue({ success: true, message: 'Deleted' });
   });
 
   it('loads host data and saves changes via toolbar action', async () => {

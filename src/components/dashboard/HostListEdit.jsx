@@ -7,6 +7,7 @@ import HelpIcon from '@mui/icons-material/Help';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorIcon from '@mui/icons-material/Error';
+import TuneIcon from '@mui/icons-material/Tune';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -17,6 +18,7 @@ import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
 import Message from './Message';
 import EditHostDialog from './EditHostDialog';
+import EditMonitorModelConfigDialog from './EditMonitorModelConfigDialog';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 import {
   fetchEditHostData,
@@ -24,10 +26,60 @@ import {
   addHostApi,
   delHostApi,
   fetchEndpointTypes,
+  updateMonitorModelConfig,
+  deleteMonitorModelConfig,
 } from './ServiceAPI';
 import { getEndpointIcon } from './endpointIcons';
 
 const STORAGE_KEY_PREFIX = 'host-list-edit-grid-';
+
+const toPascalCaseKey = (key) => {
+  if (key === 'id') {
+    return 'ID';
+  }
+  if (!key) {
+    return key;
+  }
+  return key.charAt(0).toUpperCase() + key.slice(1);
+};
+
+const toCamelCaseKey = (key) => {
+  if (key === 'ID') {
+    return 'id';
+  }
+  if (!key) {
+    return key;
+  }
+  return key.charAt(0).toLowerCase() + key.slice(1);
+};
+
+const toApiMonitorModelConfigPayload = (config) => {
+  if (!config) {
+    return null;
+  }
+  const payload = {};
+  Object.entries(config).forEach(([key, value]) => {
+    if (value === undefined) {
+      return;
+    }
+    payload[toPascalCaseKey(key)] = value;
+  });
+  if (!Object.prototype.hasOwnProperty.call(payload, 'ID')) {
+    payload.ID = 0;
+  }
+  return payload;
+};
+
+const fromApiMonitorModelConfigPayload = (config) => {
+  if (!config) {
+    return null;
+  }
+  const normalized = {};
+  Object.entries(config).forEach(([key, value]) => {
+    normalized[toCamelCaseKey(key)] = value;
+  });
+  return normalized;
+};
 
 const HostListEditToolbar = ({
   onSave,
@@ -118,6 +170,8 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [endpointTypes, setEndpointTypes] = useState([]);
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
+  const [editingModelConfigHost, setEditingModelConfigHost] = useState(null);
+  const [isModelConfigDialogOpen, setIsModelConfigDialogOpen] = useState(false);
 
   const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
   const persistedState = useMemo(() => {
@@ -331,6 +385,16 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
     [data],
   );
 
+  useEffect(() => {
+    if (!editingModelConfigHost?.id) {
+      return;
+    }
+    const latest = data.find((row) => row.id === editingModelConfigHost.id);
+    if (latest && latest !== editingModelConfigHost) {
+      setEditingModelConfigHost(latest);
+    }
+  }, [data, editingModelConfigHost]);
+
   const handleProcessRowUpdate = useCallback((newRow, oldRow) => {
     const updatedRow = { ...oldRow, ...newRow };
     setData((prev) => prev.map((row) => (row.id === oldRow.id ? updatedRow : row)));
@@ -350,6 +414,16 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   const closeEditDialog = useCallback(() => {
     setIsEditDialogOpen(false);
     setEditingHost(null);
+  }, []);
+
+  const openModelConfigDialog = useCallback((row) => {
+    setEditingModelConfigHost(row);
+    setIsModelConfigDialogOpen(true);
+  }, []);
+
+  const closeModelConfigDialog = useCallback(() => {
+    setIsModelConfigDialogOpen(false);
+    setEditingModelConfigHost(null);
   }, []);
 
   const saveData = useCallback(
@@ -397,6 +471,110 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   const handleSaveClick = useCallback(() => {
     saveData(data);
   }, [data, saveData]);
+
+  const handleModelConfigSave = useCallback(
+    async (configOverride) => {
+      if (!editingModelConfigHost?.id) {
+        closeModelConfigDialog();
+        return;
+      }
+
+      const hostId = editingModelConfigHost.id;
+      const existingConfigId = editingModelConfigHost.monitorModelConfigId;
+
+      setDisplayEdit(false);
+      setMessage({ text: 'Please wait. Saving model configuration...', info: true });
+
+      try {
+        if (configOverride && existingConfigId) {
+          const payload = toApiMonitorModelConfigPayload({
+            ...configOverride,
+            id: existingConfigId,
+          });
+          const apiResult = await updateMonitorModelConfig(siteId, existingConfigId, payload);
+          const apiConfig = fromApiMonitorModelConfigPayload(apiResult?.data) ?? {
+            ...configOverride,
+            id: existingConfigId,
+          };
+          const nextConfigId = apiConfig?.id ?? existingConfigId;
+
+          setData((prev) =>
+            prev.map((row) =>
+              row.id === hostId
+                ? {
+                    ...row,
+                    modelConfig: apiConfig,
+                    monitorModelConfigId: nextConfigId,
+                  }
+                : row,
+            ),
+          );
+
+          setMessage({
+            text: apiResult?.message ?? 'Success updating monitor model config.',
+            success: true,
+            info: false,
+          });
+          closeModelConfigDialog();
+          return;
+        }
+
+        if (configOverride && !existingConfigId) {
+          const normalizedConfig = { ...configOverride };
+          const updatedData = data.map((row) =>
+            row.id === hostId
+              ? {
+                  ...row,
+                  modelConfig: normalizedConfig,
+                  monitorModelConfigId: row.monitorModelConfigId ?? null,
+                }
+              : row,
+          );
+          setData(updatedData);
+          setIsEdited(true);
+          await saveData(updatedData);
+          setIsEdited(false);
+          setResetToggle((prev) => !prev);
+          closeModelConfigDialog();
+          return;
+        }
+
+        if (!configOverride && existingConfigId) {
+          const apiResult = await deleteMonitorModelConfig(siteId, existingConfigId);
+          const updatedData = data.map((row) =>
+            row.id === hostId
+              ? {
+                  ...row,
+                  modelConfig: null,
+                  monitorModelConfigId: null,
+                }
+              : row,
+          );
+          setData(updatedData);
+          setIsEdited(true);
+          await saveData(updatedData);
+          setIsEdited(false);
+          setResetToggle((prev) => !prev);
+          setMessage({
+            text: apiResult?.message ?? 'Success deleting monitor model config.',
+            success: true,
+            info: false,
+          });
+          closeModelConfigDialog();
+          return;
+        }
+
+        closeModelConfigDialog();
+      } catch (error) {
+        console.error('Error saving monitor model config', error);
+        setMessage({ text: 'Failed to save monitor model config.', success: false, info: false });
+        setIsEdited(true);
+      } finally {
+        setDisplayEdit(true);
+      }
+    },
+    [closeModelConfigDialog, data, editingModelConfigHost, saveData, setResetToggle, siteId],
+  );
 
   const addHost = useCallback(async () => {
     if (!displayEdit) {
@@ -451,7 +629,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         field: 'actions',
         headerName: '',
         type: 'actions',
-        width: isSmallScreen ? 90 : 110,
+        width: isSmallScreen ? 120 : 150,
         getActions: (params) => {
           const row = params.row;
           return [
@@ -464,6 +642,17 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
               }
               label="Edit Host"
               onClick={() => openEditDialog(row)}
+              showInMenu={false}
+            />,
+            <GridActionsCellItem
+              key="modelConfig"
+              icon={
+                <Tooltip title="Edit Model Config">
+                  <TuneIcon />
+                </Tooltip>
+              }
+              label="Edit Model Config"
+              onClick={() => openModelConfigDialog(row)}
               showInMenu={false}
             />,
             <GridActionsCellItem
@@ -574,6 +763,12 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         endpointTypes={endpointTypes}
         processorList={processorList}
         onSave={handleEditSave}
+      />
+      <EditMonitorModelConfigDialog
+        open={isModelConfigDialogOpen}
+        onClose={closeModelConfigDialog}
+        host={editingModelConfigHost}
+        onSave={handleModelConfigSave}
       />
       <Box sx={{ width: '100%', height: '100%' }}>
         <DataGrid
