@@ -185,7 +185,11 @@ export const useWebSocket = ({
         
         if (generatedLinkData !== null) {
           chatState.setLinkData(generatedLinkData);
-          if (generatedLinkData.length > 1) chatState.setIsDrawerOpen(true);
+          if (chatState.arePopupsEnabled && generatedLinkData.length > 1) {
+            chatState.setIsDrawerOpen(true);
+          } else if (!chatState.arePopupsEnabled) {
+            chatState.setIsDrawerOpen(false);
+          }
         }
       }
       // Handle history display data
@@ -266,4 +270,3 @@ export const useWebSocket = ({
     webSocketRef
   };
 };
-

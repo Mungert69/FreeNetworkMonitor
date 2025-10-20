@@ -171,8 +171,10 @@ export default function Dashboard() {
       initRunnerType: "TurboLLM",
       setIsChatOpen,
       siteId,
+      isChartDialogOpen,
+      closeChartDialog,
     }),
-    [handleHostLinkClick, setIsChatOpen, siteId],
+    [handleHostLinkClick, setIsChatOpen, siteId, isChartDialogOpen, closeChartDialog],
   );
 
   const chartProps = useMemo(

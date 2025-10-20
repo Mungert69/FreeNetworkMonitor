@@ -7,12 +7,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChatState } from './useChatState';
 import { useWebSocket } from './useWebSocket';
 
-function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId }) {
+function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId, isChartDialogOpen = false, closeChartDialog }) {
   const chatState = useChatState();
   const {
     // Audio and UI state
-    isMuted, setIsMuted, isExpanded, setIsExpanded, isDrawerOpen, setIsDrawerOpen,
-    autoScrollEnabled, setAutoScrollEnabled,
+    isMuted, setIsMuted, isExpanded, setIsExpanded, isDrawerOpen, setIsDrawerOpen, arePopupsEnabled, setArePopupsEnabled,
+    autoScrollEnabled, setAutoScrollEnabled, isAtBottom, setIsAtBottom,
 
     // Processing and loading states
     isReady, setIsReady, loadCount, setLoadCount, loadWarning, setLoadWarning,
@@ -42,6 +42,28 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const audioPlayerRef = useRef(AudioPlayer());
   const outputContainerRef = useRef(null);
+
+  const scrollToBottom = React.useCallback(
+    (behavior = 'auto') => {
+      const outputContainer = outputContainerRef.current;
+      if (!outputContainer) return;
+      const scrollBehavior = typeof behavior === 'string' ? behavior : 'auto';
+      if (typeof outputContainer.scrollTo === 'function') {
+        try {
+          outputContainer.scrollTo({
+            top: outputContainer.scrollHeight,
+            behavior: scrollBehavior,
+          });
+        } catch (error) {
+          outputContainer.scrollTop = outputContainer.scrollHeight;
+        }
+      } else {
+        outputContainer.scrollTop = outputContainer.scrollHeight;
+      }
+      setIsAtBottom(true);
+    },
+    [setIsAtBottom],
+  );
 
   const { stopLLM, resetSessionId, webSocketRef } = useWebSocket({
     siteId,
@@ -99,13 +121,22 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [isMuted]);
 
   useEffect(() => {
+    if (!arePopupsEnabled) {
+      return;
+    }
     if (linkData.length === 1 && !autoClickedRef.current) {
       onHostLinkClick(linkData[0]);
       autoClickedRef.current = true;  // Mark as clicked
     } else if (linkData.length !== 1) {
       autoClickedRef.current = false;  // Reset if the number of links changes
     }
-  }, [linkData, onHostLinkClick]);
+  }, [linkData, onHostLinkClick, arePopupsEnabled]);
+
+  useEffect(() => {
+    if (!isChartDialogOpen) {
+      autoClickedRef.current = false;
+    }
+  }, [isChartDialogOpen]);
 
   useEffect(() => {
     let intervalId;
@@ -119,13 +150,13 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
 
   const handleScroll = () => {
     const outputContainer = outputContainerRef.current;
+    if (!outputContainer) return;
     const isNearBottom = Math.abs(
       outputContainer.scrollHeight - outputContainer.scrollTop - outputContainer.clientHeight
     ) < 10;
 
-    // Auto-scroll logic:
-    const shouldAutoScroll = isInputFocused || (!isHoveringMessages && isNearBottom);
-    setAutoScrollEnabled(shouldAutoScroll);
+    setIsAtBottom(isNearBottom);
+    setAutoScrollEnabled(isNearBottom);
   };
   useEffect(() => {
     const outputContainer = outputContainerRef.current;
@@ -134,16 +165,17 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
    
 
     outputContainer.addEventListener('scroll', handleScroll);
+    scrollToBottom('auto');
 
     // Auto-scroll when new content appears
     if (autoScrollEnabled) {
-      outputContainer.scrollTop = outputContainer.scrollHeight;
+      scrollToBottom('auto');
     }
 
     return () => {
       outputContainer.removeEventListener('scroll', handleScroll);
     };
-  }, [llmFeedback, autoScrollEnabled, isHoveringMessages, isInputFocused]);
+  }, [llmFeedback, autoScrollEnabled, scrollToBottom]);
 
   useEffect(() => {
     if (isReady && openMessage.current !== null) {
@@ -177,7 +209,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       outputContainer.removeEventListener('scroll', handleScroll);
       clearInterval(pingInterval);
     };
-  }, []);
+  }, [scrollToBottom]);
 
   useEffect(() => {
     if (loadCount > 1) {
@@ -287,10 +319,28 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   };
 
   const toggleDrawer = (open) => (event) => {
+    if (!arePopupsEnabled) {
+      setIsDrawerOpen(false);
+      return;
+    }
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setIsDrawerOpen(open);
+  };
+
+  const togglePopupsEnabled = () => {
+    setArePopupsEnabled((prev) => {
+      const next = !prev;
+      if (!next) {
+        setIsDrawerOpen(false);
+        if (typeof closeChartDialog === 'function') {
+          closeChartDialog();
+        }
+      }
+      autoClickedRef.current = false;
+      return next;
+    });
   };
 
   const saveFeedback = () => {
@@ -364,6 +414,7 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       toggleExpand={toggleExpand}
       toggleAudio={toggleAudio}
       toggleDrawer={toggleDrawer}
+      togglePopupsEnabled={togglePopupsEnabled}
       handleSelectSession={handleSelectSession}
       handleDeleteSession={handleDeleteSession}
       handleStopRecording={handleStopRecording}
@@ -376,7 +427,11 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
       resetSessionId={resetSessionId}
       stopLLM={stopLLM}
       outputContainerRef={outputContainerRef}
+      scrollToBottom={scrollToBottom}
       isRecording={isRecording}
+      isAtBottom={isAtBottom}
+      setAutoScrollEnabled={setAutoScrollEnabled}
+      isChartDialogOpen={isChartDialogOpen}
     />
   );
 

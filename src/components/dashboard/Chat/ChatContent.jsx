@@ -12,6 +12,7 @@ import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff'; // Mute icon
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
@@ -19,6 +20,8 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Drawer, Paper, Popper, Badge, Tooltip, Zoom, SwipeableDrawer, Grid, Card, CardContent, TextField, Button, IconButton, Typography, CircularProgress, List, ListItem, Box, useScrollTrigger } from '@mui/material';
 import Message from '../Message';
 import HistoryList from "./HistoryList";
@@ -37,16 +40,25 @@ const ChatContent = ({
   helpMessage, histories, handleSelectSession, handleDeleteSession, currentMessage, setCurrentMessage,
   isRecording, handleStartRecording, handleStopRecording, stopLLM, message, linkData, saveFeedback,
   toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
-  setIsInputFocused,
+  setIsInputFocused, arePopupsEnabled, togglePopupsEnabled, isChartDialogOpen = false, scrollToBottom = () => {}, isAtBottom = true,
+  setAutoScrollEnabled,
 }) => {
   // Responsive: use full width if screen is small (drawer hidden)
   const theme = useTheme();
   const isSmallScreen = window.innerWidth < 900; // or use theme.breakpoints.down('md') with useMediaQuery
+  let chatZIndex = theme.zIndex.modal + 1;
+  if (isChartDialogOpen) {
+    chatZIndex = Math.min(chatZIndex, theme.zIndex.modal - 1);
+  }
+  if (arePopupsEnabled && isDrawerOpen) {
+    chatZIndex = Math.min(chatZIndex, theme.zIndex.drawer - 1);
+  }
+  chatZIndex = Math.max(chatZIndex, 0);
   const chatStyles = {
     position: 'fixed',
     transition: 'all 0.5s ease-in-out',
     transformOrigin: 'right',
-    zIndex: theme.zIndex.modal + 1,
+    zIndex: chatZIndex,
     ...(isExpanded
       ? isSmallScreen
         ? {
@@ -109,7 +121,11 @@ const ChatContent = ({
       <List>
         {linkData.map((linkItem) => (
           <ListItem key={linkItem.link}>
-            <Button onClick={() => { closeExpand(); onHostLinkClick(linkItem); }} sx={{
+            <Button disabled={!arePopupsEnabled} onClick={() => {
+              if (!arePopupsEnabled) return;
+              closeExpand();
+              onHostLinkClick(linkItem);
+            }} sx={{
               width: '100%', // Full width button
               justifyContent: 'flex-start',
               textTransform: 'none',
@@ -172,10 +188,25 @@ const ChatContent = ({
   const chatInputRef = useRef(null);
 
   // Scroll to bottom handler
-  const handleInputMouseEnter = () => {
-    if (outputContainerRef && outputContainerRef.current) {
-      outputContainerRef.current.scrollTop = outputContainerRef.current.scrollHeight;
+  const followLatest = (behavior = 'auto') => {
+    if (typeof setAutoScrollEnabled === 'function') {
+      setAutoScrollEnabled(true);
     }
+    scrollToBottom(behavior);
+  };
+
+  const handleInputMouseEnter = () => {
+    followLatest('auto');
+  };
+
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+    followLatest('auto');
+  };
+
+  const handleInputChange = (event) => {
+    setCurrentMessage(event.target.value);
+    followLatest('smooth');
   };
 
   return (
@@ -247,7 +278,23 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                {isDrawerOpen ? null : (
+                <IconButton
+                  onClick={togglePopupsEnabled}
+                  color="inherit"
+                  aria-label={arePopupsEnabled ? "Disable popups" : "Enable popups"}
+                  size="small"
+                  sx={{ p: 0.5 }}
+                >
+                  <Badge color="secondary">
+                    <Tooltip
+                      title={arePopupsEnabled ? "Disable popups" : "Enable popups"}
+                      TransitionComponent={Zoom}
+                    >
+                      {arePopupsEnabled ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </Tooltip>
+                  </Badge>
+                </IconButton>
+                {arePopupsEnabled && !isDrawerOpen ? (
                   <IconButton
                     onClick={toggleDrawer(true)}
                     color="inherit"
@@ -261,7 +308,7 @@ const ChatContent = ({
                       </Tooltip>
                     </Badge>
                   </IconButton>
-                )}
+                ) : null}
                 <IconButton onClick={toggleExpand} color="inherit" size="small" sx={{ p: 0.5 }}>
                   <Badge color="secondary">
                     <Tooltip title={isExpanded ? "Contract" : "Expand"} TransitionComponent={Zoom}>
@@ -328,7 +375,7 @@ const ChatContent = ({
         {/* Chat Content */}
         <CardContent
           ref={outputContainerRef}
-          sx={{ flexGrow: 1, overflow: 'auto', minHeight: 0 }}
+          sx={{ flexGrow: 1, overflow: 'auto', minHeight: 0, position: 'relative' }}
           onMouseEnter={() => setIsHoveringMessages(true)}
           onMouseLeave={() => setIsHoveringMessages(false)}
         >
@@ -350,12 +397,39 @@ const ChatContent = ({
           {(showHelpMessage && !isDashboard) && (
             <Typography sx={{ mt: 2, bgcolor: 'action.selected' }}>{helpMessage}</Typography>
           )}
+          <Zoom in={!isAtBottom} mountOnEnter unmountOnExit>
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: theme.spacing(2),
+                right: theme.spacing(2),
+              }}
+            >
+              <Tooltip title="Scroll to latest" TransitionComponent={Zoom}>
+                <IconButton
+                  color="primary"
+                  onClick={() => followLatest('smooth')}
+                  aria-label="Scroll to latest message"
+                  size="small"
+                  sx={{
+                    bgcolor: 'background.paper',
+                    boxShadow: theme.shadows[3],
+                    '&:hover': {
+                      bgcolor: 'background.default',
+                    },
+                  }}
+                >
+                  <KeyboardArrowDownIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Zoom>
         </CardContent>
 
         {/* Links Drawer */}
         <SwipeableDrawer
           anchor="bottom"
-          open={isDrawerOpen}
+          open={arePopupsEnabled && isDrawerOpen}
           onClose={toggleDrawer(false)}
           onOpen={toggleDrawer(true)}
           sx={{
@@ -408,9 +482,9 @@ const ChatContent = ({
               variant="outlined"
               label="Type a message..."
               value={currentMessage}
-              onFocus={() => setIsInputFocused(true)}
+              onFocus={handleInputFocus}
               onBlur={() => setIsInputFocused(false)}
-              onChange={(e) => setCurrentMessage(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();

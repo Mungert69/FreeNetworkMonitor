@@ -195,7 +195,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   });
 
   const [sortModel, setSortModel] = useState(
-    () => persistedState?.sortModel ?? [{ field: 'address', sort: 'asc' }],
+    () => persistedState?.sortModel ?? [],
   );
 
   const [paginationModel, setPaginationModel] = useState(
@@ -432,7 +432,15 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
       setDisplayEdit(false);
       setMessage({ text: 'Please wait. Saving can take up to one minute...', info: false });
       try {
-        const sanitizedData = hostsToPersist.map(({ edit, ...host }) => host);
+        const prioritizedIds = new Set(recentlyAddedRowIdsRef.current ?? []);
+        const orderedHosts =
+          prioritizedIds.size > 0
+            ? [
+                ...hostsToPersist.filter((row) => prioritizedIds.has(getRowIdentifier(row))),
+                ...hostsToPersist.filter((row) => !prioritizedIds.has(getRowIdentifier(row))),
+              ]
+            : hostsToPersist;
+        const sanitizedData = orderedHosts.map(({ edit, ...host }) => host);
         const response = await saveHostData(siteId, sanitizedData);
         setMessage(response);
         if (response.success) {
@@ -445,7 +453,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         setDisplayEdit(true);
       }
     },
-    [data, siteId],
+    [data, siteId, getRowIdentifier],
   );
 
   const handleEditSave = useCallback(

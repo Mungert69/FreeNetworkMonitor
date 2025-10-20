@@ -6,7 +6,9 @@ export const useChatState = () => {
   const [isMuted, setIsMuted] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [arePopupsEnabled, setArePopupsEnabled] = useState(true);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   // Processing and loading states
   const [isReady, setIsReady] = useState(false);
@@ -78,8 +80,12 @@ export const useChatState = () => {
     setIsExpanded,
     isDrawerOpen,
     setIsDrawerOpen,
+    arePopupsEnabled,
+    setArePopupsEnabled,
     autoScrollEnabled,
     setAutoScrollEnabled,
+    isAtBottom,
+    setIsAtBottom,
     isHoveringMessages,
     isInputFocused,
     setIsHoveringMessages,

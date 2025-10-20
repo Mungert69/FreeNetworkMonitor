@@ -87,6 +87,12 @@ const createDefaultProps = () => {
     sessionId: 'session-123',
     setIsHoveringMessages: vi.fn(),
     setIsInputFocused: vi.fn(),
+    arePopupsEnabled: true,
+    togglePopupsEnabled: vi.fn(),
+    isChartDialogOpen: false,
+    scrollToBottom: vi.fn(),
+    isAtBottom: true,
+    setAutoScrollEnabled: vi.fn(),
   };
 };
 
