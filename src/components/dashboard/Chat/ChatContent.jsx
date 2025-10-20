@@ -377,7 +377,7 @@ const ChatContent = ({
           anchorEl={historyButtonRef.current}
           placement="bottom-start"
           sx={{
-            zIndex: 1200, // Ensure it appears above other elements
+            zIndex: theme.zIndex.modal + 2, // Ensure the history list sits above the chat container
             width: '300px', // Adjust width as needed
             maxHeight: '400px', // Adjust max height as needed
             overflow: 'auto',
