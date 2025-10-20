@@ -159,23 +159,10 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     setAutoScrollEnabled(isNearBottom);
   };
   useEffect(() => {
-    const outputContainer = outputContainerRef.current;
-    if (!outputContainer) return;
-
-   
-
-    outputContainer.addEventListener('scroll', handleScroll);
-    scrollToBottom('auto');
-
-    // Auto-scroll when new content appears
-    if (autoScrollEnabled) {
+    if (autoScrollEnabled && isAtBottom) {
       scrollToBottom('auto');
     }
-
-    return () => {
-      outputContainer.removeEventListener('scroll', handleScroll);
-    };
-  }, [llmFeedback, autoScrollEnabled, scrollToBottom]);
+  }, [llmFeedback, autoScrollEnabled, isAtBottom, scrollToBottom]);
 
   useEffect(() => {
     if (isReady && openMessage.current !== null) {

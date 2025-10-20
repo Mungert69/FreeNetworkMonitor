@@ -103,17 +103,34 @@ const renderChatContent = (overrideProps = {}) => {
 
   const Wrapper = () => {
     const [message, setMessage] = React.useState(props.currentMessage ?? '');
+    const [autoScrollEnabled, setAutoScrollEnabled] = React.useState(
+      props.autoScrollEnabled ?? true,
+    );
+    const [isAtBottom, setIsAtBottom] = React.useState(props.isAtBottom ?? true);
+
+    const effectiveAutoScrollEnabled =
+      props.autoScrollEnabled !== undefined ? props.autoScrollEnabled : autoScrollEnabled;
+    const effectiveSetAutoScrollEnabled =
+      props.setAutoScrollEnabled ?? setAutoScrollEnabled;
+    const effectiveIsAtBottom = props.isAtBottom !== undefined ? props.isAtBottom : isAtBottom;
+    const effectiveSetIsAtBottom = props.setIsAtBottom ?? setIsAtBottom;
+
+    const mergedProps = {
+      ...props,
+      currentMessage: message,
+      setCurrentMessage: (value) => {
+        setMessage(value);
+        props.setIsInputFocused?.(false);
+      },
+      autoScrollEnabled: effectiveAutoScrollEnabled,
+      setAutoScrollEnabled: effectiveSetAutoScrollEnabled,
+      isAtBottom: effectiveIsAtBottom,
+      setIsAtBottom: effectiveSetIsAtBottom,
+    };
 
     return (
       <ThemeProvider theme={theme}>
-        <ChatContent
-          {...props}
-          currentMessage={message}
-          setCurrentMessage={(value) => {
-            setMessage(value);
-            props.setIsInputFocused?.(false);
-          }}
-        />
+        <ChatContent {...mergedProps} />
       </ThemeProvider>
     );
   };
@@ -174,5 +191,39 @@ describe('ChatContent', () => {
     await waitFor(() => {
       expect(props.sendMessage).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('enables auto-scroll and scrolls when the input gains focus', () => {
+    const scrollToBottom = vi.fn();
+    const setAutoScrollEnabled = vi.fn();
+    renderChatContent({
+      scrollToBottom,
+      setAutoScrollEnabled,
+      autoScrollEnabled: false,
+      isAtBottom: false,
+    });
+
+    const input = screen.getByLabelText('Type a message...');
+    fireEvent.focus(input);
+
+    expect(setAutoScrollEnabled).toHaveBeenCalledWith(true);
+    expect(scrollToBottom).toHaveBeenCalledWith('auto');
+  });
+
+  it('enables auto-scroll when the scroll-to-latest button is clicked', () => {
+    const scrollToBottom = vi.fn();
+    const setAutoScrollEnabled = vi.fn();
+    renderChatContent({
+      scrollToBottom,
+      setAutoScrollEnabled,
+      autoScrollEnabled: false,
+      isAtBottom: false,
+    });
+
+    const button = screen.getByRole('button', { name: /scroll to latest message/i });
+    fireEvent.click(button);
+
+    expect(setAutoScrollEnabled).toHaveBeenCalledWith(true);
+    expect(scrollToBottom).toHaveBeenCalledWith('smooth');
   });
 });

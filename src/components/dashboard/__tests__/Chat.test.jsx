@@ -263,3 +263,68 @@ describe('Chat popup behaviour', () => {
     });
   });
 });
+
+describe('Chat auto-scroll handling', () => {
+  let elementScrollSpy;
+  let originalScrollTo;
+
+  beforeEach(() => {
+    originalScrollTo = HTMLElement.prototype.scrollTo;
+    if (!HTMLElement.prototype.scrollTo) {
+      HTMLElement.prototype.scrollTo = function () {};
+    }
+    elementScrollSpy = vi
+      .spyOn(HTMLElement.prototype, 'scrollTo')
+      .mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    if (elementScrollSpy) {
+      elementScrollSpy.mockRestore();
+    }
+    if (!originalScrollTo) {
+      delete HTMLElement.prototype.scrollTo;
+    } else {
+      HTMLElement.prototype.scrollTo = originalScrollTo;
+    }
+  });
+
+  it('does not auto-scroll when the user has scrolled away', async () => {
+    renderChat();
+
+    await act(async () => {
+      latestChatState.setAutoScrollEnabled(false);
+      latestChatState.setIsAtBottom(false);
+    });
+
+    const initialCalls = elementScrollSpy.mock.calls.length;
+
+    await act(async () => {
+      latestChatState.setLlmFeedback('New update');
+    });
+
+    expect(elementScrollSpy.mock.calls.length).toBe(initialCalls);
+  });
+
+  it('resumes auto-scroll after it is re-enabled', async () => {
+    renderChat();
+
+    await act(async () => {
+      latestChatState.setAutoScrollEnabled(false);
+      latestChatState.setIsAtBottom(false);
+    });
+
+    const baselineCalls = elementScrollSpy.mock.calls.length;
+
+    await act(async () => {
+      latestChatState.setAutoScrollEnabled(true);
+      latestChatState.setIsAtBottom(true);
+    });
+
+    await act(async () => {
+      latestChatState.setLlmFeedback('Another update');
+    });
+
+    expect(elementScrollSpy.mock.calls.length).toBeGreaterThan(baselineCalls);
+  });
+});
