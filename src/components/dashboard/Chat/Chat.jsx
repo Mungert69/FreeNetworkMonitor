@@ -219,6 +219,20 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
   }, [loadCount]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const hasFeedback = typeof llmFeedback === 'string' && llmFeedback.trim().length > 0;
+    const hasHistories = Array.isArray(histories) && histories.length > 0;
+    const hasContent = hasFeedback || hasHistories;
+
+    try {
+      window.localStorage.setItem('chatHasContent', hasContent ? 'true' : 'false');
+    } catch (error) {
+      console.warn('Unable to persist chat content flag', error);
+    }
+  }, [llmFeedback, histories]);
+
+  useEffect(() => {
     resetLLM();
   }, [sessionId, llmRunnerType]);
 

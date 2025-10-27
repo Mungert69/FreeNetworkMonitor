@@ -168,6 +168,7 @@ describe('Chat popup behaviour', () => {
   beforeEach(() => {
     latestChatState = null;
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -326,5 +327,55 @@ describe('Chat auto-scroll handling', () => {
     });
 
     expect(elementScrollSpy.mock.calls.length).toBeGreaterThan(baselineCalls);
+  });
+});
+
+describe('Chat content persistence flag', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    latestChatState = null;
+  });
+
+  it('sets chatHasContent to true when feedback arrives', async () => {
+    renderChat();
+
+    await waitFor(() => {
+      expect(localStorage.getItem('chatHasContent')).toBe('false');
+    });
+
+    await act(async () => {
+      latestChatState.setLlmFeedback('Assistant reply');
+    });
+
+    await waitFor(() => {
+      expect(localStorage.getItem('chatHasContent')).toBe('true');
+    });
+  });
+
+  it('reflects history presence and absence', async () => {
+    renderChat();
+
+    await waitFor(() => {
+      expect(localStorage.getItem('chatHasContent')).toBe('false');
+    });
+
+    const historyEntry = { sessionId: 'session-123', title: 'First session' };
+
+    await act(async () => {
+      latestChatState.setHistories([historyEntry]);
+    });
+
+    await waitFor(() => {
+      expect(localStorage.getItem('chatHasContent')).toBe('true');
+    });
+
+    await act(async () => {
+      latestChatState.setLlmFeedback('');
+      latestChatState.setHistories([]);
+    });
+
+    await waitFor(() => {
+      expect(localStorage.getItem('chatHasContent')).toBe('false');
+    });
   });
 });

@@ -82,6 +82,13 @@ const ProductDetail = () => {
 
     const sendToAssistant = (setIsChatOpen, prompt) => {
         setIsChatOpen(true);
+        if (typeof window !== 'undefined') {
+            try {
+                window.localStorage.setItem('chatHasContent', 'true');
+            } catch (error) {
+                console.warn('Unable to persist chat content flag', error);
+            }
+        }
         // You'll need to pass down a prop to handle the prompt (see step 3)
         window.dispatchEvent(new CustomEvent('send-chat-prompt', { detail: prompt }));
     };
@@ -126,19 +133,49 @@ const ProductDetail = () => {
         }
         firstLoadSiteId();
 
-        const isFirstVisit = sessionStorage.getItem('visitedBefore') === null;
+        const isFirstVisit = (() => {
+            if (typeof window === 'undefined') {
+                return false;
+            }
+            return sessionStorage.getItem('visitedBefore') === null;
+        })();
+
+        let chatTimer;
+        const hasExistingChatContent = () => {
+            if (typeof window === 'undefined') {
+                return false;
+            }
+            try {
+                return window.localStorage.getItem('chatHasContent') === 'true';
+            } catch (error) {
+                console.warn('Unable to read chat content flag', error);
+                return false;
+            }
+        };
+
+        const shouldAutoPrompt = () => !isChatOpenRef.current && !hasExistingChatContent();
 
         if (isFirstVisit) {
-            const chatTimer = setTimeout(() => {
-                if (!isChatOpenRef.current) {
-                    sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
-                    // Mark as visited
-                    sessionStorage.setItem('visitedBefore', 'true');
-                }
-            }, 30000);
+            try {
+                sessionStorage.setItem('visitedBefore', 'true');
+            } catch (error) {
+                console.warn('Unable to persist visit state', error);
+            }
 
-            return () => clearTimeout(chatTimer);
+            if (shouldAutoPrompt()) {
+                chatTimer = setTimeout(() => {
+                    if (shouldAutoPrompt()) {
+                        sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
+                    }
+                }, 30000);
+            }
         }
+
+        return () => {
+            if (chatTimer) {
+                clearTimeout(chatTimer);
+            }
+        };
     }, []);
 
     return (
