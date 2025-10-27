@@ -133,6 +133,13 @@ const ProductDetail = () => {
         }
         firstLoadSiteId();
 
+        const hasAutoPrompted = () => {
+            if (typeof window === 'undefined') {
+                return false;
+            }
+            return sessionStorage.getItem('autoPrompted') === 'true';
+        };
+
         const isFirstVisit = (() => {
             if (typeof window === 'undefined') {
                 return false;
@@ -141,34 +148,24 @@ const ProductDetail = () => {
         })();
 
         let chatTimer;
-        const hasExistingChatContent = () => {
-            if (typeof window === 'undefined') {
-                return false;
-            }
-            try {
-                return window.localStorage.getItem('chatHasContent') === 'true';
-            } catch (error) {
-                console.warn('Unable to read chat content flag', error);
-                return false;
-            }
-        };
 
-        const shouldAutoPrompt = () => !isChatOpenRef.current && !hasExistingChatContent();
-
-        if (isFirstVisit) {
+        if (isFirstVisit && !hasAutoPrompted()) {
             try {
                 sessionStorage.setItem('visitedBefore', 'true');
             } catch (error) {
                 console.warn('Unable to persist visit state', error);
             }
 
-            if (shouldAutoPrompt()) {
-                chatTimer = setTimeout(() => {
-                    if (shouldAutoPrompt()) {
-                        sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
+            chatTimer = setTimeout(() => {
+                if (!isChatOpenRef.current && !hasAutoPrompted()) {
+                    try {
+                        sessionStorage.setItem('autoPrompted', 'true');
+                    } catch (error) {
+                        console.warn('Unable to mark auto prompt state', error);
                     }
-                }, 30000);
-            }
+                    sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
+                }
+            }, 30000);
         }
 
         return () => {
@@ -177,6 +174,20 @@ const ProductDetail = () => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (!isChatOpen) {
+            return;
+        }
+        if (typeof window === 'undefined') {
+            return;
+        }
+        try {
+            sessionStorage.setItem('autoPrompted', 'true');
+        } catch (error) {
+            console.warn('Unable to set auto prompt state when chat opened', error);
+        }
+    }, [isChatOpen]);
 
     return (
         <div className={classes.root}>
