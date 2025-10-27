@@ -141,44 +141,34 @@ const ProductDetail = () => {
         })();
 
         let chatTimer;
-        const hasAutoPrompted = () => {
+        const hasExistingChatContent = () => {
             if (typeof window === 'undefined') {
                 return false;
             }
-            return sessionStorage.getItem('autoPrompted') === 'true';
-        };
-        const markAutoPrompted = () => {
-            if (typeof window === 'undefined') {
-                return;
-            }
             try {
-                sessionStorage.setItem('autoPrompted', 'true');
+                return window.localStorage.getItem('chatHasContent') === 'true';
             } catch (error) {
-                console.warn('Unable to mark auto prompt status', error);
+                console.warn('Unable to read chat content flag', error);
+                return false;
             }
         };
-        const shouldAutoPrompt = () => !isChatOpenRef.current && !hasAutoPrompted();
 
-        useEffect(() => {
-            if (!isChatOpen) {
-                return;
-            }
-            markAutoPrompted();
-        }, [isChatOpen]);
+        const shouldAutoPrompt = () => !isChatOpenRef.current && !hasExistingChatContent();
 
-        if (isFirstVisit && !hasAutoPrompted()) {
+        if (isFirstVisit) {
             try {
                 sessionStorage.setItem('visitedBefore', 'true');
             } catch (error) {
                 console.warn('Unable to persist visit state', error);
             }
 
-            chatTimer = setTimeout(() => {
-                if (shouldAutoPrompt()) {
-                    markAutoPrompted();
-                    sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
-                }
-            }, 30000);
+            if (shouldAutoPrompt()) {
+                chatTimer = setTimeout(() => {
+                    if (shouldAutoPrompt()) {
+                        sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
+                    }
+                }, 30000);
+            }
         }
 
         return () => {
