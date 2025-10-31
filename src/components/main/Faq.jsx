@@ -26,7 +26,7 @@ import LogoLink from './LogoLink';
 import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
-import { getBaseDomain } from '../dashboard/ServiceAPI';
+import { getBaseDomain, getSupportEmail } from '../dashboard/ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Box from '@mui/material/Box';
@@ -65,7 +65,7 @@ const data = {
             title: "How do I get support or ask a question?",
             content: `
                 <p>You can contact us for support or to ask a question by emailing 
-                <strong>support@${getBaseDomain()}</strong> or <strong>support@mahadeva.co.uk</strong>.</p>
+                <strong>support@${getBaseDomain()}</strong> or <strong>${getSupportEmail()}</strong>.</p>
             `,
         },
         {
@@ -444,7 +444,7 @@ const data = {
             content: `
                 <p>You’ll receive email alerts if a host goes down, and weekly reports analyzing the performance of your hosts. 
                 Be sure to verify your email address to receive these notifications. If you don’t see the verification email, 
-                whitelist <a href="mailto:support@mahadeva.co.uk">support@mahadeva.co.uk</a> to ensure it reaches your inbox.</p>
+                whitelist <a href="${getSupportEmail()}">${getSupportEmail()}</a> to ensure it reaches your inbox.</p>
             `,
         },
         {
@@ -504,7 +504,187 @@ const data = {
                 quantum-safe TLS KEM (Key Encapsulation Mechanism) encryption. This makes the Quantum Secure Agent ideal for environments where quantum-safe encryption 
                 is a priority for network security.</p>
             `,
+        },
+        {
+            title: "How do I cancel my subscription?",
+            content: `
+                <p>You can cancel your subscription on the <a href="https://${getBaseDomain()}/dashboard">Quantum Network Monitor Dashboard</a> . Click on your profile icon (top right corner). On the Profile page at the bottom click View Subscription. On the view subscription page: Click on your subscription plan. This will redirect you to your stripe account. One the stripe account page click cancel subscription. Alternativeley send an email to support@readtforquantum.com with your requested change.</p>
+            `,
+        },
+        {
+            title: "How does the Network Monitor Assistant use AI to manage my hosts?",
+            content: `
+        <p>The Network Monitor Assistant uses AI to interpret your requests and perform actions on your behalf. 
+        It connects to the same APIs that power the Quantum Network Monitor Dashboard and Agents. 
+        You can ask it to add, edit, or view hosts, perform diagnostics, run security scans, or even retrieve account details.</p>
+        <p>The Assistant respects your account permissions and plan limits. 
+        Advanced operations such as penetration tests or vulnerability scans are only available in higher-tier plans.</p>
+    `,
+        },
+        {
+            title: "What is a Command Processor and how can I create one?",
+            content: `
+        <p>A Command Processor is a custom-built module that runs code on your selected agent. 
+        You can create your own Command Processor using the Quantum Network Monitor Assistant. Either ask it to produce the code or give it the C# .NET code that you wise to use. <strong>AddCmdProcessor</strong> function.</p>
+        <p>Once added, you can execute it by asking the Quantum Network Monitor Assistant to run the Cmd Processor by name. 
+        Command Processors can perform custom monitoring, data collection, or automation tasks.</p>
+        <p>For security, only your authorized agents can execute your custom processors, and source code cannot access other users’ data.</p>
+    `,
+        },
+        {
+            title: "Can I share or reuse my custom Command Processors across agents?",
+            content: `
+        <p>Yes. Once a Command Processor is uploaded, you can deploy it on any of your authorized agents. 
+        This allows you to run the same processor from multiple network locations or environments.</p>
+        <p>To replicate a processor, use the same processor name and source code when calling <strong>AddCmdProcessor</strong> on another agent. 
+        You can also modify and redeploy processors at any time.</p>
+    `,
+        },
+        {
+            title: "What is the difference between a system Command Processor and a custom one?",
+            content: `
+        <p>System Command Processors are built-in by Quantum Network Monitor and include common tools like Nmap, Metasploit, and OpenSSL. 
+        These cannot be edited or deleted.</p>
+        <p>Custom Command Processors are user-created and can perform any task you define in code, such as running database queries, testing APIs, 
+        or monitoring custom endpoints.</p>
+    `,
+        },
+        {
+            title: "What does 'Quantum Ready' mean in my plan?",
+            content: `
+        <p>'Quantum Ready' refers to advanced TLS encryption checks that verify whether your systems are prepared for quantum-safe cryptography. 
+        The Quantum Network Monitor Secure Agent includes built-in scans to detect and analyze the use of post-quantum TLS KEM algorithms.</p>
+        <p>This ensures your infrastructure is ready for upcoming cryptographic standards.</p>
+    `,
+        },
+        {
+            title: "How can I integrate Quantum Network Monitor data into other platforms?",
+            content: `
+        <p>You can use the API endpoints provided by Quantum Network Monitor to retrieve data programmatically. 
+        Common integrations include dashboards like Grafana, automation tools like Zapier, or custom scripts.</p>
+        <p>Endpoints such as <strong>GetHostDataByHostAddressAuth</strong> and <strong>GetMonitorIPsWithFilterAuth</strong> 
+        allow you to extract uptime, latency, and alert information for use in other systems.</p>
+    `,
+        },
+        {
+            title: "Can I export or back up my monitoring data?",
+            content: `
+        <p>Yes. You can export all your monitoring and ping data as a compressed archive. 
+        Use the <strong>GetUserPingInfoTar</strong> API endpoint to generate a downloadable link to your data archive.</p>
+        <p>Enterprise users also have continuous data export and retention without expiration.</p>
+    `,
+        },
+        {
+            title: "How are monitoring alerts triggered?",
+            content: `
+        <p>Alerts are triggered automatically when a monitored host fails five consecutive checks within its monitoring interval. 
+        These checks depend on the endpoint type (e.g., ICMP, HTTPS, SMTP).</p>
+        <p>Once triggered, an alert is sent to your registered email address. You must manually reset the alert in the dashboard to re-enable notifications for that host.</p>
+    `,
+        },
+        {
+            title: "Can I schedule when my monitors run?",
+            content: `
+        <p>Yes. Monitoring schedules are handled by agents based on their polling configuration. 
+        Each agent maintains an internal schedule that determines when it performs checks on your hosts.</p>
+        <p>Advanced users can adjust schedules or add downtime exclusions through the agent configuration or custom processors.</p>
+    `,
+        },
+        {
+  "title": "How secure is communication between the agent and the dashboard?",
+  "content": `
+    <p>All communication between Quantum Network Monitor agents and the Dashboard is encrypted using TLS&nbsp;1.3, ensuring that transmitted data remains confidential and tamper-proof.</p>
+
+    <p>Each agent is individually authorized through OAuth during setup, creating a unique identity that ties it securely to your account. Beyond OAuth, two additional authentication mechanisms protect communication and verify agent authenticity:</p>
+
+    <ul>
+      <li><strong>Agent Secret:</strong> When authorization is complete, a unique secret is generated and securely stored on the agent itself. This secret is used to prove the agent’s identity to the network during encrypted communication. Without it, no data or command messages can be sent using your login identity.</li>
+
+      <li><strong>AuthKey Validation:</strong> A second secret, the <em>AuthKey</em>, is established between the agent and the Quantum Network Monitor backend services. This key validates that the connection originates from the correct, named agent location. It prevents spoofing or impersonation by ensuring that only the authentic agent — not a cloned or simulated one — can exchange data with the backend.</li>
+    </ul>
+
+    <p>Together, these layers ensure that no unverified or tampered agent can send or receive monitoring data. Sensitive configuration details and credentials are never stored or transmitted in plaintext at any point.</p>
+  `
+}
+,
+        {
+            title: "Can multiple users share access to the same Quantum Network Monitor account?",
+            content: `
+        <p>Currently, each account is tied to a single login email address for security reasons. 
+        However, you can share access by authorizing multiple agents using the same account credentials.</p>
+        <p>Team-sharing and multi-user support are planned for future releases.</p>
+    `,
+        },
+        {
+            title: "Can I view historical uptime and latency trends?",
+            content: `
+        <p>Yes. The dashboard displays charts showing uptime percentage, latency averages, and packet loss over time. 
+        Data retention depends on your subscription plan — Free users retain one month of data, while Enterprise users retain it indefinitely.</p>
+    `,
+        },
+        {
+            title: "How do I view detailed error logs for a host?",
+            content: `
+        <p>You can access detailed error logs through the dashboard by clicking the host’s alert or status indicator. 
+        Logs include the last response code, timeout reason, and any diagnostic data collected by the agent.</p>
+        <p>Advanced users can also retrieve raw log data via the <strong>GetHostResponseObjByDateRangeAuth</strong> API endpoint.</p>
+    `,
+        },
+        {
+            title: "Can the Quantum Network Monitor detect anomalies or predict outages?",
+            content: `
+        <p>Yes. The Professional and Enterprise plans include predictive analysis features that use AI to detect anomalies 
+        and identify potential issues before they cause downtime. The Assistant will alert you if unusual patterns are detected in latency or uptime metrics.</p>
+    `,
+        },
+        {
+            title: "How can I test quantum-safe encryption on my servers?",
+            content: `
+        <p>If you're using the Quantum Secure Agent, you can run a <strong>quantum</strong> endpoint check. 
+        This feature tests your server's TLS configuration and determines whether it supports post-quantum encryption algorithms such as MLKEM.</p>
+        <p>To use this, add a host with the endpoint type <strong>quantum</strong> or run the check directly from the dashboard or assistant.</p>
+    `,
+        },
+        {
+            title: "Can I automate actions based on monitoring results?",
+            content: `
+        <p>Yes. You can create custom Command Processors that automatically perform actions, such as restarting a service or sending a webhook, 
+        when a certain condition is met (e.g., host down, high latency).</p>
+        <p>This allows you to build self-healing or auto-remediation workflows within your network.</p>
+    `,
+        },
+        {
+            title: "How do I monitor private IP addresses or local devices?",
+            content: `
+        <p>Private IPs and local devices can only be monitored using a Local Agent. 
+        Install the Quantum Network Monitor Agent on a system within your private network, authorize it, and assign the agent to monitor your internal IPs or services.</p>
+        <p>This ensures your private infrastructure is monitored securely without exposing it to the internet.</p>
+    `,
+        },
+        {
+            title: "What happens if my agent goes offline?",
+            content: `
+        <p>If your agent goes offline, the data in the dashboard will stop at that point . 
+        If the agent if still running it will store data until it can again connect to the Quantum Network Monitor service.</p>
+        <p>Once reconnected, all missed pings and host checks will be updated automatically.</p>
+    `,
+        },
+        {
+            title: "Can I run network scans from a specific geographic location?",
+            content: `
+        <p>Yes. When running Nmap, OpenSSL, or Metasploit tasks, you can specify the <strong>agentLocation</strong> parameter 
+        (for example, 'London - UK' or 'Berlin - Germany').</p>
+        <p>This lets you simulate how your network or site appears from different global regions.</p>
+    `,
+        },
+        {
+            title: "Does the Quantum Network Monitor comply with privacy regulations?",
+            content: `
+        <p>Yes. Quantum Network Monitor complies with major data protection regulations, including GDPR. 
+        Monitoring data is anonymized and stored in secure regions. You can request data deletion at any time by contacting support.</p>
+    `,
         }
+
     ],
 };
 const downloadFAQAsJson = () => {
@@ -691,7 +871,7 @@ const Faq = () => {
                             />
                         </Grid>
                     </Grid>
-                   
+
 
                     <hr />
 
@@ -746,7 +926,7 @@ const Faq = () => {
                     </Grid>
 
                     <hr />
-                     <Grid container justifyContent="center" style={{ marginTop: 20 }}>
+                    <Grid container justifyContent="center" style={{ marginTop: 20 }}>
                         <button onClick={downloadFAQAsJson}>📥 Download FAQ as JSON</button>
                     </Grid>
                     <Footer />

@@ -56,6 +56,10 @@ loadAppSettings();
 export const getBaseDomain = () => {
     return appsettings.baseDomain;
 }
+
+export const getSupportEmail = () =>{
+    return appsettings.supportEmail;
+}
 export const getLlmTypes = () => {
     return appsettings.llmTypes;
 }

@@ -23,7 +23,7 @@ import LogoLink from "./LogoLink";
 import AuthNav from '../auth-nav';
 import ReactMarkdown from 'react-markdown';
 import { useMediaQuery } from '@mui/material';
-import {  getBaseDomain} from '../dashboard/ServiceAPI';
+import { getBaseDomain, getSupportEmail } from '../dashboard/ServiceAPI';
 
 const markdown = `
 
@@ -121,7 +121,7 @@ After installing the app:
 
 6. **View and Edit Mode**: Utilize the edit icon to switch between view and edit modes. In view mode, monitoring data for hosts will appear after about 2 minutes. Click the chart icon next to a host for more detailed response data.
 
-7. **Alerts and Reports**: Receive email alerts if a host is detected as down, along with weekly reports that analyze your hosts' performance. It's necessary to verify your email address to receive these alerts and reports. If the verification email doesn't arrive, make sure to whitelist support@mahadeva.co.uk in your spam filter.
+7. **Alerts and Reports**: Receive email alerts if a host is detected as down, along with weekly reports that analyze your hosts' performance. It's necessary to verify your email address to receive these alerts and reports. If the verification email doesn't arrive, make sure to whitelist ${getBaseDomain()} in your spam filter.
 
 8. **Account Management**: Manage your account by clicking the profile icon.
 
@@ -232,7 +232,7 @@ Once the agent is authorized, you can start adding hosts to monitor:
 
 4. **View and Edit Mode**: Click the edit icon to toggle between view and edit modes. In view mode, after about 2 minutes, host monitoring data should start appearing. For detailed response data, click the chart icon next to the host.
 
-5. **Alerts and Reports**: Alerts will be sent to your email address if the host is detected as down. Weekly reports are also sent to your email address with an analysis of your hosts' performance. Note that you must verify your email address to receive email alerts and reports. If you don't receive the verification email, exclude support@mahadeva.co.uk from your spam filter.
+5. **Alerts and Reports**: Alerts will be sent to your email address if the host is detected as down. Weekly reports are also sent to your email address with an analysis of your hosts' performance. Note that you must verify your email address to receive email alerts and reports. If you don't receive the verification email, exclude ${getBaseDomain()} from your spam filter.
 
 6. **Account Management**: You can manage your account by clicking the profile icon.
 
@@ -246,7 +246,7 @@ MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 M
 
 ## Support
 
-If you encounter any issues or have questions, please feel free to reach out to us at support@mahadeva.co.uk. We're here to help and would love to hear your feedback!
+If you encounter any issues or have questions, please feel free to reach out to us at ${getBaseDomain()}. We're here to help and would love to hear your feedback!
 `;
 
 export default function Download() {
