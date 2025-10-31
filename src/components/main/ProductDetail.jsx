@@ -51,7 +51,17 @@ const interactiveStyles = {
     }
 };
 
-
+const hasChatContent = () => {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+    try {
+        return window.localStorage.getItem('chatHasContent') === 'true';
+    } catch (error) {
+        console.warn('Unable to read chat content flag', error);
+        return false;
+    }
+};
 
 const ProductDetail = () => {
     const blogRef = useRef(null);
@@ -149,6 +159,8 @@ const ProductDetail = () => {
 
         let chatTimer;
 
+        const chatAlreadyHasContent = hasChatContent();
+
         if (isFirstVisit && !hasAutoPrompted()) {
             try {
                 sessionStorage.setItem('visitedBefore', 'true');
@@ -156,16 +168,18 @@ const ProductDetail = () => {
                 console.warn('Unable to persist visit state', error);
             }
 
-            chatTimer = setTimeout(() => {
-                if (!isChatOpenRef.current && !hasAutoPrompted()) {
-                    try {
-                        sessionStorage.setItem('autoPrompted', 'true');
-                    } catch (error) {
-                        console.warn('Unable to mark auto prompt state', error);
+            if (!chatAlreadyHasContent) {
+                chatTimer = setTimeout(() => {
+                    if (!isChatOpenRef.current && !hasAutoPrompted() && !hasChatContent()) {
+                        try {
+                            sessionStorage.setItem('autoPrompted', 'true');
+                        } catch (error) {
+                            console.warn('Unable to mark auto prompt state', error);
+                        }
+                        sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
                     }
-                    sendToAssistant(setIsChatOpen, "What types of network monitoring and security functions can you assist me with?");
-                }
-            }, 30000);
+                }, 30000);
+            }
         }
 
         return () => {

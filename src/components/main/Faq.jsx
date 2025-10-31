@@ -23,13 +23,13 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import LogoLink from './LogoLink';
-import { HashLink } from 'react-router-hash-link';
 import TextField from '@mui/material/TextField';
 import pingImage from '/ping.svg';
-import { getBaseDomain, getSupportEmail } from '../dashboard/ServiceAPI';
+import { getBaseDomain, getSupportEmail, fetchTiers, getStartSiteId } from '../dashboard/ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Box from '@mui/material/Box';
+import VisualGuides from './VisualGuides';
 
 const data = {
     title: "FAQ (Find answers to common questions here)",
@@ -687,23 +687,6 @@ const data = {
 
     ],
 };
-const downloadFAQAsJson = () => {
-    const simplified = data.rows.map(row => ({
-        input: row.title,
-        output: stripHtml(row.content)
-    }));
-
-    const blob = new Blob([JSON.stringify(simplified, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'faq.json';
-    a.click();
-
-    URL.revokeObjectURL(url);
-};
-
 // Helper to strip HTML from content
 const stripHtml = (html) => {
     if (!html) {
@@ -711,6 +694,188 @@ const stripHtml = (html) => {
     }
     return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 };
+
+const escapeHtml = (value = '') =>
+    String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+const normalizeDescription = (input) => {
+    if (Array.isArray(input)) {
+        return input.filter((line) => typeof line === 'string' && line.trim().length > 0);
+    }
+    if (typeof input === 'string') {
+        return input
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+    }
+    return [];
+};
+
+const formatPriceLabel = (price) => {
+    if (price === undefined || price === null || price === '') {
+        return '';
+    }
+
+    const numeric = Number(price);
+    if (!Number.isNaN(numeric) && Number.isFinite(numeric)) {
+        const formatted = numeric.toLocaleString(undefined, {
+            minimumFractionDigits: numeric % 1 === 0 ? 0 : 2,
+            maximumFractionDigits: 2,
+        });
+        return `$${formatted}/mo`;
+    }
+
+    const trimmed = String(price).trim();
+    return trimmed.length ? trimmed : '';
+};
+
+const PLAN_ORDER = ['Free', 'Standard', 'Professional', 'Enterprise'];
+
+const createTierLookup = (tiers) => {
+    const map = new Map();
+    tiers.forEach((tier) => {
+        if (tier?.title) {
+            map.set(tier.title.trim().toLowerCase(), tier);
+        }
+    });
+    return map;
+};
+
+const getTier = (lookup, name) => lookup.get(name.trim().toLowerCase()) ?? null;
+
+const createStatusFallback = (context, loadingMessage) => {
+    const { status, subscriptionHref, error } = context;
+
+    switch (status) {
+        case 'idle':
+        case 'loading':
+            return `<p>${loadingMessage}</p>`;
+        case 'error': {
+            const details = error ? ` (${escapeHtml(error)})` : '';
+            return `<p>We couldn't load plan information right now. Please visit the <a href="${subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a>${details}.</p>`;
+        }
+        case 'empty':
+            return `<p>Plan information is currently unavailable. Please visit the <a href="${subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a> for the latest details.</p>`;
+        default:
+            return null;
+    }
+};
+
+const buildPlanFeatureContent = (context, planName) => {
+    const fallback = createStatusFallback(context, `Loading ${planName} plan details&hellip;`);
+    if (fallback) {
+        return fallback;
+    }
+
+    const lookup = createTierLookup(context.tiers);
+    const tier = getTier(lookup, planName);
+
+    if (!tier) {
+        return `<p>We couldn't find up-to-date information for the ${escapeHtml(planName)} plan. Please check the <a href="${context.subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a> for the latest features.</p>`;
+    }
+
+    const priceLabel = formatPriceLabel(tier.price);
+    const subheader = tier.subheader ? escapeHtml(tier.subheader) : '';
+    const features = normalizeDescription(tier.description);
+
+    const introMeta = [];
+    if (priceLabel) {
+        introMeta.push(priceLabel);
+    }
+    if (subheader) {
+        introMeta.push(subheader);
+    }
+
+    const introSuffix = introMeta.length ? ` &mdash; ${introMeta.join(' • ')}` : '';
+    const intro = `<p>The <strong>${escapeHtml(tier.title)}</strong> Plan${introSuffix}${features.length ? ' includes:' : ' is designed to help you scale your monitoring.'}</p>`;
+
+    const featureList = features.length
+        ? `<ul>${features.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`
+        : '';
+
+    const outro = `<p>For the complete, always-current feature list, visit the <a href="${context.subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a>.</p>`;
+
+    return `${intro}${featureList}${outro}`;
+};
+
+const extractMatchingLine = (tier, regex) => {
+    const features = normalizeDescription(tier?.description);
+    return features.find((line) => regex.test(line));
+};
+
+const buildTokenLimitContent = (context) => {
+    const fallback = createStatusFallback(context, 'Loading current token limits&hellip;');
+    if (fallback) {
+        return fallback;
+    }
+
+    const lookup = createTierLookup(context.tiers);
+    const items = PLAN_ORDER.map((name) => {
+        const tier = getTier(lookup, name);
+        if (!tier) {
+            return `<li><strong>${escapeHtml(name)} Plan:</strong> See the <a href="${context.subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a> for the latest token allocation.</li>`;
+        }
+        const tokenLine = extractMatchingLine(tier, /token/i) || extractMatchingLine(tier, /AI/i);
+        if (tokenLine) {
+            return `<li><strong>${escapeHtml(tier.title)} Plan:</strong> ${escapeHtml(tokenLine)}</li>`;
+        }
+        return `<li><strong>${escapeHtml(tier.title)} Plan:</strong> Token limits are outlined on the <a href="${context.subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a>.</li>`;
+    });
+
+    return `<p>The AI-powered assistants reference the latest subscription data for token limits:</p><ul>${items.join('')}</ul><p>These limits reset daily, so you always have the most recent entitlements applied automatically.</p>`;
+};
+
+const buildPlanFitContent = (context) => {
+    const fallback = createStatusFallback(context, 'Loading plan comparison details&hellip;');
+    if (fallback) {
+        return fallback;
+    }
+
+    const lookup = createTierLookup(context.tiers);
+    const items = PLAN_ORDER.map((name) => {
+        const tier = getTier(lookup, name);
+        if (!tier) {
+            return `<li><strong>${escapeHtml(name)} Plan:</strong> Visit the <a href="${context.subscriptionHref}" target="_blank" rel="noopener noreferrer">subscription page</a> to see who this plan is designed for.</li>`;
+        }
+        const summary = tier.subheader || extractMatchingLine(tier, /(monitor|ideal|perfect|scale|host)/i) || 'See the subscription page for the latest guidance.';
+        return `<li><strong>${escapeHtml(tier.title)} Plan:</strong> ${escapeHtml(summary)}</li>`;
+    });
+
+    return `<p>Use this guide to quickly match a plan to your monitoring needs:</p><ul>${items.join('')}</ul><p>You can adjust or upgrade at any time as your infrastructure grows.</p>`;
+};
+
+const dynamicContentBuilders = {
+    "What are the token limits in each plan?": buildTokenLimitContent,
+    "What features are available with the Free Plan?": (context) => buildPlanFeatureContent(context, 'Free'),
+    "What features are included in the Standard Plan?": (context) => buildPlanFeatureContent(context, 'Standard'),
+    "What does the Professional Plan offer?": (context) => buildPlanFeatureContent(context, 'Professional'),
+    "What features are in the Enterprise Plan?": (context) => buildPlanFeatureContent(context, 'Enterprise'),
+    "How do I know which plan is right for me?": buildPlanFitContent,
+};
+
+const visualGuides = [
+    {
+        id: 'charts',
+        title: 'Visual Guide 1',
+        subtitle: 'See Your Charts in Motion',
+        description: 'Take a 45-second tour of the real-time charts and learn how to spot latency spikes before they become incidents.',
+        videoSrc: '/img/how-to-charts.webm',
+        accent: '#36c5f0',
+    },
+    {
+        id: 'hosts',
+        title: 'Visual Guide 2',
+        subtitle: 'Add Hosts in Seconds',
+        description: 'Watch the streamlined host onboarding flow and learn a few pro tips for tagging and organizing your infrastructure.',
+        videoSrc: '/img/how-to-login.webm',
+        accent: '#ff6f61',
+    },
+];
 
 const Faq = () => {
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
@@ -730,20 +895,117 @@ const Faq = () => {
         setOpen(false);
     };
 
+    const [tiers, setTiers] = React.useState([]);
+    const [tiersStatus, setTiersStatus] = React.useState('idle'); // idle | loading | success | empty | error
+    const [tiersError, setTiersError] = React.useState('');
+
+    React.useEffect(() => {
+        if (typeof window === 'undefined') {
+            setTiersStatus('empty');
+            return;
+        }
+
+        let isMounted = true;
+
+        const loadTiers = async () => {
+            setTiersStatus('loading');
+            setTiersError('');
+            try {
+                const siteId = getStartSiteId();
+                const fetched = await fetchTiers(siteId);
+                if (!isMounted) {
+                    return;
+                }
+                if (Array.isArray(fetched) && fetched.length > 0) {
+                    setTiers(fetched);
+                    setTiersStatus('success');
+                } else {
+                    setTiers([]);
+                    setTiersStatus('empty');
+                }
+            } catch (error) {
+                if (!isMounted) {
+                    return;
+                }
+                setTiers([]);
+                setTiersStatus('error');
+                setTiersError(error instanceof Error ? error.message : 'Unable to load plan information.');
+                console.warn('Faq: failed to load subscription tiers', error);
+            }
+        };
+
+        loadTiers();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    const subscriptionHref = React.useMemo(() => {
+        const domain = getBaseDomain();
+        if (domain) {
+            return `https://${domain}/subscription`;
+        }
+        return '/subscription';
+    }, []);
+
+    const tierContext = React.useMemo(
+        () => ({
+            status: tiersStatus,
+            tiers,
+            error: tiersError,
+            subscriptionHref,
+        }),
+        [tiersStatus, tiers, tiersError, subscriptionHref],
+    );
+
+    const faqRows = React.useMemo(
+        () =>
+            data.rows.map((row) => {
+                const builder = dynamicContentBuilders[row.title];
+                if (!builder) {
+                    return row;
+                }
+                return {
+                    ...row,
+                    content: builder(tierContext),
+                };
+            }),
+        [tierContext],
+    );
+
     const normalizedQuery = searchQuery.trim().toLowerCase();
 
     const filteredFaqs = React.useMemo(() => {
+        const sourceRows = faqRows;
         if (!normalizedQuery) {
-            return data.rows;
+            return sourceRows;
         }
-        return data.rows.filter((faq) => {
+        return sourceRows.filter((faq) => {
             const plainContent = stripHtml(faq.content).toLowerCase();
             return (
                 faq.title.toLowerCase().includes(normalizedQuery) ||
                 plainContent.includes(normalizedQuery)
             );
         });
-    }, [normalizedQuery]);
+    }, [normalizedQuery, faqRows]);
+
+    const handleDownloadFAQAsJson = React.useCallback(() => {
+        const simplified = faqRows.map((row) => ({
+            input: row.title,
+            output: stripHtml(row.content),
+        }));
+
+        const blob = new Blob([JSON.stringify(simplified, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'faq.json';
+        a.click();
+
+        URL.revokeObjectURL(url);
+    }, [faqRows]);
 
     const accordionPalette = React.useMemo(
         () => ({
@@ -835,28 +1097,7 @@ const Faq = () => {
                     </Grid>
 
                     <hr></hr>
-                    <Grid align="center">
-                        <Grid container
-                            direction="rows"
-                            justifyContent="space-around"
-                            alignItems="center"
-                        >
-                            <Grid item  >
-                                <Typography variant="body2" color="textSecondary" align="center">
-                                    <HashLink to="/#blog-post1" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })} className={classes.link}>
-                                        Visual Guide 1 : View Charts
-                                    </HashLink>
-                                </Typography>
-                            </Grid>
-                            <Grid item >
-                                <Typography variant="body2" color="textSecondary" align="center">
-                                    <HashLink to="/#blog-post2" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })} className={classes.link}>
-                                        Visual Guide 2 : Add Hosts
-                                    </HashLink>
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </Grid>
+                    <VisualGuides guides={visualGuides} />
 
                     <hr></hr>
                     {/* Search Field */}
@@ -927,7 +1168,7 @@ const Faq = () => {
 
                     <hr />
                     <Grid container justifyContent="center" style={{ marginTop: 20 }}>
-                        <button onClick={downloadFAQAsJson}>📥 Download FAQ as JSON</button>
+                        <button onClick={handleDownloadFAQAsJson}>📥 Download FAQ as JSON</button>
                     </Grid>
                     <Footer />
                 </Container>
