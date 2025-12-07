@@ -318,7 +318,7 @@ const ProductDetail = () => {
                                                     <Typography
                                                         component="span"
                                                         sx={interactiveStyles.assistantTrigger}
-                                                        onClick={() => sendToAssistant(setIsChatOpen, "Explain how the secutiry expert performs a nmap scan")}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "Explain how the Security expert performs a nmap scan")}
                                                     >
                                                         Nmap
                                                     </Typography>
@@ -336,7 +336,7 @@ const ProductDetail = () => {
                                                     <Typography
                                                         component="span"
                                                         sx={interactiveStyles.assistantTrigger}
-                                                        onClick={() => sendToAssistant(setIsChatOpen, "How can the secutiry expert use openssl to test my security configuration")}
+                                                        onClick={() => sendToAssistant(setIsChatOpen, "How can the Security expert use openssl to test my security configuration")}
                                                     >
                                                         OpenSSL
                                                     </Typography>
