@@ -11,6 +11,7 @@ import NmapIcon from '@mui/icons-material/Search';
 import NmapVulnIcon from '@mui/icons-material/BugReport';
 import CrawlSiteIcon from '@mui/icons-material/Public';
 import HugIcon from '@mui/icons-material/AccessAlarm';
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
 
 // Shared map so both dashboards resolve endpoint icons consistently.
 export const endpointIconComponentMap = {
@@ -27,6 +28,7 @@ export const endpointIconComponentMap = {
   NmapVulnIcon,
   CrawlSiteIcon,
   HugIcon,
+  BluetoothIcon,
 };
 
 export const getEndpointIcon = (iconName) => endpointIconComponentMap[iconName] ?? null;
