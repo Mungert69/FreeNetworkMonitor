@@ -3,6 +3,8 @@
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
 import SaveIcon from '@mui/icons-material/Save';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
   Dialog,
   DialogTitle,
@@ -14,6 +16,8 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
+  IconButton,
+  InputAdornment,
   useMediaQuery,
 } from '@mui/material';
 
@@ -140,10 +144,16 @@ const EditHostDialog = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [editedHost, setEditedHost] = useState({ ...host });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (host) {
-      setEditedHost({ ...host });
+      setEditedHost({
+        ...host,
+        username: host.username ?? '',
+        password: host.password ?? '',
+        args: host.args ?? '',
+      });
     }
   }, [host]);
 
@@ -242,6 +252,60 @@ const EditHostDialog = ({
                   />
                 }
                 label="Enabled"
+              />
+            </Grid>
+
+            {/* Username */}
+            <Grid item xs={12}>
+              <TextField
+                label="Username"
+                value={editedHost.username}
+                onChange={(e) => handleChange('username', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Optional username or identifier"
+                margin="dense"
+              />
+            </Grid>
+
+            {/* Password / Key */}
+            <Grid item xs={12}>
+              <TextField
+                label="Password / Key"
+                type={showPassword ? 'text' : 'password'}
+                value={editedHost.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Optional password or key"
+                margin="dense"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        edge="end"
+                        size="small"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+
+            {/* Args */}
+            <Grid item xs={12}>
+              <TextField
+                label="Args"
+                value={editedHost.args}
+                onChange={(e) => handleChange('args', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Extra command-style arguments"
+                margin="dense"
               />
             </Grid>
 
