@@ -20,9 +20,13 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
 
   const hasData = Array.isArray(data) && data.length > 0;
   const [isStatusExpanded, setIsStatusExpanded] = React.useState(false);
+  const [hasStatusOverflow, setHasStatusOverflow] = React.useState(false);
   const [areDetailsVisible, setAreDetailsVisible] = React.useState(false);
+  const statusTextRef = React.useRef(null);
 
   const chartHeight = fullScreen ? 'max(360px, calc(100vh - 320px))' : 'clamp(260px, 45vh, 400px)';
+  const statusCollapsedHeight = 52;
+  const statusExpandedMaxHeight = 220;
 
   const summary = React.useMemo(() => {
     if (!hasData) {
@@ -177,6 +181,47 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
   React.useEffect(() => {
     setIsStatusExpanded(false);
   }, [details.statusText]);
+
+  React.useLayoutEffect(() => {
+    if (!areDetailsVisible) {
+      setHasStatusOverflow(false);
+      return undefined;
+    }
+
+    const statusNode = statusTextRef.current;
+    if (!statusNode) {
+      return undefined;
+    }
+
+    const measureOverflow = () => {
+      const fullHeight = statusNode.scrollHeight;
+      setHasStatusOverflow(fullHeight > statusCollapsedHeight + 1);
+    };
+
+    measureOverflow();
+
+    let resizeObserver;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(measureOverflow);
+      resizeObserver.observe(statusNode);
+    } else {
+      window.addEventListener('resize', measureOverflow);
+    }
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener('resize', measureOverflow);
+      }
+    };
+  }, [areDetailsVisible, details.statusText, statusCollapsedHeight]);
+
+  React.useEffect(() => {
+    if (!hasStatusOverflow && isStatusExpanded) {
+      setIsStatusExpanded(false);
+    }
+  }, [hasStatusOverflow, isStatusExpanded]);
 
   const {
     currentDataSet,
@@ -365,21 +410,32 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
                   <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, color: alpha(theme.palette.text.secondary, 0.9) }}>
                     Status details
                   </Typography>
-                  <Button size="small" onClick={() => setIsStatusExpanded(prev => !prev)}>
-                    {isStatusExpanded ? 'Show less' : 'Show more'}
-                  </Button>
+                  {hasStatusOverflow && (
+                    <Button size="small" onClick={() => setIsStatusExpanded(prev => !prev)}>
+                      {isStatusExpanded ? 'Show less' : 'Show more'}
+                    </Button>
+                  )}
                 </Stack>
-                <Collapse in={isStatusExpanded} collapsedSize={52} timeout="auto">
-                  <Typography
-                    variant="body2"
+                <Collapse in={isStatusExpanded} collapsedSize={statusCollapsedHeight} timeout="auto">
+                  <Box
                     sx={{
                       mt: 0.75,
-                      color: theme.palette.text.primary,
-                      whiteSpace: 'pre-line',
+                      maxHeight: isStatusExpanded ? statusExpandedMaxHeight : 'none',
+                      overflowY: isStatusExpanded ? 'auto' : 'visible',
+                      pr: isStatusExpanded ? 0.5 : 0,
                     }}
                   >
-                    {details.statusText}
-                  </Typography>
+                    <Typography
+                      ref={statusTextRef}
+                      variant="body2"
+                      sx={{
+                        color: theme.palette.text.primary,
+                        whiteSpace: 'pre-line',
+                      }}
+                    >
+                      {details.statusText}
+                    </Typography>
+                  </Box>
                 </Collapse>
               </Box>
             )}
