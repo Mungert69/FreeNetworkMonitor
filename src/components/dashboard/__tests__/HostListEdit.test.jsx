@@ -176,6 +176,6 @@ describe('HostListEdit', () => {
     });
 
     const [, payload] = saveHostData.mock.calls[0];
-    expect(payload[0]).toMatchObject({ address: 'newhost.com' });
+    expect(payload.some((row) => row.address === 'newhost.com')).toBe(true);
   });
 });

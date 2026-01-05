@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Badge, Box, IconButton, Tooltip, useMediaQuery } from '@mui/material';
+import { Badge, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
@@ -156,7 +156,7 @@ const HostListEditToolbar = ({
   </GridToolbarContainer>
 );
 
-export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
+export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpdateToken }) => {
   const { userInfo } = useFusionAuth();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -172,6 +172,11 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
   const [editingModelConfigHost, setEditingModelConfigHost] = useState(null);
   const [isModelConfigDialogOpen, setIsModelConfigDialogOpen] = useState(false);
+  const [isLlmConflictDialogOpen, setIsLlmConflictDialogOpen] = useState(false);
+  const [llmConflictSummary, setLlmConflictSummary] = useState(null);
+  const pendingLlmDataRef = useRef(null);
+  const localDraftRef = useRef(null);
+  const baselineDataRef = useRef(null);
 
   const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
   const persistedState = useMemo(() => {
@@ -274,6 +279,111 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
   );
 
   useEffect(() => {
+    if (isEdited && !baselineDataRef.current) {
+      baselineDataRef.current = data;
+    }
+    if (!isEdited) {
+      baselineDataRef.current = null;
+    }
+  }, [data, isEdited]);
+
+  const normalizeRowForCompare = useCallback((row) => {
+    if (!row) {
+      return null;
+    }
+    return {
+      id: row.id ?? row.monitorIPID ?? null,
+      address: row.address,
+      endPointType: row.endPointType,
+      timeout: row.timeout,
+      port: row.port,
+      enabled: row.enabled,
+      hidden: row.hidden,
+      appID: row.appID,
+      username: row.username,
+      password: row.password,
+      args: row.args,
+      monitorModelConfigId: row.monitorModelConfigId,
+      modelConfig: row.modelConfig ?? null,
+    };
+  }, []);
+
+  const buildRowMaps = useCallback(
+    (rows) => {
+      const map = new Map();
+      (rows ?? []).forEach((row) => {
+        map.set(getRowIdentifier(row), normalizeRowForCompare(row));
+      });
+      return map;
+    },
+    [getRowIdentifier, normalizeRowForCompare],
+  );
+
+  const computeConflictSummary = useCallback(
+    (baseRows, localRows, remoteRows) => {
+      const baseMap = buildRowMaps(baseRows);
+      const localMap = buildRowMaps(localRows);
+      const remoteMap = buildRowMaps(remoteRows);
+      const allIds = new Set([...baseMap.keys(), ...localMap.keys(), ...remoteMap.keys()]);
+      const conflictIds = new Set();
+
+      allIds.forEach((rowId) => {
+        const base = baseMap.get(rowId);
+        const local = localMap.get(rowId);
+        const remote = remoteMap.get(rowId);
+
+        if (!base || !local || !remote) {
+          return;
+        }
+
+        Object.keys(base).forEach((field) => {
+          const baseVal = base[field];
+          const localVal = local[field];
+          const remoteVal = remote[field];
+          if (localVal !== baseVal && remoteVal !== baseVal && localVal !== remoteVal) {
+            conflictIds.add(rowId);
+          }
+        });
+      });
+
+      return {
+        totalConflicts: conflictIds.size,
+      };
+    },
+    [buildRowMaps],
+  );
+
+  const applyRemoteMerge = useCallback(
+    (baseRows, localRows, remoteRows) => {
+      const baseMap = buildRowMaps(baseRows);
+      const localMap = buildRowMaps(localRows);
+      const remoteMap = buildRowMaps(remoteRows);
+      const mergedRows = (localRows ?? []).map((row) => {
+        const rowId = getRowIdentifier(row);
+        const base = baseMap.get(rowId);
+        const local = localMap.get(rowId);
+        const remote = remoteMap.get(rowId);
+        if (!base || !local || !remote) {
+          return row;
+        }
+        const merged = { ...row };
+        Object.keys(base).forEach((field) => {
+          const baseVal = base[field];
+          const localVal = local[field];
+          const remoteVal = remote[field];
+          if (localVal === baseVal && remoteVal !== baseVal) {
+            merged[field] = remoteVal;
+          }
+        });
+        return merged;
+      });
+
+      return mergedRows;
+    },
+    [buildRowMaps, getRowIdentifier],
+  );
+
+  useEffect(() => {
     if (!defaultSearchValue) {
       return;
     }
@@ -344,6 +454,50 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
 
     fetchData();
   }, [arrangeRowsForDisplay, resetToggle, siteId, userInfo]);
+
+  const lastProcessedLlmTokenRef = useRef(null);
+
+  useEffect(() => {
+    if (!llmUpdateToken || siteId === null || siteId === undefined) {
+      return;
+    }
+
+    if (lastProcessedLlmTokenRef.current === llmUpdateToken) {
+      return;
+    }
+    lastProcessedLlmTokenRef.current = llmUpdateToken;
+
+    const handleLlmUpdate = async () => {
+      if (!isEdited) {
+        setResetToggle((prev) => !prev);
+        return;
+      }
+
+      try {
+        localDraftRef.current = data;
+        const remoteRows = await fetchEditHostData(siteId, userInfo);
+        if (!remoteRows) {
+          return;
+        }
+        pendingLlmDataRef.current = remoteRows;
+        const baseRows = baselineDataRef.current ?? data;
+        const summary = computeConflictSummary(baseRows, data, remoteRows);
+        if (summary.totalConflicts === 0) {
+          const merged = applyRemoteMerge(baseRows, data, remoteRows);
+          setData(merged);
+          setMessage({ text: 'Network Monitor Assistant updates merged with your edits.', success: true, info: false });
+          return;
+        }
+        console.warn('HostListEdit detected Network Monitor Assistant edit conflicts', summary);
+        setLlmConflictSummary(summary);
+        setIsLlmConflictDialogOpen(true);
+      } catch (error) {
+        console.error('Error processing Network Monitor Assistant host update', error);
+      }
+    };
+
+    handleLlmUpdate();
+  }, [applyRemoteMerge, computeConflictSummary, data, isEdited, llmUpdateToken, siteId, userInfo]);
 
   const processorMap = useMemo(() => {
     const map = new Map();
@@ -446,15 +600,47 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         if (response.success) {
           setIsEdited(false);
         }
+        return response;
       } catch (error) {
         console.error('Error saving data', error);
         setMessage({ text: 'Failed to save data.', success: false, info: false });
+        return { success: false };
       } finally {
         setDisplayEdit(true);
       }
     },
     [data, siteId, getRowIdentifier],
   );
+
+  const handleKeepLocalChanges = useCallback(async () => {
+    const localRows = localDraftRef.current ?? data;
+    setIsLlmConflictDialogOpen(false);
+    setLlmConflictSummary(null);
+    pendingLlmDataRef.current = null;
+    const response = await saveData(localRows);
+    if (response?.success) {
+      setResetToggle((prev) => !prev);
+    }
+  }, [data, saveData]);
+
+  const handleAcceptLlmChanges = useCallback(() => {
+    const remoteRows = pendingLlmDataRef.current;
+    setIsLlmConflictDialogOpen(false);
+    setLlmConflictSummary(null);
+    pendingLlmDataRef.current = null;
+    if (Array.isArray(remoteRows)) {
+      setData(remoteRows);
+      setIsEdited(false);
+      setResetToggle((prev) => !prev);
+    }
+  }, []);
+
+  const handleDismissLlmDialog = useCallback(() => {
+    setIsLlmConflictDialogOpen(false);
+    setLlmConflictSummary(null);
+    pendingLlmDataRef.current = null;
+    localDraftRef.current = null;
+  }, []);
 
   const handleEditSave = useCallback(
     async (editedHost) => {
@@ -464,9 +650,14 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         );
         setData(updatedData);
         setIsEdited(true);
-        await saveData(updatedData);
-        setIsEdited(false);
-        closeEditDialog();
+        const response = await saveData(updatedData);
+        if (response?.success) {
+          setIsEdited(false);
+          closeEditDialog();
+          setResetToggle((prev) => !prev);
+        } else {
+          setIsEdited(true);
+        }
       } catch (error) {
         console.error('Error saving edited host', error);
         setMessage({ text: 'Failed to save edited host.', success: false, info: false });
@@ -778,6 +969,22 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue }) => {
         host={editingModelConfigHost}
         onSave={handleModelConfigSave}
       />
+      <Dialog open={isLlmConflictDialogOpen} onClose={handleDismissLlmDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>Network Monitor Assistant updates detected</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            The assistant updated hosts while you were editing. We detected {llmConflictSummary?.totalConflicts ?? 0} conflicting host updates.
+          </Typography>
+          <Typography variant="body2">
+            Choose whether to keep your edits (this will overwrite the Network Monitor Assistant changes) or accept the Network Monitor Assistant updates.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDismissLlmDialog}>Decide later</Button>
+          <Button onClick={handleAcceptLlmChanges} color="warning">Accept Network Monitor Assistant updates</Button>
+          <Button onClick={handleKeepLocalChanges} variant="contained">Keep my edits</Button>
+        </DialogActions>
+      </Dialog>
       <Box sx={{ width: '100%', height: '100%' }}>
         <DataGrid
           rows={rows}

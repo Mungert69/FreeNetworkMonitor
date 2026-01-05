@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChatState } from './useChatState';
 import { useWebSocket } from './useWebSocket';
 
-function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, siteId, isChartDialogOpen = false, closeChartDialog }) {
+function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType, setIsChatOpen, siteId, isChartDialogOpen = false, closeChartDialog }) {
   const chatState = useChatState();
   const {
     // Audio and UI state
@@ -69,7 +69,8 @@ function Chat({ onHostLinkClick, isDashboard, initRunnerType, setIsChatOpen, sit
     siteId,
     isDashboard,
     chatState,
-    audioPlayerRef
+    audioPlayerRef,
+    onHostListUpdated,
   });
 
   const processAudioBlob = async (audioBlob) => {

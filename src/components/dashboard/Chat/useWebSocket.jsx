@@ -7,6 +7,7 @@ export const useWebSocket = ({
   isDashboard,
   chatState,
   audioPlayerRef,
+  onHostListUpdated,
 }) => {
   const webSocketRef = useRef(null);
   const [reconnect, setReconnect] = useState(false);
@@ -70,14 +71,20 @@ export const useWebSocket = ({
       return null; // Handle gracefully in case of JSON parsing error
     }
 
-    if (!jsonData || !jsonData.name || !jsonData.dataJson) {
+    if (!jsonData || !jsonData.name || jsonData.dataJson === undefined || jsonData.dataJson === null) {
       console.error("Malformed function data received:", jsonData);
       return null; // Handle missing fields gracefully
     }
 
+    console.log('LLM function data received:', jsonData);
+
+    const dataArray = Array.isArray(jsonData.dataJson)
+      ? jsonData.dataJson
+      : [jsonData.dataJson];
+
     switch (jsonData.name) {
       case "get_host_list":
-        return jsonData.dataJson.map((host) => {
+        return dataArray.map((host) => {
           let newHost = { ...host };
           if (host.UserID !== "default") {
             newHost.isHostList = true;
@@ -87,7 +94,7 @@ export const useWebSocket = ({
         });
 
       case "get_host_data":
-        return jsonData.dataJson.map((host) => {
+        return dataArray.map((host) => {
           let newHost = { ...host };
           newHost.isHostData = true;
           return newHost;
@@ -95,7 +102,13 @@ export const useWebSocket = ({
 
       case "add_host":
       case "edit_host":
-        return jsonData.dataJson.map((host) => {
+      case "delete_host":
+        console.log('LLM host update handler available:', typeof onHostListUpdated);
+        if (typeof onHostListUpdated === 'function') {
+          onHostListUpdated();
+          console.log('LLM host update handler invoked');
+        }
+        return dataArray.map((host) => {
           let newHost = { ...host };
           if (host.UserID !== "default") {
             newHost.isHostList = true;

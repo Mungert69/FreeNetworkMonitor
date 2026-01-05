@@ -45,6 +45,7 @@ export default function Dashboard() {
   const [alertCount, setAlertCount] = React.useState(0);
   const [toggleTable, setToggleTable] = React.useState(true);
   const [reloadListData, setReloadListData] = React.useState(true);
+  const [llmHostUpdateToken, setLlmHostUpdateToken] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [realTime, setRealTime] = React.useState(true);
   const [dateStart, setDateStart] = React.useState();
@@ -122,6 +123,13 @@ export default function Dashboard() {
     //console.log("Host Link Clicked with host data:", JSON.stringify(hostData));
   }, [handleSetDataSetId, clickViewChart, closeChartDialog]);
 
+  const handleHostListUpdated = useCallback(() => {
+    console.log('LLM host update detected, refreshing lists');
+    setReloadListData((currentVal) => !currentVal);
+    setLlmHostUpdateToken((currentVal) => currentVal + 1);
+  }, []);
+
+
   const hostListProps = useMemo(
     () => ({
       siteId,
@@ -160,13 +168,15 @@ export default function Dashboard() {
       siteId,
       processorList,
       defaultSearchValue,
+      llmUpdateToken: llmHostUpdateToken,
     }),
-    [siteId, processorList, defaultSearchValue],
+    [siteId, processorList, defaultSearchValue, llmHostUpdateToken],
   );
 
   const chatProps = useMemo(
     () => ({
       onHostLinkClick: handleHostLinkClick,
+      onHostListUpdated: handleHostListUpdated,
       isDashboard: true,
       initRunnerType: "TurboLLM",
       setIsChatOpen,
@@ -174,7 +184,7 @@ export default function Dashboard() {
       isChartDialogOpen,
       closeChartDialog,
     }),
-    [handleHostLinkClick, setIsChatOpen, siteId, isChartDialogOpen, closeChartDialog],
+    [handleHostLinkClick, handleHostListUpdated, setIsChatOpen, siteId, isChartDialogOpen, closeChartDialog],
   );
 
   const chartProps = useMemo(
