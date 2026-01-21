@@ -1,7 +1,7 @@
 // File: src/components/EditHostDialog.js
 
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SaveIcon from '@mui/icons-material/Save';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -139,12 +139,32 @@ const EditHostDialog = ({
   endpointTypes,
   processorList,
   onSave,
+  onLocationChange,
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [editedHost, setEditedHost] = useState({ ...host });
   const [showPassword, setShowPassword] = useState(false);
+
+  const endpointTypeOptions = useMemo(() => {
+    const options = (endpointTypes ?? []).map((type) => ({
+      value: type.internalType,
+      label: type.name,
+    }));
+    const currentType = host?.endPointType;
+    const normalizedCurrent = String(currentType ?? '').toLowerCase();
+    if (
+      normalizedCurrent &&
+      !options.some((option) => String(option.value ?? '').toLowerCase() === normalizedCurrent)
+    ) {
+      options.push({
+        value: currentType,
+        label: `Custom (offline): ${currentType}`,
+      });
+    }
+    return options;
+  }, [endpointTypes, host]);
 
   useEffect(() => {
     if (host) {
@@ -206,9 +226,9 @@ const EditHostDialog = ({
                 <MenuItem value="">
                   <em>Select Endpoint Type</em>
                 </MenuItem>
-                {(endpointTypes ?? []).map((type) => (
-                  <MenuItem key={type.internalType} value={type.internalType}>
-                    {type.name}
+                {endpointTypeOptions.map((type) => (
+                  <MenuItem key={type.value} value={type.value}>
+                    {type.label}
                   </MenuItem>
                 ))}
               </TextField>
@@ -314,7 +334,12 @@ const EditHostDialog = ({
               <TextField
                 label="Monitor Location"
                 value={editedHost.appID ?? ''}
-                onChange={(e) => handleChange('appID', e.target.value)}
+                onChange={(e) => {
+                  handleChange('appID', e.target.value);
+                  if (onLocationChange) {
+                    onLocationChange(e.target.value);
+                  }
+                }}
                 fullWidth
                 select
                 SelectProps={{

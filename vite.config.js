@@ -4,8 +4,8 @@ import fs from 'fs';
 import path from 'path';
 
 const isVitest = Boolean(process.env.VITEST);
-const certificateKeyPath = '/home/mahadeva/code/securefiles/dev/server-readyforquantum.key';
-const certificatePath = '/home/mahadeva/code/securefiles/dev/server-readyforquantum.crt';
+const certificateKeyPath = '/home/mahadeva/code/securefiles/dev/readyforquantum.key';
+const certificatePath = '/home/mahadeva/code/securefiles/dev/readyforquantum.crt';
 
 const httpsConfig = (() => {
   if (isVitest) {
@@ -32,7 +32,8 @@ export default defineConfig({
     : {
         server: {
           port: 8443, // You can change this to your desired port
-          host: '127.0.0.1',
+          host: 'devwww.readyforquantum.com',
+          allowedHosts: ['devwww.readyforquantum.com'],
           cors: true, // Enable CORS if needed
           ...(httpsConfig ? { https: httpsConfig } : {}),
         },

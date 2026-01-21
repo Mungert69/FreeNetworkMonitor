@@ -178,6 +178,78 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
   const localDraftRef = useRef(null);
   const baselineDataRef = useRef(null);
 
+  const applyEndpointData = useCallback((endpointData) => {
+    if (!endpointData) {
+      return;
+    }
+    const map = endpointData.reduce((acc, entry) => {
+      if (entry?.internalType) {
+        acc[entry.internalType.toLowerCase()] = entry;
+      }
+      return acc;
+    }, {});
+    setEndpointTypeMap(map);
+    setEndpointTypes(endpointData);
+  }, []);
+
+  const resolveAgentLocation = useCallback(
+    (appId) => {
+      if (!appId) {
+        return '';
+      }
+      const match = (processorList ?? []).find((row) => String(row.appID) === String(appId));
+      return match?.location ?? '';
+    },
+    [processorList],
+  );
+
+  const mergeEndpointData = useCallback(
+    (endpointData, currentType) => {
+      if (!currentType) {
+        applyEndpointData(endpointData);
+        return;
+      }
+      const normalizedCurrent = String(currentType).toLowerCase();
+      const alreadyExists = (endpointData ?? []).some(
+        (entry) => String(entry?.internalType ?? '').toLowerCase() === normalizedCurrent,
+      );
+      if (!alreadyExists) {
+        applyEndpointData([
+          ...(endpointData ?? []),
+          {
+            internalType: currentType,
+            name: `Custom (offline): ${currentType}`,
+            icon: 'CustomConnectIcon',
+            description: 'Custom endpoint type from offline agent.',
+          },
+        ]);
+        return;
+      }
+      applyEndpointData(endpointData);
+    },
+    [applyEndpointData],
+  );
+
+  const loadEndpointTypes = useCallback(
+    async (appId) => {
+      try {
+        const location = resolveAgentLocation(appId);
+        console.log('HostListEdit.loadEndpointTypes', {
+          appId,
+          location,
+        });
+        const endpointData = await fetchEndpointTypes(siteId, location);
+        const appIdValue = appId ?? '';
+        const currentType = data.find((row) => String(row?.appID ?? '') === String(appIdValue))
+          ?.endPointType;
+        mergeEndpointData(endpointData, currentType);
+      } catch (error) {
+        console.error('HostListEdit failed to fetch endpoint types', error);
+      }
+    },
+    [data, mergeEndpointData, resolveAgentLocation, siteId],
+  );
+
   const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
   const persistedState = useMemo(() => {
     if (typeof window === 'undefined') {
@@ -210,6 +282,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
   const pendingAdditionRef = useRef(false);
   const lastKnownRowIdsRef = useRef(new Set());
   const recentlyAddedRowIdsRef = useRef(new Set());
+  const lastEndpointFetchRef = useRef(null);
 
   const getRowIdentifier = useCallback(
     (row) =>
@@ -412,25 +485,15 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [hostData, endpointData] = await Promise.all([
-          fetchEditHostData(siteId, userInfo),
-          fetchEndpointTypes(siteId),
-        ]);
-
-        if (endpointData) {
-          const map = endpointData.reduce((acc, entry) => {
-            if (entry?.internalType) {
-              acc[entry.internalType.toLowerCase()] = entry;
-            }
-            return acc;
-          }, {});
-          setEndpointTypeMap(map);
-          setEndpointTypes(endpointData);
-        }
-
+        const hostData = await fetchEditHostData(siteId, userInfo);
         if (hostData) {
           const { rows: adjustedRows, newRowsAdded } = arrangeRowsForDisplay(hostData);
           setData(adjustedRows);
+          fetchEndpointTypes(siteId)
+            .then((endpointData) => mergeEndpointData(endpointData, adjustedRows?.[0]?.endPointType))
+            .catch((error) =>
+              console.error('HostListEdit failed to fetch endpoint types', error),
+            );
           if (newRowsAdded) {
             setSortModel((prevModel) => (Array.isArray(prevModel) && prevModel.length === 0
               ? prevModel
@@ -444,6 +507,11 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         } else {
           const { rows: adjustedRows } = arrangeRowsForDisplay([]);
           setData(adjustedRows);
+          fetchEndpointTypes(siteId)
+            .then((endpointData) => mergeEndpointData(endpointData, null))
+            .catch((error) =>
+              console.error('HostListEdit failed to fetch endpoint types', error),
+            );
         }
       } catch (error) {
         console.error('Error fetching host list data', error);
@@ -453,7 +521,14 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     };
 
     fetchData();
-  }, [arrangeRowsForDisplay, resetToggle, siteId, userInfo]);
+  }, [arrangeRowsForDisplay, mergeEndpointData, resetToggle, siteId, userInfo]);
+
+  useEffect(() => {
+    if (!isEditDialogOpen || !editingHost) {
+      return;
+    }
+    loadEndpointTypes(editingHost.appID);
+  }, [editingHost, isEditDialogOpen, loadEndpointTypes]);
 
   const lastProcessedLlmTokenRef = useRef(null);
 
@@ -509,6 +584,19 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     return map;
   }, [processorList]);
 
+  const processorDisabledMap = useMemo(() => {
+    const map = new Map();
+    (processorList ?? []).forEach((processor) => {
+      if (processor?.appID !== undefined && processor?.appID !== null) {
+        const disabled = (processor.disabledEndPointTypes ?? []).map((type) =>
+          String(type ?? '').toLowerCase(),
+        );
+        map.set(String(processor.appID), disabled);
+      }
+    });
+    return map;
+  }, [processorList]);
+
   const processorOptionsByRow = useCallback(
     (row) => {
       const normalizedEndpoint = `${row?.endPointType ?? ''}`.toLowerCase();
@@ -549,16 +637,55 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     }
   }, [data, editingModelConfigHost]);
 
-  const handleProcessRowUpdate = useCallback((newRow, oldRow) => {
-    const updatedRow = { ...oldRow, ...newRow };
-    setData((prev) => prev.map((row) => (row.id === oldRow.id ? updatedRow : row)));
-    setIsEdited(true);
-    return updatedRow;
-  }, []);
+  const handleProcessRowUpdate = useCallback(
+    (newRow, oldRow) => {
+      const updatedRow = { ...oldRow, ...newRow };
+      setData((prev) => prev.map((row) => (row.id === oldRow.id ? updatedRow : row)));
+      setIsEdited(true);
+      if (updatedRow.appID !== oldRow.appID) {
+        const nextAppId = updatedRow.appID ?? '';
+        const normalized = nextAppId ? String(nextAppId) : '';
+        if (normalized && lastEndpointFetchRef.current !== normalized) {
+          lastEndpointFetchRef.current = normalized;
+          loadEndpointTypes(nextAppId);
+        }
+      }
+      return updatedRow;
+    },
+    [loadEndpointTypes],
+  );
 
   const handleProcessRowUpdateError = useCallback((error) => {
     console.error('Row update failed', error);
   }, []);
+
+  const handleCellEditStop = useCallback(
+    (params) => {
+      if (params.field === 'appID') {
+        const nextAppId = params.value ?? params.row?.appID ?? '';
+        const normalized = nextAppId ? String(nextAppId) : '';
+        if (normalized && lastEndpointFetchRef.current !== normalized) {
+          lastEndpointFetchRef.current = normalized;
+          loadEndpointTypes(nextAppId);
+        }
+      }
+    },
+    [loadEndpointTypes],
+  );
+
+  const handleCellEditStart = useCallback(
+    (params) => {
+      if (params.field === 'endPointType') {
+        const nextAppId = params.row?.appID ?? '';
+        const normalized = nextAppId ? String(nextAppId) : '';
+        if (normalized && lastEndpointFetchRef.current !== normalized) {
+          lastEndpointFetchRef.current = normalized;
+          loadEndpointTypes(nextAppId);
+        }
+      }
+    },
+    [loadEndpointTypes],
+  );
 
   const openEditDialog = useCallback((row) => {
     setEditingHost(row);
@@ -818,11 +945,6 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
   );
 
   const columns = useMemo(() => {
-    const endpointOptions = endpointTypes.map((type) => ({
-      value: type.internalType,
-      label: type.name,
-    }));
-
     return [
       {
         field: 'actions',
@@ -884,11 +1006,39 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         minWidth: 180,
         editable: true,
         type: 'singleSelect',
-        valueOptions: endpointOptions,
+        valueOptions: ({ row }) => {
+          const disabled = processorDisabledMap.get(String(row?.appID ?? '')) ?? [];
+          const options = endpointTypes
+            .filter((type) => !disabled.includes(String(type.internalType ?? '').toLowerCase()))
+            .map((type) => ({
+              value: type.internalType,
+              label: type.name,
+            }));
+          const currentType = row?.endPointType;
+          const normalizedCurrent = String(currentType ?? '').toLowerCase();
+          if (
+            normalizedCurrent &&
+            !options.some((option) => String(option.value ?? '').toLowerCase() === normalizedCurrent)
+          ) {
+            options.push({
+              value: currentType,
+              label: `Custom (offline): ${currentType}`,
+            });
+          }
+          return options;
+        },
         renderCell: (params) => {
           const internalType = `${params.value ?? ''}`.toLowerCase();
           const endpointType = endpointTypeMap[internalType];
           if (!endpointType) {
+            if (params.value) {
+              return (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <ErrorIcon color="warning" fontSize="small" />
+                  <span>{`Custom (offline): ${params.value}`}</span>
+                </Box>
+              );
+            }
             return (
               <Tooltip title="Endpoint type unavailable">
                 <ErrorIcon color="warning" fontSize="small" />
@@ -905,7 +1055,13 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         },
         valueFormatter: ({ value }) => {
           const endpointType = endpointTypeMap[`${value ?? ''}`.toLowerCase()];
-          return endpointType?.name || value || '';
+          if (endpointType?.name) {
+            return endpointType.name;
+          }
+          if (value) {
+            return `Custom (offline): ${value}`;
+          }
+          return '';
         },
       },
       {
@@ -947,6 +1103,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     endpointTypes,
     isSmallScreen,
     openEditDialog,
+    processorDisabledMap,
     processorMap,
     processorOptionsByRow,
   ]);
@@ -962,6 +1119,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         endpointTypes={endpointTypes}
         processorList={processorList}
         onSave={handleEditSave}
+        onLocationChange={loadEndpointTypes}
       />
       <EditMonitorModelConfigDialog
         open={isModelConfigDialogOpen}
@@ -994,6 +1152,8 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
           density={isSmallScreen ? 'compact' : 'standard'}
           processRowUpdate={handleProcessRowUpdate}
           onProcessRowUpdateError={handleProcessRowUpdateError}
+          onCellEditStop={handleCellEditStop}
+          onCellEditStart={handleCellEditStart}
           filterModel={filterModel}
           onFilterModelChange={setFilterModel}
           sortModel={sortModel}

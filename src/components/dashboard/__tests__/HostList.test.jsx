@@ -16,7 +16,7 @@ vi.mock('../DataSetsList', () => ({
 }));
 
 vi.mock('../ServiceAPI', () => ({
-  fetchEndpointTypes: vi.fn().mockResolvedValue([
+  fetchEndpointTypesForLocations: vi.fn().mockResolvedValue([
     {
       internalType: 'HTTP',
       name: 'HTTP',
