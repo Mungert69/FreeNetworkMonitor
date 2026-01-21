@@ -16,14 +16,16 @@ vi.mock('../DataSetsList', () => ({
 }));
 
 vi.mock('../ServiceAPI', () => ({
-  fetchEndpointTypesForLocations: vi.fn().mockResolvedValue([
-    {
-      internalType: 'HTTP',
-      name: 'HTTP',
-      description: 'HTTP Endpoint',
-      icon: 'HttpIcon',
-    },
-  ]),
+  fetchEndpointTypesForLocations: vi.fn().mockResolvedValue({
+    'New York': [
+      {
+        internalType: 'HTTP',
+        name: 'HTTP',
+        description: 'HTTP Endpoint',
+        icon: 'HttpIcon',
+      },
+    ],
+  }),
 }));
 
 const baseProps = {

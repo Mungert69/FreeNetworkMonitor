@@ -147,24 +147,54 @@ const EditHostDialog = ({
   const [editedHost, setEditedHost] = useState({ ...host });
   const [showPassword, setShowPassword] = useState(false);
 
-  const endpointTypeOptions = useMemo(() => {
-    const options = (endpointTypes ?? []).map((type) => ({
-      value: type.internalType,
-      label: type.name,
-    }));
-    const currentType = host?.endPointType;
-    const normalizedCurrent = String(currentType ?? '').toLowerCase();
-    if (
-      normalizedCurrent &&
-      !options.some((option) => String(option.value ?? '').toLowerCase() === normalizedCurrent)
-    ) {
-      options.push({
-        value: currentType,
-        label: `Custom (offline): ${currentType}`,
+  const customConnectsByApp = useMemo(() => {
+    const map = new Map();
+    (processorList ?? []).forEach((processor) => {
+      if (processor?.appID !== undefined && processor?.appID !== null) {
+        const custom = Array.isArray(processor.customConnects)
+          ? processor.customConnects
+          : [];
+        map.set(
+          String(processor.appID),
+          custom.map((type) => String(type ?? '').toLowerCase()),
+        );
+      }
+    });
+    return map;
+  }, [processorList]);
+
+  const globalCustomConnects = useMemo(() => {
+    const set = new Set();
+    (processorList ?? []).forEach((processor) => {
+      (processor.customConnects ?? []).forEach((type) => {
+        if (type) {
+          set.add(String(type).toLowerCase());
+        }
       });
-    }
-    return options;
-  }, [endpointTypes, host]);
+    });
+    return set;
+  }, [processorList]);
+
+  const filteredEndpointTypes = useMemo(() => {
+    const disabled = (processorList ?? [])
+      .find((processor) => String(processor.appID) === String(editedHost.appID))
+      ?.disabledEndPointTypes ?? [];
+    const disabledSet = new Set(
+      disabled.map((type) => String(type ?? '').toLowerCase()),
+    );
+    const allowedCustom = customConnectsByApp.get(String(editedHost.appID ?? '')) ?? [];
+    return (endpointTypes ?? []).filter((type) => {
+      const internalType = String(type.internalType ?? '').toLowerCase();
+      if (disabledSet.has(internalType)) {
+        return false;
+      }
+      if (globalCustomConnects.has(internalType)) {
+        return allowedCustom.includes(internalType);
+      }
+      return true;
+    });
+  }, [customConnectsByApp, editedHost.appID, endpointTypes, globalCustomConnects, processorList]);
+
 
   useEffect(() => {
     if (host) {
@@ -226,9 +256,9 @@ const EditHostDialog = ({
                 <MenuItem value="">
                   <em>Select Endpoint Type</em>
                 </MenuItem>
-                {endpointTypeOptions.map((type) => (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.label}
+                {filteredEndpointTypes.map((type) => (
+                  <MenuItem key={type.internalType} value={type.internalType}>
+                    {type.name}
                   </MenuItem>
                 ))}
               </TextField>

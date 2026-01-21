@@ -427,7 +427,17 @@ export const HostList = ({
     if (!endpointData) {
       return;
     }
-    const map = endpointData.reduce((acc, entry) => {
+    const allTypes = [];
+    if (Array.isArray(endpointData)) {
+      allTypes.push(...endpointData);
+    } else if (typeof endpointData === 'object') {
+      Object.values(endpointData).forEach((list) => {
+        if (Array.isArray(list)) {
+          allTypes.push(...list);
+        }
+      });
+    }
+    const map = allTypes.reduce((acc, entry) => {
       if (entry?.internalType) {
         acc[entry.internalType.toLowerCase()] = entry;
       }

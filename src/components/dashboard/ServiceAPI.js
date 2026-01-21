@@ -354,7 +354,7 @@ export const fetchEndpointTypes = async (baseUrlId, agentLocation = '') => {
 }
 
 export const fetchEndpointTypesForLocations = async (baseUrlId, agentLocations = []) => {
-    var data = [];
+    var data = {};
     axiosRetry(axios, { retries: 3 });
     const locations = Array.isArray(agentLocations)
         ? agentLocations.filter((location) => location && String(location).trim() !== '')
@@ -381,10 +381,17 @@ export const fetchEndpointTypesForLocations = async (baseUrlId, agentLocations =
     }));
 
     try {
-        result.data.data.map((row) => {
-            console.log('Found EndPointType '+JSON.stringify(row));
-            data.push(row);
-        });
+        const responseData = result?.data?.data;
+        if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
+            data = Object.entries(responseData).reduce((acc, [location, list]) => {
+                if (Array.isArray(list)) {
+                    acc[location] = list;
+                }
+                return acc;
+            }, {});
+        } else {
+            console.log('ServiceAPI.fetchEndpointTypesForLocations received invalid data', responseData);
+        }
     }
     catch (error) {
         console.log('ServiceAPI.fetchEndpointTypesForLocations Mapping Data Error was : ' + error);
@@ -393,7 +400,7 @@ export const fetchEndpointTypesForLocations = async (baseUrlId, agentLocations =
         return undefined;
     }
 
-    console.log('ServiceAPI.fetchEndpointTypesForLocations fetched ' + data.length + ' endpoint types');
+    console.log('ServiceAPI.fetchEndpointTypesForLocations fetched ' + Object.keys(data).length + ' agent endpoint sets');
     return data;
 }
  

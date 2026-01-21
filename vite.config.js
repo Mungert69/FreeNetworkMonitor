@@ -32,9 +32,15 @@ export default defineConfig({
     : {
         server: {
           port: 8443, // You can change this to your desired port
-          host: 'devwww.readyforquantum.com',
+          host: '0.0.0.0',
           allowedHosts: ['devwww.readyforquantum.com'],
           cors: true, // Enable CORS if needed
+          hmr: {
+            host: 'devwww.readyforquantum.com',
+            protocol: 'wss',
+            port: 8443,
+            clientPort: 443,
+          },
           ...(httpsConfig ? { https: httpsConfig } : {}),
         },
       }),

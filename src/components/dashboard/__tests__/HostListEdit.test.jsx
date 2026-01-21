@@ -33,6 +33,7 @@ vi.mock('../EditMonitorModelConfigDialog', () => ({
 
 const fetchEditHostData = vi.fn();
 const fetchEndpointTypes = vi.fn();
+const fetchEndpointTypesForLocations = vi.fn();
 const saveHostData = vi.fn();
 const addHostApi = vi.fn();
 const delHostApi = vi.fn();
@@ -43,6 +44,7 @@ const deleteMonitorModelConfig = vi.fn();
 vi.mock('../ServiceAPI', () => ({
   fetchEditHostData: (...args) => fetchEditHostData(...args),
   fetchEndpointTypes: (...args) => fetchEndpointTypes(...args),
+  fetchEndpointTypesForLocations: (...args) => fetchEndpointTypesForLocations(...args),
   saveHostData: (...args) => saveHostData(...args),
   addHostApi: (...args) => addHostApi(...args),
   delHostApi: (...args) => delHostApi(...args),
@@ -94,6 +96,7 @@ describe('HostListEdit', () => {
     vi.clearAllMocks();
     fetchEditHostData.mockResolvedValue(baseHostRows);
     fetchEndpointTypes.mockResolvedValue(endpointTypes);
+    fetchEndpointTypesForLocations.mockResolvedValue({ 'New York': endpointTypes });
     saveHostData.mockResolvedValue({ success: true, text: 'Saved' });
     addHostApi.mockResolvedValue({ success: true, text: 'Added' });
     delHostApi.mockResolvedValue({ success: true, text: 'Deleted' });

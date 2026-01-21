@@ -26,6 +26,7 @@ import {
   addHostApi,
   delHostApi,
   fetchEndpointTypes,
+  fetchEndpointTypesForLocations,
   updateMonitorModelConfig,
   deleteMonitorModelConfig,
 } from './ServiceAPI';
@@ -169,6 +170,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
   const [editingHost, setEditingHost] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [endpointTypes, setEndpointTypes] = useState([]);
+  const [endpointTypesByLocation, setEndpointTypesByLocation] = useState({});
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
   const [editingModelConfigHost, setEditingModelConfigHost] = useState(null);
   const [isModelConfigDialogOpen, setIsModelConfigDialogOpen] = useState(false);
@@ -182,14 +184,29 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     if (!endpointData) {
       return;
     }
-    const map = endpointData.reduce((acc, entry) => {
+    const allTypes = [];
+    const nextByLocation = {};
+    if (Array.isArray(endpointData)) {
+      allTypes.push(...endpointData);
+    } else if (typeof endpointData === 'object') {
+      Object.entries(endpointData).forEach(([location, list]) => {
+        if (Array.isArray(list)) {
+          nextByLocation[location] = list;
+          allTypes.push(...list);
+        }
+      });
+    }
+    const map = allTypes.reduce((acc, entry) => {
       if (entry?.internalType) {
         acc[entry.internalType.toLowerCase()] = entry;
       }
       return acc;
     }, {});
     setEndpointTypeMap(map);
-    setEndpointTypes(endpointData);
+    setEndpointTypes(allTypes);
+    if (Object.keys(nextByLocation).length > 0) {
+      setEndpointTypesByLocation((prev) => ({ ...prev, ...nextByLocation }));
+    }
   }, []);
 
   const resolveAgentLocation = useCallback(
@@ -203,52 +220,56 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     [processorList],
   );
 
-  const mergeEndpointData = useCallback(
-    (endpointData, currentType) => {
-      if (!currentType) {
-        applyEndpointData(endpointData);
-        return;
-      }
-      const normalizedCurrent = String(currentType).toLowerCase();
-      const alreadyExists = (endpointData ?? []).some(
-        (entry) => String(entry?.internalType ?? '').toLowerCase() === normalizedCurrent,
-      );
-      if (!alreadyExists) {
-        applyEndpointData([
-          ...(endpointData ?? []),
-          {
-            internalType: currentType,
-            name: `Custom (offline): ${currentType}`,
-            icon: 'CustomConnectIcon',
-            description: 'Custom endpoint type from offline agent.',
-          },
-        ]);
-        return;
-      }
-      applyEndpointData(endpointData);
-    },
-    [applyEndpointData],
-  );
-
   const loadEndpointTypes = useCallback(
     async (appId) => {
       try {
         const location = resolveAgentLocation(appId);
-        console.log('HostListEdit.loadEndpointTypes', {
-          appId,
-          location,
-        });
-        const endpointData = await fetchEndpointTypes(siteId, location);
-        const appIdValue = appId ?? '';
-        const currentType = data.find((row) => String(row?.appID ?? '') === String(appIdValue))
-          ?.endPointType;
-        mergeEndpointData(endpointData, currentType);
+        if (!location) {
+          const endpointData = await fetchEndpointTypes(siteId);
+          applyEndpointData(endpointData);
+          return endpointData;
+        }
+        const endpointData = await fetchEndpointTypesForLocations(siteId, [location]);
+        applyEndpointData(endpointData);
+        return endpointData;
       } catch (error) {
         console.error('HostListEdit failed to fetch endpoint types', error);
+        return undefined;
       }
     },
-    [data, mergeEndpointData, resolveAgentLocation, siteId],
+    [applyEndpointData, resolveAgentLocation, siteId],
   );
+
+  const getEndpointLocations = useCallback(
+    (endpointType) => {
+      const normalized = String(endpointType ?? '').toLowerCase();
+      if (!normalized || !endpointTypesByLocation) {
+        return [];
+      }
+      return Object.entries(endpointTypesByLocation)
+        .filter(([, list]) =>
+          Array.isArray(list) &&
+          list.some((type) => String(type?.internalType ?? '').toLowerCase() === normalized),
+        )
+        .map(([location]) => location)
+        .sort((a, b) => a.localeCompare(b));
+    },
+    [endpointTypesByLocation],
+  );
+
+  const getEndpointLocationsFromMap = useCallback((endpointType, map) => {
+    const normalized = String(endpointType ?? '').toLowerCase();
+    if (!normalized || !map) {
+      return [];
+    }
+    return Object.entries(map)
+      .filter(([, list]) =>
+        Array.isArray(list) &&
+        list.some((type) => String(type?.internalType ?? '').toLowerCase() === normalized),
+      )
+      .map(([location]) => location)
+      .sort((a, b) => a.localeCompare(b));
+  }, []);
 
   const storageKey = `${STORAGE_KEY_PREFIX}${siteId ?? 'default'}`;
   const persistedState = useMemo(() => {
@@ -489,11 +510,20 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         if (hostData) {
           const { rows: adjustedRows, newRowsAdded } = arrangeRowsForDisplay(hostData);
           setData(adjustedRows);
-          fetchEndpointTypes(siteId)
-            .then((endpointData) => mergeEndpointData(endpointData, adjustedRows?.[0]?.endPointType))
-            .catch((error) =>
-              console.error('HostListEdit failed to fetch endpoint types', error),
-            );
+          const locations = Array.from(
+            new Set(
+              adjustedRows
+                .map((row) => resolveAgentLocation(row?.appID))
+                .filter((location) => location && String(location).trim() !== ''),
+            ),
+          );
+          if (locations.length > 0) {
+            const endpointData = await fetchEndpointTypesForLocations(siteId, locations);
+            applyEndpointData(endpointData);
+          } else {
+            const endpointData = await fetchEndpointTypes(siteId);
+            applyEndpointData(endpointData);
+          }
           if (newRowsAdded) {
             setSortModel((prevModel) => (Array.isArray(prevModel) && prevModel.length === 0
               ? prevModel
@@ -507,11 +537,8 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         } else {
           const { rows: adjustedRows } = arrangeRowsForDisplay([]);
           setData(adjustedRows);
-          fetchEndpointTypes(siteId)
-            .then((endpointData) => mergeEndpointData(endpointData, null))
-            .catch((error) =>
-              console.error('HostListEdit failed to fetch endpoint types', error),
-            );
+          const endpointData = await fetchEndpointTypes(siteId);
+          applyEndpointData(endpointData);
         }
       } catch (error) {
         console.error('Error fetching host list data', error);
@@ -521,7 +548,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     };
 
     fetchData();
-  }, [arrangeRowsForDisplay, mergeEndpointData, resetToggle, siteId, userInfo]);
+  }, [applyEndpointData, arrangeRowsForDisplay, resolveAgentLocation, resetToggle, siteId, userInfo]);
 
   useEffect(() => {
     if (!isEditDialogOpen || !editingHost) {
@@ -584,6 +611,13 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     return map;
   }, [processorList]);
 
+  const allAgentLocations = useMemo(() => {
+    return (processorList ?? [])
+      .map((processor) => processor?.location)
+      .filter((location) => location && String(location).trim() !== '')
+      .map((location) => String(location));
+  }, [processorList]);
+
   const processorDisabledMap = useMemo(() => {
     const map = new Map();
     (processorList ?? []).forEach((processor) => {
@@ -596,6 +630,26 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     });
     return map;
   }, [processorList]);
+
+  const getAllowedEndpointTypes = useCallback(
+    (appId, endpointData) => {
+      const location = resolveAgentLocation(appId);
+      let perAgentTypes = [];
+      if (Array.isArray(endpointData)) {
+        perAgentTypes = endpointData;
+      } else if (endpointData && typeof endpointData === 'object') {
+        perAgentTypes = endpointData[location] ?? [];
+      } else {
+        perAgentTypes = endpointTypesByLocation[location] ?? endpointTypes;
+      }
+      const disabled = processorDisabledMap.get(String(appId ?? '')) ?? [];
+      return perAgentTypes.filter((type) => {
+        const internalType = String(type?.internalType ?? '').toLowerCase();
+        return !disabled.includes(internalType);
+      });
+    },
+    [endpointTypes, endpointTypesByLocation, processorDisabledMap, resolveAgentLocation],
+  );
 
   const processorOptionsByRow = useCallback(
     (row) => {
@@ -647,7 +701,32 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         const normalized = nextAppId ? String(nextAppId) : '';
         if (normalized && lastEndpointFetchRef.current !== normalized) {
           lastEndpointFetchRef.current = normalized;
-          loadEndpointTypes(nextAppId);
+          loadEndpointTypes(nextAppId).then(async (endpointData) => {
+            const allowed = getAllowedEndpointTypes(nextAppId, endpointData);
+            const allowedSet = new Set(
+              allowed.map((type) => String(type.internalType ?? '').toLowerCase()),
+            );
+            const currentType = String(updatedRow.endPointType ?? '').toLowerCase();
+            if (currentType && !allowedSet.has(currentType)) {
+              let availableLocations = getEndpointLocations(currentType);
+              if (availableLocations.length === 0 && allAgentLocations.length > 0) {
+                const refreshed = await fetchEndpointTypesForLocations(siteId, allAgentLocations);
+                if (refreshed) {
+                  applyEndpointData(refreshed);
+                  availableLocations = getEndpointLocationsFromMap(currentType, refreshed);
+                }
+              }
+              const locationSummary =
+                availableLocations.length > 0
+                  ? ` Available on: ${availableLocations.join(', ')}.`
+                  : '';
+              setMessage({
+                text: `Selected endpoint is not available for this agent.${locationSummary} Switch back or choose a supported endpoint.`,
+                success: false,
+                info: true,
+              });
+            }
+          });
         }
       }
       return updatedRow;
@@ -686,6 +765,14 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     },
     [loadEndpointTypes],
   );
+
+  const endpointTypesForEditDialog = useMemo(() => {
+    if (!editingHost) {
+      return endpointTypes;
+    }
+    const location = resolveAgentLocation(editingHost.appID);
+    return endpointTypesByLocation[location] ?? endpointTypes;
+  }, [editingHost, endpointTypes, endpointTypesByLocation, resolveAgentLocation]);
 
   const openEditDialog = useCallback((row) => {
     setEditingHost(row);
@@ -1008,37 +1095,25 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         type: 'singleSelect',
         valueOptions: ({ row }) => {
           const disabled = processorDisabledMap.get(String(row?.appID ?? '')) ?? [];
-          const options = endpointTypes
-            .filter((type) => !disabled.includes(String(type.internalType ?? '').toLowerCase()))
+          const location = resolveAgentLocation(row?.appID);
+          const perAgentTypes = endpointTypesByLocation[location] ?? endpointTypes;
+          return perAgentTypes
+            .filter((type) => {
+              const internalType = String(type.internalType ?? '').toLowerCase();
+              if (disabled.includes(internalType)) {
+                return false;
+              }
+              return true;
+            })
             .map((type) => ({
               value: type.internalType,
               label: type.name,
             }));
-          const currentType = row?.endPointType;
-          const normalizedCurrent = String(currentType ?? '').toLowerCase();
-          if (
-            normalizedCurrent &&
-            !options.some((option) => String(option.value ?? '').toLowerCase() === normalizedCurrent)
-          ) {
-            options.push({
-              value: currentType,
-              label: `Custom (offline): ${currentType}`,
-            });
-          }
-          return options;
         },
         renderCell: (params) => {
           const internalType = `${params.value ?? ''}`.toLowerCase();
           const endpointType = endpointTypeMap[internalType];
           if (!endpointType) {
-            if (params.value) {
-              return (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <ErrorIcon color="warning" fontSize="small" />
-                  <span>{`Custom (offline): ${params.value}`}</span>
-                </Box>
-              );
-            }
             return (
               <Tooltip title="Endpoint type unavailable">
                 <ErrorIcon color="warning" fontSize="small" />
@@ -1055,13 +1130,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         },
         valueFormatter: ({ value }) => {
           const endpointType = endpointTypeMap[`${value ?? ''}`.toLowerCase()];
-          if (endpointType?.name) {
-            return endpointType.name;
-          }
-          if (value) {
-            return `Custom (offline): ${value}`;
-          }
-          return '';
+          return endpointType?.name || value || '';
         },
       },
       {
@@ -1106,6 +1175,8 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
     processorDisabledMap,
     processorMap,
     processorOptionsByRow,
+    resolveAgentLocation,
+    endpointTypesByLocation,
   ]);
 
   return (
@@ -1116,7 +1187,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         open={isEditDialogOpen}
         onClose={closeEditDialog}
         host={editingHost}
-        endpointTypes={endpointTypes}
+        endpointTypes={endpointTypesForEditDialog}
         processorList={processorList}
         onSave={handleEditSave}
         onLocationChange={loadEndpointTypes}
