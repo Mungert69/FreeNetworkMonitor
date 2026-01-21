@@ -757,7 +757,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
       if (params.field === 'endPointType') {
         const nextAppId = params.row?.appID ?? '';
         const normalized = nextAppId ? String(nextAppId) : '';
-        if (normalized && lastEndpointFetchRef.current !== normalized) {
+        if (normalized) {
           lastEndpointFetchRef.current = normalized;
           loadEndpointTypes(nextAppId);
         }
