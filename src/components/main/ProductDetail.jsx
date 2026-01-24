@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { TextField, CssBaseline, Box, Grow, Typography, Divider, Link, Container, Grid, Paper, Tooltip } from '@mui/material';
-import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl } from '../dashboard/ServiceAPI';
+import { TextField, CssBaseline, Box, Grow, Typography, Divider, Link, Container, Grid, Paper, Tooltip, MenuItem } from '@mui/material';
+import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl, fetchProcessorList } from '../dashboard/ServiceAPI';
 
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 import EmailIcon from '@mui/icons-material/Email';
@@ -20,6 +20,7 @@ import Button from '@mui/material/Button';
 import BlogArticle from './BlogArticle';
 import DashboardAppBar from '../dashboard/DashboardAppBar';
 import DashboardDrawer from '../dashboard/DashboardDrawer';
+import { useFusionAuth } from '@fusionauth/react-sdk';
 
 
 const Chat = lazy(() => import('../dashboard/Chat/Chat'));
@@ -66,6 +67,7 @@ const hasChatContent = () => {
 const ProductDetail = () => {
     const blogRef = useRef(null);
     const theme = useTheme();
+    const { isLoggedIn, userInfo } = useFusionAuth();
     const publicUrl = import.meta.env.VITE_PUBLIC_URL;
     const classes = useClasses(styleObject(theme, pingImage));
     const [open, setOpen] = React.useState(false);
@@ -78,6 +80,15 @@ const ProductDetail = () => {
     const [blogHash, setBlogHash] = React.useState('');
     const [serverAddress, setServerAddress] = useState('');
     const [quantumCheck, setQuantumCheck] = useState('');
+    const [advancedTarget, setAdvancedTarget] = useState('');
+    const [customCodeDescription, setCustomCodeDescription] = useState('');
+    const [processorList, setProcessorList] = useState([]);
+    const [selectedAgent, setSelectedAgent] = useState('');
+    const hasAdvancedTarget = advancedTarget.trim().length > 0;
+    const hasCustomCodeDescription = customCodeDescription.trim().length > 0;
+    const hasLocalAgentSelected = Boolean(selectedAgent);
+    const canRunIntrusive = isLoggedIn && hasLocalAgentSelected;
+
     const toggleChatView = () => {
         setIsChatOpen(!isChatOpen);
     };
@@ -103,9 +114,38 @@ const ProductDetail = () => {
         window.dispatchEvent(new CustomEvent('send-chat-prompt', { detail: prompt }));
     };
 
+    const withAgent = (prompt) =>
+        selectedAgent ? `${prompt} Please use the agent ${selectedAgent}.` : prompt;
+
+    const localAgentOptions = React.useMemo(
+        () =>
+            (processorList ?? [])
+                .filter((processor) => processor?.isPrivate)
+                .filter((processor) => processor?.isEnabled !== false)
+                .map((processor) => ({
+                    value: String(processor.location ?? processor.appID ?? '').trim(),
+                    label: String(processor.location ?? processor.appID ?? '').trim(),
+                }))
+                .filter((option) => option.value),
+        [processorList],
+    );
+
+    useEffect(() => {
+        if (localAgentOptions.length > 0 && !selectedAgent) {
+            setSelectedAgent(localAgentOptions[0].value);
+        }
+    }, [localAgentOptions, selectedAgent]);
+
     useEffect(() => {
         isChatOpenRef.current = isChatOpen;
     }, [isChatOpen]);
+
+    useEffect(() => {
+        if (siteId === null || siteId === undefined) {
+            return;
+        }
+        fetchProcessorList(siteId, setProcessorList, userInfo, isLoggedIn);
+    }, [siteId, userInfo, isLoggedIn]);
 
     useEffect(() => {
         const query = new URLSearchParams(window.location.search);
@@ -537,63 +577,322 @@ const ProductDetail = () => {
                         </Grid>
                     </Grid>
 
-                    {/* Call-to-Action Section */}
                     <Divider sx={{ my: 6 }} />
-                    <Grid
-                        container
-                        spacing={4}
-                        justifyContent="center"
-                        alignItems="stretch"
-                        sx={{ mb: { xs: 4, md: 8 } }}
-                    >
-                        <Grid item xs={12} md={6}>
-                            <Paper className={classes.paper}>
-                                <NetworkPingIcon fontSize="large" color="primary" />
-                                <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
+                    {/* Target and Agent Section */}
+                    <Box sx={{ mb: { xs: 4, md: 8 } }}>
+                        <Grid
+                            container
+                            spacing={4}
+                            justifyContent="center"
+                            alignItems="stretch"
+                            sx={{ mb: 4 }}
+                        >
+                            <Grid item xs={12} md={6}>
+                                <Paper className={classes.paper}>
+                                    <NetworkPingIcon fontSize="large" color="primary" />
+                                    <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
+                                    <TextField
+                                        fullWidth
+                                        label="Server Address"
+                                        variant="outlined"
+                                        value={serverAddress}
+                                        onChange={(e) => setServerAddress(e.target.value)}
+                                        sx={{ mt: 2 }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        sx={{ mt: 2 }}
+                                        aria-label="Basic security check with AI assistant"
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            `Using the Security Expert run a security check on my server: ${serverAddress} checking only common ports and ssl certificates. I confirm that I have permission to check this server. Please use the agent Scanner - EU`
+                                        )}
+                                    >
+                                        Check Server Security
+                                    </Button>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Paper className={classes.paper}>
+                                    <LanguageIcon fontSize="large" color="secondary" />
+                                    <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>Quantum Security Check</Typography>
+                                    <TextField
+                                        fullWidth
+                                        label="Service URL"
+                                        variant="outlined"
+                                        value={quantumCheck}
+                                        onChange={(e) => setQuantumCheck(e.target.value)}
+                                        sx={{ mt: 2 }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        sx={{ mt: 2 }}
+                                        aria-label="Test quantum ready tls negotiation with AI assistant"
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            `Check quantum readiness using the Quantum Expert on my server ${quantumCheck}. I confirm that I have permission to check this server. Please use the agent Scanner - EU`
+                                        )}
+                                    >
+                                        Check Quantum Readiness
+                                    </Button>
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                        <Typography
+                            variant="h3"
+                            align="center"
+                            sx={{ fontWeight: 700, mb: 1, fontSize: { xs: "1.6rem", md: "2.2rem" } }}
+                        >
+                            Advanced Tools & Agent Selection
+                        </Typography>
+                        <Typography variant="body1" align="center" sx={{ mb: 4 }}>
+                            The checks above work for any public target. For deeper diagnostics and agent-powered workflows,
+                            select a local agent and target below.
+                        </Typography>
+                        <Grid container spacing={3} justifyContent="center">
+                            <Grid item xs={12} md={6}>
                                 <TextField
                                     fullWidth
-                                    label="Server Address"
+                                    label="Target Host or URL"
                                     variant="outlined"
-                                    value={serverAddress}
-                                    onChange={(e) => setServerAddress(e.target.value)}
-                                    sx={{ mt: 2 }}
+                                    value={advancedTarget}
+                                    onChange={(e) => setAdvancedTarget(e.target.value)}
                                 />
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{ mt: 2 }}
-                                    aria-label="Basic security check with AI assistant"
-                                    onClick={() => sendToAssistant(setIsChatOpen, `Using the Security Expert run a security check on my server: ${serverAddress} checking only common ports and ssl certificates. I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Local Agent"
+                                    value={selectedAgent}
+                                    onChange={(e) => setSelectedAgent(e.target.value)}
                                 >
-                                    Check Server Security
-                                </Button>
-                            </Paper>
+                                    {localAgentOptions.length === 0 ? (
+                                        <MenuItem value="">
+                                            <em>No local agents found</em>
+                                        </MenuItem>
+                                    ) : (
+                                        localAgentOptions.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))
+                                    )}
+                                </TextField>
+                                {(!isLoggedIn || localAgentOptions.length === 0) && (
+                                    <Typography variant="body2" sx={{ mt: 1 }}>
+                                        Install a local agent for intrusive checks.{" "}
+                                        <Link href="https://freenetworkmonitor.click/download" target="_blank" rel="noopener">
+                                            Download the agent
+                                        </Link>
+                                        .
+                                    </Typography>
+                                )}
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Paper className={classes.paper}>
-                                <LanguageIcon fontSize="large" color="secondary" />
-                                <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>Quantum Security Check</Typography>
+                    </Box>
+
+                    <Divider sx={{ my: 6 }} />
+                    {/* Expert Toolkit Section */}
+                    <Box sx={{ mb: { xs: 4, md: 8 } }}>
+                        <Typography
+                            variant="h3"
+                            align="center"
+                            sx={{ fontWeight: 700, mb: 1, fontSize: { xs: "1.6rem", md: "2.2rem" } }}
+                        >
+                            Expert Toolkit
+                        </Typography>
+                        <Typography variant="body1" align="center" sx={{ mb: 4 }}>
+                            Launch targeted security workflows powered by specialist AI experts.
+                        </Typography>
+                        <Grid container spacing={3} justifyContent="center" alignItems="stretch">
+                            <Grid item xs={12} sm={6} md={3} align="center">
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
+                                        Nmap Recon
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 2 }}>
+                                        Discover open ports, services, and surface vulnerabilities in seconds.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disabled={!hasAdvancedTarget}
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            withAgent(`Using the Security Expert, run an Nmap service/version scan on ${advancedTarget}. I confirm I have permission to scan this target.`)
+                                        )}
+                                    >
+                                        Run Recon
+                                    </Button>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3} align="center">
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
+                                        TLS Hardening
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 2 }}>
+                                        Check certificates, cipher suites, and protocol support with OpenSSL.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={!hasAdvancedTarget}
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            withAgent(`Using the Security Expert, run an OpenSSL TLS configuration check on ${advancedTarget}. I confirm I have permission to test this service.`)
+                                        )}
+                                    >
+                                        Check TLS
+                                    </Button>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3} align="center">
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
+                                        Quantum Readiness Scan
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 2 }}>
+                                        Test TLS KEM support, certificate algorithms, and quantum-safe posture.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disabled={!hasAdvancedTarget}
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            withAgent(`Using the Quantum Expert, run a quantum readiness scan for ${advancedTarget}. I confirm I have permission to test this service.`)
+                                        )}
+                                    >
+                                        Scan Quantum Safety
+                                    </Button>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3} align="center">
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
+                                        Metasploit Guided Test
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 2 }}>
+                                        Let the penetration expert choose safe modules and validate exposure.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disabled={!hasAdvancedTarget || !canRunIntrusive}
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            withAgent(`Using the Penetration Expert, run a guided Metasploit check against ${advancedTarget}. I confirm I have explicit permission to test this target.`)
+                                        )}
+                                    >
+                                        Start Guided Test
+                                    </Button>
+                                    {!canRunIntrusive && (
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                            Requires login and a local agent.
+                                        </Typography>
+                                    )}
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    <Divider sx={{ my: 6 }} />
+                    {/* Custom Code Section */}
+                    <Box sx={{ mb: { xs: 4, md: 8 } }}>
+                        <Typography
+                            variant="h3"
+                            align="center"
+                            sx={{ fontWeight: 700, mb: 1, fontSize: { xs: "1.6rem", md: "2.2rem" } }}
+                        >
+                            Custom Code on Your Agents
+                        </Typography>
+                        <Typography variant="body1" align="center" sx={{ mb: 4 }}>
+                            Deploy bespoke .NET automation to your agent fleet. Build command processors for on-demand execution,
+                            or create custom connect endpoints that run on a schedule and stream monitoring data.
+                        </Typography>
+                        <Grid container spacing={3} justifyContent="center" sx={{ mb: 3 }}>
+                            <Grid item xs={12} md={10}>
                                 <TextField
                                     fullWidth
-                                    label="Service URL"
+                                    label="Custom Code Description"
                                     variant="outlined"
-                                    value={quantumCheck}
-                                    onChange={(e) => setQuantumCheck(e.target.value)}
-                                    sx={{ mt: 2 }}
+                                    value={customCodeDescription}
+                                    onChange={(e) => setCustomCodeDescription(e.target.value)}
+                                    placeholder="Describe the workflow, inputs, and outputs you want the code to handle."
                                 />
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    sx={{ mt: 2 }}
-                                    aria-label="Test quantum ready tls negotiation with AI assistant"
-                                    onClick={() => sendToAssistant(setIsChatOpen, `Check quantum readiness using the Quantum Expert on my server ${quantumCheck}  .I confirm that I have permission to check this server. Please use the agent Scanner - EU`)}
-                                >
-                                    Check Quantum Readiness
-                                </Button>
-                            </Paper>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Divider sx={{ my: 6 }} />
+                        <Grid container spacing={3} justifyContent="center" alignItems="stretch">
+                            <Grid item xs={12} md={6} align="center">
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h4" gutterBottom sx={{ fontSize: '1.2rem' }}>
+                                        Cmd Processor Expert
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 2 }}>
+                                        Generate .NET cmd processors that run scripts or CLI tools, return full output, and can be
+                                        listed, updated, or executed on demand.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={!canRunIntrusive || !hasCustomCodeDescription}
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            withAgent(`Using the Cmd Processor Expert, create a custom cmd processor based on this description: ${customCodeDescription}. I confirm I have permission to deploy this code.`)
+                                        )}
+                                    >
+                                        Build a Cmd Processor
+                                    </Button>
+                                    {!canRunIntrusive && (
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                            Requires login and a local agent.
+                                        </Typography>
+                                    )}
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={6} align="center">
+                                <Paper className={classes.paper}>
+                                    <Typography variant="h4" gutterBottom sx={{ fontSize: '1.2rem' }}>
+                                        Connect Expert
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 2 }}>
+                                        Create custom monitoring endpoints that run on a schedule, collect metrics, and feed alerting
+                                        or dashboards with your own logic.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disabled={!canRunIntrusive || !hasCustomCodeDescription}
+                                        onClick={() => sendToAssistant(
+                                            setIsChatOpen,
+                                            withAgent(`Using the Connect Expert, create a custom Connect endpoint based on this description: ${customCodeDescription}. I confirm I have permission to deploy this code.`)
+                                        )}
+                                    >
+                                        Create a Connect
+                                    </Button>
+                                    {!canRunIntrusive && (
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                            Requires login and a local agent.
+                                        </Typography>
+                                    )}
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                        {(!isLoggedIn || localAgentOptions.length === 0) && (
+                            <Typography variant="body2" align="center" sx={{ mt: 3 }}>
+                                Install a local agent to unlock custom code deployments.{" "}
+                                <Link href="https://freenetworkmonitor.click/download" target="_blank" rel="noopener">
+                                    Download the agent
+                                </Link>
+                                .
+                            </Typography>
+                        )}
+                    </Box>
+
                     {/* Action Buttons Section */}
                     <Grid
                         container
