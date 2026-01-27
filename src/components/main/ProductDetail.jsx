@@ -642,7 +642,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                                 onClick={() => onAssistant(
                                     withAgent(`Using the Cmd Processor Expert, create a custom cmd processor based on this description: ${customCodeDescription}. I confirm I have permission to deploy this code.`)
                                 )}
-                            >
+                            >0h
                                 Build a Cmd Processor
                             </Button>
                             {!canRunIntrusive && (
