@@ -8,5 +8,12 @@ mkdir -p ./out/blogpics
 
 cp -r ../FreeNetworkMonitorBlog/public/images ./out/
 cp -r ../FreeNetworkMonitorBlog/public/blogpics ./out/
-docker compose -f docker-compose-local.yml build
-docker push mungert/networkmonitorreact-local:1.2.5
+docker buildx inspect multiarch-builder >/dev/null 2>&1 || docker buildx create --name multiarch-builder --use
+docker buildx use multiarch-builder
+docker buildx inspect --bootstrap
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  --file ./Dockerfile-local \
+  --tag mungert/networkmonitorreact-local:1.3.0 \
+  --push \
+  .

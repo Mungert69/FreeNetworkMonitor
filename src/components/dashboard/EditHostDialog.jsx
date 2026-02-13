@@ -1,7 +1,7 @@
 // File: src/components/EditHostDialog.js
 
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SaveIcon from '@mui/icons-material/Save';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -139,12 +139,62 @@ const EditHostDialog = ({
   endpointTypes,
   processorList,
   onSave,
+  onLocationChange,
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [editedHost, setEditedHost] = useState({ ...host });
   const [showPassword, setShowPassword] = useState(false);
+
+  const customConnectsByApp = useMemo(() => {
+    const map = new Map();
+    (processorList ?? []).forEach((processor) => {
+      if (processor?.appID !== undefined && processor?.appID !== null) {
+        const custom = Array.isArray(processor.customConnects)
+          ? processor.customConnects
+          : [];
+        map.set(
+          String(processor.appID),
+          custom.map((type) => String(type ?? '').toLowerCase()),
+        );
+      }
+    });
+    return map;
+  }, [processorList]);
+
+  const globalCustomConnects = useMemo(() => {
+    const set = new Set();
+    (processorList ?? []).forEach((processor) => {
+      (processor.customConnects ?? []).forEach((type) => {
+        if (type) {
+          set.add(String(type).toLowerCase());
+        }
+      });
+    });
+    return set;
+  }, [processorList]);
+
+  const filteredEndpointTypes = useMemo(() => {
+    const disabled = (processorList ?? [])
+      .find((processor) => String(processor.appID) === String(editedHost.appID))
+      ?.disabledEndPointTypes ?? [];
+    const disabledSet = new Set(
+      disabled.map((type) => String(type ?? '').toLowerCase()),
+    );
+    const allowedCustom = customConnectsByApp.get(String(editedHost.appID ?? '')) ?? [];
+    return (endpointTypes ?? []).filter((type) => {
+      const internalType = String(type.internalType ?? '').toLowerCase();
+      if (disabledSet.has(internalType)) {
+        return false;
+      }
+      if (globalCustomConnects.has(internalType)) {
+        return allowedCustom.includes(internalType);
+      }
+      return true;
+    });
+  }, [customConnectsByApp, editedHost.appID, endpointTypes, globalCustomConnects, processorList]);
+
 
   useEffect(() => {
     if (host) {
@@ -206,7 +256,7 @@ const EditHostDialog = ({
                 <MenuItem value="">
                   <em>Select Endpoint Type</em>
                 </MenuItem>
-                {(endpointTypes ?? []).map((type) => (
+                {filteredEndpointTypes.map((type) => (
                   <MenuItem key={type.internalType} value={type.internalType}>
                     {type.name}
                   </MenuItem>
@@ -314,7 +364,12 @@ const EditHostDialog = ({
               <TextField
                 label="Monitor Location"
                 value={editedHost.appID ?? ''}
-                onChange={(e) => handleChange('appID', e.target.value)}
+                onChange={(e) => {
+                  handleChange('appID', e.target.value);
+                  if (onLocationChange) {
+                    onLocationChange(e.target.value);
+                  }
+                }}
                 fullWidth
                 select
                 SelectProps={{

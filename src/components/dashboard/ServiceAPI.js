@@ -311,13 +311,22 @@ export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, set
 };
 
 
-export const fetchEndpointTypes = async (baseUrlId) => {
+export const fetchEndpointTypes = async (baseUrlId, agentLocation = '') => {
     var data = [];
     axiosRetry(axios, { retries: 3 });
+    const trimmedLocation = agentLocation ? String(agentLocation).trim() : '';
+    const queryString = trimmedLocation
+        ? `?agent_location=${encodeURIComponent(trimmedLocation)}`
+        : '';
+    console.log('ServiceAPI.fetchEndpointTypes request', {
+        baseUrlId,
+        agentLocation: trimmedLocation,
+    });
     const result = await trackPromise(axios(
         {
             method: 'get',
-            url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypes', 
+            url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypes' + queryString, 
+            withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -341,6 +350,57 @@ export const fetchEndpointTypes = async (baseUrlId) => {
     }
 
     console.log('ServiceAPI.fetchEndpointTypes fetched ' + data.length + ' endpoint types');
+    return data;
+}
+
+export const fetchEndpointTypesForLocations = async (baseUrlId, agentLocations = []) => {
+    var data = {};
+    axiosRetry(axios, { retries: 3 });
+    const locations = Array.isArray(agentLocations)
+        ? agentLocations.filter((location) => location && String(location).trim() !== '')
+        : [];
+    console.log('ServiceAPI.fetchEndpointTypesForLocations request', {
+        baseUrlId,
+        locations,
+    });
+    const result = await trackPromise(axios(
+        {
+            method: 'post',
+            url: apiBaseUrls[baseUrlId] + '/HostConfig/GetAvailableEndpointTypesForAgents',
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                agentLocations: locations,
+            },
+        }
+    ).catch(function (error) {
+        console.log('ServiceAPI.fetchEndpointTypesForLocations Axios Error was : ' + error);
+        return;
+    }));
+
+    try {
+        const responseData = result?.data?.data;
+        if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
+            data = Object.entries(responseData).reduce((acc, [location, list]) => {
+                if (Array.isArray(list)) {
+                    acc[location] = list;
+                }
+                return acc;
+            }, {});
+        } else {
+            console.log('ServiceAPI.fetchEndpointTypesForLocations received invalid data', responseData);
+        }
+    }
+    catch (error) {
+        console.log('ServiceAPI.fetchEndpointTypesForLocations Mapping Data Error was : ' + error);
+        if (result !== undefined && result.data.message !== undefined)
+            console.log('Api Result.Message was ' + result.data.message);
+        return undefined;
+    }
+
+    console.log('ServiceAPI.fetchEndpointTypesForLocations fetched ' + Object.keys(data).length + ' agent endpoint sets');
     return data;
 }
  
@@ -427,7 +487,17 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
             return;
         }));
     try {
-        result.data.data.map((row) => {
+        const responseData = result?.data?.data;
+        if (!Array.isArray(responseData)) {
+            console.log('ServiceAPI.fetchListData received no data array', {
+                dataSetId,
+                responseData,
+            });
+            setListData([]);
+            setAlertCount(0);
+            return;
+        }
+        responseData.map((row) => {
             if (row.monitorStatus.alertFlag) { alertCount++ }
             const obj = { 'id': row.id, 'dataSetID' : row.dataSetID, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus?.alertFlag, 'predictAlertFlag': row.predictStatus?.alertFlag };
             data.push(obj)
@@ -782,8 +852,16 @@ export const updateApiUser = async (baseUrlId, user) => {
             return message;
 
         });
-        message.text = result.data.message;
-        message.success = result.data.success;
+        if (result?.data) {
+            message.text = result.data.message;
+            message.success = result.data.success;
+        } else if (result?.message) {
+            message.text = result.message;
+            message.success = false;
+        } else {
+            message.text = 'ServiceAPI.saveHostData returned no response data.';
+            message.success = false;
+        }
     }
     catch (error) {
         message.text = 'ServiceAPI.updateApiUser Error was : ' + error;

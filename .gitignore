@@ -10,6 +10,8 @@
 build
 server-freenetworkmonitor.key
 server-freenetworkmonitor.crt
+server-readyforquantum.key
+server-readyforquantum.crt
 secret
 .swp
 # User-specific stuff

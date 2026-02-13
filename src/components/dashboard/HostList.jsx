@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import DataSetsList from './DataSetsList';
-import { fetchEndpointTypes } from './ServiceAPI';
+import { fetchEndpointTypesForLocations } from './ServiceAPI';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 import { getEndpointIcon } from './endpointIcons';
 
@@ -423,6 +423,28 @@ export const HostList = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [showDataSetsList, setShowDataSetsList] = useState(false);
   const [endpointTypeMap, setEndpointTypeMap] = useState({});
+  const applyEndpointData = useCallback((endpointData) => {
+    if (!endpointData) {
+      return;
+    }
+    const allTypes = [];
+    if (Array.isArray(endpointData)) {
+      allTypes.push(...endpointData);
+    } else if (typeof endpointData === 'object') {
+      Object.values(endpointData).forEach((list) => {
+        if (Array.isArray(list)) {
+          allTypes.push(...list);
+        }
+      });
+    }
+    const map = allTypes.reduce((acc, entry) => {
+      if (entry?.internalType) {
+        acc[entry.internalType.toLowerCase()] = entry;
+      }
+      return acc;
+    }, {});
+    setEndpointTypeMap(map);
+  }, []);
 
   const {
     currentDataSet,
@@ -568,26 +590,40 @@ export const HostList = ({
     window.localStorage.setItem(storageKey, JSON.stringify(stateToPersist));
   }, [filterModel, sortModel, paginationModel, storageKey]);
 
+  const rows = useMemo(
+    () => (Array.isArray(data) ? data : []),
+    [data],
+  );
+
+  const endpointLocations = useMemo(() => {
+    const processorMap = new Map(
+      (processorList ?? [])
+        .filter((row) => row?.appID && row?.location)
+        .map((row) => [String(row.appID), row.location]),
+    );
+    const locations = new Set();
+    (rows ?? []).forEach((row) => {
+      const appId = row?.appID ? String(row.appID) : '';
+      const location = processorMap.get(appId);
+      if (location) {
+        locations.add(location);
+      }
+    });
+    return Array.from(locations);
+  }, [processorList, rows]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const endpointData = await fetchEndpointTypes(siteId);
-        if (endpointData) {
-          const map = endpointData.reduce((acc, entry) => {
-            if (entry?.internalType) {
-              acc[entry.internalType.toLowerCase()] = entry;
-            }
-            return acc;
-          }, {});
-          setEndpointTypeMap(map);
-        }
+        const endpointData = await fetchEndpointTypesForLocations(siteId, endpointLocations);
+        applyEndpointData(endpointData);
       } catch (error) {
         console.error('HostList failed to fetch endpoint types', error);
       }
     };
 
     fetchData();
-  }, [siteId]);
+  }, [applyEndpointData, endpointLocations, siteId]);
 
   const processorMap = useMemo(() => {
     const map = new Map();
@@ -614,11 +650,6 @@ export const HostList = ({
     });
     return options;
   }, [processorList]);
-
-  const rows = useMemo(
-    () => (Array.isArray(data) ? data : []),
-    [data],
-  );
 
   const columns = useMemo(
     () => [

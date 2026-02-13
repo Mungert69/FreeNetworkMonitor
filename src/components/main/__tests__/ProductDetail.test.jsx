@@ -34,6 +34,7 @@ vi.mock('../../dashboard/ServiceAPI', () => ({
   fetchFirstLoadServer: vi.fn().mockResolvedValue('https://example.com'),
   getSiteIdfromUrl: vi.fn().mockResolvedValue(42),
   getBaseDomain: vi.fn().mockReturnValue('example.com'),
+  fetchProcessorList: vi.fn(),
 }));
 
 vi.mock('../../dashboard/DashboardAppBar', () => ({
@@ -78,6 +79,10 @@ vi.mock('../../dashboard/Chat/Chat', () => ({
 vi.mock('/ping.svg', () => ({
   __esModule: true,
   default: 'ping.svg',
+}));
+
+vi.mock('@fusionauth/react-sdk', () => ({
+  useFusionAuth: () => ({ isLoggedIn: true, userInfo: { email: 'user@example.com' } }),
 }));
 
 import ProductDetail from '../ProductDetail';

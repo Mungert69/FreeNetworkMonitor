@@ -19,3 +19,13 @@ Our local agent monitor app lets you oversee local hosts, while our ChatGPT-powe
 </a>
 
 Please check it out and leave a review using the Trust Pilot link at the bottom of the landing page. Thanks :)
+
+## Chat history display
+The LLM backend only emits history display payloads from the user-facing service (defaults to `monitor`).
+To request histories from another service, send:
+
+```
+<|GET_HISTORY_DISPLAY|>cmdprocessor
+```
+
+If no service ID is provided, the backend uses its `UserFacingServiceId` setting.
