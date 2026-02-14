@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef, lazy, useCallback, useMemo } from "react";
 
 import Slide from '@mui/material/Slide';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import Loading from '../../loading';
-import { resetPredictAlertApiCall, convertDate, getBaseDomain,getStartSiteId, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { resetPredictAlertApiCall, convertDate, getBaseDomain, getSupportEmail, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
@@ -64,6 +67,9 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatKey, setChatKey] = useState(0);
+  const [dashboardError, setDashboardError] = useState('');
+  const isValidSiteId = Number.isInteger(siteId) && siteId >= 0;
+  const supportEmail = getSupportEmail() || 'support@readyforquantum.com';
 
   const toggleChatView = useCallback(() => {
     setIsChatOpen((prev) => !prev);
@@ -202,6 +208,9 @@ export default function Dashboard() {
   );
 
   const getUserInfo = async () => {
+    if (!isValidSiteId) {
+      return;
+    }
 
     const apiUser = await getUserInfoApi(siteId, userInfo);
     await setApiUser(apiUser);
@@ -238,16 +247,20 @@ export default function Dashboard() {
   useEffect(() => {
 
     const getAccess = async () => {
-      var siteId = 0;
+      let resolvedSiteId = -1;
       try {
         console.log("Calling fetchLoadServer is Authenticated triggered");
         var loadServer = await fetchLoadServer(userInfo);
         console.log("Calling getSiteIdfromUrl");
-        siteId = await getSiteIdfromUrl(loadServer);
+        resolvedSiteId = await getSiteIdfromUrl(loadServer);
+        if (!Number.isInteger(resolvedSiteId) || resolvedSiteId < 0) {
+          throw new Error("Load server URL did not map to a configured API base URL");
+        }
         console.log("Calling addUserApi");
-        var apiUser = await addUserApi(siteId, userInfo);
+        var apiUser = await addUserApi(resolvedSiteId, userInfo);
         console.log("Calling setSiteId");
-        await setSiteId(siteId);
+        await setSiteId(resolvedSiteId);
+        setDashboardError('');
 
         await setApiUser(apiUser);
         console.log(" Current User is " + JSON.stringify(apiUser));
@@ -255,6 +268,9 @@ export default function Dashboard() {
         // TODO Are we are going to need to get a new token if load server is changed?
       } catch (e) {
         console.log("Error in Dashboard failed to get access error was" + e + " : user was " + userInfo.sub);
+        setDashboardError('Unable to connect to a configured backend server.');
+        await setSiteId(null);
+        await setApiUser(undefined);
       }
     }
 
@@ -285,16 +301,22 @@ export default function Dashboard() {
     checkAuth();
   }, [isLoggedIn, isFetchingUserInfo]);
   const firstLoadSiteId = async () => {
-    var siteId = 0;
+    let resolvedSiteId = -1;
     try {
       console.log("Calling fetchLoadServer for user default");
       var loadServer = await fetchFirstLoadServer();
       console.log("Calling getSiteIdfromUrl");
-      siteId = await getSiteIdfromUrl(loadServer);
+      resolvedSiteId = await getSiteIdfromUrl(loadServer);
+      if (!Number.isInteger(resolvedSiteId) || resolvedSiteId < 0) {
+        throw new Error("Default load server URL did not map to a configured API base URL");
+      }
       console.log("Calling setSiteId");
-      await setSiteId(siteId);
+      await setSiteId(resolvedSiteId);
+      setDashboardError('');
     } catch (e) {
-      console.log("Error in Dashboard failed to get load SiteId for default user");
+      console.log("Error in Dashboard failed to get load SiteId for default user: " + e);
+      setDashboardError('Unable to connect to a configured backend server.');
+      await setSiteId(null);
     }
   }
 
@@ -352,6 +374,9 @@ export default function Dashboard() {
   }, [listData]);
   useEffect(() => {
     const fetchData = async () => {
+      if (!isValidSiteId) {
+        return;
+      }
       await setIsLoading(true);
       await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, userInfo, isLoggedIn);
       await setIsLoading(false);
@@ -359,25 +384,31 @@ export default function Dashboard() {
     fetchData();
     // Fetch chart data when hostData or datasetId changes.
     //setIsLoading(false);
-  }, [hostData]);
+  }, [hostData, siteId, isLoggedIn, userInfo, isValidSiteId]);
   useEffect(() => {
     const fetchData = async () => {
+      if (!isValidSiteId) {
+        return;
+      }
       await setIsLoading(true);
       await fetchListData(dataSetId, siteId, setListData, setAlertCount, userInfo, isLoggedIn);
       await fetchProcessorList(siteId, setProcessorList, userInfo, isLoggedIn);
       await setIsLoading(false);
     };
     fetchData();
-  }, [reloadListData, dataSetId, siteId, apiUser]);
+  }, [reloadListData, dataSetId, siteId, apiUser, isLoggedIn, userInfo, isValidSiteId]);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!isValidSiteId) {
+        return;
+      }
       await setIsLoading(true);
       await fetchDataSetsByDate(siteId, setDataSets, dateStart, dateEnd);
       await setIsLoading(false);
     };
     fetchData();
-  }, [siteId, dateStart, dateEnd]);
+  }, [siteId, dateStart, dateEnd, isValidSiteId]);
   return (
     <div className={classes.root}>
 
@@ -421,6 +452,23 @@ export default function Dashboard() {
         handleDrawerClose={handleDrawerClose}
         isMediumOrLarger={isMediumOrLarger}
       />
+      {dashboardError && (
+        <Alert
+          severity="error"
+          sx={{ mx: 2, mb: 2 }}
+          action={
+            <Button color="inherit" size="small" onClick={() => window.location.reload()}>
+              Refresh
+            </Button>
+          }
+        >
+          {dashboardError} Refresh the page and try again. If the problem persists, contact support at{' '}
+          <Link href={`mailto:${supportEmail}`} color="inherit" underline="always">
+            {supportEmail}
+          </Link>
+          .
+        </Alert>
+      )}
       <DashboardMainPanel
         classes={classes}
         isMediumOrLarger={isMediumOrLarger}

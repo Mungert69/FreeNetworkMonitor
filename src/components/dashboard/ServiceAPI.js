@@ -206,13 +206,26 @@ export const convertDate = (date, format) => {
   return utcDate.tz(targetZone).format(format);
 };
 export const getSiteIdfromUrl = (url) => {
-    var siteId;
-
+    let siteId = -1;
     try {
-        siteId = apiBaseUrls.indexOf(url);
+        if (!Array.isArray(apiBaseUrls) || apiBaseUrls.length === 0) {
+            console.log('ServiceAPI.getSiteIdfromUrl no apiBaseUrls configured');
+            return -1;
+        }
+
+        const normalizeUrl = (value) => String(value || '').trim().replace(/\/+$/, '');
+        const normalizedInput = normalizeUrl(url);
+        siteId = apiBaseUrls.findIndex((entry) => normalizeUrl(entry) === normalizedInput);
+
+        if (siteId < 0) {
+            console.log('ServiceAPI.getSiteIdfromUrl no matching site for url = ' + url);
+            return -1;
+        }
+
         console.log('ServiceAPI.getSiteIdfromUrl got SiteID = ' + siteId);
     } catch (e) {
         console.log('ServiceAPI.getSiteIdfromUrl failed to get SiteID. Error was : ' + e);
+        return -1;
     }
 
     return siteId;
