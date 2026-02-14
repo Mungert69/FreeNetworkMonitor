@@ -170,6 +170,9 @@ For detailed instructions on installing Docker Desktop, refer to the [official D
 
 To set up the Quantum Network Monitor Agent within Docker, follow these steps:
 
+**Image architecture support:** The Docker image \`mungert/networkmonitorprocessor:latest\` is multi-architecture and supports both **x64/amd64** and **arm64** hosts.
+**Container platform note:** This is a **Linux container image**. It runs on Docker Desktop for **Windows/macOS** and on Docker Engine/Desktop for **Linux**.
+
 1. **Create a Docker Compose File**: Create a \`docker-compose.yml\` file with the following content:
 
 \`\`\`yaml
