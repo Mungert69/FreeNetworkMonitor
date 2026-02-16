@@ -2,6 +2,7 @@
 value=`cat ../secret`
 git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
 npm i 
+export VITE_AGENT_DOTNET_SDK_VERSION=`dotnet --version 2>/dev/null || echo unknown`
 npm run build
 mkdir -p ./out/images
 mkdir -p ./out/blogpics

@@ -25,9 +25,41 @@ import ReactMarkdown from 'react-markdown';
 import { useMediaQuery } from '@mui/material';
 import { getBaseDomain, getSupportEmail } from '../dashboard/ServiceAPI';
 
+const AGENT_OPENSSL_VERSION = import.meta.env.VITE_AGENT_OPENSSL_VERSION || "unknown";
+const AGENT_LIBOQS_VERSION = import.meta.env.VITE_AGENT_LIBOQS_VERSION || "unknown";
+const AGENT_OQS_PROVIDER_VERSION = import.meta.env.VITE_AGENT_OQS_PROVIDER_VERSION || "unknown";
+const AGENT_DOTNET_SDK_VERSION = import.meta.env.VITE_AGENT_DOTNET_SDK_VERSION || "unknown";
+const AGENT_DOCKER_BASE_IMAGE = import.meta.env.VITE_AGENT_DOCKER_BASE_IMAGE || "unknown";
+const AGENT_DOCKER_OS_NAME = import.meta.env.VITE_AGENT_DOCKER_OS_NAME || "unknown";
+const AGENT_DOCKER_OS_VERSION = import.meta.env.VITE_AGENT_DOCKER_OS_VERSION || "unknown";
+
+const buildVersionRows = [
+  [".NET SDK", AGENT_DOTNET_SDK_VERSION],
+  ["OpenSSL", AGENT_OPENSSL_VERSION],
+  ["liboqs", AGENT_LIBOQS_VERSION],
+  ["oqs-provider", AGENT_OQS_PROVIDER_VERSION],
+  ["Docker base image", AGENT_DOCKER_BASE_IMAGE],
+  ["Docker OS", AGENT_DOCKER_OS_NAME],
+  ["Docker OS tag", AGENT_DOCKER_OS_VERSION],
+].filter(([, value]) => value && value !== "unknown");
+
+const buildVersionSection =
+  buildVersionRows.length > 0
+    ? `
+## Current Agent Build Versions
+
+${buildVersionRows.map(([label, value]) => `- ${label}: ${value}`).join("\n")}
+
+These values are sourced from the active build pipeline configuration and container runtime definition.
+Keeping these components current is a security feature: it reduces known-vulnerability exposure and improves agent trust posture.
+`
+    : "";
+
 const markdown = `
 
 Welcome to the Beta Tester Download Portal for the Quantum Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
+
+${buildVersionSection}
 
 ## Key Features of the Quantum Network Monitor Agent
 

@@ -25,6 +25,82 @@ const httpsConfig = (() => {
   return undefined;
 })();
 
+const versionsEnvPath = '/home/mahadeva/code/NetworkMonitor/versions.env';
+const dockerfilePath = '/home/mahadeva/code/FreeNetworkMonitor/Dockerfile';
+
+const parseVersionsEnv = (filePath) => {
+  const defaults = {
+    OPENSSL_VERSION: 'unknown',
+    LIBOQS_VERSION: 'unknown',
+    OQS_PROVIDER_VERSION: 'unknown',
+  };
+
+  if (!fs.existsSync(filePath)) {
+    return defaults;
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  const values = { ...defaults };
+
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) {
+      continue;
+    }
+
+    const match = line.match(/^([A-Z0-9_]+)\s*=\s*"?\$\{[A-Z0-9_]+:-([^"}]+)\}"?$/);
+    if (!match) {
+      continue;
+    }
+
+    const key = match[1];
+    const value = match[2];
+    if (key in values) {
+      values[key] = value;
+    }
+  }
+
+  return values;
+};
+
+const buildVersions = parseVersionsEnv(versionsEnvPath);
+
+const parseDockerBaseImage = (filePath) => {
+  const defaults = {
+    baseImage: 'unknown',
+    osName: 'unknown',
+    osVersion: 'unknown',
+  };
+
+  if (!fs.existsSync(filePath)) {
+    return defaults;
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  const fromLine = content
+    .split('\n')
+    .map((line) => line.trim())
+    .find((line) => /^FROM\s+/i.test(line));
+
+  if (!fromLine) {
+    return defaults;
+  }
+
+  const imageRef = fromLine.replace(/^FROM\s+/i, '').trim().split(/\s+/)[0];
+  const [repoPart, tagPart] = imageRef.split(':');
+  const repoName = repoPart.split('/')[0] || 'unknown';
+  const osName = repoName || 'unknown';
+  const osVersion = tagPart || 'latest';
+
+  return {
+    baseImage: imageRef || 'unknown',
+    osName,
+    osVersion,
+  };
+};
+
+const dockerBase = parseDockerBaseImage(dockerfilePath);
+
 export default defineConfig({
   plugins: [react()],
   ...(isVitest
@@ -65,6 +141,12 @@ export default defineConfig({
   base: '/',  // Ensures React Router works in Vite
   define: {
     'import.meta.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),  // Define environment for debugging
+    'import.meta.env.VITE_AGENT_OPENSSL_VERSION': JSON.stringify(buildVersions.OPENSSL_VERSION),
+    'import.meta.env.VITE_AGENT_LIBOQS_VERSION': JSON.stringify(buildVersions.LIBOQS_VERSION),
+    'import.meta.env.VITE_AGENT_OQS_PROVIDER_VERSION': JSON.stringify(buildVersions.OQS_PROVIDER_VERSION),
+    'import.meta.env.VITE_AGENT_DOCKER_BASE_IMAGE': JSON.stringify(dockerBase.baseImage),
+    'import.meta.env.VITE_AGENT_DOCKER_OS_NAME': JSON.stringify(dockerBase.osName),
+    'import.meta.env.VITE_AGENT_DOCKER_OS_VERSION': JSON.stringify(dockerBase.osVersion),
   },
   test: {
     environment: 'jsdom',
