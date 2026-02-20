@@ -50,8 +50,8 @@ const buildVersionSection =
 
 ${buildVersionRows.map(([label, value]) => `- ${label}: ${value}`).join("\n")}
 
-These values are sourced from the active build pipeline configuration and container runtime definition.
-Keeping these components current is a security feature: it reduces known-vulnerability exposure and improves agent trust posture.
+These versions reflect the current agent builds and Docker environment used in our release process.
+We keep them up to date as part of our security-first approach, helping reduce exposure to known issues and giving you confidence in the agent you install.
 `
     : "";
 
