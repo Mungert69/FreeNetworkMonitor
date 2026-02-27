@@ -1,6 +1,8 @@
 #!/bin/sh
-value=`cat ../secret`
-git pull https://mungert69:$value@github.com/Mungert69/FreeNetworkMonitor
+set -e
+
+git pull
+
 npm i 
 export VITE_AGENT_DOTNET_SDK_VERSION=`dotnet --version 2>/dev/null || echo unknown`
 npm run build
@@ -12,9 +14,35 @@ cp -r ../FreeNetworkMonitorBlog/public/blogpics ./out/
 docker buildx inspect multiarch-builder >/dev/null 2>&1 || docker buildx create --name multiarch-builder --use
 docker buildx use multiarch-builder
 docker buildx inspect --bootstrap
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  --file ./Dockerfile-local \
-  --tag mungert/networkmonitorreact-local:1.3.0 \
-  --push \
-  .
+
+IMAGE_TAG="mungert/networkmonitorreact-local:1.3.1"
+PUSH_IMAGE="${PUSH_IMAGE:-0}"
+HOST_ARCH="$(docker version --format '{{.Server.Arch}}' 2>/dev/null || uname -m)"
+case "$HOST_ARCH" in
+  amd64|x86_64)
+    DEFAULT_LOCAL_PLATFORM="linux/amd64"
+    ;;
+  arm64|aarch64)
+    DEFAULT_LOCAL_PLATFORM="linux/arm64"
+    ;;
+  *)
+    DEFAULT_LOCAL_PLATFORM="linux/amd64"
+    ;;
+esac
+LOCAL_PLATFORM="${LOCAL_PLATFORM:-$DEFAULT_LOCAL_PLATFORM}"
+
+if [ "$PUSH_IMAGE" = "1" ]; then
+  docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    --file ./Dockerfile-local \
+    --tag "$IMAGE_TAG" \
+    --push \
+    .
+else
+  docker buildx build \
+    --platform "$LOCAL_PLATFORM" \
+    --file ./Dockerfile-local \
+    --tag "$IMAGE_TAG" \
+    --load \
+    .
+fi
