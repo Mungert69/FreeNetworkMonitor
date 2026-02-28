@@ -215,9 +215,59 @@ const ChatContent = ({
   const voiceButtonTooltip = voiceMode === 'push_to_talk'
     ? (isRecording ? 'Stop Recording' : 'Start Recording')
     : (isContinuousActive ? 'Stop Continuous Mode' : 'Start Continuous Mode');
-  const voiceStatusLabel = voiceMode === 'push_to_talk'
-    ? (isRecording ? 'recording' : 'idle')
-    : (isContinuousActive ? 'listening' : 'off');
+  const voiceStatus = (() => {
+    if (voiceMode === 'push_to_talk') {
+      if (isProcessing) {
+        return {
+          label: 'Busy',
+          color: 'warning.main',
+          hint: 'Processing your previous voice message.',
+        };
+      }
+      if (isRecording) {
+        return {
+          label: 'Recording',
+          color: 'error.main',
+          hint: 'Recording now. Tap the mic to stop and send.',
+        };
+      }
+      return {
+        label: 'Ready',
+        color: 'success.main',
+        hint: 'Push to talk is ready. Tap the mic to start.',
+      };
+    }
+
+    if (!isContinuousActive) {
+      return {
+        label: 'Off',
+        color: 'text.disabled',
+        hint: 'Continuous mode is off. Tap the mic to start listening.',
+      };
+    }
+
+    if (isProcessing || isLLMBusy) {
+      return {
+        label: 'Busy',
+        color: 'warning.main',
+        hint: 'Waiting for current message to finish before retriggering.',
+      };
+    }
+
+    if (isRecording) {
+      return {
+        label: 'Recording',
+        color: 'error.main',
+        hint: 'Voice detected. Will auto-send after a pause.',
+      };
+    }
+
+    return {
+      label: 'Listening',
+      color: 'success.main',
+      hint: 'Continuous mode is listening for speech.',
+    };
+  })();
 
   return (
     <Box sx={chatStyles}>
@@ -581,9 +631,61 @@ const ChatContent = ({
               </IconButton>
             </Box>
           </Box>
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Voice mode: {voiceModeLabel} | Status: {voiceStatusLabel}
-          </Typography>
+          <Box
+            sx={{
+              mt: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              flexWrap: 'wrap',
+              p: 0.75,
+              borderRadius: 1,
+              bgcolor: 'action.hover',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1,
+                py: 0.35,
+                borderRadius: 5,
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  bgcolor: voiceStatus.color,
+                }}
+              />
+              <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                {voiceStatus.label}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                px: 1,
+                py: 0.35,
+                borderRadius: 5,
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                {voiceModeLabel}
+              </Typography>
+            </Box>
+            <Typography variant="caption" color="text.secondary" sx={{ flex: 1, minWidth: 180 }}>
+              {voiceStatus.hint}
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
       <Message message={message} />

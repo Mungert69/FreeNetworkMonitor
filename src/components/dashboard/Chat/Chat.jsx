@@ -12,12 +12,13 @@ const VOICE_MODE = {
   CONTINUOUS: 'continuous',
 };
 const VOICE_DEBUG = true;
-const BASE_START_THRESHOLD = 0.0075;
+const BASE_START_THRESHOLD = 0.0085;
 const BASE_STOP_THRESHOLD = 0.0025;
-const MIN_SPEECH_MS = 220;
+// Keep this low to reduce clipped first syllables ("hello" -> "oh").
+const MIN_SPEECH_MS = 40;
 const SILENCE_MS = 1200;
 const MAX_RECORDING_MS = 15000;
-const START_MARGIN_ABOVE_NOISE = 0.002;
+const START_MARGIN_ABOVE_NOISE = 0.0025;
 
 function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType, setIsChatOpen, siteId, isChartDialogOpen = false, closeChartDialog }) {
   const chatState = useChatState();
@@ -73,6 +74,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
   const noiseFloorRef = useRef(0.0035);
   const recordingStartedAtRef = useRef(null);
   const lastVadLogAtRef = useRef(0);
+  const canAutoTriggerRef = useRef(true);
 
   const voiceDebug = React.useCallback((event, payload = {}) => {
     if (!VOICE_DEBUG) return;
@@ -340,6 +342,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
     segmentActiveRef.current = false;
     noiseFloorRef.current = 0.0035;
     recordingStartedAtRef.current = null;
+    canAutoTriggerRef.current = true;
     voiceDebug('continuous_cleanup_end');
   }, [voiceDebug]);
 
@@ -395,6 +398,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
         stopThreshold: Number(adaptiveStopThreshold.toFixed(5)),
         stopGate: Number(stopGate.toFixed(5)),
         silenceAccumulatedMs: Math.round(silenceAccumulatedMsRef.current),
+        canAutoTrigger: canAutoTriggerRef.current,
         segmentActive: segmentActiveRef.current,
         isRecording: isRecordingRef.current,
         isProcessing,
@@ -407,7 +411,14 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
       }
       silenceStartRef.current = null;
 
-      if (!segmentActiveRef.current && !isRecordingRef.current && !isProcessing && now - speechStartRef.current >= MIN_SPEECH_MS) {
+      if (
+        canAutoTriggerRef.current &&
+        !segmentActiveRef.current &&
+        !isRecordingRef.current &&
+        !isProcessing &&
+        !isLLMBusy &&
+        now - speechStartRef.current >= MIN_SPEECH_MS
+      ) {
         segmentActiveRef.current = true;
         recordingStartedAtRef.current = now;
         silenceAccumulatedMsRef.current = 0;
@@ -439,6 +450,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
             stopGate: Number(stopGate.toFixed(5)),
           });
           if (isRecordingRef.current) {
+            canAutoTriggerRef.current = false;
             handleStopRecording();
           }
           recordingStartedAtRef.current = null;
@@ -462,7 +474,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
     }
 
     continuousFrameRef.current = requestAnimationFrame(monitorContinuousSpeech);
-  }, [isProcessing, voiceDebug]);
+  }, [isLLMBusy, isProcessing, voiceDebug]);
 
   const startContinuousMode = React.useCallback(async () => {
     if (isContinuousActiveRef.current) return;
@@ -486,6 +498,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
     lastVadTimestampRef.current = Date.now();
     segmentActiveRef.current = false;
     noiseFloorRef.current = 0.0035;
+    canAutoTriggerRef.current = !isProcessing && !isLLMBusy;
 
     isContinuousActiveRef.current = true;
     setIsContinuousActive(true);
@@ -496,6 +509,22 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
   useEffect(() => {
     isContinuousActiveRef.current = isContinuousActive;
   }, [isContinuousActive]);
+
+  useEffect(() => {
+    if (voiceMode !== VOICE_MODE.CONTINUOUS) return;
+    if (!isContinuousActiveRef.current) return;
+
+    if (!isProcessing && !isLLMBusy && !isRecordingRef.current) {
+      if (!canAutoTriggerRef.current) {
+        canAutoTriggerRef.current = true;
+        voiceDebug('continuous_retrigger_unlocked');
+      }
+    } else if (canAutoTriggerRef.current && (isProcessing || isLLMBusy)) {
+      // Keep lock engaged while previous voice message is being processed by STT/backend.
+      canAutoTriggerRef.current = false;
+      voiceDebug('continuous_retrigger_locked', { isProcessing, isLLMBusy });
+    }
+  }, [isLLMBusy, isProcessing, voiceMode, voiceDebug]);
 
   useEffect(() => () => {
     stopContinuousMode();

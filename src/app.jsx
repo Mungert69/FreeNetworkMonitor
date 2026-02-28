@@ -1,7 +1,6 @@
 import React, { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { LoadingCircle } from "./loading-circle";
-import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
 import RouteChangeTracker from './route-change-tracker';
 //import ReactGA4 from 'react-ga4';
 
@@ -14,10 +13,25 @@ const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
 //const TRACKING_ID = "G-XXXXXXXXXX"; // Replace with your GA4 tracking ID
 const isDevServerLabel = window?.serverLabel?.serverLabel === "dev";
+const CONSENT_COOKIE_NAME = "react-cookie-consent";
+const CONSENT_COOKIE_DAYS = 1500;
+
+const getCookieValue = (cookieName) => {
+  if (typeof document === 'undefined') return '';
+  const escapedName = cookieName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  const match = document.cookie.match(new RegExp(`(?:^|; )${escapedName}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : '';
+};
+
+const setCookieValue = (cookieName, value, maxAgeDays) => {
+  if (typeof document === 'undefined') return;
+  const maxAgeSeconds = Math.max(0, Math.floor(maxAgeDays * 24 * 60 * 60));
+  document.cookie = `${cookieName}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=None; Secure`;
+};
 
 const App = () => {
 
-  const [consentGiven, setConsentGiven] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(() => getCookieValue(CONSENT_COOKIE_NAME) === 'true');
 
   // 1. Initialize GA4 immediately (but block cookies until consent)
   useEffect(() => {
@@ -38,6 +52,7 @@ const App = () => {
 
   // 2. Handle cookie accept → grant consent and trigger initial pageview
   const handleAccept = () => {
+    setCookieValue(CONSENT_COOKIE_NAME, 'true', CONSENT_COOKIE_DAYS);
     window.gtag?.("consent", "update", {
       analytics_storage: "granted",
     });
@@ -56,66 +71,80 @@ const App = () => {
   return (
     <div>
       <div>
-        <CookieConsent
-          location="bottom"
-          buttonText="Agree"
-          cookieName="react-cookie-consent"
-          onAccept={handleAccept}
-          sameSite="None"
-          secure={true}
-          style={{ background: "#2B373B", color: "#FFFFFF" }}
-          buttonStyle={{
-            background: "#FFD700",
-            color: "#2B373B",
-            fontSize: "15px",
-            fontWeight: 700,
-            borderRadius: "4px",
-            padding: "8px 22px",
-            margin: "0 8px",
-            border: "none",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-            cursor: "pointer"
-          }}
-          linkStyle={{ color: "#FFD700", textDecoration: "underline", fontWeight: 700 }}
-          expires={1500}
-        >
-          <span style={{ fontWeight: 500 }}>
-            This website uses cookies to enhance the user experience.{" "}
-            By clicking agree or continuing to use this site you agree to the use of cookies.
-            For full cookie policy click{" "}
-            <a
-              href="https://readyforquantum.com/cookiepolicy.html"
-              aria-label="Read our Cookie Policy (opens in a new tab)"
-              title="Read our Cookie Policy"
-              target="_blank"
-              rel="noopener noreferrer"
+        {!consentGiven && (
+          <div
+            style={{
+              position: 'fixed',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1500,
+              background: "#2B373B",
+              color: "#FFFFFF",
+              padding: "16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+              flexWrap: "wrap",
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>
+              This website uses cookies to enhance the user experience.{" "}
+              By clicking agree or continuing to use this site you agree to the use of cookies.
+              For full cookie policy click{" "}
+              <a
+                href="https://readyforquantum.com/cookiepolicy.html"
+                aria-label="Read our Cookie Policy (opens in a new tab)"
+                title="Read our Cookie Policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "#FFD700",
+                  fontWeight: 700,
+                  textDecoration: "underline",
+                  backgroundColor: "transparent"
+                }}
+              >
+                Cookie Policy
+              </a>.
+              To view our privacy policy click{" "}
+              <a
+                href="https://readyforquantum.com/privacypolicy.html"
+                aria-label="Read our Privacy Policy (opens in a new tab)"
+                title="Read our Privacy Policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "#FFD700",
+                  fontWeight: 700,
+                  textDecoration: "underline",
+                  backgroundColor: "transparent"
+                }}
+              >
+                Privacy Policy
+              </a>.
+            </span>
+            <button
+              type="button"
+              onClick={handleAccept}
               style={{
-                color: "#FFD700",
+                background: "#FFD700",
+                color: "#2B373B",
+                fontSize: "15px",
                 fontWeight: 700,
-                textDecoration: "underline",
-                backgroundColor: "transparent"
+                borderRadius: "4px",
+                padding: "8px 22px",
+                margin: "0 8px",
+                border: "none",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                cursor: "pointer"
               }}
             >
-              Cookie Policy
-            </a>.
-            To view our privacy policy click{" "}
-            <a
-              href="https://readyforquantum.com/privacypolicy.html"
-              aria-label="Read our Privacy Policy (opens in a new tab)"
-              title="Read our Privacy Policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "#FFD700",
-                fontWeight: 700,
-                textDecoration: "underline",
-                backgroundColor: "transparent"
-              }}
-            >
-              Privacy Policy
-            </a>.
-          </span>
-        </CookieConsent>
+              Agree
+            </button>
+          </div>
+        )}
         {consentGiven && <RouteChangeTracker />}
 
         <Routes>
