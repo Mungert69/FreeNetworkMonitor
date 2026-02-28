@@ -7,6 +7,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChatState } from './useChatState';
 import { useWebSocket } from './useWebSocket';
 
+const VOICE_MODE = {
+  PUSH_TO_TALK: 'push_to_talk',
+  CONTINUOUS: 'continuous',
+};
+const VOICE_DEBUG = true;
+const BASE_START_THRESHOLD = 0.0075;
+const BASE_STOP_THRESHOLD = 0.0025;
+const MIN_SPEECH_MS = 220;
+const SILENCE_MS = 1200;
+const MAX_RECORDING_MS = 15000;
+const START_MARGIN_ABOVE_NOISE = 0.002;
+
 function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType, setIsChatOpen, siteId, isChartDialogOpen = false, closeChartDialog }) {
   const chatState = useChatState();
   const {
@@ -42,6 +54,34 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
 
   const audioPlayerRef = useRef(AudioPlayer());
   const outputContainerRef = useRef(null);
+  const [voiceMode, setVoiceMode] = useState(VOICE_MODE.PUSH_TO_TALK);
+  const [isContinuousActive, setIsContinuousActive] = useState(false);
+
+  const isContinuousActiveRef = useRef(false);
+  const isRecordingRef = useRef(false);
+  const continuousStreamRef = useRef(null);
+  const continuousAudioContextRef = useRef(null);
+  const continuousAnalyserRef = useRef(null);
+  const continuousSourceRef = useRef(null);
+  const continuousFrameRef = useRef(null);
+  const analyserBufferRef = useRef(null);
+  const speechStartRef = useRef(null);
+  const silenceStartRef = useRef(null);
+  const silenceAccumulatedMsRef = useRef(0);
+  const lastVadTimestampRef = useRef(0);
+  const segmentActiveRef = useRef(false);
+  const noiseFloorRef = useRef(0.0035);
+  const recordingStartedAtRef = useRef(null);
+  const lastVadLogAtRef = useRef(0);
+
+  const voiceDebug = React.useCallback((event, payload = {}) => {
+    if (!VOICE_DEBUG) return;
+    try {
+      console.log(`[voice][${event}]`, payload);
+    } catch (error) {
+      // no-op
+    }
+  }, []);
 
   const scrollToBottom = React.useCallback(
     (behavior = 'auto') => {
@@ -94,6 +134,10 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
   };
 
   const { isRecording, startRecording, stopRecording } = useAudioRecorder(processAudioBlob);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   useEffect(() => {
     if (isToggleDisabled) {
@@ -251,6 +295,7 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
   };
 
   const handleStartRecording = () => {
+    voiceDebug('ptt_start_requested', { isRecording: isRecordingRef.current });
     if (audioPlayerRef.current && typeof audioPlayerRef.current.pauseAudio === 'function') {
       audioPlayerRef.current.pauseAudio(); // Pause audio playback
     }
@@ -258,7 +303,259 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
   };
 
   const handleStopRecording = async () => {
+    voiceDebug('ptt_stop_requested', { isRecording: isRecordingRef.current });
     stopRecording(); // Stop recording
+  };
+
+  const cleanupContinuousResources = React.useCallback(async () => {
+    voiceDebug('continuous_cleanup_begin', { isRecording: isRecordingRef.current, isContinuousActive: isContinuousActiveRef.current });
+    if (continuousFrameRef.current) {
+      cancelAnimationFrame(continuousFrameRef.current);
+      continuousFrameRef.current = null;
+    }
+    try {
+      continuousSourceRef.current?.disconnect();
+    } catch (error) {
+      // no-op
+    }
+    continuousSourceRef.current = null;
+    continuousAnalyserRef.current = null;
+    analyserBufferRef.current = null;
+    if (continuousAudioContextRef.current) {
+      try {
+        await continuousAudioContextRef.current.close();
+      } catch (error) {
+        // no-op
+      }
+      continuousAudioContextRef.current = null;
+    }
+    if (continuousStreamRef.current) {
+      continuousStreamRef.current.getTracks().forEach((track) => track.stop());
+      continuousStreamRef.current = null;
+    }
+    speechStartRef.current = null;
+    silenceStartRef.current = null;
+    silenceAccumulatedMsRef.current = 0;
+    lastVadTimestampRef.current = 0;
+    segmentActiveRef.current = false;
+    noiseFloorRef.current = 0.0035;
+    recordingStartedAtRef.current = null;
+    voiceDebug('continuous_cleanup_end');
+  }, [voiceDebug]);
+
+  const stopContinuousMode = React.useCallback(async () => {
+    voiceDebug('continuous_stop_requested', { isRecording: isRecordingRef.current, segmentActive: segmentActiveRef.current });
+    isContinuousActiveRef.current = false;
+    setIsContinuousActive(false);
+    await cleanupContinuousResources();
+    if (isRecordingRef.current) {
+      handleStopRecording();
+    }
+    voiceDebug('continuous_stopped');
+  }, [cleanupContinuousResources, voiceDebug]);
+
+  const monitorContinuousSpeech = React.useCallback(() => {
+    if (!isContinuousActiveRef.current || !continuousAnalyserRef.current || !analyserBufferRef.current) {
+      return;
+    }
+
+    continuousAnalyserRef.current.getByteTimeDomainData(analyserBufferRef.current);
+    let sumSquares = 0;
+    for (let i = 0; i < analyserBufferRef.current.length; i += 1) {
+      const centered = (analyserBufferRef.current[i] - 128) / 128;
+      sumSquares += centered * centered;
+    }
+
+    const rms = Math.sqrt(sumSquares / analyserBufferRef.current.length);
+    const now = Date.now();
+    const deltaMs = lastVadTimestampRef.current > 0 ? now - lastVadTimestampRef.current : 0;
+    lastVadTimestampRef.current = now;
+    const adaptiveStartThreshold = Math.max(
+      BASE_START_THRESHOLD,
+      noiseFloorRef.current + START_MARGIN_ABOVE_NOISE,
+      noiseFloorRef.current * 1.55,
+    );
+    const adaptiveStopThreshold = Math.max(BASE_STOP_THRESHOLD, noiseFloorRef.current * 0.95);
+    const stopGate = adaptiveStopThreshold;
+
+    if (!segmentActiveRef.current) {
+      // Track ambient noise when idle, but clamp spikes so brief speech doesn't explode the floor.
+      const floorSampleCap = Math.max(noiseFloorRef.current * 1.4, BASE_START_THRESHOLD * 0.85);
+      const floorSample = Math.min(rms, floorSampleCap);
+      noiseFloorRef.current = (noiseFloorRef.current * 0.97) + (floorSample * 0.03);
+    }
+
+    const nowForLog = Date.now();
+    if (VOICE_DEBUG && nowForLog - lastVadLogAtRef.current >= 700) {
+      lastVadLogAtRef.current = nowForLog;
+      voiceDebug('vad_sample', {
+        rms: Number(rms.toFixed(5)),
+        noiseFloor: Number(noiseFloorRef.current.toFixed(5)),
+        startThreshold: Number(adaptiveStartThreshold.toFixed(5)),
+        stopThreshold: Number(adaptiveStopThreshold.toFixed(5)),
+        stopGate: Number(stopGate.toFixed(5)),
+        silenceAccumulatedMs: Math.round(silenceAccumulatedMsRef.current),
+        segmentActive: segmentActiveRef.current,
+        isRecording: isRecordingRef.current,
+        isProcessing,
+      });
+    }
+
+    if (rms > adaptiveStartThreshold) {
+      if (!speechStartRef.current) {
+        speechStartRef.current = now;
+      }
+      silenceStartRef.current = null;
+
+      if (!segmentActiveRef.current && !isRecordingRef.current && !isProcessing && now - speechStartRef.current >= MIN_SPEECH_MS) {
+        segmentActiveRef.current = true;
+        recordingStartedAtRef.current = now;
+        silenceAccumulatedMsRef.current = 0;
+        voiceDebug('vad_trigger_start', {
+          rms: Number(rms.toFixed(5)),
+          startThreshold: Number(adaptiveStartThreshold.toFixed(5)),
+          noiseFloor: Number(noiseFloorRef.current.toFixed(5)),
+        });
+        handleStartRecording();
+      }
+    } else if (rms < stopGate) {
+      speechStartRef.current = null;
+      if (segmentActiveRef.current || isRecordingRef.current) {
+        silenceAccumulatedMsRef.current += deltaMs;
+        if (!silenceStartRef.current || silenceAccumulatedMsRef.current < 80) {
+          silenceStartRef.current = silenceStartRef.current || now;
+          voiceDebug('vad_silence_started', {
+            rms: Number(rms.toFixed(5)),
+            stopThreshold: Number(adaptiveStopThreshold.toFixed(5)),
+            stopGate: Number(stopGate.toFixed(5)),
+          });
+        } else if (silenceAccumulatedMsRef.current >= SILENCE_MS) {
+          silenceStartRef.current = null;
+          silenceAccumulatedMsRef.current = 0;
+          segmentActiveRef.current = false;
+          voiceDebug('vad_trigger_stop', {
+            rms: Number(rms.toFixed(5)),
+            stopThreshold: Number(adaptiveStopThreshold.toFixed(5)),
+            stopGate: Number(stopGate.toFixed(5)),
+          });
+          if (isRecordingRef.current) {
+            handleStopRecording();
+          }
+          recordingStartedAtRef.current = null;
+        }
+      }
+    } else {
+      // In the middle band: do not reset silence entirely, just decay lightly.
+      silenceStartRef.current = null;
+      silenceAccumulatedMsRef.current = Math.max(0, silenceAccumulatedMsRef.current - (deltaMs * 0.25));
+    }
+
+    if (isRecordingRef.current && recordingStartedAtRef.current && now - recordingStartedAtRef.current >= MAX_RECORDING_MS) {
+      voiceDebug('vad_force_stop_max_duration', {
+        elapsedMs: now - recordingStartedAtRef.current,
+      });
+      segmentActiveRef.current = false;
+      silenceStartRef.current = null;
+      silenceAccumulatedMsRef.current = 0;
+      recordingStartedAtRef.current = null;
+      handleStopRecording();
+    }
+
+    continuousFrameRef.current = requestAnimationFrame(monitorContinuousSpeech);
+  }, [isProcessing, voiceDebug]);
+
+  const startContinuousMode = React.useCallback(async () => {
+    if (isContinuousActiveRef.current) return;
+    voiceDebug('continuous_start_requested', { voiceMode });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    continuousStreamRef.current = stream;
+
+    const audioContext = new AudioContext();
+    continuousAudioContextRef.current = audioContext;
+    const source = audioContext.createMediaStreamSource(stream);
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
+
+    continuousSourceRef.current = source;
+    continuousAnalyserRef.current = analyser;
+    analyserBufferRef.current = new Uint8Array(analyser.fftSize);
+    speechStartRef.current = null;
+    silenceStartRef.current = null;
+    silenceAccumulatedMsRef.current = 0;
+    lastVadTimestampRef.current = Date.now();
+    segmentActiveRef.current = false;
+    noiseFloorRef.current = 0.0035;
+
+    isContinuousActiveRef.current = true;
+    setIsContinuousActive(true);
+    voiceDebug('continuous_started');
+    continuousFrameRef.current = requestAnimationFrame(monitorContinuousSpeech);
+  }, [monitorContinuousSpeech, voiceDebug, voiceMode]);
+
+  useEffect(() => {
+    isContinuousActiveRef.current = isContinuousActive;
+  }, [isContinuousActive]);
+
+  useEffect(() => () => {
+    stopContinuousMode();
+  }, [stopContinuousMode]);
+
+  const toggleVoiceMode = () => {
+    voiceDebug('voice_mode_toggle_clicked', { currentMode: voiceMode });
+    setVoiceMode((prev) => (
+      prev === VOICE_MODE.PUSH_TO_TALK ? VOICE_MODE.CONTINUOUS : VOICE_MODE.PUSH_TO_TALK
+    ));
+  };
+
+  useEffect(() => {
+    voiceDebug('voice_mode_changed', { voiceMode });
+    if (voiceMode === VOICE_MODE.CONTINUOUS) {
+      if (!isContinuousActiveRef.current) {
+        startContinuousMode().catch((error) => {
+          console.error('Failed to auto-start continuous mode:', error);
+          voiceDebug('continuous_start_failed', { error: String(error) });
+          setMessage({
+            warning: '',
+            text: 'Unable to start continuous mode. Check microphone permissions.',
+          });
+          setVoiceMode(VOICE_MODE.PUSH_TO_TALK);
+        });
+      }
+      return;
+    }
+
+    if (isContinuousActiveRef.current) {
+      stopContinuousMode();
+    }
+  }, [voiceMode, startContinuousMode, stopContinuousMode, setMessage, voiceDebug]);
+
+  const handleVoiceButton = () => {
+    voiceDebug('voice_button_clicked', {
+      voiceMode,
+      isRecording,
+      isContinuousActive,
+    });
+    if (voiceMode === VOICE_MODE.PUSH_TO_TALK) {
+      if (isRecording) {
+        handleStopRecording();
+      } else {
+        handleStartRecording();
+      }
+      return;
+    }
+
+    if (isContinuousActive) {
+      stopContinuousMode();
+    } else {
+      startContinuousMode().catch((error) => {
+        console.error('Failed to start continuous mode:', error);
+        setMessage({
+          warning: '',
+          text: 'Unable to start continuous mode. Check microphone permissions.',
+        });
+      });
+    }
   };
 
   const closeExpand = () => {
@@ -421,8 +718,10 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
       handleDeleteSession={handleDeleteSession}
       handleStopRecording={handleStopRecording}
       handleStartRecording={handleStartRecording}
+      handleVoiceButton={handleVoiceButton}
       saveFeedback={saveFeedback}
       toggleLlmRunnerType={toggleLlmRunnerType}
+      toggleVoiceMode={toggleVoiceMode}
       closeExpand={closeExpand}
       onHostLinkClick={onHostLinkClick}
       setIsChatOpen={setIsChatOpen}
@@ -431,6 +730,8 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
       outputContainerRef={outputContainerRef}
       scrollToBottom={scrollToBottom}
       isRecording={isRecording}
+      voiceMode={voiceMode}
+      isContinuousActive={isContinuousActive}
       isAtBottom={isAtBottom}
       setAutoScrollEnabled={setAutoScrollEnabled}
       isChartDialogOpen={isChartDialogOpen}

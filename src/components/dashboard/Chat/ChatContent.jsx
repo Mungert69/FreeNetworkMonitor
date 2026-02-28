@@ -18,6 +18,7 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff'; // Mute icon
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
+import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -38,10 +39,10 @@ const ChatContent = ({
   isExpanded, toggleExpand, resetSessionId, isMuted, toggleAudio, outputContainerRef, isProcessing,
   isLLMBusy, thinkingDots, isCallingFunction, callingFunctionMessage, showHelpMessage, isDashboard,
   helpMessage, histories, handleSelectSession, handleDeleteSession, currentMessage, setCurrentMessage,
-  isRecording, handleStartRecording, handleStopRecording, stopLLM, message, linkData, saveFeedback,
-  toggleLlmRunnerType, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
+  isRecording, handleStartRecording, handleStopRecording, handleVoiceButton, stopLLM, message, linkData, saveFeedback,
+  toggleLlmRunnerType, toggleVoiceMode, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
   setIsInputFocused, arePopupsEnabled, togglePopupsEnabled, isChartDialogOpen = false, scrollToBottom = () => {}, isAtBottom = true,
-  setAutoScrollEnabled,
+  setAutoScrollEnabled, voiceMode = 'push_to_talk', isContinuousActive = false,
 }) => {
   // Responsive: use full width if screen is small (drawer hidden)
   const theme = useTheme();
@@ -208,6 +209,15 @@ const ChatContent = ({
     setCurrentMessage(event.target.value);
     followLatest('smooth');
   };
+
+  const voiceModeLabel = voiceMode === 'continuous' ? 'Continuous' : 'Push To Talk';
+  const voiceButtonActive = voiceMode === 'push_to_talk' ? isRecording : isContinuousActive;
+  const voiceButtonTooltip = voiceMode === 'push_to_talk'
+    ? (isRecording ? 'Stop Recording' : 'Start Recording')
+    : (isContinuousActive ? 'Stop Continuous Mode' : 'Start Continuous Mode');
+  const voiceStatusLabel = voiceMode === 'push_to_talk'
+    ? (isRecording ? 'recording' : 'idle')
+    : (isContinuousActive ? 'listening' : 'off');
 
   return (
     <Box sx={chatStyles}>
@@ -533,12 +543,23 @@ const ChatContent = ({
               </IconButton>
               <IconButton
                 color="secondary"
-                onClick={isRecording ? handleStopRecording : handleStartRecording}
+                onClick={handleVoiceButton || (isRecording ? handleStopRecording : handleStartRecording)}
                 disabled={isProcessing}
               >
                 <Badge color="secondary">
-                  <Tooltip title={isRecording ? 'Stop Recording' : 'Start Recording'}>
-                    {isRecording ? <MicOffIcon /> : <MicIcon />}
+                  <Tooltip title={voiceButtonTooltip}>
+                    {voiceButtonActive ? <MicOffIcon /> : <MicIcon />}
+                  </Tooltip>
+                </Badge>
+              </IconButton>
+              <IconButton
+                color="secondary"
+                onClick={toggleVoiceMode}
+                disabled={isProcessing}
+              >
+                <Badge color="secondary">
+                  <Tooltip title={`Voice Mode: ${voiceModeLabel}`}>
+                    <SettingsVoiceIcon />
                   </Tooltip>
                 </Badge>
               </IconButton>
@@ -560,6 +581,9 @@ const ChatContent = ({
               </IconButton>
             </Box>
           </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+            Voice mode: {voiceModeLabel} | Status: {voiceStatusLabel}
+          </Typography>
         </CardContent>
       </Card>
       <Message message={message} />

@@ -6,6 +6,10 @@ import path from 'path';
 const isVitest = Boolean(process.env.VITEST);
 const certificateKeyPath = '/home/mahadeva/code/securefiles/dev/readyforquantum.key';
 const certificatePath = '/home/mahadeva/code/securefiles/dev/readyforquantum.crt';
+const devHost = process.env.VITE_DEV_HOST || 'devwww.readyforquantum.com';
+const devPort = Number(process.env.VITE_DEV_PORT || 8443);
+const devClientPort = Number(process.env.VITE_DEV_CLIENT_PORT || 443);
+const devHmrProtocol = process.env.VITE_DEV_HMR_PROTOCOL || 'wss';
 
 const httpsConfig = (() => {
   if (isVitest) {
@@ -107,15 +111,15 @@ export default defineConfig({
     ? {}
     : {
         server: {
-          port: 8443, // You can change this to your desired port
+          port: devPort,
           host: '0.0.0.0',
-          allowedHosts: ['devwww.readyforquantum.com'],
+          allowedHosts: [devHost],
           cors: true, // Enable CORS if needed
           hmr: {
-            host: 'devwww.readyforquantum.com',
-            protocol: 'wss',
-            port: 8443,
-            clientPort: 443,
+            host: devHost,
+            protocol: devHmrProtocol,
+            port: devPort,
+            clientPort: devClientPort,
           },
           ...(httpsConfig ? { https: httpsConfig } : {}),
         },
