@@ -72,7 +72,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'dist/assets/*.js'",
     "start": "vite",
-    "startssl": "VITE_DEBUG=true vite --host localhost --port 8443",
+    "startssl": "VITE_DEV_HOST=devwww.readyforquantum.com VITE_DEV_PORT=8443 VITE_DEV_CLIENT_PORT=443 npm run start",
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest --run",
