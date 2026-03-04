@@ -922,6 +922,26 @@ const ProductDetail = () => {
                         paperClassName={classes.paper}
                     />
 
+                    <Grid container justifyContent="center" sx={{ mb: 4 }}>
+                        <Grid item xs={12} md={10}>
+                            <Paper className={classes.paper}>
+                                <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>
+                                    Hugging Face GGUF model selection for TestLLM
+                                </Typography>
+                                <Typography variant="body1">
+                                    Running the Network Monitor Assistant with Hugging Face models? Use our{' '}
+                                    <Link href="/huggingface_gguf_selection_guide.html">
+                                        GGUF selection guide
+                                    </Link>{' '}
+                                    to choose quant formats for your hardware, then validate quality in the{' '}
+                                    <Link href="/dashboard">
+                                        dashboard assistant workflow
+                                    </Link>.
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+
                     {/* Action Buttons Section */}
                     <Grid
                         container

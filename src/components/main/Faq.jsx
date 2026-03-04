@@ -512,6 +512,15 @@ const data = {
             `,
         },
         {
+            title: "Which GGUF model format should I use with TestLLM?",
+            content: `
+        <p>If you are using Hugging Face models through the Network Monitor Assistant, start with the
+        <a href="https://${getBaseDomain()}/huggingface_gguf_selection_guide.html" target="_blank">GGUF selection guide</a>.
+        It explains BF16/F16 baselines, K-family and IQ-family quantization levels, and when to use hybrid tensor formats.</p>
+        <p>For best results, choose a format based on your available memory and then validate quality on your normal assistant tasks (host management, diagnostics, and security checks).</p>
+    `,
+        },
+        {
             title: "How does the Network Monitor Assistant use AI to manage my hosts?",
             content: `
         <p>The Network Monitor Assistant uses AI to interpret your requests and perform actions on your behalf. 

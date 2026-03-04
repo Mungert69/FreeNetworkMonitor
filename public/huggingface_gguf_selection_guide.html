@@ -2,204 +2,392 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Choosing the Right Model Format</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Hugging Face GGUF Selection Guide | Layer Bumping with llama.cpp</title>
+  <meta name="description" content="Layer bumping with llama.cpp explained: how GGUF quant variants are produced (K-family vs IQ-family), what BF16/F16/Hybrid means, and how to pick a file for local inference and Network Monitor Assistant TestLLM workflows.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://readyforquantum.com/huggingface_gguf_selection_guide.html">
+
+  <meta property="og:title" content="Hugging Face GGUF Selection Guide | Layer Bumping with llama.cpp">
+  <meta property="og:description" content="How GGUF variants are produced with llama.cpp (including tensor-type layer bumping), plus practical selection notes for local inference and Network Monitor Assistant TestLLM workflows.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://readyforquantum.com/huggingface_gguf_selection_guide.html">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Hugging Face GGUF Selection Guide | Layer Bumping with llama.cpp">
+  <meta name="twitter:description" content="How GGUF variants are produced with llama.cpp (layer/tensor bumping) and how to select a format for local inference and TestLLM workflows.">
+
   <style>
     :root {
-      --bg-color: #f9f9f9;
-      --text-color: #333;
-      --primary-color: #0066cc;
-      --heading-color: #222;
-      --accent-color: #0055aa;
-      --bullet-color: #444;
-      --border-color: #ddd;
+      --bg-color: #f4f7f6;
+      --surface-color: rgba(255, 255, 255, 0.98);
+      --text-color: #24312f;
+      --primary-color: #607466;
+      --primary-dark: #49584e;
+      --secondary-color: #6239ab;
+      --secondary-light: #efe9fa;
+      --heading-color: #1f2a28;
+      --bullet-color: #2f3f3c;
+      --border-color: #d7e0dc;
+      --shadow-color: rgba(33, 56, 47, 0.12);
     }
+    * { box-sizing: border-box; }
     body {
-      background: var(--bg-color);
+      background:
+        radial-gradient(circle at 10% -10%, rgba(98, 57, 171, 0.12), transparent 34%),
+        radial-gradient(circle at 92% 8%, rgba(96, 116, 102, 0.22), transparent 28%),
+        var(--bg-color);
       color: var(--text-color);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.6;
-      padding: 24px;
-      max-width: 800px;
-      margin: auto;
+      margin: 0;
+      padding: 24px 16px 40px;
     }
+    .page-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: 0 4px 16px 0 var(--shadow-color), 0 1px 6px 0 rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    .top-bar {
+      background: linear-gradient(120deg, var(--primary-dark), var(--primary-color) 58%, var(--secondary-color));
+      color: #fff;
+      padding: 18px 22px;
+    }
+    .top-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .content { padding: 24px; }
+    .doc-links {
+      margin: 0 0 18px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: #f8fbfa;
+      font-size: 0.96rem;
+    }
+    .doc-links strong { color: var(--heading-color); }
+    a { color: var(--secondary-color); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
     h2, h3 {
       color: var(--heading-color);
-      margin-top: 1.5em;
+      margin-top: 1.4em;
+      line-height: 1.25;
     }
     h2 {
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: .3em;
+      border-bottom: 2px solid rgba(98, 57, 171, 0.25);
+      padding-bottom: .35em;
+      font-size: 1.6rem;
     }
-    h3 {
-      margin-top: 1.2em;
-    }
-    p {
-      margin: 1em 0;
-    }
+    h3 { margin-top: 1.2em; font-size: 1.15rem; }
+    p { margin: 1em 0; }
     ul {
       margin: .5em 0 1em 1.2em;
       color: var(--bullet-color);
+      padding-left: 0.8em;
     }
-    li {
-      margin-bottom: .4em;
-    }
+    li { margin-bottom: .4em; }
     .note {
-      background: #eef;
-      border-left: 4px solid var(--primary-color);
-      padding: .6em;
-      margin: 1em 0;
+      background: linear-gradient(180deg, #f6f2fc, #fdfcff);
+      border: 1px solid #ddd0f3;
+      border-left: 4px solid var(--secondary-color);
+      border-radius: 10px;
+      padding: .85em .9em;
+      margin: 1.1em 0;
     }
-    .note strong {
-      color: var(--accent-color);
-    }
+    .note strong { color: var(--secondary-color); }
     hr {
       border: none;
-      border-top: 1px solid var(--border-color);
+      border-top: 1px solid rgba(96, 116, 102, 0.22);
       margin: 2em 0;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin: 1.5em 0;
+      border-radius: 10px;
+      overflow: hidden;
     }
     th, td {
       padding: .6em;
       border: 1px solid var(--border-color);
       text-align: left;
+      vertical-align: top;
     }
-    th {
-      background: #f0f0f0;
+    th { background: #edf3f0; color: var(--heading-color); }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
+      background: #eef2f1;
+      color: #21312b;
+      padding: 0.12em 0.35em;
+      border-radius: 5px;
+    }
+    .toc {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #f8fbfa;
+      margin: 14px 0 18px;
+    }
+    .toc h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+    .toc ul { margin: 0.3em 0 0.2em 1.2em; }
+    .pill {
+      display: inline-block;
+      padding: 0.12em 0.55em;
+      border-radius: 999px;
+      border: 1px solid rgba(98, 57, 171, 0.25);
+      background: rgba(98, 57, 171, 0.08);
+      color: #3b1d78;
+      font-weight: 700;
+      font-size: 0.86rem;
+      letter-spacing: 0.01em;
+    }
+    @media (max-width: 760px) {
+      body { padding: 12px 10px 24px; }
+      .content { padding: 14px; }
+      .top-bar { padding: 14px 14px; }
+      .top-title { font-size: 1rem; }
+      table { font-size: 0.92rem; }
     }
   </style>
 </head>
+
 <body>
+  <div class="page-shell">
+    <header class="top-bar">
+      <h1 class="top-title">Hugging Face GGUF Selection Guide <span class="pill">Layer Bumping</span> with llama.cpp</h1>
+    </header>
 
-  <h2>Choosing the Right Model Format</h2>
-  <p>Selecting the correct model format depends on your <strong>hardware capabilities</strong> and <strong>memory constraints</strong>.</p>
+    <main class="content">
+      <p class="doc-links">
+        <strong>Ready For Quantum:</strong>
+        <a href="/">Home</a> |
+        <a href="/?assistant=open&utm_source=huggingface&utm_medium=referral&utm_campaign=huggingface_repo_readme">Dashboard (Assistant)</a> |
+        <a href="/faq">FAQ</a> |
+        <a href="/download">Agent Download</a>
+      </p>
 
-  <h3>BF16 (Brain Float 16) – Use if BF16 acceleration is available</h3>
-  <ul>
-    <li>A 16‑bit floating‑point format designed for <strong>faster computation</strong> while retaining good precision.</li>
-    <li>Provides <strong>similar dynamic range</strong> as FP32 but with <strong>lower memory usage</strong>.</li>
-    <li>Recommended if your hardware supports <strong>BF16 acceleration</strong> (check your device's specs).</li>
-    <li>Ideal for <strong>high‑performance inference</strong> with <strong>reduced memory footprint</strong> compared to FP32.</li>
-  </ul>
+      <div class="note" id="from-huggingface">
+        <strong>Coming from a Hugging Face model card?</strong><br><br>
+        Some Hugging Face GGUF repos link here using wording like <strong>“Layer bumping with llama.cpp”</strong>.
+        This page explains (1) how those GGUF variants were produced, and (2) what the names mean so you can select
+        an appropriate download for your local runtime and memory limits.
+      </div>
 
-  <div class="note">
-    <strong>📌 Use BF16 if:</strong><br>
-    ✔ Your hardware has native <strong>BF16 support</strong> (e.g., newer GPUs, TPUs).<br>
-    ✔ You want <strong>higher precision</strong> while saving memory.<br>
-    ✔ You plan to <strong>requantize</strong> the model into another format.<br>
-    <br>
-    <strong>📌 Avoid BF16 if:</strong><br>
-    ❌ Your hardware does <strong>not support BF16</strong> (it may fall back to FP32 and run slower).<br>
-    ❌ You need compatibility with older devices that lack BF16 optimization.
+      <h2 id="layer-bumping-with-llama-cpp">Layer Bumping with llama.cpp: what it means for GGUF variants</h2>
+
+      <p>
+        GGUF variants are typically produced by converting a base model (commonly <code>bf16</code> or <code>f16</code>)
+        into GGUF, then applying quantization formats to reduce file size and runtime memory.
+        Many users then run the GGUFs via <strong>llama.cpp</strong> or compatible runtimes such as <strong>Jan</strong>,
+        <strong>LM Studio</strong>, and <strong>Ollama</strong>.
+      </p>
+
+      <p>
+        On <a href="/"><strong>readyforquantum.com</strong></a>, these GGUF variants are also commonly used in evaluation and operational workflows
+        (for example the <a href="/?assistant=open&utm_source=huggingface&utm_medium=referral&utm_campaign=huggingface_repo_readme"><strong>Network Monitor Assistant</strong></a> and its <strong>TestLLM</strong> workflow tuning).
+        The same GGUF naming and conversion details apply whether you are downloading from Hugging Face for local chat,
+        benchmarking, or pipeline testing.
+      </p>
+
+      <div class="toc" aria-label="Table of contents">
+        <h3>On this page</h3>
+        <ul>
+          <li><a href="#conversion-notes">How GGUF files are produced (conversion + quantization)</a></li>
+          <li><a href="#bf16">BF16 format</a> · <a href="#f16">F16 format</a> · <a href="#hybrid">Hybrid formats</a></li>
+          <li><a href="#quantized">Quantized formats (K-family and IQ-family)</a></li>
+          <li><a href="#very-low-bit">Very low-bit (IQ3 / Q4)</a> · <a href="#ultra-low-bit">Ultra low-bit (IQ1 / IQ2)</a></li>
+          <li><a href="#summary-table">Summary table</a> · <a href="#references">References</a></li>
+        </ul>
+      </div>
+
+      <div class="note" id="conversion-notes">
+        <strong>🔧 GGUF Conversion Notes (llama.cpp)</strong><br><br>
+
+        These GGUF files are generated with the
+        <a href="https://github.com/ggerganov/llama.cpp" target="_blank" rel="noopener">llama.cpp</a>
+        conversion / quantization pipeline. The pipeline converts a source model (commonly <code>bf16</code> or <code>f16</code>)
+        into GGUF, then applies quantization formats (K-family or IQ-family) to reduce model size.<br><br>
+
+        <strong>Layer / tensor “bumping”</strong><br>
+        When creating some quants, the llama.cpp tooling may keep certain tensors at higher precision than the rest
+        (often described as “bumping” key tensors/layers). In practice, this is typically done via llama.cpp options such as
+        <code>--tensor-type</code>, where specific tensors are assigned a higher-precision type while the remaining weights are quantized more aggressively.
+        This can improve quality at lower bit-rates while slightly increasing file size.<br><br>
+
+        <strong>Quant family consistency</strong><br>
+        These releases are created with a <strong>single quantization family per GGUF</strong>:
+        <em>K-family</em> quants (<code>Q*_K_*</code>) are not mixed with <em>IQ-family</em> quants (<code>IQ*</code>) inside the same file.
+      </div>
+
+      <hr>
+
+      <h3 id="bf16">BF16 (Brain Float 16) – Full precision base</h3>
+      <ul>
+        <li>A 16-bit floating-point format designed for <strong>faster computation</strong> while retaining good precision.</li>
+        <li>Provides <strong>similar dynamic range</strong> as FP32 but with <strong>lower memory usage</strong>.</li>
+        <li>Often used as a <strong>source format</strong> for GGUF conversion before quantization.</li>
+        <li>Ideal as a <strong>high-precision reference</strong> and for <strong>requantization</strong> into other formats.</li>
+      </ul>
+
+      <div class="note">
+        <strong>📌 Notes on BF16 files in these releases</strong><br>
+        ✔ Included when a high-precision baseline or a requantization starting point is provided.<br>
+        ✔ Useful for comparing against quantized variants.<br><br>
+        <strong>📌 Compatibility note</strong><br>
+        ❗ Hardware without BF16 acceleration may run BF16 workloads more slowly (often via fallback paths).
+      </div>
+
+      <hr>
+
+      <h3 id="f16">F16 (Float 16) – Alternative full precision base</h3>
+      <ul>
+        <li>A 16-bit floating-point with <strong>high precision</strong> but typically less range than BF16.</li>
+        <li>Commonly used when FP16 acceleration is broadly supported by the target stack.</li>
+        <li>Slightly lower numerical precision than BF16 but generally sufficient for inference and as a conversion base.</li>
+      </ul>
+
+      <div class="note">
+        <strong>📌 Notes on F16 files in these releases</strong><br>
+        ✔ Included when FP16 is preferred as a full-precision baseline or conversion source.<br><br>
+        <strong>📌 Compatibility note</strong><br>
+        ❗ Devices lacking native FP16 acceleration may not see the expected performance benefits.
+      </div>
+
+      <hr>
+
+      <h3 id="hybrid">Hybrid Precision Models (e.g., <code>bf16_q8_0</code>, <code>f16_q4_K</code>) – Mixed tensor types</h3>
+      <p>
+        These formats reflect a conversion where some tensors remain higher precision while others are quantized.
+        In practice this is implemented by llama.cpp’s conversion/quantization options (commonly via tensor-type selection / “bumping”).
+      </p>
+      <ul>
+        <li>Named like <code>bf16_q8_0</code> (indicating a BF16-based conversion where quantization is applied using <code>Q8_0</code> for selected tensors).</li>
+        <li>Provide a <strong>balance between memory efficiency and accuracy</strong>, typically improving quality versus fully-quantized models at similar size.</li>
+        <li>The exact set of tensors retained at higher precision depends on the conversion configuration used.</li>
+      </ul>
+
+      <div class="note">
+        <strong>📌 How hybrids are produced</strong><br>
+        ✔ Converted using llama.cpp with <strong>mixed tensor types</strong> (often via <code>--tensor-type</code> mapping).<br>
+        ✔ “Bumped” tensors (kept higher precision) are usually those that are more sensitive to aggressive quantization.<br><br>
+        <strong>📌 Practical implication</strong><br>
+        ❗ Hybrid files may be larger than fully quantized files of the same nominal quant level, because some tensors remain higher precision.
+      </div>
+
+      <hr>
+
+      <h3 id="quantized">Quantized Models (Q4_K, Q6_K, Q8, IQ*, etc.) – GGUF quantization formats</h3>
+      <p>
+        Quantization reduces model size and memory usage by representing weights in fewer bits, while using per-block scaling/metadata
+        to preserve as much model behavior as possible.
+      </p>
+      <ul>
+        <li><strong>Lower-bit models (Q4_K)</strong> → smaller files and lower memory footprint; more aggressive compression.</li>
+        <li><strong>Higher-bit models (Q6_K, Q8_0)</strong> → larger files; generally closer to full-precision behavior.</li>
+      </ul>
+
+      <div class="note">
+        <strong>🧩 Quant Family Consistency in these releases</strong><br><br>
+        When creating these GGUFs, layers/tensors are kept within the <strong>same quant family</strong> per file:<br><br>
+        ✔ <strong>K-family</strong> models use <code>Q*_K_*</code> formats consistently across quantized tensors.<br>
+        ✔ <strong>IQ-family</strong> models use <code>IQ*</code> formats consistently across quantized tensors.<br>
+        ✖ K-family and IQ-family formats are <strong>not mixed</strong> within the same GGUF.<br><br>
+        This mirrors how llama.cpp’s kernels and tensor loaders are typically exercised during inference and keeps the build process
+        and runtime behavior predictable.
+      </div>
+
+      <hr>
+
+      <h3 id="very-low-bit">Very Low-Bit Quantization (IQ3_XS, IQ3_S, IQ3_M, Q4_K, Q4_0)</h3>
+      <p>
+        These formats are produced to prioritize <strong>high memory efficiency</strong>.
+        IQ-family formats are importance-aware and are designed to preserve quality per byte at very low bit-rates.
+        The Q4 variants provide a common 4-bit baseline in the K-family (and legacy Q4_0).
+      </p>
+      <ul>
+        <li><strong>IQ3_XS</strong>: Ultra-low-bit (3-bit), very high compression.</li>
+        <li><strong>IQ3_S</strong>: Slightly less aggressive than XS.</li>
+        <li><strong>IQ3_M</strong>: Medium block size – typically higher reconstruction quality than IQ3_S.</li>
+        <li><strong>Q4_K</strong>: 4-bit K-family with block-wise optimization.</li>
+        <li><strong>Q4_0</strong>: Legacy pure 4-bit format often referenced for compatibility / older pipelines.</li>
+      </ul>
+
+      <h3 id="ultra-low-bit">Ultra Low-Bit Quantization (IQ1_S, IQ1_M, IQ2_S, IQ2_M, IQ2_XS, IQ2_XSS)</h3>
+      <p>
+        Ultra-low-bit (1-2 bit) formats are produced for <strong>extreme compression</strong>.
+        They can be useful for fitting large models into very constrained memory, but they represent an aggressive tradeoff.
+      </p>
+      <ul>
+        <li>Use case: extremely constrained memory environments or experimentation with maximal compression.</li>
+        <li>Trade-off: very low accuracy – <strong>validate on your target workload</strong> before relying on it.</li>
+      </ul>
+
+      <hr>
+
+      <h2 id="summary-table">Summary Table: Model Format Selection</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Model Format</th>
+            <th>Precision</th>
+            <th>Memory Usage</th>
+            <th>Device Requirements</th>
+            <th>Typical Scenario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>BF16</td><td>Very High</td><td>High</td><td>BF16-supported GPU/CPU</td><td>Full-precision baseline; requant source</td></tr>
+          <tr><td>F16</td><td>High</td><td>High</td><td>FP16-supported GPU/CPU</td><td>Full-precision baseline where FP16 is preferred</td></tr>
+          <tr><td>Q4_K</td><td>Medium-Low</td><td>Low</td><td>CPU or Low-VRAM devices</td><td>K-family 4-bit GGUF quant</td></tr>
+          <tr><td>Q6_K</td><td>Medium</td><td>Moderate</td><td>CPU with more memory</td><td>K-family higher-bit GGUF quant</td></tr>
+          <tr><td>Q8_0</td><td>High</td><td>Moderate</td><td>GPU/CPU with moderate VRAM</td><td>High-fidelity quantized variant</td></tr>
+          <tr><td>IQ3_XS</td><td>Low</td><td>Very Low</td><td>Ultra-low-memory devices</td><td>IQ-family 3-bit ultra-compressed GGUF</td></tr>
+          <tr><td>IQ3_S</td><td>Low</td><td>Very Low</td><td>Low-memory devices</td><td>IQ-family 3-bit compressed GGUF</td></tr>
+          <tr><td>IQ3_M</td><td>Low-Medium</td><td>Low</td><td>Low-memory devices</td><td>IQ-family 3-bit with improved reconstruction</td></tr>
+          <tr><td>Q4_0</td><td>Low</td><td>Low</td><td>ARM-based/embedded devices</td><td>Legacy 4-bit format; compatibility baseline</td></tr>
+          <tr><td>Ultra Low-Bit (IQ1/2_*)</td><td>Very Low</td><td>Extremely Low</td><td>Tiny edge/embedded devices</td><td>Extreme compression variants</td></tr>
+          <tr><td>Hybrid (e.g., <code>bf16_q8_0</code>)</td><td>Medium–High</td><td>Medium</td><td>Mixed-precision capable hardware</td><td>Mixed tensor types (“bumped” tensors)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note" id="references">
+        <strong>🔗 References and related tools</strong><br><br>
+
+        <strong>llama.cpp implementation</strong><br>
+        The GGUF quantization formats and tensor-type mapping behavior described above are implemented in llama.cpp:
+        <a href="https://github.com/ggerganov/llama.cpp" target="_blank" rel="noopener">github.com/ggerganov/llama.cpp</a><br><br>
+
+        <strong>Network Monitor Assistant (readyforquantum.com)</strong><br>
+        If you are evaluating or operating models via <a href="/?assistant=open&utm_source=huggingface&utm_medium=referral&utm_campaign=huggingface_repo_readme">Network Monitor Assistant</a>, the same GGUF naming and selection concepts apply to
+        <strong>TestLLM</strong> workflows (memory fit, speed, and quality targets).
+        Related pages:
+        <a href="/?assistant=open&utm_source=huggingface&utm_medium=referral&utm_campaign=huggingface_repo_readme">Dashboard (Assistant)</a>,
+        <a href="/faq">FAQ</a>,
+        <a href="/download">Agent Download</a>.
+      </div>
+
+      <p class="doc-links">
+        <strong>More:</strong>
+        <a href="/">Home</a> |
+        <a href="/faq">FAQ</a> |
+        <a href="/download">Agent Download</a> |
+        <a href="/?assistant=open&utm_source=huggingface&utm_medium=referral&utm_campaign=huggingface_repo_readme">Dashboard (Assistant)</a>
+      </p>
+
+    </main>
   </div>
-
-  <hr>
-
-  <h3>F16 (Float 16) – More widely supported than BF16</h3>
-  <ul>
-    <li>A 16‑bit floating‑point <strong>high precision</strong> but with less range than BF16.</li>
-    <li>Works on most devices with <strong>FP16 acceleration support</strong> (including many GPUs and some CPUs).</li>
-    <li>Slightly lower numerical precision than BF16 but generally sufficient for inference.</li>
-  </ul>
-
-  <div class="note">
-    <strong>📌 Use F16 if:</strong><br>
-    ✔ Your hardware supports <strong>FP16</strong> but <strong>not BF16</strong>.<br>
-    ✔ You need a <strong>balance between speed, memory usage, and accuracy</strong>.<br>
-    ✔ You are running on a <strong>GPU</strong> or another device optimized for FP16 computations.<br>
-    <br>
-    <strong>📌 Avoid F16 if:</strong><br>
-    ❌ Your device lacks <strong>native FP16 support</strong> (it may run slower than expected).<br>
-    ❌ You have memory limitations.
-  </div>
-
-  <hr>
-
-  <h3>Hybrid Precision Models (e.g., <code>bf16_q8_0</code>, <code>f16_q4_K</code>) – Best of Both Worlds</h3>
-  <p>These formats selectively <strong>quantize non‑essential layers</strong> while keeping <strong>key layers in full precision</strong> (e.g., attention and output layers).</p>
-  <ul>
-    <li>Named like <code>bf16_q8_0</code> (means full‑precision BF16 core layers + quantized Q8_0 other layers).</li>
-    <li>Strike a <strong>balance between memory efficiency and accuracy</strong>, better than fully quantized models without requiring full BF16/F16.</li>
-  </ul>
-
-  <div class="note">
-    <strong>📌 Use Hybrid Models if:</strong><br>
-    ✔ You need <strong>better accuracy than quant‑only models</strong> but can’t afford full BF16/F16 everywhere.<br>
-    ✔ Your device supports <strong>mixed‑precision inference</strong>.<br>
-    ✔ You want to <strong>optimize trade‑offs</strong> for production‑grade models on constrained hardware.<br>
-    <br>
-    <strong>📌 Avoid Hybrid Models if:</strong><br>
-    ❌ Your target device doesn’t support <strong>mixed or full‑precision acceleration</strong>.<br>
-    ❌ You are operating under <strong>ultra‑strict memory limits</strong> (use fully quantized formats instead).
-  </div>
-
-  <hr>
-
-  <h3>Quantized Models (Q4_K, Q6_K, Q8, etc.) – For CPU & Low‑VRAM Inference</h3>
-  <p>Quantization reduces model size and memory usage while maintaining as much accuracy as possible.</p>
-  <ul>
-    <li><strong>Lower‑bit models (Q4_K)</strong> → <strong>Best for minimal memory usage</strong>, may have lower precision.</li>
-    <li><strong>Higher‑bit models (Q6_K, Q8_0)</strong> → <strong>Better accuracy</strong>, requires more memory.</li>
-  </ul>
-
-  <div class="note">
-    <strong>📌 Use Quantized Models if:</strong><br>
-    ✔ You are running inference on a <strong>CPU</strong> and need an optimized model.<br>
-    ✔ Your device has <strong>low VRAM</strong> and cannot load full‑precision models.<br>
-    ✔ You want to reduce <strong>memory footprint</strong> while keeping reasonable accuracy.<br>
-    <br>
-    <strong>📌 Avoid Quantized Models if:</strong><br>
-    ❌ You need <strong>maximum accuracy</strong> (full‑precision models are better for this).<br>
-    ❌ Your hardware has enough VRAM for higher‑precision formats (BF16/F16).
-  </div>
-
-  <hr>
-
-  <h3>Very Low‑Bit Quantization (IQ3_XS, IQ3_S, IQ3_M, Q4_K, Q4_0)</h3>
-  <p>Optimized for <strong>very high memory efficiency</strong>, ideal for <strong>low‑power devices</strong> or <strong>large‑scale deployments</strong> where memory is critical.</p>
-  <ul>
-    <li><strong>IQ3_XS</strong>: Ultra‑low‑bit (3‑bit), <strong>very high memory efficiency</strong> – use when even Q4_K is too large.</li>
-    <li><strong>IQ3_S</strong>: Slightly less aggressive than XS – use on low‑memory devices.</li>
-    <li><strong>IQ3_M</strong>: Medium block size – better accuracy than IQ3_S.</li>
-    <li><strong>Q4_K</strong>: 4‑bit with block‑wise optimization – good for low‑memory devices where Q6_K is too large.</li>
-    <li><strong>Q4_0</strong>: Pure 4‑bit, optimized for ARM devices – ideal for low‑memory/ARM inference.</li>
-  </ul>
-
-  <h3>Ultra Low‑Bit Quantization (IQ1_S, IQ1_M, IQ2_S, IQ2_M, IQ2_XS, IQ2_XSS)</h3>
-  <p>Ultra‑low‑bit (1‑2 bit) with <strong>extreme memory efficiency</strong>.</p>
-  <ul>
-    <li>Use case: fit the model into very constrained memory.</li>
-    <li>Trade‑off: very low accuracy – may not function as expected; <strong>test fully before using</strong>.</li>
-  </ul>
-
-  <hr>
-
-  <h2>Summary Table: Model Format Selection</h2>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Model Format</th><th>Precision</th><th>Memory Usage</th><th>Device Requirements</th><th>Best Use Case</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>BF16</td><td>Very High</td><td>High</td><td>BF16‑supported GPU/CPU</td><td>High‑speed inference with reduced memory</td></tr>
-      <tr><td>F16</td><td>High</td><td>High</td><td>FP16‑supported GPU/CPU</td><td>Inference when BF16 isn’t available</td></tr>
-      <tr><td>Q4_K</td><td>Medium‑Low</td><td>Low</td><td>CPU or Low‑VRAM devices</td><td>Memory‑constrained inference</td></tr>
-      <tr><td>Q6_K</td><td>Medium</td><td>Moderate</td><td>CPU with more memory</td><td>Better accuracy with quantization</td></tr>
-      <tr><td>Q8_0</td><td>High</td><td>Moderate</td><td>GPU/CPU with moderate VRAM</td><td>Highest accuracy among quantized models</td></tr>
-      <tr><td>IQ3_XS</td><td>Low</td><td>Very Low</td><td>Ultra‑low‑memory devices</td><td>Max memory efficiency, low accuracy</td></tr>
-      <tr><td>IQ3_S</td><td>Low</td><td>Very Low</td><td>Low‑memory devices</td><td>Slightly more usable than IQ3_XS</td></tr>
-      <tr><td>IQ3_M</td><td>Low‑Medium</td><td>Low</td><td>Low‑memory devices</td><td>Better accuracy than IQ3_S</td></tr>
-      <tr><td>Q4_0</td><td>Low</td><td>Low</td><td>ARM‑based/embedded devices</td><td>ARM‑optimized inference</td></tr>
-      <tr><td>Ultra Low‑Bit (IQ1/2_*)</td><td>Very Low</td><td>Extremely Low</td><td>Tiny edge/embedded devices</td><td>Extreme memory fit; low accuracy</td></tr>
-      <tr><td>Hybrid (e.g., <code>bf16_q8_0</code>)</td><td>Medium–High</td><td>Medium</td><td>Mixed‑precision capable hardware</td><td>Balance: performance & memory, near‑FP accuracy</td></tr>
-    </tbody>
-  </table>
-
 </body>
 </html>
-

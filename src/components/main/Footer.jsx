@@ -91,6 +91,18 @@ function Footer() {
             </Grid>
           </Grid>
         </Paper>
+        <Box sx={{ textAlign: 'center', mb: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            Model resources for Network Monitor Assistant:{' '}
+            <Link
+              href="/huggingface_gguf_selection_guide.html"
+              underline="hover"
+              color="primary"
+            >
+              Hugging Face GGUF selection guide
+            </Link>
+          </Typography>
+        </Box>
         <Box sx={{ textAlign: 'center', mt: 2 }}>
           <Copyright />
         </Box>

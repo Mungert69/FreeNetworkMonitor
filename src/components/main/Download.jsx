@@ -75,6 +75,7 @@ ${buildVersionSection}
 ### AI-Powered Integration:
 - The Agent acts as a proxy for the AI-powered Network Monitor Assistant, executing commands such as Nmap scans, Metasploit modules, and OpenSSL security checks. This seamless integration allows you to manage hosts, investigate network anomalies, and perform in-depth network security audits directly from the dashboard.
 - Whether you're optimizing performance or securing your infrastructure, the assistant works with the Agent to provide proactive and real-time network management, ensuring you stay ahead of potential threats.
+- If you use Hugging Face GGUF models with TestLLM, use our [GGUF model selection guide](https://${getBaseDomain()}/huggingface_gguf_selection_guide.html) to choose practical quantization formats for your hardware.
 
 ### Advanced Security Tools Integration:
 - The Agent supports advanced security diagnostics with integrated tools such as Nmap for network scanning and Metasploit for vulnerability testing. Use these powerful tools to scan for vulnerabilities, detect open ports, or run exploitation modules for real-world security audits.
