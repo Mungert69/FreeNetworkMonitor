@@ -107,13 +107,19 @@ const AudioPlayer = () => {
 
     const sound = new Howl({
       src: [nextFile],
+      html5: true,
       onend: () => {
         console.log('Audio playback ended.');
         audioQueueRef.current.shift(); // Remove the played file
         playNextInQueue(); // Play the next file in the queue
       },
-      onerror: (error) => {
-        console.error('Audio playback error:', error);
+      onloaderror: (_id, error) => {
+        console.error('Audio load error:', error);
+        audioQueueRef.current.shift(); // Remove the errored file
+        playNextInQueue(); // Play the next file in the queue
+      },
+      onplayerror: (_id, error) => {
+        console.error('Audio play error:', error);
         audioQueueRef.current.shift(); // Remove the errored file
         playNextInQueue(); // Play the next file in the queue
       },
