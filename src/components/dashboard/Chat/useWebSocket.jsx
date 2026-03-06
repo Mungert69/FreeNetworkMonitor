@@ -12,6 +12,37 @@ export const useWebSocket = ({
   const webSocketRef = useRef(null);
   const [reconnect, setReconnect] = useState(false);
   
+  const parseAudioPayload = (rawAudioValue) => {
+    const trimmed = (rawAudioValue || '').trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    const hashIndex = trimmed.indexOf('#');
+    if (hashIndex < 0) {
+      console.warn('Dropping audio chunk without sequence metadata.');
+      return null;
+    }
+
+    const baseUrl = trimmed.substring(0, hashIndex);
+    const fragment = trimmed.substring(hashIndex + 1);
+
+    try {
+      const params = new URLSearchParams(fragment);
+      const streamId = params.get('stream');
+      const seqRaw = params.get('seq');
+      const seq = seqRaw === null ? NaN : Number.parseInt(seqRaw, 10);
+
+      if (baseUrl && streamId && Number.isInteger(seq) && seq >= 0) {
+        return { url: baseUrl, streamId, seq };
+      }
+    } catch (error) {
+      console.warn('Failed to parse audio metadata from URL fragment:', error);
+    }
+
+    console.warn('Dropping audio chunk with invalid sequence metadata.');
+    return null;
+  };
 
   const filterLlmOutput = (text) => {
 
@@ -180,6 +211,14 @@ export const useWebSocket = ({
 
     webSocketRef.current.onmessage = (event) => {
       let newWord = event.data;
+      if (newWord.includes('<Assistant:>') ||
+          newWord.includes('<Function Call:>') ||
+          newWord.includes('<Function Response:>') ||
+          newWord === '</functioncall>' ||
+          newWord === '</functioncall-complete>')
+      {
+        console.log('[chat-ws] marker-frame', newWord);
+      }
       
       // Handle audio data
       if (newWord.includes('</audio>')) {
@@ -187,7 +226,10 @@ export const useWebSocket = ({
         newWord = textPart?.trim() || '';
         
         if (audioFile?.trim()) {
-          audioPlayerRef.current.playAudioSequentially(audioFile.trim());
+          const parsedAudio = parseAudioPayload(audioFile);
+          if (parsedAudio && audioPlayerRef.current?.playAudioSequentially) {
+            audioPlayerRef.current.playAudioSequentially(parsedAudio);
+          }
         }
       }
 
