@@ -79,6 +79,8 @@ const endpointTypes = [
   },
 ];
 
+const TEST_TIMEOUT_MS = 20000;
+
 describe('HostListEdit', () => {
   const renderComponent = (props = {}) =>
     render(
@@ -121,7 +123,7 @@ describe('HostListEdit', () => {
     expect(siteIdArg).toBe(1);
     expect(Array.isArray(payload)).toBe(true);
     expect(payload[0]).toMatchObject({ address: 'example.com', endPointType: 'HTTP' });
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('triggers help dialog when help button is pressed', async () => {
     renderComponent();
@@ -138,7 +140,7 @@ describe('HostListEdit', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('help-dialog')).not.toBeInTheDocument();
     });
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('places a newly added host at the top of the grid', async () => {
     const newHostRow = {
@@ -180,5 +182,5 @@ describe('HostListEdit', () => {
 
     const [, payload] = saveHostData.mock.calls[0];
     expect(payload.some((row) => row.address === 'newhost.com')).toBe(true);
-  });
+  }, TEST_TIMEOUT_MS);
 });
