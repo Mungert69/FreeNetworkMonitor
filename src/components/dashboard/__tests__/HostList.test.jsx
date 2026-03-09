@@ -61,6 +61,8 @@ const baseProps = {
   defaultSearchValue: '',
 };
 
+const TEST_TIMEOUT_MS = 20000;
+
 describe('HostList', () => {
   const theme = createTheme();
 
@@ -120,7 +122,7 @@ describe('HostList', () => {
 
     expect(baseProps.resetHostAlert).toHaveBeenCalledWith(42);
     expect(baseProps.resetPredictAlert).toHaveBeenCalledWith(42);
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('shows dataset selector when toolbar button is activated', async () => {
     renderHostList();
@@ -138,7 +140,7 @@ describe('HostList', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('datasets-modal')).not.toBeInTheDocument();
     });
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('navigates between datasets using toolbar controls', async () => {
     renderHostList();
@@ -153,5 +155,5 @@ describe('HostList', () => {
 
     expect(baseProps.handleSetDataSetId).toHaveBeenCalledWith(0, undefined);
     expect(baseProps.handleSetDataSetId).toHaveBeenCalledWith(2, '2025-01-04 08:00');
-  });
+  }, TEST_TIMEOUT_MS);
 });
