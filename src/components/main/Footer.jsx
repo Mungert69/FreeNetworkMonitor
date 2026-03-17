@@ -103,6 +103,24 @@ function Footer() {
             </Link>
           </Typography>
         </Box>
+        <Box sx={{ textAlign: 'center', mb: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            Authorized use only: run scanning, testing, or monitoring only on assets you own or are explicitly authorized in writing to test.
+          </Typography>
+        </Box>
+        <Box sx={{ textAlign: 'center', mb: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            <Link href="/termofservice.html" underline="hover" color="primary">Terms & AUP</Link>
+            {' | '}
+            <Link href="/acceptable-use.html" underline="hover" color="primary">Acceptable Use</Link>
+            {' | '}
+            <Link href="/security-compliance.html" underline="hover" color="primary">Security & Compliance</Link>
+            {' | '}
+            <Link href="/privacypolicy.html" underline="hover" color="primary">Privacy Policy</Link>
+            {' | '}
+            <Link href="/cookiepolicy.html" underline="hover" color="primary">Cookie Policy</Link>
+          </Typography>
+        </Box>
         <Box sx={{ textAlign: 'center', mt: 2 }}>
           <Copyright />
         </Box>

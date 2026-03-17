@@ -94,7 +94,7 @@ const App = () => {
               By clicking agree or continuing to use this site you agree to the use of cookies.
               For full cookie policy click{" "}
               <a
-                href="https://readyforquantum.com/cookiepolicy.html"
+                href="/cookiepolicy.html"
                 aria-label="Read our Cookie Policy (opens in a new tab)"
                 title="Read our Cookie Policy"
                 target="_blank"
@@ -110,7 +110,7 @@ const App = () => {
               </a>.
               To view our privacy policy click{" "}
               <a
-                href="https://readyforquantum.com/privacypolicy.html"
+                href="/privacypolicy.html"
                 aria-label="Read our Privacy Policy (opens in a new tab)"
                 title="Read our Privacy Policy"
                 target="_blank"
@@ -123,6 +123,22 @@ const App = () => {
                 }}
               >
                 Privacy Policy
+              </a>.
+              To review acceptable use terms click{" "}
+              <a
+                href="/termofservice.html"
+                aria-label="Read our Terms and Acceptable Use Policy (opens in a new tab)"
+                title="Read our Terms and Acceptable Use Policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "#FFD700",
+                  fontWeight: 700,
+                  textDecoration: "underline",
+                  backgroundColor: "transparent"
+                }}
+              >
+                Terms & AUP
               </a>.
             </span>
             <button

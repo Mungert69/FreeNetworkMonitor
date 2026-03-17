@@ -9,6 +9,8 @@ import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import FaqIcon from '@mui/icons-material/LiveHelp';
 import BlogIcon from '@mui/icons-material/Book';
 import DownloadIcon from '@mui/icons-material/GetApp';
+import GavelIcon from '@mui/icons-material/Gavel';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import Tooltip from '@mui/material/Tooltip';
 
 export function MainListItems({ classes }) {
@@ -84,6 +86,28 @@ export function MainListItems({ classes }) {
               <LoyaltyIcon />
             </ListItemIcon>
             <ListItemText primary="Subscription" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+
+      <Tooltip title="Acceptable Use" placement="right">
+        <Link className={classes.linkCompact} href="/acceptable-use.html">
+          <ListItem button key="acceptable-use">
+            <ListItemIcon>
+              <GavelIcon />
+            </ListItemIcon>
+            <ListItemText primary="Acceptable Use" />
+          </ListItem>
+        </Link>
+      </Tooltip>
+
+      <Tooltip title="Security & Compliance" placement="right">
+        <Link className={classes.linkCompact} href="/security-compliance.html">
+          <ListItem button key="security-compliance">
+            <ListItemIcon>
+              <VerifiedUserIcon />
+            </ListItemIcon>
+            <ListItemText primary="Security & Compliance" />
           </ListItem>
         </Link>
       </Tooltip>

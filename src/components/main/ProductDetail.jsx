@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { TextField, CssBaseline, Box, Grow, Typography, Divider, Link, Container, Grid, Paper, Tooltip, MenuItem } from '@mui/material';
+import { TextField, CssBaseline, Box, Grow, Typography, Divider, Link, Container, Grid, Paper, Tooltip, MenuItem, Alert, Checkbox, FormControlLabel } from '@mui/material';
 import { getStartSiteId, fetchFirstLoadServer, getSiteIdfromUrl, fetchProcessorList } from '../dashboard/ServiceAPI';
 
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
@@ -20,6 +20,7 @@ import Button from '@mui/material/Button';
 import BlogArticle from './BlogArticle';
 import DashboardAppBar from '../dashboard/DashboardAppBar';
 import DashboardDrawer from '../dashboard/DashboardDrawer';
+import Message from '../dashboard/Message';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 
 
@@ -123,10 +124,10 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
                     </Box>
                     <Paper className={paperClassName} sx={{ height: '100%' }}>
                         <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
-                        Our monitoring system automatically:
+                        Our monitoring system helps teams:
                         <ul>
                             <li>
-                                Scans for vulnerabilities (
+                                Run approved security diagnostics (
                                 <Tooltip title="Ask about Nmap scans" arrow>
                                     <Typography
                                         component="span"
@@ -213,7 +214,7 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
                                         sx={interactiveStyles.assistantTrigger}
                                         onClick={() => onAssistant("How do I run an instant penetration test?")}
                                     >
-                                        Run instant penetration tests
+                                        Request guided diagnostic checks
                                     </Typography>
                                 </Tooltip>
                             </li>
@@ -363,11 +364,29 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
     const [advancedTarget, setAdvancedTarget] = useState('');
     const [customCodeDescription, setCustomCodeDescription] = useState('');
     const [selectedAgent, setSelectedAgent] = useState('');
+    const [authorizedUseConfirmed, setAuthorizedUseConfirmed] = useState(false);
+    const [message, setMessage] = useState({ info: 'init' });
 
     const hasAdvancedTarget = advancedTarget.trim().length > 0;
     const hasCustomCodeDescription = customCodeDescription.trim().length > 0;
     const hasLocalAgentSelected = Boolean(selectedAgent);
-    const canRunIntrusive = isLoggedIn && hasLocalAgentSelected;
+    const hasIntrusivePrereqs = isLoggedIn && hasLocalAgentSelected;
+
+    const showAuthorizationError = React.useCallback(() => {
+        setMessage({
+            text: 'Authorization required. Check "I am authorised to test these targets" before running this action.',
+            warning: '',
+            persist: false,
+        });
+    }, []);
+
+    const runWithAuthorization = React.useCallback((action) => {
+        if (!authorizedUseConfirmed) {
+            showAuthorizationError();
+            return;
+        }
+        action();
+    }, [authorizedUseConfirmed, showAuthorizationError]);
 
     const withAgent = React.useCallback(
         (prompt) => (selectedAgent ? `${prompt} Please use the agent ${selectedAgent}.` : prompt),
@@ -409,9 +428,9 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                                 color="primary"
                                 sx={{ mt: 2 }}
                                 aria-label="Basic security check with AI assistant"
-                                onClick={() => onAssistant(
-                                    `Using the Security Expert run a security check on my server: ${serverAddress} checking only common ports and ssl certificates. I confirm that I have permission to check this server. Please use the agent Scanner - EU`
-                                )}
+                                onClick={() => runWithAuthorization(() => onAssistant(
+                                    `Using the Security Expert run a security check on my server: ${serverAddress} checking only common ports and ssl certificates. I am authorised. Please use the agent Scanner - EU`
+                                ))}
                             >
                                 Check Server Security
                             </Button>
@@ -434,13 +453,30 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                                 color="secondary"
                                 sx={{ mt: 2 }}
                                 aria-label="Test quantum ready tls negotiation with AI assistant"
-                                onClick={() => onAssistant(
-                                    `Check quantum readiness using the Quantum Expert on my server ${quantumCheck}. I confirm that I have permission to check this server. Please use the agent Scanner - EU`
-                                )}
+                                onClick={() => runWithAuthorization(() => onAssistant(
+                                    `Check quantum readiness using the Quantum Expert on my server ${quantumCheck}. I am authorised. Please use the agent Scanner - EU`
+                                ))}
                             >
                                 Check Quantum Readiness
                             </Button>
                         </Paper>
+                    </Grid>
+                </Grid>
+                <Grid container justifyContent="center" sx={{ mb: 3 }}>
+                    <Grid item xs={12} md={10}>
+                        <FormControlLabel
+                            sx={{ mt: 1 }}
+                            control={
+                                <Checkbox
+                                    checked={authorizedUseConfirmed}
+                                    onChange={(event) => setAuthorizedUseConfirmed(event.target.checked)}
+                                />
+                            }
+                            label="I am authorised to test these targets"
+                        />
+                        <Alert severity="warning" sx={{ alignItems: 'center' }}>
+                            Active scanning and testing is restricted to authorized assets only. By continuing, you confirm you own the target or have explicit written permission to test it. For security, compliance, and abuse prevention, all LLM interactions in this service are recorded and may be reviewed. Where required by law or to address suspected abuse, relevant information may be shared with appropriate authorities.
+                        </Alert>
                     </Grid>
                 </Grid>
                 <Typography
@@ -451,7 +487,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     Advanced Tools & Agent Selection
                 </Typography>
                 <Typography variant="body1" align="center" sx={{ mb: 4 }}>
-                    The checks above work for any public target. For deeper diagnostics and agent-powered workflows,
+                    Use these tools only on targets you own or are explicitly authorized in writing to test. For deeper diagnostics and agent-powered workflows,
                     select a local agent and target below.
                 </Typography>
                 <Grid container spacing={3} justifyContent="center">
@@ -523,9 +559,9 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                                 variant="contained"
                                 color="secondary"
                                 disabled={!hasAdvancedTarget}
-                                onClick={() => onAssistant(
+                                onClick={() => runWithAuthorization(() => onAssistant(
                                     withAgent(`Using the Security Expert, run an Nmap service/version scan on ${advancedTarget}. I confirm I have permission to scan this target.`)
-                                )}
+                                ))}
                             >
                                 Run Recon
                             </Button>
@@ -543,9 +579,9 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                                 variant="contained"
                                 color="primary"
                                 disabled={!hasAdvancedTarget}
-                                onClick={() => onAssistant(
+                                onClick={() => runWithAuthorization(() => onAssistant(
                                     withAgent(`Using the Security Expert, run an OpenSSL TLS configuration check on ${advancedTarget}. I confirm I have permission to test this service.`)
-                                )}
+                                ))}
                             >
                                 Check TLS
                             </Button>
@@ -563,9 +599,9 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                                 variant="contained"
                                 color="secondary"
                                 disabled={!hasAdvancedTarget}
-                                onClick={() => onAssistant(
+                                onClick={() => runWithAuthorization(() => onAssistant(
                                     withAgent(`Using the Quantum Expert, run a quantum readiness scan for ${advancedTarget}. I confirm I have permission to test this service.`)
-                                )}
+                                ))}
                             >
                                 Scan Quantum Safety
                             </Button>
@@ -582,14 +618,14 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                disabled={!hasAdvancedTarget || !canRunIntrusive}
-                                onClick={() => onAssistant(
+                                disabled={!hasAdvancedTarget || !hasIntrusivePrereqs}
+                                onClick={() => runWithAuthorization(() => onAssistant(
                                     withAgent(`Using the Penetration Expert, run a guided Metasploit check against ${advancedTarget}. I confirm I have explicit permission to test this target.`)
-                                )}
+                                ))}
                             >
                                 Start Guided Test
                             </Button>
-                            {!canRunIntrusive && (
+                            {!hasIntrusivePrereqs && (
                                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                                     Requires login and a local agent.
                                 </Typography>
@@ -638,14 +674,14 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={!canRunIntrusive || !hasCustomCodeDescription}
-                                onClick={() => onAssistant(
+                                disabled={!hasIntrusivePrereqs || !hasCustomCodeDescription}
+                                onClick={() => runWithAuthorization(() => onAssistant(
                                     withAgent(`Using the Cmd Processor Expert, create a custom cmd processor based on this description: ${customCodeDescription}. I confirm I have permission to deploy this code.`)
-                                )}
-                            >0h
+                                ))}
+                            >
                                 Build a Cmd Processor
                             </Button>
-                            {!canRunIntrusive && (
+                            {!hasIntrusivePrereqs && (
                                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                                     Requires login and a local agent.
                                 </Typography>
@@ -664,14 +700,14 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                disabled={!canRunIntrusive || !hasCustomCodeDescription}
-                                onClick={() => onAssistant(
+                                disabled={!hasIntrusivePrereqs || !hasCustomCodeDescription}
+                                onClick={() => runWithAuthorization(() => onAssistant(
                                     withAgent(`Using the Connect Expert, create a custom Connect endpoint based on this description: ${customCodeDescription}. I confirm I have permission to deploy this code.`)
-                                )}
+                                ))}
                             >
                                 Create a Connect
                             </Button>
-                            {!canRunIntrusive && (
+                            {!hasIntrusivePrereqs && (
                                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                                     Requires login and a local agent.
                                 </Typography>
@@ -688,6 +724,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                         .
                     </Typography>
                 )}
+                <Message message={message} />
             </Box>
         </>
     );
@@ -870,12 +907,12 @@ const ProductDetail = () => {
         <div className={classes.root}>
             <CssBaseline />
             <Seo
-                title="AI Network Monitor: Quantum-Ready Security & Nmap Automation"
-                description="Get 24/7 network monitoring with zero setup. Our AI assistant automates Nmap scans, Metasploit tests, and quantum-readiness checks—with alerts in plain English. Start free: no configuration needed."
+                title="AI Network Monitor: Quantum-Ready Security & Continuous Monitoring"
+                description="Helps teams protect their infrastructure with continuous monitoring and streamlined, approved security diagnostics. Start free with clear controls and plain-English alerts."
                 openGraph={{
                     ogImage: {
                         ogImage: `${publicUrl}/ping.svg`,
-                        ogImageAlt: "AI Network Monitor: Automated Nmap & Quantum Security",
+                        ogImageAlt: "AI Network Monitor: Continuous Monitoring and Approved Security Diagnostics",
                     },
                     ogUrl: `https://${getBaseDomain()}`,
                     ogType: "website",
@@ -907,6 +944,14 @@ const ProductDetail = () => {
                 <Container className={classes.container}>
                     {/* Hero Section */}
                     <HeroSection />
+                    <Grid container justifyContent="center" sx={{ mb: 4 }}>
+                        <Grid item xs={12} md={10}>
+                            <Alert severity="warning">
+                                Authorized use only: scanning, security testing, and monitoring may be performed only on systems you own or are explicitly authorized in writing to test. Review our{' '}
+                                <Link href="/termofservice.html">Terms & AUP</Link>.
+                            </Alert>
+                        </Grid>
+                    </Grid>
 
                     {/* Features Section */}
                     <FeaturesSection
