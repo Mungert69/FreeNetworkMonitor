@@ -469,13 +469,7 @@ export default function Dashboard() {
           .
         </Alert>
       )}
-      <Alert severity="warning" sx={{ mx: 2, mb: 2 }}>
-        Authorized use only: run monitoring, scanning, and security testing only on systems you own or are explicitly authorized in writing to test. Review the{' '}
-        <Link href="/termofservice.html" underline="always">
-          Terms & Acceptable Use Policy
-        </Link>
-        .
-      </Alert>
+
       <DashboardMainPanel
         classes={classes}
         isMediumOrLarger={isMediumOrLarger}
