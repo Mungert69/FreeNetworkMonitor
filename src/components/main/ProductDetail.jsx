@@ -1050,8 +1050,8 @@ const ProductDetail = () => {
                     <Divider sx={{ my: 6 }} />
                     <Footer />
 
-                    <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-                        {siteId !== null && siteId !== undefined && (
+                    {isChatOpen && siteId !== null && siteId !== undefined && (
+                        <div className={classes.chatContainer}>
                             <Suspense fallback={<div>Loading chat...</div>}>
                                 <Chat
                                     isDashboard={false}
@@ -1060,8 +1060,8 @@ const ProductDetail = () => {
                                     siteId={siteId}
                                 />
                             </Suspense>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </Container>
             </main>
 

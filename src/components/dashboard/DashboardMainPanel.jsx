@@ -48,13 +48,13 @@ const DashboardMainPanel = ({
               )}
             </Suspense>
           </Paper>
-          <div className={isChatOpen ? classes.chatContainer : classes.chatHidden}>
-            {siteId !== null && siteId !== undefined && (
+          {isChatOpen && siteId !== null && siteId !== undefined && (
+            <div className={classes.chatContainer}>
               <Suspense fallback={loadingFallback}>
                 <ChatComponent key={chatKey} {...chatProps} />
               </Suspense>
-            )}
-          </div>
+            </div>
+          )}
         </Grid>
       </Grid>
     </Container>
@@ -62,4 +62,3 @@ const DashboardMainPanel = ({
 );
 
 export default React.memo(DashboardMainPanel);
-
