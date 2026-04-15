@@ -15,6 +15,6 @@ docker buildx inspect --bootstrap
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --file ./Dockerfile \
-  --tag mungert/networkmonitorreact:1.4.2 \
+  --tag mungert/networkmonitorreact:1.5.0 \
   --push \
   .

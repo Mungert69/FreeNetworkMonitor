@@ -81,6 +81,19 @@ export const getApiSubscriptionUrl = () => {
     return appsettings.apiSubscriptionUrl;
 }
 
+export const getPaymentRedirectUrl = async (url) => {
+    const result = await axios({
+        method: 'get',
+        url,
+        withCredentials: true,
+        headers: {
+            'X-Return-Checkout-Url': 'true'
+        },
+    });
+
+    return result?.data?.url || '';
+}
+
 export const getClientId = () => {
     return appsettings.clientId;
 }
@@ -1000,10 +1013,12 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
     try {
         const result = await axios(
             {
-                method: 'post',
-                url: apiSubscriptionUrl + '/CreateCheckoutSession/' + user.sub + '/' + productName + '/'+user.email,
-                data: user,
-
+                method: 'get',
+                url: apiSubscriptionUrl + '/CreateCheckoutSession/' + encodeURIComponent(user.sub) + '/' + encodeURIComponent(productName) + '/' + encodeURIComponent(user.email),
+                withCredentials: true,
+                headers: {
+                    'X-Return-Checkout-Url': 'true'
+                },
             }
         ).catch(function (error) {
             message.text = 'ServiceAPI.subscribeApi Axios Error was : ' + error;
@@ -1011,7 +1026,7 @@ export const subscribeApi = async (baseSubUrlId, user, productName) => {
             message.success = false;
             return message;
         });
-        message.text = "Result was : " + result.data.message;
+        message.text = "Result was : " + (result.data.message || result.data.url || '');
         message.success = result.data.success;
     }
     catch (error) {

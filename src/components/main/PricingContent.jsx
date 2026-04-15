@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
 import LoginButton from '../login-button';
-import { getApiSubscriptionUrl, convertDate, fetchTiers, getStartSiteId } from '../dashboard/ServiceAPI';
+import { getApiSubscriptionUrl, convertDate, fetchTiers, getStartSiteId, getPaymentRedirectUrl } from '../dashboard/ServiceAPI';
 import { useFusionAuth } from '@fusionauth/react-sdk';
 
 // ⟵ removed ScrollableBox
@@ -27,6 +27,8 @@ function PricingContent({ noRedirect, apiUser }) {
   const [tiers, setTiers] = React.useState([]);
   const [loadingTiers, setLoadingTiers] = React.useState(true);
   const [tiersError, setTiersError] = React.useState('');
+  const [paymentLoading, setPaymentLoading] = React.useState('');
+  const [paymentError, setPaymentError] = React.useState('');
 
   React.useEffect(() => {
     let mounted = true;
@@ -49,9 +51,42 @@ function PricingContent({ noRedirect, apiUser }) {
 
   const url = (title, userId, email, customerId) => {
     if (noRedirect) return '/Dashboard?initViewSub=true';
-    if (customerId) return getApiSubscriptionUrl() + '/customer-portal/' + customerId;
+    if (customerId) return getApiSubscriptionUrl() + '/customer-portal/' + encodeURIComponent(customerId);
     if (title === 'Free') return '';
-    return getApiSubscriptionUrl() + '/CreateCheckoutSession/' + userId + '/' + title + '/' + email;
+    return getApiSubscriptionUrl()
+      + '/CreateCheckoutSession/'
+      + encodeURIComponent(userId)
+      + '/'
+      + encodeURIComponent(title)
+      + '/'
+      + encodeURIComponent(email);
+  };
+
+  const handlePaymentClick = async (event, tier) => {
+    const redirectUrl = url(tier.title, apiUser.userID, apiUser.email, apiUser.customerId);
+    if (!redirectUrl) {
+      event.preventDefault();
+      return;
+    }
+
+    if (noRedirect) {
+      return;
+    }
+
+    event.preventDefault();
+    setPaymentError('');
+    setPaymentLoading(tier.title);
+
+    try {
+      const stripeRedirectUrl = await getPaymentRedirectUrl(redirectUrl);
+      if (!stripeRedirectUrl) throw new Error('Missing payment redirect URL.');
+      window.location.assign(stripeRedirectUrl);
+    } catch (error) {
+      console.log('Payment redirect failed:', error);
+      setPaymentError('Unable to start subscription. Please try again.');
+    } finally {
+      setPaymentLoading('');
+    }
   };
 
   const buttonText = (tier, accountType, customerId) => {
@@ -105,6 +140,11 @@ function PricingContent({ noRedirect, apiUser }) {
         <Typography variant="h5" align="center" color="text.secondary" component="p">
           {descriptionText(apiUser.accountType, apiUser.cancelAt)}
         </Typography>
+        {paymentError ? (
+          <Typography color="error" align="center" sx={{ mt: 2 }}>
+            {paymentError}
+          </Typography>
+        ) : null}
       </Container>
 
       <Container component="main">
@@ -179,12 +219,14 @@ function PricingContent({ noRedirect, apiUser }) {
                   {isLoggedIn ? (
                     <Button
                       href={url(tier.title, apiUser.userID, apiUser.email, apiUser.customerId)}
+                      onClick={(event) => handlePaymentClick(event, tier)}
                       fullWidth
                       variant={tier.buttonVariant}
                       size="large"
+                      disabled={paymentLoading === tier.title}
                       sx={{ whiteSpace: 'normal', lineHeight: 1.2, py: 1.5 }}
                     >
-                      {buttonText(tier, apiUser.accountType, apiUser.customerId)}
+                      {paymentLoading === tier.title ? 'Opening...' : buttonText(tier, apiUser.accountType, apiUser.customerId)}
                     </Button>
                   ) : (
                     <LoginButton
