@@ -30,7 +30,7 @@ const httpsConfig = (() => {
 })();
 
 const versionsEnvPath = '/home/mahadeva/code/NetworkMonitor/versions.env';
-const dockerfilePath = '/home/mahadeva/code/FreeNetworkMonitor/Dockerfile';
+const dockerfilePath = '/home/mahadeva/code/NetworkMonitorProcessorAgent/Dockerfile.trixie';
 
 const parseVersionsEnv = (filePath) => {
   const defaults = {
