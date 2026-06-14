@@ -61,6 +61,7 @@ export const useWebSocket = ({
       '<\\|start_header_id\\|>assistant<\\|end_header_id\\|>\\n\\n': '<Assistant:>',
       '<start_of_turn>model\\n': '<Assistant:>',
       '<\\|im_start\\|>assistant\\n': '<Assistant:>',
+      '<\\|turn>model': '<Assistant:>',
       '<\\|im_start\\|>assistant<\\|im_sep\\|>\\n': '<Assistant:>',
       '<\\|assistant\\|>\\n': '<Assistant:>',
 
@@ -72,6 +73,8 @@ export const useWebSocket = ({
       '<\\|eot_id\\|>': '\n',
       '<\\|eom_id\\|>': '\n',
       '<\\|im_end\\|>': '\n',
+      '<turn\\|>': '\n',
+      '<eos>': '\n',
       '<end_of_turn>': '\n',
       '<end_of_sentence>': '\n',
       '<\\|end\\|>': '\n'
