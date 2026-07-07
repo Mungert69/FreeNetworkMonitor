@@ -43,7 +43,7 @@ const ChatContent = ({
   toggleLlmRunnerType, toggleVoiceMode, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
   setIsInputFocused, arePopupsEnabled, togglePopupsEnabled, isChartDialogOpen = false, scrollToBottom = () => {}, isAtBottom = true,
   setAutoScrollEnabled, voiceMode = 'push_to_talk', isContinuousActive = false,
-  initialPrompt = '', clearInitialPrompt,
+  initialPrompt = '', autoSendInitialPrompt = false, clearInitialPrompt, clearInitialPromptAutoSend,
 }) => {
   // Responsive: use full width if screen is small (drawer hidden)
   const theme = useTheme();
@@ -197,10 +197,20 @@ const ChatContent = ({
     setCurrentMessage(initialPrompt);
     chatInputRef.current?.focus();
 
+    if (autoSendInitialPrompt) {
+      setTimeout(() => {
+        sendMessage();
+      }, 0);
+    }
+
     if (typeof clearInitialPrompt === 'function') {
       clearInitialPrompt();
     }
-  }, [clearInitialPrompt, initialPrompt, setCurrentMessage]);
+
+    if (typeof clearInitialPromptAutoSend === 'function') {
+      clearInitialPromptAutoSend();
+    }
+  }, [autoSendInitialPrompt, clearInitialPrompt, clearInitialPromptAutoSend, initialPrompt, sendMessage, setCurrentMessage]);
 
   // Scroll to bottom handler
   const followLatest = (behavior = 'auto') => {

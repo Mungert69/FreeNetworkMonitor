@@ -753,6 +753,7 @@ const ProductDetail = () => {
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const isChatOpenRef = useRef(isChatOpen);
     const [pendingChatPrompt, setPendingChatPrompt] = React.useState('');
+    const [pendingChatPromptShouldAutoSend, setPendingChatPromptShouldAutoSend] = React.useState(false);
     const [siteId, setSiteId] = React.useState(null);
     const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const [openInNewTab, setOpenInNewTab] = React.useState(false);
@@ -761,6 +762,7 @@ const ProductDetail = () => {
 
     const toggleChatView = () => {
         setPendingChatPrompt('');
+        setPendingChatPromptShouldAutoSend(false);
         setIsChatOpen(!isChatOpen);
     };
 
@@ -775,6 +777,7 @@ const ProductDetail = () => {
     const sendToAssistant = React.useCallback((prompt) => {
         const chatWasAlreadyOpen = isChatOpenRef.current;
         setPendingChatPrompt(prompt);
+        setPendingChatPromptShouldAutoSend(!chatWasAlreadyOpen);
         setIsChatOpen(true);
         if (typeof window !== 'undefined') {
             try {
@@ -1064,7 +1067,9 @@ const ProductDetail = () => {
                                     setIsChatOpen={setIsChatOpen}
                                     siteId={siteId}
                                     initialPrompt={pendingChatPrompt}
+                                    autoSendInitialPrompt={pendingChatPromptShouldAutoSend}
                                     clearInitialPrompt={() => setPendingChatPrompt('')}
+                                    clearInitialPromptAutoSend={() => setPendingChatPromptShouldAutoSend(false)}
                                 />
                             </Suspense>
                         </div>

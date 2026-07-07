@@ -208,6 +208,19 @@ describe('ChatContent', () => {
     expect(clearInitialPrompt).toHaveBeenCalledTimes(1);
   });
 
+  it('auto-sends the initial prompt when requested', async () => {
+    const sendMessage = vi.fn().mockResolvedValue();
+    renderChatContent({
+      initialPrompt: 'How do I use the AI Assistant?',
+      autoSendInitialPrompt: true,
+      sendMessage,
+    });
+
+    await waitFor(() => {
+      expect(sendMessage).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('enables auto-scroll and scrolls when the input gains focus', () => {
     const scrollToBottom = vi.fn();
     const setAutoScrollEnabled = vi.fn();

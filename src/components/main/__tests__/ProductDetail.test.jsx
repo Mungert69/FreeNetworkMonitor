@@ -177,6 +177,7 @@ describe('ProductDetail assistant auto prompt behaviour', () => {
       await waitFor(() => {
         expect(latestChatProps?.initialPrompt).toBe('How do I use the AI Assistant?');
       });
+      expect(latestChatProps?.autoSendInitialPrompt).toBe(true);
       expect(dispatchSpy).not.toHaveBeenCalled();
     } finally {
       dispatchSpy.mockRestore();
@@ -197,5 +198,6 @@ describe('ProductDetail assistant auto prompt behaviour', () => {
     await waitFor(() => {
       expect(latestChatProps?.initialPrompt).toBe('');
     });
+    expect(latestChatProps?.autoSendInitialPrompt).toBe(false);
   });
 });

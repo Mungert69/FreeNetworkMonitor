@@ -30,7 +30,9 @@ function Chat({
   isChartDialogOpen = false,
   closeChartDialog,
   initialPrompt = '',
+  autoSendInitialPrompt = false,
   clearInitialPrompt,
+  clearInitialPromptAutoSend,
 }) {
   const chatState = useChatState(initialPrompt);
   const {
@@ -782,7 +784,9 @@ function Chat({
       setAutoScrollEnabled={setAutoScrollEnabled}
       isChartDialogOpen={isChartDialogOpen}
       initialPrompt={initialPrompt}
+      autoSendInitialPrompt={autoSendInitialPrompt}
       clearInitialPrompt={clearInitialPrompt}
+      clearInitialPromptAutoSend={clearInitialPromptAutoSend}
     />
   );
 
