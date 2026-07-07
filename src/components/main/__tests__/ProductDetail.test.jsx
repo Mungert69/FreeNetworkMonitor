@@ -71,9 +71,14 @@ vi.mock('./Blog', () => ({
   default: () => <div data-testid="blog" />,
 }));
 
+let latestChatProps = null;
+
 vi.mock('../../dashboard/Chat/Chat', () => ({
   __esModule: true,
-  default: () => <div data-testid="chat-component" />,
+  default: (props) => {
+    latestChatProps = props;
+    return <div data-testid="chat-component" />;
+  },
 }));
 
 vi.mock('/ping.svg', () => ({
@@ -101,6 +106,7 @@ describe('ProductDetail assistant auto prompt behaviour', () => {
     vi.useFakeTimers();
     localStorage.clear();
     sessionStorage.clear();
+    latestChatProps = null;
   });
 
   afterEach(() => {
@@ -111,32 +117,22 @@ describe('ProductDetail assistant auto prompt behaviour', () => {
   });
 
   it('auto prompts after delay when first visit and chat is empty', async () => {
-    const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
+    renderProductDetail();
 
-    try {
-      renderProductDetail();
+    await act(async () => {
+      await Promise.resolve();
+    });
 
-      await act(async () => {
-        await Promise.resolve();
-      });
+    await act(async () => {
+      vi.advanceTimersByTime(30000);
+    });
 
-      expect(dispatchSpy).not.toHaveBeenCalled();
-
-      await act(async () => {
-        vi.advanceTimersByTime(30000);
-      });
-
-      const autopCall = dispatchSpy.mock.calls.find(
-        ([event]) => event.type === 'send-chat-prompt',
+    await waitFor(() => {
+      expect(latestChatProps?.initialPrompt).toContain(
+        'What types of network monitoring and security functions can you assist me with?'
       );
-      expect(autopCall).toBeTruthy();
-      const [eventArg] = autopCall;
-      expect(eventArg.type).toBe('send-chat-prompt');
-      expect(eventArg.detail).toContain('What types of network monitoring');
-      expect(localStorage.getItem('chatHasContent')).toBe('true');
-    } finally {
-      dispatchSpy.mockRestore();
-    }
+    });
+    expect(localStorage.getItem('chatHasContent')).toBe('true');
   });
 
   it('does not auto prompt when chat already has stored content', async () => {
@@ -178,12 +174,28 @@ describe('ProductDetail assistant auto prompt behaviour', () => {
       });
 
       expect(localStorage.getItem('chatHasContent')).toBe('true');
-      const manualCall = dispatchSpy.mock.calls.find(
-        ([event]) => event.type === 'send-chat-prompt',
-      );
-      expect(manualCall).toBeTruthy();
+      await waitFor(() => {
+        expect(latestChatProps?.initialPrompt).toBe('How do I use the AI Assistant?');
+      });
+      expect(dispatchSpy).not.toHaveBeenCalled();
     } finally {
       dispatchSpy.mockRestore();
     }
+  });
+
+  it('opens the chat without a prompt when the regular toggle is used', async () => {
+    renderProductDetail();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('appbar-toggle'));
+    });
+
+    await waitFor(() => {
+      expect(latestChatProps?.initialPrompt).toBe('');
+    });
   });
 });

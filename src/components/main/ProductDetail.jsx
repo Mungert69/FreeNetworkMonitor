@@ -752,6 +752,7 @@ const ProductDetail = () => {
     const [isLoading, setIsLoading] = React.useState(false);
     const [isChatOpen, setIsChatOpen] = React.useState(false);
     const isChatOpenRef = useRef(isChatOpen);
+    const [pendingChatPrompt, setPendingChatPrompt] = React.useState('');
     const [siteId, setSiteId] = React.useState(null);
     const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
     const [openInNewTab, setOpenInNewTab] = React.useState(false);
@@ -759,6 +760,7 @@ const ProductDetail = () => {
     const [processorList, setProcessorList] = useState([]);
 
     const toggleChatView = () => {
+        setPendingChatPrompt('');
         setIsChatOpen(!isChatOpen);
     };
 
@@ -771,6 +773,8 @@ const ProductDetail = () => {
     };
 
     const sendToAssistant = React.useCallback((prompt) => {
+        const chatWasAlreadyOpen = isChatOpenRef.current;
+        setPendingChatPrompt(prompt);
         setIsChatOpen(true);
         if (typeof window !== 'undefined') {
             try {
@@ -779,8 +783,9 @@ const ProductDetail = () => {
                 console.warn('Unable to persist chat content flag', error);
             }
         }
-        // You'll need to pass down a prop to handle the prompt (see step 3)
-        window.dispatchEvent(new CustomEvent('send-chat-prompt', { detail: prompt }));
+        if (chatWasAlreadyOpen) {
+            window.dispatchEvent(new CustomEvent('send-chat-prompt', { detail: prompt }));
+        }
     }, []);
 
     const localAgentOptions = React.useMemo(
@@ -1058,6 +1063,8 @@ const ProductDetail = () => {
                                     initRunnerType={'TurboLLM'}
                                     setIsChatOpen={setIsChatOpen}
                                     siteId={siteId}
+                                    initialPrompt={pendingChatPrompt}
+                                    clearInitialPrompt={() => setPendingChatPrompt('')}
                                 />
                             </Suspense>
                         </div>
