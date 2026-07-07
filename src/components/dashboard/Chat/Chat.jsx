@@ -68,6 +68,7 @@ function Chat({
   const outputContainerRef = useRef(null);
   const [voiceMode, setVoiceMode] = useState(VOICE_MODE.PUSH_TO_TALK);
   const [isContinuousActive, setIsContinuousActive] = useState(false);
+  const hasMountedRef = useRef(false);
 
   const isContinuousActiveRef = useRef(false);
   const isRecordingRef = useRef(false);
@@ -291,6 +292,11 @@ function Chat({
   }, [llmFeedback, histories]);
 
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
     resetLLM();
   }, [sessionId, llmRunnerType]);
 

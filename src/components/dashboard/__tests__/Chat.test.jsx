@@ -263,6 +263,14 @@ describe('Chat popup behaviour', () => {
       expect(onHostLinkClick).toHaveBeenCalledWith(secondHost);
     });
   });
+
+  it('keeps the first-open initial prompt in the input state', async () => {
+    renderChat({ initialPrompt: 'How do I use the AI Assistant?' });
+
+    await waitFor(() => {
+      expect(latestChatState.currentMessage).toBe('How do I use the AI Assistant?');
+    });
+  });
 });
 
 describe('Chat auto-scroll handling', () => {
