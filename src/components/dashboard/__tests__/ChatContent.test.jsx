@@ -93,8 +93,6 @@ const createDefaultProps = () => {
     scrollToBottom: vi.fn(),
     isAtBottom: true,
     setAutoScrollEnabled: vi.fn(),
-    initialPrompt: '',
-    clearInitialPrompt: vi.fn(),
   };
 };
 
@@ -193,19 +191,6 @@ describe('ChatContent', () => {
     await waitFor(() => {
       expect(props.sendMessage).toHaveBeenCalledTimes(1);
     });
-  });
-
-  it('prefills the input when an initial prompt is provided', () => {
-    const clearInitialPrompt = vi.fn();
-    renderChatContent({
-      initialPrompt: 'How do I use the AI Assistant?',
-      clearInitialPrompt,
-    });
-
-    expect(screen.getByLabelText('Type a message...')).toHaveValue(
-      'How do I use the AI Assistant?'
-    );
-    expect(clearInitialPrompt).toHaveBeenCalledTimes(1);
   });
 
   it('enables auto-scroll and scrolls when the input gains focus', () => {

@@ -43,7 +43,6 @@ const ChatContent = ({
   toggleLlmRunnerType, toggleVoiceMode, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
   setIsInputFocused, arePopupsEnabled, togglePopupsEnabled, isChartDialogOpen = false, scrollToBottom = () => {}, isAtBottom = true,
   setAutoScrollEnabled, voiceMode = 'push_to_talk', isContinuousActive = false,
-  initialPrompt = '', clearInitialPrompt,
 }) => {
   // Responsive: use full width if screen is small (drawer hidden)
   const theme = useTheme();
@@ -188,19 +187,6 @@ const ChatContent = ({
 
   // Ref for the chat input
   const chatInputRef = useRef(null);
-
-  useEffect(() => {
-    if (!initialPrompt) {
-      return;
-    }
-
-    setCurrentMessage(initialPrompt);
-    chatInputRef.current?.focus();
-
-    if (typeof clearInitialPrompt === 'function') {
-      clearInitialPrompt();
-    }
-  }, [clearInitialPrompt, initialPrompt, setCurrentMessage]);
 
   // Scroll to bottom handler
   const followLatest = (behavior = 'auto') => {
