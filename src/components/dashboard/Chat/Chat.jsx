@@ -32,7 +32,7 @@ function Chat({
   initialPrompt = '',
   clearInitialPrompt,
 }) {
-  const chatState = useChatState();
+  const chatState = useChatState(initialPrompt);
   const {
     // Audio and UI state
     isMuted, setIsMuted, isExpanded, setIsExpanded, isDrawerOpen, setIsDrawerOpen, arePopupsEnabled, setArePopupsEnabled,

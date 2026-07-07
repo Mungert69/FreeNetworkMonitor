@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-export const useChatState = () => {
+export const useChatState = (initialCurrentMessage = '') => {
   // Audio and UI state
   const [isMuted, setIsMuted] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -24,7 +24,7 @@ export const useChatState = () => {
   const [callingFunctionMessage, setCallingFunctionMessage] = useState('Calling function...');
   const [showHelpMessage, setShowHelpMessage] = useState(false);
   const [helpMessage, setHelpMessage] = useState('');
-  const [currentMessage, setCurrentMessage] = useState('');
+  const [currentMessage, setCurrentMessage] = useState(initialCurrentMessage);
   const [llmFeedback, setLlmFeedback] = useState('');
   const [message, setMessage] = useState({ 
     info: 'init', 
