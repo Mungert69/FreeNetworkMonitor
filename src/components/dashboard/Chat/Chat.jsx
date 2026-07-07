@@ -20,7 +20,18 @@ const SILENCE_MS = 1200;
 const MAX_RECORDING_MS = 15000;
 const START_MARGIN_ABOVE_NOISE = 0.0025;
 
-function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType, setIsChatOpen, siteId, isChartDialogOpen = false, closeChartDialog }) {
+function Chat({
+  onHostLinkClick,
+  onHostListUpdated,
+  isDashboard,
+  initRunnerType,
+  setIsChatOpen,
+  siteId,
+  isChartDialogOpen = false,
+  closeChartDialog,
+  initialPrompt = '',
+  clearInitialPrompt,
+}) {
   const chatState = useChatState();
   const {
     // Audio and UI state
@@ -764,6 +775,8 @@ function Chat({ onHostLinkClick, onHostListUpdated, isDashboard, initRunnerType,
       isAtBottom={isAtBottom}
       setAutoScrollEnabled={setAutoScrollEnabled}
       isChartDialogOpen={isChartDialogOpen}
+      initialPrompt={initialPrompt}
+      clearInitialPrompt={clearInitialPrompt}
     />
   );
 
