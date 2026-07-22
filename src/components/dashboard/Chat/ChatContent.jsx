@@ -188,19 +188,30 @@ const ChatContent = ({
 
   // Ref for the chat input
   const chatInputRef = useRef(null);
+  const hasAutoSentInitialPromptRef = useRef(false);
 
   useEffect(() => {
     if (!initialPrompt) {
+      hasAutoSentInitialPromptRef.current = false;
       return;
     }
 
     setCurrentMessage(initialPrompt);
     chatInputRef.current?.focus();
 
-    if (autoSendInitialPrompt) {
-      setTimeout(() => {
-        sendMessage();
-      }, 0);
+    if (!autoSendInitialPrompt || !isReady || hasAutoSentInitialPromptRef.current) {
+      return;
+    }
+
+    hasAutoSentInitialPromptRef.current = true;
+    setTimeout(() => {
+      sendMessage(initialPrompt);
+    }, 0);
+  }, [autoSendInitialPrompt, initialPrompt, isReady, sendMessage, setCurrentMessage]);
+
+  useEffect(() => {
+    if (!initialPrompt) {
+      return;
     }
 
     if (typeof clearInitialPrompt === 'function') {
@@ -210,7 +221,7 @@ const ChatContent = ({
     if (typeof clearInitialPromptAutoSend === 'function') {
       clearInitialPromptAutoSend();
     }
-  }, [autoSendInitialPrompt, clearInitialPrompt, clearInitialPromptAutoSend, initialPrompt, sendMessage, setCurrentMessage]);
+  }, [clearInitialPrompt, clearInitialPromptAutoSend, initialPrompt]);
 
   // Scroll to bottom handler
   const followLatest = (behavior = 'auto') => {

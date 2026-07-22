@@ -4,6 +4,7 @@ import { render, act, waitFor } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 let latestChatState = null;
+let sendSpy = vi.fn();
 
 const useMockChatState = () => {
   const [isMuted, setIsMuted] = React.useState(false);
@@ -13,7 +14,7 @@ const useMockChatState = () => {
   const [autoScrollEnabled, setAutoScrollEnabled] = React.useState(true);
   const [isAtBottom, setIsAtBottom] = React.useState(true);
 
-  const [isReady, setIsReady] = React.useState(true);
+  const [isReady, setIsReady] = React.useState(false);
   const [loadCount, setLoadCount] = React.useState(0);
   const [loadWarning, setLoadWarning] = React.useState('');
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -137,7 +138,7 @@ vi.mock('../Chat/useWebSocket', () => ({
   useWebSocket: () => ({
     stopLLM: vi.fn(),
     resetSessionId: vi.fn(),
-    webSocketRef: { current: { readyState: 1, send: vi.fn(), close: vi.fn() } },
+    webSocketRef: { current: { readyState: 1, send: sendSpy, close: vi.fn() } },
   }),
 }));
 
@@ -269,6 +270,24 @@ describe('Chat popup behaviour', () => {
 
     await waitFor(() => {
       expect(latestChatState.currentMessage).toBe('How do I use the AI Assistant?');
+    });
+  });
+
+  it('waits for readiness before auto-sending an initial prompt', async () => {
+    renderChat({ initialPrompt: 'How do I use the AI Assistant?', autoSendInitialPrompt: true });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    sendSpy.mockClear();
+
+    await act(async () => {
+      latestChatState.setIsReady(true);
+    });
+
+    await waitFor(() => {
+      expect(sendSpy).toHaveBeenCalledWith('How do I use the AI Assistant?');
     });
   });
 });

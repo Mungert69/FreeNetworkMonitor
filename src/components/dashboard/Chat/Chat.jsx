@@ -71,6 +71,11 @@ function Chat({
   const [voiceMode, setVoiceMode] = useState(VOICE_MODE.PUSH_TO_TALK);
   const [isContinuousActive, setIsContinuousActive] = useState(false);
   const hasMountedRef = useRef(false);
+  const isReadyRef = useRef(isReady);
+
+  useEffect(() => {
+    isReadyRef.current = isReady;
+  }, [isReady]);
 
   const isContinuousActiveRef = useRef(false);
   const isRecordingRef = useRef(false);
@@ -705,7 +710,7 @@ function Chat({
     window.URL.revokeObjectURL(url); // Release the object URL
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (messageOverride = currentMessage) => {
     if (audioPlayerRef.current && typeof audioPlayerRef.current.clearQueue === 'function') {
       audioPlayerRef.current.clearQueue(); // Clear the audio queue safely
     } else {
@@ -714,7 +719,7 @@ function Chat({
     setIsProcessing(true); // Start loading indicator
 
     try {
-      await sendMessageCheck(currentMessage); // Await the sendMessageCheck function
+      await sendMessageCheck(messageOverride); // Await the sendMessageCheck function
     } catch (error) {
       console.error('Error sending message:', error); // Handle any errors
     }
@@ -728,7 +733,29 @@ function Chat({
     }
   };
 
+  const waitForReady = async () => {
+    if (isReadyRef.current) return;
+
+    await new Promise((resolve) => {
+      const checkReady = () => {
+        if (isReadyRef.current) {
+          resolve();
+          return;
+        }
+
+        setTimeout(checkReady, 100);
+      };
+
+      checkReady();
+    });
+  };
+
   async function sendMessageCheck(message) {
+    if (message === '' && !isReadyRef.current) {
+      return;
+    }
+
+    await waitForReady();
     await waitForWebSocket(webSocketRef.current);
     //console.log("Sending message =>" + message + "<=");
     webSocketRef.current.send(message);
