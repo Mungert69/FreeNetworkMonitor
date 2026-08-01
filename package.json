@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://readyforquantum.com/",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "overrides": {
     "prismjs": "^1.30.0",
