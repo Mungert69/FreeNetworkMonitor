@@ -65,6 +65,7 @@ const baseHostRows = [
     address: 'example.com',
     endPointType: 'HTTP',
     timeout: '1000',
+    skipCycles: 2,
     port: '80',
     enabled: true,
     appID: 'A1',
@@ -122,7 +123,7 @@ describe('HostListEdit', () => {
     const [siteIdArg, payload] = saveHostData.mock.calls[0];
     expect(siteIdArg).toBe(1);
     expect(Array.isArray(payload)).toBe(true);
-    expect(payload[0]).toMatchObject({ address: 'example.com', endPointType: 'HTTP' });
+    expect(payload[0]).toMatchObject({ address: 'example.com', endPointType: 'HTTP', skipCycles: 2 });
   }, TEST_TIMEOUT_MS);
 
   it('triggers help dialog when help button is pressed', async () => {

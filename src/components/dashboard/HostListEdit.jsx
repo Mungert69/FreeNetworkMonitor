@@ -54,6 +54,15 @@ const toCamelCaseKey = (key) => {
   return key.charAt(0).toLowerCase() + key.slice(1);
 };
 
+const normalizeSkipCycles = (value) => {
+  if (value === '' || value === undefined || value === null) {
+    return null;
+  }
+
+  const numericValue = Number(value);
+  return Number.isInteger(numericValue) ? numericValue : value;
+};
+
 const toApiMonitorModelConfigPayload = (config) => {
   if (!config) {
     return null;
@@ -390,6 +399,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
       address: row.address,
       endPointType: row.endPointType,
       timeout: row.timeout,
+      skipCycles: row.skipCycles ?? null,
       port: row.port,
       enabled: row.enabled,
       hidden: row.hidden,
@@ -808,7 +818,10 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
                 ...hostsToPersist.filter((row) => !prioritizedIds.has(getRowIdentifier(row))),
               ]
             : hostsToPersist;
-        const sanitizedData = orderedHosts.map(({ edit, ...host }) => host);
+        const sanitizedData = orderedHosts.map(({ edit, ...host }) => ({
+          ...host,
+          skipCycles: normalizeSkipCycles(host.skipCycles),
+        }));
         const response = await saveHostData(siteId, sanitizedData);
         setMessage(response);
         if (response.success) {
@@ -1137,6 +1150,14 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         field: 'timeout',
         headerName: 'Timeout (ms)',
         width: 140,
+        type: 'number',
+        editable: true,
+      },
+      {
+        field: 'skipCycles',
+        headerName: 'Skip cycles',
+        description: 'Leave blank to use the endpoint default. Zero runs every processor cycle.',
+        width: 125,
         type: 'number',
         editable: true,
       },

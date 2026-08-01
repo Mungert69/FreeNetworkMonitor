@@ -101,6 +101,10 @@ export  function HelpDialog({ setOpen }) {
             For example 1000 for 1 second.
           </Typography>
           <Typography gutterBottom>
+            Skip cycles : Leave blank to use the endpoint default configured on the monitor.
+            Zero checks the host every processor cycle; a value of 3 checks it, then skips the next three cycles.
+          </Typography>
+          <Typography gutterBottom>
             Enabled : Valid values are true or false. If true, the host will be monitored. If false, the host will be ignored.
           </Typography>
           <Typography gutterBottom>

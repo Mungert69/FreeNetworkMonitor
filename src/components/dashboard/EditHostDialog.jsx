@@ -203,6 +203,7 @@ const EditHostDialog = ({
         username: host.username ?? '',
         password: host.password ?? '',
         args: host.args ?? '',
+        skipCycles: host.skipCycles ?? '',
       });
     }
   }, [host]);
@@ -217,7 +218,10 @@ const EditHostDialog = ({
   };
 
   const handleSave = () => {
-    onSave(editedHost);
+    const skipCycles = editedHost.skipCycles === '' || editedHost.skipCycles === null
+      ? null
+      : Number(editedHost.skipCycles);
+    onSave({ ...editedHost, skipCycles });
   };
 
   return (
@@ -288,6 +292,22 @@ const EditHostDialog = ({
                 fullWidth
                 InputLabelProps={{ shrink: true }}
                 placeholder="Enter port"
+                margin="dense"
+              />
+            </Grid>
+
+            {/* Skip cycles */}
+            <Grid item xs={12}>
+              <TextField
+                label="Skip cycles"
+                type="number"
+                value={editedHost.skipCycles ?? ''}
+                onChange={(e) => handleChange('skipCycles', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ min: 0, max: 65535, step: 1 }}
+                helperText="Leave blank to use the endpoint default. Zero runs every processor cycle."
+                placeholder="Use endpoint default"
                 margin="dense"
               />
             </Grid>
