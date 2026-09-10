@@ -15,7 +15,7 @@ docker buildx inspect multiarch-builder >/dev/null 2>&1 || docker buildx create 
 docker buildx use multiarch-builder
 docker buildx inspect --bootstrap
 
-IMAGE_TAG="mungert/networkmonitorreact-local:1.7.0"
+IMAGE_TAG="mungert/networkmonitorreact-local:1.7.1"
 PUSH_IMAGE="${PUSH_IMAGE:-0}"
 HOST_ARCH="$(docker version --format '{{.Server.Arch}}' 2>/dev/null || uname -m)"
 case "$HOST_ARCH" in
