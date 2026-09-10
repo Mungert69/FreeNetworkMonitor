@@ -1,4 +1,5 @@
 import React from "react";
+import DOMPurify from 'dompurify';
 import clsx from 'clsx';
 import CssBaseline from '@mui/material/CssBaseline';
 import Drawer from '@mui/material/Drawer';
@@ -1166,7 +1167,9 @@ const Faq = () => {
                                                     width: '100%',
                                                     textAlign: 'left',
                                                 }}
-                                                dangerouslySetInnerHTML={{ __html: faq.content }}
+                                                dangerouslySetInnerHTML={{
+                                                    __html: DOMPurify.sanitize(faq.content),
+                                                }}
                                             />
                                         </AccordionDetails>
                                     </Accordion>
