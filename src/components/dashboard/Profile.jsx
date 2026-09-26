@@ -29,6 +29,7 @@ import {
 
 import Message from './Message';
 import PasskeyManager from './PasskeyManager';
+import DeviceFirmware from './DeviceFirmware';
 import { updateApiUser, resendVerifyEmail, handleDownload } from './ServiceAPI';
 
 const Profile = ({ apiUser, siteId, getUserInfo }) => {
@@ -304,6 +305,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
           </Grid>
         </CardActions>
       </Card>
+      <DeviceFirmware key={`${siteId}:${apiUser.userID}`} siteId={siteId} />
     </>
   );
 };

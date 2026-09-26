@@ -2,6 +2,20 @@
 
 Easy to use web driven network monitor application.
 
+## Device firmware
+
+The profile dialog has a separate Device firmware card below the account controls.
+It uses the existing authenticated cookie to fetch `GET /processors` and
+`GET /firmware/esp32-s3/images`, then submits the selected AppID, version and hash
+to `POST /firmware/esp32-s3/update`. The backend enforces ownership; the client
+never supplies a requesting user ID. Update submissions are not automatically
+retried, and a queued request is not reported as a completed installation.
+
+Both older and newer releases can be selected. Downgrades require firmware
+0.1.8 or newer running on the device. Hardware model and current version are
+not yet returned by the backend, so the user must confirm the target is an
+ESP32-S3. A non-quantum-capable processor is not necessarily an ESP32.
+
 ## About
 
 Introducing our advanced network monitoring tool, built to optimize your services for the quantum computing era.
@@ -19,4 +33,3 @@ Our local agent monitor app lets you oversee local hosts, while our ChatGPT-powe
 </a>
 
 Please check it out and leave a review using the Trust Pilot link at the bottom of the landing page. Thanks :)
-

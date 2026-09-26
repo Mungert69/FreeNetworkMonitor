@@ -1079,6 +1079,25 @@ export const delHostApi = async (baseUrlId, user, index) => {
     return message;
 }
 
+// Firmware requests use the same authenticated cookie as other profile actions.
+export const fetchUserProcessors = async (baseUrlId) => {
+    const result = await axios({ method: 'get', url: apiBaseUrls[baseUrlId] + '/processors', withCredentials: true });
+    return result.data;
+};
+
+export const fetchFirmwareImages = async (baseUrlId) => {
+    const result = await axios({ method: 'get', url: apiBaseUrls[baseUrlId] + '/firmware/esp32-s3/images', withCredentials: true });
+    return result.data;
+};
+
+export const requestFirmwareUpdate = async (baseUrlId, appID, image) => {
+    const result = await axios({ method: 'post', url: apiBaseUrls[baseUrlId] + '/firmware/esp32-s3/update',
+        data: { AppID: appID, Version: image.version, Sha256: image.sha256 },
+        withCredentials: true, headers: { 'Content-Type': 'application/json' },
+        'axios-retry': { retries: 0 } });
+    return result.data;
+};
+
 const monitorModelConfigApiResult = (result) => {
     const payload = result?.data ?? {};
     return {
