@@ -4,6 +4,14 @@ Easy to use web driven network monitor application.
 
 ## Device firmware
 
+The profile also has a separate **Processor management** card. Removal requires
+confirmation and is allowed even with monitors attached. The request goes to
+`DELETE /processors/{appID}` using the authenticated cookie; Data removes the
+registration and broadcasts updated processor state. Refresh the list to confirm
+completion. MonitorIPs, their assignments and history stay unchanged so the user
+can reassign them later. Reusing the ESP32 requires its serial re-registration/login
+flow; deletion does not revoke the user's OAuth token.
+
 The profile dialog has a separate Device firmware card below the account controls.
 It uses the existing authenticated cookie to fetch `GET /processors` and
 `GET /firmware/esp32-s3/images`, then submits the selected AppID, version and hash

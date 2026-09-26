@@ -7,6 +7,12 @@ beforeAll(async () => {
     api = await import('../ServiceAPI');
 });
 describe('Firmware API authentication', () => {
+    it('deletes only the selected processor using authenticated cookies and no retries', async () => {
+        axios.mockResolvedValue({});
+        await api.deleteUserProcessor(0, 'owner/device');
+        expect(axios).toHaveBeenLastCalledWith(expect.objectContaining({ method: 'delete', withCredentials: true,
+            url: expect.stringMatching(/\/processors\/owner%2Fdevice$/), 'axios-retry': { retries: 0 } }));
+    });
     it('uses authenticated cookies for inventory and owned processors', async () => {
         axios.mockResolvedValue({ data: [] });
         await api.fetchUserProcessors(0);

@@ -1090,6 +1090,11 @@ export const fetchFirmwareImages = async (baseUrlId) => {
     return result.data;
 };
 
+export const deleteUserProcessor = async (baseUrlId, appID) => {
+    await axios({ method: 'delete', url: apiBaseUrls[baseUrlId] + '/processors/' + encodeURIComponent(appID),
+        withCredentials: true, 'axios-retry': { retries: 0 } });
+};
+
 export const requestFirmwareUpdate = async (baseUrlId, appID, image) => {
     const result = await axios({ method: 'post', url: apiBaseUrls[baseUrlId] + '/firmware/esp32-s3/update',
         data: { AppID: appID, Version: image.version, Sha256: image.sha256 },

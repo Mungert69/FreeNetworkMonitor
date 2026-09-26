@@ -30,6 +30,7 @@ import {
 import Message from './Message';
 import PasskeyManager from './PasskeyManager';
 import DeviceFirmware from './DeviceFirmware';
+import ProcessorManagement from './ProcessorManagement';
 import { updateApiUser, resendVerifyEmail, handleDownload } from './ServiceAPI';
 
 const Profile = ({ apiUser, siteId, getUserInfo }) => {
@@ -40,6 +41,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
   const [open, setOpen] = useState(false);
   const { name, picture } = state;
   const [isLoading, setIsLoading] = useState(false);
+  const [processorRevision, setProcessorRevision] = useState(0);
 
   // Email Verified popover
   const [anchorEl, setAnchorEl] = useState(null);
@@ -305,7 +307,8 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
           </Grid>
         </CardActions>
       </Card>
-      <DeviceFirmware key={`${siteId}:${apiUser.userID}`} siteId={siteId} />
+      <ProcessorManagement key={`${siteId}:${apiUser.userID}`} siteId={siteId} onRemoved={() => setProcessorRevision(n => n + 1)} />
+      <DeviceFirmware key={`${siteId}:${apiUser.userID}:${processorRevision}`} siteId={siteId} />
     </>
   );
 };
