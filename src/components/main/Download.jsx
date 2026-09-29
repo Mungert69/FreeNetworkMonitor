@@ -95,6 +95,31 @@ ${buildVersionSection}
 
 ## Choose your platform:
 
+### ESP32-S3 Network Monitor (Preview)
+
+Run the processor on a dedicated ESP32-S3 board. The current firmware targets
+an ESP32-S3 with 16 MB flash and 8 MB octal PSRAM, such as the
+ESP32-S3-DevKitC-1-N16R8. You will also need a USB data cable and a 2.4 GHz
+Wi-Fi network.
+
+The ESP32 version supports ICMP ping, DNS, TCP connections, HTTP/HTTPS, and
+passive Bluetooth LE broadcast monitoring. It does not yet support command
+processors or every endpoint available in the Windows and Docker agents.
+
+**Getting started:** First installation uses a signed factory image flashed
+over USB. The signed setup package and flashing instructions will be published
+on the [GitHub releases page](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/releases).
+The image contains no Wi-Fi password or account token. On first boot, open the
+USB serial logs at 115200 baud and follow the
+Wi-Fi prompts. Once connected, the logs show an OAuth sign-in URL and user
+code. Open the URL in a browser, enter the code, and sign in to your account.
+The device registers after authorization.
+
+After registration, manage the device from the dashboard. To install or roll
+back firmware, open **Profile → Device firmware**, select the ESP32 processor
+and firmware release, then submit the update. See the [ESP32-S3 setup guide](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded#network-monitor-for-esp32-s3)
+for hardware requirements and recovery information.
+
 ### Android Download Instructions
 
 **Exclusive Beta Testing Invitation**
