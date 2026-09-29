@@ -71,6 +71,7 @@ ${buildVersionSection}
 ### Multi-Platform Support:
 - Available for Android (via Google Play Store) and Windows (via Windows Store), enabling network monitoring across different platforms.
 - The Docker version offers full functionality on Linux, macOS, and Windows, providing a containerized solution for secure and robust monitoring without platform-specific limitations.
+- An ESP32-S3 processor is also available as a hardware preview for dedicated monitoring. It requires a compatible ESP32-S3 board and currently supports a smaller set of monitoring endpoints; see the ESP32-S3 setup details below.
 
 ### AI-Powered Integration:
 - The Agent acts as a proxy for the AI-powered Network Monitor Assistant, executing commands such as Nmap scans, Metasploit modules, and OpenSSL security checks. This seamless integration allows you to manage hosts, investigate network anomalies, and perform in-depth network security audits directly from the dashboard.
