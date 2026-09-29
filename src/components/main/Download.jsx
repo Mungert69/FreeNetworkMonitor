@@ -107,7 +107,7 @@ The ESP32 version supports ICMP ping, DNS, TCP connections, HTTP/HTTPS, and
 passive Bluetooth LE broadcast monitoring. It does not yet support command
 processors or every endpoint available in the Windows and Docker agents.
 
-**First installation:** Download the [signed Live factory image](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/releases/latest/download/networkmonitor-esp32-s3-live-factory.zip)
+**First installation:** Download the [Live factory image with signed firmware](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/releases/latest/download/networkmonitor-esp32-s3-live-factory.zip)
 and follow the [step-by-step setup guide](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/blob/v0.2.1/docs/first-physical-board.md).
 The image includes the Live service settings; setup asks for Wi-Fi over USB
 serial, then prints an OAuth URL and code to authorize in your browser. You do
