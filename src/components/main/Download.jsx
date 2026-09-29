@@ -96,7 +96,7 @@ ${buildVersionSection}
 
 ## Choose your platform:
 
-### ESP32-S3 Network Monitor (Preview)
+### ESP32-S3 Network Monitor
 
 Run the processor on a dedicated ESP32-S3 board. The current firmware targets
 an ESP32-S3 with 16 MB flash and 8 MB octal PSRAM, such as the
@@ -107,19 +107,16 @@ The ESP32 version supports ICMP ping, DNS, TCP connections, HTTP/HTTPS, and
 passive Bluetooth LE broadcast monitoring. It does not yet support command
 processors or every endpoint available in the Windows and Docker agents.
 
-**Availability:** This is currently a hardware preview. There is no public
-first-install image yet, so a new board cannot currently be set up from this
-page. When a signed factory image is released, the setup will use USB and will
-not require users to handle the signing key.
+**First installation:** Download the [signed Live factory image](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/releases/latest/download/networkmonitor-esp32-s3-live-factory.zip)
+and follow the [step-by-step setup guide](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/blob/v0.2.1/docs/first-physical-board.md).
+The image includes the Live service settings; setup asks for Wi-Fi over USB
+serial, then prints an OAuth URL and code to authorize in your browser. You do
+not need to build firmware or handle signing keys.
 
-After first installation is available, setup will ask you to connect to the
-board's USB serial console at 115200 baud, enter Wi-Fi details, then open the
-OAuth sign-in URL and code printed in the logs to authorize the device. The
-[project setup notes](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded#network-monitor-for-esp32-s3)
-describe the current preview capabilities and setup status.
-
-After a device is installed and registered, firmware updates can be requested
-from **Profile → Device firmware** when releases are available.
+For a new board, the first-install procedure erases its flash. Do not use it
+for an already registered processor. After registration, request upgrades or
+downgrades from **Profile → Device firmware**; OTA preserves Wi-Fi and account
+settings.
 
 ### Android Download Instructions
 
