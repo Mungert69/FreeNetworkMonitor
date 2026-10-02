@@ -24,7 +24,11 @@ export default function DeviceFirmware({ siteId }) {
     }, [siteId, reload]);
     const device = processors.find(p => p.appID === appID);
     const image = images.find(i => i.sha256 === digest);
-    const eligible = device?.isEnabled && !device?.isQuantumCapable && device?.rabbitTopologyVersion === 2;
+    const eligible = device?.isEnabled && device?.pType === 'ESP32-S3' && device?.rabbitTopologyVersion === 2;
+    const eligibilityMessage = !device?.isEnabled ? 'This processor is disabled.'
+        : !device?.pType ? 'This processor has not reported its device type. Update its firmware to report ESP32-S3.'
+        : device.pType !== 'ESP32-S3' ? 'These firmware images are only for ESP32-S3 processors.'
+        : 'This processor does not use command protocol v2.';
     const install = async () => {
         if (busy || !eligible || !image || !confirmed) return;
         setBusy(true); setMessage(null);
@@ -47,7 +51,7 @@ export default function DeviceFirmware({ siteId }) {
                 {processors.map(p => <MenuItem key={p.appID} value={p.appID}>{p.location || p.appID} — {p.appID}</MenuItem>)}
             </TextField>
             {!loading && !processors.length && <Typography>No processors registered to your account.</Typography>}
-            {device && !eligible && <Alert severity="warning">This processor is disabled or does not use the C processor v2 command protocol.</Alert>}
+            {device && !eligible && <Alert severity="warning">{eligibilityMessage}</Alert>}
             <TextField select fullWidth label="Firmware image" value={digest} disabled={loading || busy}
                 onChange={e => { setDigest(e.target.value); setConfirmed(false); }}>
                 {images.map(i => <MenuItem key={i.sha256} value={i.sha256}>{i.version} — {(i.sizeBytes / 1048576).toFixed(2)} MB — {i.sha256.slice(0, 12)}</MenuItem>)}

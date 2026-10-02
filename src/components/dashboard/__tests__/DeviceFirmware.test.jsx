@@ -6,7 +6,7 @@ import DeviceFirmware from '../DeviceFirmware';
 import { fetchUserProcessors, fetchFirmwareImages, requestFirmwareUpdate } from '../ServiceAPI';
 
 vi.mock('../ServiceAPI', () => ({ fetchUserProcessors: vi.fn(), fetchFirmwareImages: vi.fn(), requestFirmwareUpdate: vi.fn() }));
-const device = { appID: 'my-device', location: 'My desk', isEnabled: true, isQuantumCapable: false, rabbitTopologyVersion: 2 };
+const device = { appID: 'my-device', location: 'My desk', pType: 'ESP32-S3', isEnabled: true, isQuantumCapable: true, rabbitTopologyVersion: 2 };
 const image = { version: '0.1.6', sha256: 'a'.repeat(64), sizeBytes: 2048 };
 beforeEach(() => {
     cleanup(); vi.clearAllMocks();
@@ -16,6 +16,17 @@ beforeEach(() => {
 });
 
 describe('Device firmware', () => {
+    it.each([true, false])('allows ESP32-S3 with quantum capability %s', async isQuantumCapable => {
+        fetchUserProcessors.mockResolvedValue([{ ...device, isQuantumCapable }]);
+        const user = userEvent.setup();
+        render(<DeviceFirmware siteId={0} />);
+        await waitFor(() => expect(screen.getByRole('combobox', { name: 'Processor' })).not.toBeDisabled());
+        await user.click(screen.getByRole('combobox', { name: 'Processor' }));
+        await user.click(screen.getByRole('option', { name: /My desk/ }));
+        await user.click(screen.getByRole('combobox', { name: 'Firmware image' }));
+        await user.click(screen.getByRole('option', { name: /0\.1\.6/ }));
+        expect(screen.getByRole('checkbox')).not.toBeDisabled();
+    });
     it.each(['0.1.6', '0.1.8'])('allows selecting release %s and requires confirmation before sending', async version => {
         const user = userEvent.setup();
         render(<DeviceFirmware siteId={0} />);
@@ -40,8 +51,8 @@ describe('Device firmware', () => {
         expect(requestFirmwareUpdate).not.toHaveBeenCalled();
     });
 
-    it('does not enable firmware installation for a .NET processor', async () => {
-        fetchUserProcessors.mockResolvedValue([{ ...device, isQuantumCapable: true }]);
+    it.each(['', '.NET', undefined])('does not enable firmware installation for type %s', async pType => {
+        fetchUserProcessors.mockResolvedValue([{ ...device, pType }]);
         const user = userEvent.setup();
         render(<DeviceFirmware siteId={0} />);
         await waitFor(() => expect(screen.getByRole('combobox', { name: 'Processor' })).not.toBeDisabled());
