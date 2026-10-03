@@ -26,6 +26,7 @@ import DataSetsList from './DataSetsList';
 import { fetchEndpointTypesForLocations } from './ServiceAPI';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 import { getEndpointIcon } from './endpointIcons';
+import { formatMeasurement, scaleMeasurement } from './measurement';
 
 const muiCache = createCache({
   key: 'mui',
@@ -772,11 +773,11 @@ export const HostList = ({
       },
       {
         field: 'roundTripAverage',
-        headerName: 'Average ms',
+        headerName: 'Average',
         width: 130,
         type: 'number',
-        valueGetter: ({ row }) => parseNumericValue(row?.roundTripAverage),
-        renderCell: ({ row }) => formatNumber(row?.roundTripAverage),
+        valueGetter: ({ row }) => scaleMeasurement(row?.roundTripAverage, row),
+        renderCell: ({ row }) => formatMeasurement(row?.roundTripAverage, row),
       },
       {
         field: 'appID',
@@ -948,8 +949,8 @@ export const HostList = ({
                         : '—',
                   },
                   {
-                    label: 'Average ms',
-                    value: formatNumber(row.roundTripAverage) || '—',
+                    label: 'Average',
+                    value: formatMeasurement(row.roundTripAverage, row),
                   },
                 ];
 

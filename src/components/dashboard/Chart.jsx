@@ -14,9 +14,14 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BoltIcon from '@mui/icons-material/Bolt';
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
+import { measurementMetadata, scaleMeasurement } from './measurement';
 
-export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
+export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
   const theme = useTheme();
+  const unit = measurementMetadata(hostDetail).unit;
+  const data = React.useMemo(() => Array.isArray(rawData)
+    ? rawData.map(point => ({ ...point, response: scaleMeasurement(point.response, hostDetail) }))
+    : rawData, [rawData, hostDetail]);
 
   const hasData = Array.isArray(data) && data.length > 0;
   const [isStatusExpanded, setIsStatusExpanded] = React.useState(false);
@@ -39,7 +44,7 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
     }
 
     const total = validPoints.reduce((acc, point) => acc + point.response, 0);
-    const average = Math.round((total / validPoints.length) * 10) / 10;
+    const average = Math.round((total / validPoints.length) * 1000000) / 1000000;
     const max = Math.max(...validPoints.map((point) => point.response));
     const min = Math.min(...validPoints.map((point) => point.response));
 
@@ -71,7 +76,7 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
 
     const { response, status, time } = payload[0].payload ?? {};
     const statusLines = chunkStatus(status);
-    const showResponse = response !== -1 && response !== undefined;
+    const showResponse = typeof response === 'number' && response >= 0;
 
     return (
       <Box
@@ -90,7 +95,7 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
         </Typography>
         {showResponse && (
           <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
-            {`${response} ms`}
+            {`${response} ${unit}`}
           </Typography>
         )}
         {statusLines.map((line, idx) => (
@@ -104,7 +109,7 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
         ))}
       </Box>
     );
-  }, [chunkStatus, theme]);
+  }, [chunkStatus, theme, unit]);
 
   const renderDot = React.useCallback(
     ({ cx, cy, value }) => {
@@ -383,9 +388,9 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
         <Collapse in={areDetailsVisible} timeout="auto" unmountOnExit>
           <Stack spacing={1.5}>
             <Stack direction="row" spacing={1.5} flexWrap="wrap">
-              <SummaryTile label="Average" value={summary.average != null ? `${summary.average} ms` : '—'} accent={theme.palette.primary.main} />
-              <SummaryTile label="Peak" value={summary.max != null ? `${summary.max} ms` : '—'} />
-              <SummaryTile label="Best" value={summary.min != null ? `${summary.min} ms` : '—'} />
+              <SummaryTile label="Average" value={summary.average != null ? `${summary.average} ${unit}` : '—'} accent={theme.palette.primary.main} />
+              <SummaryTile label="Peak" value={summary.max != null ? `${summary.max} ${unit}` : '—'} />
+              <SummaryTile label="Best" value={summary.min != null ? `${summary.min} ${unit}` : '—'} />
             </Stack>
 
             <Stack direction="row" spacing={1.5} flexWrap="wrap">
@@ -522,7 +527,7 @@ export function Chart({ data, selectedDate, hostname, dataSetId, dataSets, handl
                   position="insideLeft"
                   style={{ textAnchor: 'middle', fill: theme.palette.text.primary, fontSize: 12, fontWeight: 600 }}
                 >
-                  ms
+                  {unit}
                 </Label>
               </YAxis>
               <Area

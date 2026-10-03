@@ -526,6 +526,8 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
         responseData.map((row) => {
             if (row.monitorStatus.alertFlag) { alertCount++ }
             const obj = { 'id': row.id, 'dataSetID' : row.dataSetID, 'date': convertDate(row.dateStarted, 'YYYY-MM-DD HH:mm'), 'address': row.address, 'monitorStatus': row.monitorStatus, 'packetsLost': row.packetsLost, 'percentageLost': row.packetsLostPercentage, 'packetsSent': row.packetsSent, 'roundTripMaximum': row.roundTripTimeMaximum, 'roundTripMinimum': row.roundTripTimeMinimum, 'status': row.status, 'roundTripAverage': row.roundTripTimeAverage, 'monitorIPID': row.monitorIPID, 'appID': row.appID, 'endPointType': row.endPointType, 'alertFlag': row.monitorStatus?.alertFlag, 'predictAlertFlag': row.predictStatus?.alertFlag };
+            obj.unit = row.unit ?? 'ms';
+            obj.scale = row.scale ?? 1;
             data.push(obj)
         });
     }

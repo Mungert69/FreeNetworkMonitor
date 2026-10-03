@@ -109,6 +109,8 @@ export default function Dashboard() {
 
       const hostData = { 'id': linkData.ID, 'dataSetID': linkData.DataSetID, 'date': convertDate(linkData.DateStarted, 'YYYY-MM-DD HH:mm'), 'address': linkData.Address, 'monitorStatus': linkData.MonitorStatus, 'packetsLost': linkData.PacketsLost, 'percentageLost': linkData.PacketsLostPercentage, 'packetsSent': linkData.PacketsSent, 'roundTripMaximum': linkData.RoundTripTimeMaximum, 'roundTripMinimum': linkData.RoundTripTimeMinimum, 'status': linkData.Status, 'roundTripAverage': linkData.RoundTripTimeAverage, 'monitorIPID': linkData.MonitorIPID, 'appID': linkData.AppID, 'endPointType': linkData.EndPointType, 'alertFlag': linkData.MonitorStatus.alertFlag, 'userID': linkData.UserID };
       if (hostData !== undefined) {
+        hostData.unit = linkData.Unit ?? linkData.unit ?? 'ms';
+        hostData.scale = linkData.Scale ?? linkData.scale ?? 1;
         setDefaultSearchValue(hostData.address);
         handleSetDataSetId(hostData.dataSetID, hostData.date);
         clickViewChart(hostData);
