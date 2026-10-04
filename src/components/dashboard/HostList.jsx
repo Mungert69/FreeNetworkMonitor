@@ -27,6 +27,7 @@ import { fetchEndpointTypesForLocations } from './ServiceAPI';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 import { getEndpointIcon } from './endpointIcons';
 import { formatMeasurement, scaleMeasurement } from './measurement';
+import { monitorLocationValue } from './monitorLocation';
 
 const muiCache = createCache({
   key: 'mui',
@@ -786,7 +787,7 @@ export const HostList = ({
         minWidth: 160,
         type: 'singleSelect',
         valueOptions: monitorLocationOptions,
-        valueGetter: ({ row }) => processorMap.get(row?.appID) || row?.appID || '',
+        valueGetter: (value, row) => monitorLocationValue(value, row, processorMap),
         sortComparator: (value1, value2) =>
           String(value1 || '').localeCompare(String(value2 || ''), undefined, {
             sensitivity: 'base',
