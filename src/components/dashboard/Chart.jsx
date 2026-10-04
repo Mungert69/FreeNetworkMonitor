@@ -14,7 +14,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BoltIcon from '@mui/icons-material/Bolt';
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
-import { measurementMetadata, scaleMeasurement } from './measurement';
+import { measurementMetadata, scaleMeasurement, formatMeasurementNumber } from './measurement';
 
 export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
   const theme = useTheme();
@@ -44,7 +44,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
     }
 
     const total = validPoints.reduce((acc, point) => acc + point.response, 0);
-    const average = Math.round((total / validPoints.length) * 1000000) / 1000000;
+    const average = total / validPoints.length;
     const max = Math.max(...validPoints.map((point) => point.response));
     const min = Math.min(...validPoints.map((point) => point.response));
 
@@ -388,7 +388,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
         <Collapse in={areDetailsVisible} timeout="auto" unmountOnExit>
           <Stack spacing={1.5}>
             <Stack direction="row" spacing={1.5} flexWrap="wrap">
-              <SummaryTile label="Average" value={summary.average != null ? `${summary.average} ${unit}` : '—'} accent={theme.palette.primary.main} />
+              <SummaryTile label="Average" value={summary.average != null ? `${formatMeasurementNumber(summary.average, hostDetail)} ${unit}` : '—'} accent={theme.palette.primary.main} />
               <SummaryTile label="Peak" value={summary.max != null ? `${summary.max} ${unit}` : '—'} />
               <SummaryTile label="Best" value={summary.min != null ? `${summary.min} ${unit}` : '—'} />
             </Stack>

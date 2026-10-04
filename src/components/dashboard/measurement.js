@@ -20,5 +20,12 @@ export function formatMeasurement(value, metadata) {
   const scaled = scaleMeasurement(value, metadata);
   if (scaled === null || scaled < 0) return '—';
   const { unit } = measurementMetadata(metadata);
-  return `${scaled.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${unit}`;
+  return `${formatMeasurementNumber(scaled, metadata)} ${unit}`;
+}
+
+// Keep display rounding separate from scaling and chart calculations.
+export function formatMeasurementNumber(value, metadata) {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) return '—';
+  const { unit, scale } = measurementMetadata(metadata);
+  return value.toLocaleString(undefined, { maximumFractionDigits: unit === 'ms' && scale === 1 ? 2 : 6 });
 }
