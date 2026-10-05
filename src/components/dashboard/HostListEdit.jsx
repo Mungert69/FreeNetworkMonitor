@@ -1,3 +1,4 @@
+import { normalizeThresholds, resetLimitsForChangedMeasurement } from './alertThresholds';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Badge, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -399,6 +400,8 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
       address: row.address,
       endPointType: row.endPointType,
       timeout: row.timeout,
+      lowThreshold: row.lowThreshold ?? null,
+      highThreshold: row.highThreshold ?? null,
       skipCycles: row.skipCycles ?? null,
       port: row.port,
       enabled: row.enabled,
@@ -703,7 +706,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
 
   const handleProcessRowUpdate = useCallback(
     (newRow, oldRow) => {
-      const updatedRow = { ...oldRow, ...newRow };
+      const updatedRow = resetLimitsForChangedMeasurement({ ...oldRow, ...newRow }, oldRow);
       setData((prev) => prev.map((row) => (row.id === oldRow.id ? updatedRow : row)));
       setIsEdited(true);
       if (updatedRow.appID !== oldRow.appID) {
@@ -821,6 +824,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         const sanitizedData = orderedHosts.map(({ edit, ...host }) => ({
           ...host,
           skipCycles: normalizeSkipCycles(host.skipCycles),
+          ...normalizeThresholds(host),
         }));
         const response = await saveHostData(siteId, sanitizedData);
         setMessage(response);
@@ -830,7 +834,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         return response;
       } catch (error) {
         console.error('Error saving data', error);
-        setMessage({ text: 'Failed to save data.', success: false, info: false });
+        setMessage({ text: error.message || 'Failed to save data.', success: false, info: false });
         return { success: false };
       } finally {
         setDisplayEdit(true);
@@ -1152,6 +1156,14 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         width: 140,
         type: 'number',
         editable: true,
+      },
+      {
+        field: 'lowThreshold', headerName: 'Low alert limit', width: 150, type: 'number', editable: true,
+        description: 'Actual measurement units. Blank disables the low limit.',
+      },
+      {
+        field: 'highThreshold', headerName: 'High alert limit', width: 150, type: 'number', editable: true,
+        description: 'Actual measurement units. Blank disables the high limit.',
       },
       {
         field: 'skipCycles',

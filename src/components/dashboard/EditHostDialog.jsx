@@ -1,3 +1,4 @@
+import { normalizeThresholds, resetLimitsForChangedMeasurement } from './alertThresholds';
 // File: src/components/EditHostDialog.js
 
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
@@ -204,6 +205,8 @@ const EditHostDialog = ({
         password: host.password ?? '',
         args: host.args ?? '',
         skipCycles: host.skipCycles ?? '',
+        lowThreshold: host.lowThreshold ?? '',
+        highThreshold: host.highThreshold ?? '',
       });
     }
   }, [host]);
@@ -211,17 +214,18 @@ const EditHostDialog = ({
   if (!host) return null;
 
   const handleChange = (field, value) => {
-    setEditedHost((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setEditedHost((prev) => resetLimitsForChangedMeasurement({ ...prev, [field]: value }, prev));
   };
 
+  let limitsError = '';
+  try { normalizeThresholds(editedHost); } catch (error) { limitsError = error.message; }
+
   const handleSave = () => {
+    if (limitsError) return;
     const skipCycles = editedHost.skipCycles === '' || editedHost.skipCycles === null
       ? null
       : Number(editedHost.skipCycles);
-    onSave({ ...editedHost, skipCycles });
+    onSave({ ...editedHost, skipCycles, ...normalizeThresholds(editedHost) });
   };
 
   return (
@@ -295,6 +299,19 @@ const EditHostDialog = ({
                 margin="dense"
               />
             </Grid>
+
+            {['lowThreshold', 'highThreshold'].map((field) => (
+              <Grid item xs={6} key={field}>
+                <TextField
+                  label={field === 'lowThreshold' ? 'Low alert limit' : 'High alert limit'}
+                  type="number" value={editedHost[field] ?? ''}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                  fullWidth margin="dense" inputProps={{ step: 'any' }} error={Boolean(limitsError)}
+                  helperText={limitsError || 'Actual measurement units. Leave blank to disable.'}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+            ))}
 
             {/* Skip cycles */}
             <Grid item xs={12}>
