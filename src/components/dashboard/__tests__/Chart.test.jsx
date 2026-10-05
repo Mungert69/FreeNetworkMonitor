@@ -20,7 +20,7 @@ vi.mock('../datasetNavigation', () => {
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }) => <div data-testid="responsive-container">{children}</div>,
-  LineChart: ({ children }) => <div data-testid="line-chart">{children}</div>,
+  LineChart: ({ children, data }) => <div data-testid="line-chart" data-points={JSON.stringify(data)}>{children}</div>,
   Line: () => null,
   XAxis: () => null,
   YAxis: ({ children }) => <>{children}</>,
@@ -28,6 +28,7 @@ vi.mock('recharts', () => ({
   CartesianGrid: () => null,
   Tooltip: () => null,
   Area: () => null,
+  ReferenceLine: () => null,
 }));
 
 const mockedUseDataSetNavigation = useDataSetNavigation;
@@ -77,6 +78,16 @@ describe('Chart', () => {
     expect(screen.getByText('Archived data unavailable.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Load new data' }));
     expect(refresh).toHaveBeenCalledOnce();
+  });
+
+  it('marks violations against physical current limits and preserves failures and equality', () => {
+    renderChart({ hostDetail: { unit: 'A', scale: .1, offset: -3276.8, lowThreshold: -1.1, highThreshold: 1 },
+      data: [{response:32756}, {response:32757}, {response:32768}, {response:32779}, {response:-1}] });
+    const points = JSON.parse(screen.getByTestId('line-chart').dataset.points);
+    expect(points.map(p => p.violation ?? null)).toEqual(['low', null, null, 'high', null]);
+    expect(points[4].response).toBeNull();
+    expect(screen.getByText('Current limits')).toBeInTheDocument();
+    expect(screen.getByText('Colours show violations, not alert events.')).toBeInTheDocument();
   });
 
   it('shows monitor location and expands physical limits without scaling them again', () => {
