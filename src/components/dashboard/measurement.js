@@ -13,7 +13,7 @@ export function scaleMeasurement(value, metadata) {
   if (value === null || value === undefined || value === '') return null;
   const number = Number(value);
   if (!Number.isFinite(number)) return null;
-  // Negative values are failure/no-data markers, never physical measurements.
+  // Negative encoded samples are failure markers; scaling valid samples can produce negative physical values.
   const { scale, offset } = measurementMetadata(metadata);
   const scaled = number < 0 ? number : number * scale + offset;
   return Number.isFinite(scaled) ? scaled : null;

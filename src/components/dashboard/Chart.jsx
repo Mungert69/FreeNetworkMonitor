@@ -98,7 +98,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
         </Typography>
         {showResponse && (
           <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
-            {`${response} ${unit}`}
+            {`${formatMeasurementNumber(response, hostDetail)} ${unit}`}
           </Typography>
         )}
         {statusLines.map((line, idx) => (
@@ -112,18 +112,17 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
         ))}
       </Box>
     );
-  }, [chunkStatus, theme, unit]);
+  }, [chunkStatus, theme, unit, hostDetail]);
 
   const renderDot = React.useCallback(
-    ({ cx, cy, value }) => {
+    ({ cx, cy, payload }) => {
       if (cx == null || cy == null) {
         return null;
       }
 
-      const numericValue = Number(value);
       const successColor = theme.palette.success?.main || theme.palette.primary.main;
       const errorColor = theme.palette.error?.main || theme.palette.warning?.main || '#d32f2f';
-      const baseColor = numericValue < 0 ? errorColor : successColor;
+      const baseColor = payload?.valid === false ? errorColor : successColor;
 
       return (
         <g>
@@ -392,8 +391,8 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
           <Stack spacing={1.5}>
             <Stack direction="row" spacing={1.5} flexWrap="wrap">
               <SummaryTile label="Average" value={summary.average != null ? `${formatMeasurementNumber(summary.average, hostDetail)} ${unit}` : '—'} accent={theme.palette.primary.main} />
-              <SummaryTile label="Peak" value={summary.max != null ? `${summary.max} ${unit}` : '—'} />
-              <SummaryTile label="Best" value={summary.min != null ? `${summary.min} ${unit}` : '—'} />
+              <SummaryTile label="Peak" value={summary.max != null ? `${formatMeasurementNumber(summary.max, hostDetail)} ${unit}` : '—'} />
+              <SummaryTile label="Best" value={summary.min != null ? `${formatMeasurementNumber(summary.min, hostDetail)} ${unit}` : '—'} />
             </Stack>
 
             <Stack direction="row" spacing={1.5} flexWrap="wrap">
@@ -517,9 +516,10 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
               />
               <YAxis
                 stroke={theme.palette.text.secondary}
-                width={36}
+                width={54}
                 tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
-                allowDecimals={false}
+                allowDecimals
+                tickFormatter={(value) => formatMeasurementNumber(value, hostDetail)}
                 domain={['dataMin', 'dataMax']}
                 tickMargin={0}
                 axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
