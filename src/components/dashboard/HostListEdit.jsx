@@ -15,7 +15,6 @@ import {
   GridToolbarContainer,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
-import FadeWrapper from './FadeWrapper';
 import HelpDialog from './HelpDialog';
 import Message from './Message';
 import EditHostDialog from './EditHostDialog';
@@ -110,53 +109,13 @@ const HostListEditToolbar = ({
       px: 1,
     }}
   >
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-      <FadeWrapper toggle={isEdited}>
-        <Tooltip title="Save Host List">
-          <span>
-            <IconButton
-              color="primary"
-              size="small"
-              aria-label="Save host list"
-              onClick={onSave}
-              disabled={disableActions}
-            >
-              <Badge color="secondary" variant="dot" overlap="circular">
-                <SaveIcon />
-              </Badge>
-            </IconButton>
-          </span>
-        </Tooltip>
-      </FadeWrapper>
-      <Tooltip title="Add new Host">
-        <span>
-          <IconButton
-            color="primary"
-            size="small"
-            aria-label="Add host"
-            onClick={onAdd}
-            disabled={disableActions}
-          >
-            <Badge color="secondary" variant="dot" overlap="circular">
-              <AddIcon />
-            </Badge>
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Click for help">
-        <span>
-          <IconButton
-            color="primary"
-            size="small"
-            aria-label="Open help dialog"
-            onClick={onHelp}
-          >
-            <Badge color="secondary" variant="dot" overlap="circular">
-              <HelpIcon />
-            </Badge>
-          </IconButton>
-        </span>
-      </Tooltip>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+      <Button variant="contained" disableElevation size="small" startIcon={<AddIcon />} onClick={onAdd} disabled={disableActions} sx={{ textTransform: 'none' }}>Add host</Button>
+      {isEdited && <>
+        <Typography variant="body2" color="text.secondary">Unsaved changes</Typography>
+        <Button variant="outlined" size="small" startIcon={<SaveIcon />} onClick={onSave} disabled={disableActions} aria-label="Save host list" sx={{ textTransform: 'none' }}>Save changes</Button>
+      </>}
+      <Tooltip title="Help"><IconButton size="small" aria-label="Open help dialog" onClick={onHelp}><HelpIcon fontSize="small" /></IconButton></Tooltip>
     </Box>
     <GridToolbarQuickFilter
       variant="outlined"
@@ -1154,22 +1113,6 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         field: 'timeout',
         headerName: 'Timeout (ms)',
         width: 140,
-        type: 'number',
-        editable: true,
-      },
-      {
-        field: 'lowThreshold', headerName: 'Low alert limit', width: 150, type: 'number', editable: true,
-        description: 'Actual measurement units. Blank disables the low limit.',
-      },
-      {
-        field: 'highThreshold', headerName: 'High alert limit', width: 150, type: 'number', editable: true,
-        description: 'Actual measurement units. Blank disables the high limit.',
-      },
-      {
-        field: 'skipCycles',
-        headerName: 'Skip cycles',
-        description: 'Leave blank to use the endpoint default. Zero runs every processor cycle.',
-        width: 125,
         type: 'number',
         editable: true,
       },

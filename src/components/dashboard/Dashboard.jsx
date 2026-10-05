@@ -1,3 +1,4 @@
+import { useChartData } from './useChartData';
 import React, { useState, useEffect, useRef, lazy, useCallback, useMemo } from "react";
 
 import Slide from '@mui/material/Slide';
@@ -5,7 +6,7 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Loading from '../../loading';
-import { resetPredictAlertApiCall, convertDate, getBaseDomain, getSupportEmail, getServerLabel, fetchChartData, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
+import { resetPredictAlertApiCall, convertDate, getBaseDomain, getSupportEmail, getServerLabel, fetchListData, fetchDataSetsByDate, fetchProcessorList, resetAlertApiCall, fetchLoadServer, fetchFirstLoadServer, getSiteIdfromUrl, addUserApi, getUserInfoApi } from './ServiceAPI';
 import { useMediaQuery } from '@mui/material';
 import styleObject from './styleObject';
 import useClasses from "./useClasses";
@@ -37,7 +38,12 @@ export default function Dashboard() {
   const [apiUser, setApiUser] = useState({});
   //const [defaultUser, setDefaultUser] = React.useState(true);
   //const [open, setOpen] = React.useState(false);
-  const [chartData, setChartData] = React.useState([]);
+  const [chartSelection, setChartSelection] = useState({ mode: 'dataset' });
+  const [newChartData, setNewChartData] = useState(false);
+  const [chartRefresh, setChartRefresh] = useState(0);
+  const pendingChartHost = useRef(null);
+  const chartNavigation = useRef(false);
+
   const [listData, setListData] = React.useState([]);
   const [dataSets, setDataSets] = React.useState([]);
   const [hostData, setHostData] = React.useState(defaultHost);
@@ -69,6 +75,10 @@ export default function Dashboard() {
   const [chatKey, setChatKey] = useState(0);
   const [dashboardError, setDashboardError] = useState('');
   const isValidSiteId = Number.isInteger(siteId) && siteId >= 0;
+  const { datasetData: chartData, rangeResult: chartRangeResult, loading: chartLoading, error: chartError } = useChartData({
+    host: hostData, datasetId: dataSetId, selection: chartSelection, refresh: chartRefresh,
+    siteId, user: userInfo, loggedIn: isLoggedIn, enabled: isValidSiteId && isChartDialogOpen,
+  });
   const supportEmail = getSupportEmail() || 'support@readyforquantum.com';
 
   const toggleChatView = useCallback(() => {
@@ -76,6 +86,9 @@ export default function Dashboard() {
   }, []);
 
   const handleSetDataSetId = useCallback((id, date) => {
+    chartNavigation.current = true;
+    setChartSelection({ mode: 'dataset' });
+    setNewChartData(false);
     setDataSetId(id);
     setSelectedDate(date);
   }, []);
@@ -87,6 +100,10 @@ export default function Dashboard() {
   const clickViewChart = useCallback((hostData) => {
     console.log("Passing host data to chart:", JSON.stringify(hostData));
     setHostData(hostData);
+    setChartSelection({ mode: 'dataset' });
+    setNewChartData(false);
+    pendingChartHost.current = null;
+    chartNavigation.current = false;
     setIsChartDialogOpen(true);
   }, []);
 
@@ -196,18 +213,41 @@ export default function Dashboard() {
     [handleHostLinkClick, handleHostListUpdated, setIsChatOpen, siteId, isChartDialogOpen, closeChartDialog],
   );
 
+  const selectChartRange = useCallback(selection => {
+    chartNavigation.current = false;
+    setChartSelection(selection);
+    setNewChartData(false);
+    if (selection.mode !== 'dataset') setDataSetId(0);
+  }, []);
+  const refreshChartView = useCallback(() => {
+    if (pendingChartHost.current) setHostData(pendingChartHost.current);
+    pendingChartHost.current = null;
+    setNewChartData(false);
+    setChartSelection(previous => previous.hours ? {
+      ...previous, start: new Date(Date.now() - previous.hours * 3600000).toISOString(), end: new Date().toISOString(),
+    } : previous);
+    setChartRefresh(value => value + 1);
+  }, []);
+
   const chartProps = useMemo(
     () => ({
-      data: chartData,
+      data: chartSelection.mode === 'dataset' ? chartData : (chartRangeResult?.points ?? []).map(p => ({
+        timestamp: Date.parse(p.timestamp), time: new Date(p.timestamp).toLocaleString(),
+        response: p.value, valid: p.success, status: p.status,
+      })),
       selectedDate,
       hostname: hostData.address,
       dataSetId,
       dataSets,
       handleSetDataSetId,
       hostDetail: hostData,
+      processorList,
       fullScreen: true,
+      timeSelection: chartSelection, onTimeSelection: selectChartRange,
+      rangeResult: chartSelection.mode === 'dataset' ? null : chartRangeResult,
+      loading: chartLoading, error: chartError, newDataAvailable: newChartData, onRefresh: refreshChartView,
     }),
-    [chartData, selectedDate, hostData, dataSetId, dataSets, handleSetDataSetId],
+    [chartData, selectedDate, hostData, dataSetId, dataSets, handleSetDataSetId, processorList, chartSelection, chartRangeResult, chartLoading, chartError, newChartData, selectChartRange, refreshChartView],
   );
 
   const getUserInfo = async () => {
@@ -368,26 +408,22 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [realTime]);
   useEffect(() => {
-    // Set hostData to monitorIPID  found in listData.
-    const item = listData.find(item => item.monitorIPID === hostData.monitorIPID);
-    // If item not undefined then set hostData to item.
-    if (item !== undefined) {
+    const item = listData.find(row => row.monitorIPID === hostData.monitorIPID);
+    if (!item) return;
+    if (isChartDialogOpen && chartNavigation.current && item.dataSetID !== dataSetId) return;
+    if (!isChartDialogOpen || chartNavigation.current) {
+      chartNavigation.current = false;
       setHostData(item);
+      setNewChartData(false);
+      return;
     }
-  }, [listData]);
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!isValidSiteId) {
-        return;
-      }
-      await setIsLoading(true);
-      await fetchChartData(hostData, dataSetIdRef.current, siteId, setChartData, userInfo, isLoggedIn);
-      await setIsLoading(false);
-    };
-    fetchData();
-    // Fetch chart data when hostData or datasetId changes.
-    //setIsLoading(false);
-  }, [hostData, siteId, isLoggedIn, userInfo, isValidSiteId]);
+    const includesLatest = chartSelection.mode === 'dataset' ? dataSetId === 0 : chartRangeResult?.includesLatest;
+    const signature = row => JSON.stringify([row.id, row.packetsSent, row.packetsLost, row.monitorStatus?.eventTime, row.status]);
+    if (includesLatest && signature(item) !== signature(hostData)) {
+      pendingChartHost.current = item;
+      setNewChartData(true);
+    }
+  }, [listData, isChartDialogOpen, chartSelection.mode, chartRangeResult?.includesLatest, dataSetId]);
   useEffect(() => {
     const fetchData = async () => {
       if (!isValidSiteId) {

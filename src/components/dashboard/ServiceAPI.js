@@ -431,7 +431,7 @@ export const fetchEndpointTypesForLocations = async (baseUrlId, agentLocations =
 }
  
 
-export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isLoggedIn) => {
+export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartData, user, isLoggedIn, signal) => {
     const monitorPingInfoId = hostData.id;
     if (isLoggedIn) { var extUrlStr = 'Auth'; }
     else {
@@ -447,6 +447,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
     axiosRetry(axios, { retries: 3 });
     const result = await trackPromise(axios(
         {
+            signal,
             method: 'post',
             url: apiBaseUrls[baseUrlId] + '/ResponseTime/GetPingInfosByMonitorPingInfoID' + extUrlStr,
             data: sentData,
@@ -456,7 +457,8 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
             },
         }
     ).catch(function (error) {
-        console.log('ServiceAPI.fetchChartData Axios Error was : ' + error);
+        if (signal?.aborted) return;
+        throw error;
     }));
     try {
         const responseData = result?.data?.data;
@@ -467,7 +469,7 @@ export const fetchChartData = async (hostData, dataSetId, baseUrlId, setChartDat
             });
         } else {
             responseData.map((row) => {
-                data.push({ 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.responseTime, 'status': row.status })
+                data.push({ timestamp: Date.parse(row.dateSent), 'time': convertDate(row.dateSent, 'HH:mm:ss'), 'response': row.responseTime, 'status': row.status })
             });
             console.log('ServiceAPI.fetchChartData Got chart data for MonitorPingInfo with ID  : ' + monitorPingInfoId + ' count : ' + data.length);
         }
@@ -529,6 +531,9 @@ export const fetchListData = async (dataSetId, baseUrlId, setListData, setAlertC
             obj.unit = row.unit ?? 'ms';
             obj.scale = row.scale ?? 1;
             obj.offset = row.offset ?? 0;
+            ['timeout', 'port', 'enabled', 'skipCycles', 'args', 'lowThreshold', 'highThreshold', 'measurementBreach', 'eventTime'].forEach(key => {
+                if (row[key] !== undefined) obj[key] = row[key];
+            });
             data.push(obj)
         });
     }
@@ -1313,4 +1318,15 @@ export const fetchTiers = async (baseUrlId) => {
 
   console.log('ServiceAPI.fetchTiers fetched ' + data.length + ' tiers');
   return data;
+};
+
+// Chart-only API: the response contains physical values, bounded points and full-range statistics.
+export const fetchChartRange = async (hostId, selection, baseUrlId, isLoggedIn, signal) => {
+    const result = await axios({
+        method: 'post', signal, withCredentials: true,
+        url: apiBaseUrls[baseUrlId] + '/ResponseTime/GetChartRange' + (isLoggedIn ? 'Auth' : 'Default'),
+        data: { monitorIPID: hostId, start: selection.start, end: selection.end },
+    });
+    if (!result.data?.success || !result.data?.data) throw new Error(result.data?.message || 'Unable to load the selected range.');
+    return result.data.data;
 };

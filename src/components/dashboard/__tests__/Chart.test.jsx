@@ -65,6 +65,33 @@ describe('Chart', () => {
     vi.clearAllMocks();
   });
 
+  it('uses complete range statistics and keeps signed physical values unscaled', () => {
+    const refresh = vi.fn();
+    renderChart({ timeSelection: { mode: 'day', start: '2026-10-01T00:00:00Z', end: '2026-10-02T00:00:00Z' },
+      rangeResult: { unit: 'A', average: -1.25, minimum: -2, maximum: 3, successful: 5000, failed: 4, notices: ['Archived data unavailable.'] },
+      data: [{ timestamp: Date.parse('2026-10-01T12:00:00Z'), response: -2, valid: true }],
+      hostDetail: { unit: 'A', scale: .1, offset: -3276.8 }, newDataAvailable: true, onRefresh: refresh,
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Show details' }));
+    expect(screen.getByText('-1.25 A')).toBeInTheDocument();
+    expect(screen.getByText('Archived data unavailable.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Load new data' }));
+    expect(refresh).toHaveBeenCalledOnce();
+  });
+
+  it('shows monitor location and expands physical limits without scaling them again', () => {
+    renderChart({
+      processorList: [{ appID: 'board', location: 'Workshop' }],
+      hostDetail: { ...baseProps.hostDetail, appID: 'board', endPointType: 'blebroadcast', unit: 'A', scale: .1, offset: -3276.8, lowThreshold: -2, highThreshold: null },
+    });
+    expect(screen.getByText('Workshop')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show details' }));
+    fireEvent.click(screen.getByRole('button', { name: /host and alert settings/i }));
+    expect(screen.getByText('-2 A')).toBeInTheDocument();
+    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    expect(screen.getByText('Minimum')).toBeInTheDocument();
+  });
+
   it('shows live indicator and disables the back-to-live button when viewing the latest dataset', () => {
     mockedUseDataSetNavigation.mockReturnValue({
       currentDataSet: { id: 0 },

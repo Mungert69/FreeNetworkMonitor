@@ -1,12 +1,15 @@
 import { normalizeThresholds, resetLimitsForChangedMeasurement } from './alertThresholds';
 // File: src/components/EditHostDialog.js
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import React, { useEffect, useMemo, useState } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
+  Box, Typography, Accordion, AccordionSummary, AccordionDetails,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -22,116 +25,6 @@ import {
   useMediaQuery,
 } from '@mui/material';
 
-
-const getMuiTheme = (isSmallScreen) => createTheme({
-  palette: {
-    background: {
-      paper: "#f8fafb", // match dashboard paper background
-    },
-    text: {
-      primary: "#222", // match dashboard text
-      secondary: "#607466",
-    },
-    primary: {
-      main: "#6239AB",
-      light: "#8e6be0",
-      dark: "#3d206e",
-      contrastText: "#fff"
-    },
-    secondary: {
-      main: "#607466",
-      light: "#8fa39c",
-      dark: "#3b4a3e",
-      contrastText: "#fff"
-    }
-  },
-  components: {
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          backgroundColor: "#f8fafb",
-          color: "#222",
-        }
-      }
-    },
-    MuiDialogTitle: {
-      styleOverrides: {
-        root: {
-          color: "#222", // Use primary text color
-          fontWeight: 700,
-          fontSize: isSmallScreen ? "1.1rem" : "1.3rem",
-          background: "linear-gradient(90deg, #f8fafb 80%, #ede7f6 100%)",
-        }
-      }
-    },
-    MuiDialogContent: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#f8fafb",
-          color: "#222",
-        }
-      }
-    },
-    MuiDialogActions: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#f8fafb",
-        }
-      }
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          fontSize: isSmallScreen ? "0.94rem" : undefined,
-          backgroundColor: "#fff",
-          color: "#222",
-        },
-        input: {
-          fontSize: isSmallScreen ? "0.94rem" : undefined,
-          backgroundColor: "#fff",
-          color: "#222",
-        },
-      },
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          fontSize: isSmallScreen ? "0.94rem" : undefined,
-          color: "#222",
-          backgroundColor: "#fff",
-          '&.Mui-selected': {
-            backgroundColor: "#ede7f6 !important",
-            color: "#6239AB",
-          },
-          '&:hover': {
-            backgroundColor: "#ede7f6",
-            color: "#6239AB",
-          }
-        }
-      }
-    },
-    MuiCheckbox: {
-      styleOverrides: {
-        root: {
-          padding: isSmallScreen ? "4px" : undefined,
-          color: "#6239AB",
-          '&.Mui-checked': {
-            color: "#607466",
-          }
-        }
-      }
-    },
-    MuiFormControlLabel: {
-      styleOverrides: {
-        root: {
-          marginBottom: 0,
-          color: "#607466",
-        },
-      }
-    },
-   
-  }
-});
 
 const EditHostDialog = ({
   open,
@@ -229,13 +122,18 @@ const EditHostDialog = ({
   };
 
   return (
-    <ThemeProvider theme={getMuiTheme(isSmallScreen)}>
-      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Host</DialogTitle>
-        <DialogContent>
+    <>
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth fullScreen={isSmallScreen} aria-labelledby="edit-host-title" PaperProps={{ sx: { borderRadius: isSmallScreen ? 0 : 3 } }}>
+        <DialogTitle id="edit-host-title" sx={{ pr: 7, pb: 2 }}>
+          <Typography component="span" variant="h6" fontWeight={700}>Edit Host</Typography>
+          <Typography component="span" display="block" variant="body2" color="text.secondary" sx={{ overflowWrap: 'anywhere' }}>{host.address}</Typography>
+          <IconButton aria-label="Close edit host" onClick={onClose} sx={{ position: 'absolute', right: 16, top: 16 }}><CloseIcon /></IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ py: 3 }}>
           <Grid container spacing={2}>
+            <Grid size={12}><Typography variant="subtitle1" fontWeight={700}>Connection</Typography><Typography variant="body2" color="text.secondary">Choose what to monitor and where the check runs.</Typography></Grid>
             {/* Host Address */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 label="Host Address"
                 value={editedHost.address}
@@ -248,7 +146,7 @@ const EditHostDialog = ({
             </Grid>
 
             {/* Endpoint Type */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 label="Endpoint Type"
                 value={editedHost.endPointType ?? ''}
@@ -272,132 +170,8 @@ const EditHostDialog = ({
               </TextField>
             </Grid>
 
-            {/* Timeout */}
-            <Grid item xs={6}>
-              <TextField
-                label="Timeout"
-                type="number"
-                value={editedHost.timeout}
-                onChange={(e) => handleChange('timeout', e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                placeholder="Enter timeout"
-                margin="dense"
-              />
-            </Grid>
-
-            {/* Port */}
-            <Grid item xs={6}>
-              <TextField
-                label="Port"
-                type="number"
-                value={editedHost.port}
-                onChange={(e) => handleChange('port', e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                placeholder="Enter port"
-                margin="dense"
-              />
-            </Grid>
-
-            {['lowThreshold', 'highThreshold'].map((field) => (
-              <Grid item xs={6} key={field}>
-                <TextField
-                  label={field === 'lowThreshold' ? 'Low alert limit' : 'High alert limit'}
-                  type="number" value={editedHost[field] ?? ''}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                  fullWidth margin="dense" inputProps={{ step: 'any' }} error={Boolean(limitsError)}
-                  helperText={limitsError || 'Actual measurement units. Leave blank to disable.'}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-            ))}
-
-            {/* Skip cycles */}
-            <Grid item xs={12}>
-              <TextField
-                label="Skip cycles"
-                type="number"
-                value={editedHost.skipCycles ?? ''}
-                onChange={(e) => handleChange('skipCycles', e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                inputProps={{ min: 0, max: 65535, step: 1 }}
-                helperText="Leave blank to use the endpoint default. Zero runs every processor cycle."
-                placeholder="Use endpoint default"
-                margin="dense"
-              />
-            </Grid>
-
-            {/* Enabled */}
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={editedHost.enabled}
-                    onChange={(e) => handleChange('enabled', e.target.checked)}
-                  />
-                }
-                label="Enabled"
-              />
-            </Grid>
-
-            {/* Username */}
-            <Grid item xs={12}>
-              <TextField
-                label="Username"
-                value={editedHost.username}
-                onChange={(e) => handleChange('username', e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                placeholder="Optional username or identifier"
-                margin="dense"
-              />
-            </Grid>
-
-            {/* Password / Key */}
-            <Grid item xs={12}>
-              <TextField
-                label="Password / Key"
-                type={showPassword ? 'text' : 'password'}
-                value={editedHost.password}
-                onChange={(e) => handleChange('password', e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                placeholder="Optional password or key"
-                margin="dense"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        edge="end"
-                        size="small"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            {/* Args */}
-            <Grid item xs={12}>
-              <TextField
-                label="Args"
-                value={editedHost.args}
-                onChange={(e) => handleChange('args', e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                placeholder="Extra command-style arguments"
-                margin="dense"
-              />
-            </Grid>
-
             {/* Monitor Location */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 label="Monitor Location"
                 value={editedHost.appID ?? ''}
@@ -436,23 +210,161 @@ const EditHostDialog = ({
                   ))}
               </TextField>
             </Grid>
+
+            {/* Enabled */}
+            <Grid size={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={editedHost.enabled}
+                    onChange={(e) => handleChange('enabled', e.target.checked)}
+                  />
+                }
+                label="Enabled"
+              />
+            </Grid>
+
+            <Grid size={12}><Typography variant="subtitle1" fontWeight={700}>Measurement alerts</Typography><Typography variant="body2" color="text.secondary">Optional limits in the measurement’s actual units. Leave blank to disable.</Typography></Grid>
+            {['lowThreshold', 'highThreshold'].map((field) => (
+              <Grid size={{ xs: 12, sm: 6 }} key={field}>
+                <TextField
+                  label={field === 'lowThreshold' ? 'Low alert limit' : 'High alert limit'}
+                  type="number" value={editedHost[field] ?? ''}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                  fullWidth margin="dense" inputProps={{ step: 'any' }} error={Boolean(limitsError)}
+                  helperText={limitsError || 'Actual measurement units. Leave blank to disable.'}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+            ))}
+
+            <Grid size={12}>
+              <Accordion elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px !important', '&:before': { display: 'none' } }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Box><Typography fontWeight={600}>Advanced settings</Typography><Typography variant="body2" color="text.secondary">Timing, port, credentials and arguments</Typography></Box>
+                </AccordionSummary>
+                <AccordionDetails><Grid container spacing={2}>
+            {/* Timeout */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Timeout (ms)"
+                type="number"
+                value={editedHost.timeout}
+                onChange={(e) => handleChange('timeout', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Enter timeout"
+                margin="dense"
+              />
+            </Grid>
+
+            {/* Port */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Port"
+                type="number"
+                value={editedHost.port}
+                onChange={(e) => handleChange('port', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Enter port"
+                margin="dense"
+              />
+            </Grid>
+
+            {/* Skip cycles */}
+            <Grid size={12}>
+              <TextField
+                label="Skip cycles"
+                type="number"
+                value={editedHost.skipCycles ?? ''}
+                onChange={(e) => handleChange('skipCycles', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ min: 0, max: 65535, step: 1 }}
+                helperText="Leave blank to use the endpoint default. Zero runs every processor cycle."
+                placeholder="Use endpoint default"
+                margin="dense"
+              />
+            </Grid>
+
+            {/* Username */}
+            <Grid size={12}>
+              <TextField
+                label="Username"
+                value={editedHost.username}
+                onChange={(e) => handleChange('username', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Optional username or identifier"
+                margin="dense"
+              />
+            </Grid>
+
+            {/* Password / Key */}
+            <Grid size={12}>
+              <TextField
+                label="Password / Key"
+                type={showPassword ? 'text' : 'password'}
+                value={editedHost.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Optional password or key"
+                margin="dense"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        edge="end"
+                        size="small"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+
+            {/* Args */}
+            <Grid size={12}>
+              <TextField
+                label="Args"
+                value={editedHost.args}
+                onChange={(e) => handleChange('args', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                placeholder="Extra command-style arguments"
+                margin="dense"
+              />
+            </Grid>
+
+                </Grid></AccordionDetails>
+              </Accordion>
+            </Grid>
+
           </Grid>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ px: 3, py: 2, gap: 1, flexWrap: 'wrap' }}>
+          <Typography variant="caption" color="text.secondary" sx={{ width: '100%', mb: 1 }}>Saving also applies any pending edits in the host table.</Typography>
           <Button onClick={onClose} color="primary">
             Cancel
           </Button>
           <Button
+            disabled={Boolean(limitsError)}
             onClick={handleSave}
             color="primary"
             variant="contained"
             startIcon={<SaveIcon />}
           >
-            Save
+            Save changes
           </Button>
         </DialogActions>
       </Dialog>
-    </ThemeProvider>
+    </>
   );
 };
 

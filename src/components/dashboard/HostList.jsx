@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Box, Button, Chip, IconButton, TextField, Tooltip, useMediaQuery } from '@mui/material';
+import { Badge, Box, Button, Chip, Collapse, IconButton, TextField, Tooltip, useMediaQuery } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
+import TuneIcon from '@mui/icons-material/Tune';
 import StorageIcon from '@mui/icons-material/Storage';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -107,6 +108,7 @@ const HostListToolbar = ({
   isOnLatestDataSet,
   datasetLabel,
 }) => {
+  const [showTableOptions, setShowTableOptions] = useState(false);
   const chipProps = isOnLatestDataSet
     ? {
         icon: <BoltIcon fontSize="small" />,
@@ -244,12 +246,15 @@ const HostListToolbar = ({
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-        <GridToolbarExport />
         <GridToolbarQuickFilter variant="outlined" size="small" placeholder="Search hosts" />
+        <GridToolbarFilterButton />
+        <Button size="small" startIcon={<TuneIcon />} aria-expanded={showTableOptions} aria-controls="host-table-options" onClick={() => setShowTableOptions(value => !value)} sx={{ textTransform: 'none' }}>Table options</Button>
       </Box>
+      <Collapse in={showTableOptions} sx={{ width: '100%' }}>
+        <Box id="host-table-options" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end', borderTop: '1px solid', borderColor: 'divider', pt: 1 }}>
+          <GridToolbarColumnsButton /><GridToolbarDensitySelector /><GridToolbarExport />
+        </Box>
+      </Collapse>
     </GridToolbarContainer>
   );
 };

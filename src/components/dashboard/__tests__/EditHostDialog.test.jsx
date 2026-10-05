@@ -29,6 +29,7 @@ describe('EditHostDialog', () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole('button', { name: /advanced settings/i }));
     const skipCycles = screen.getByLabelText('Skip cycles');
     expect(skipCycles).toHaveValue(3);
 

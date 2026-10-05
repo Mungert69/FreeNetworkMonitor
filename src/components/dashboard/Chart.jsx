@@ -1,4 +1,10 @@
 import React from 'react';
+import ChartTimeRange from './ChartTimeRange';
+import Alert from '@mui/material/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
+import { Accordion, AccordionSummary, AccordionDetails, useMediaQuery } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { alpha, useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Area } from 'recharts';
 import Box from '@mui/material/Box';
@@ -16,27 +22,44 @@ import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 import { measurementMetadata, scaleMeasurement, formatMeasurementNumber } from './measurement';
 
-export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, fullScreen = false }) {
+export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, processorList = [], fullScreen = false, timeSelection = { mode: 'dataset' }, onTimeSelection, rangeResult, loading = false, error, newDataAvailable, onRefresh }) {
   const theme = useTheme();
-  const unit = measurementMetadata(hostDetail).unit;
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isRange = timeSelection.mode !== 'dataset';
+  const unit = isRange ? (rangeResult?.unit ?? measurementMetadata(hostDetail).unit) : measurementMetadata(hostDetail).unit;
+  const location = processorList.find(p => String(p.appID) === String(hostDetail?.appID))?.location
+    ?? hostDetail?.location ?? hostDetail?.appID ?? 'Not available';
+  const formatLimit = value => value == null ? 'Disabled' : `${formatMeasurementNumber(value, hostDetail)} ${unit}`;
+  const configuration = [
+    ['Endpoint', hostDetail?.endPointType], ['Monitor location', location],
+    ['Processor ID', hostDetail?.appID], ['Timeout (ms)', hostDetail?.timeout],
+    ['Port', hostDetail?.port], ['Skip cycles', hostDetail?.skipCycles],
+    ['Monitoring', typeof hostDetail?.enabled === 'boolean' ? (hostDetail.enabled ? 'Enabled' : 'Disabled') : undefined],
+    ['Last event', hostDetail?.eventTime ?? hostDetail?.monitorStatus?.eventTime],
+    ['Low alert limit', hostDetail && 'lowThreshold' in hostDetail ? formatLimit(hostDetail.lowThreshold) : undefined],
+    ['High alert limit', hostDetail && 'highThreshold' in hostDetail ? formatLimit(hostDetail.highThreshold) : undefined],
+  ];
   const data = React.useMemo(() => Array.isArray(rawData)
     ? rawData.map(point => ({ ...point,
-      valid: typeof point.response === 'number' && point.response >= 0,
-      response: typeof point.response === 'number' && point.response >= 0
+      valid: isRange ? point.valid : typeof point.response === 'number' && point.response >= 0,
+      response: isRange ? point.response : typeof point.response === 'number' && point.response >= 0
         ? scaleMeasurement(point.response, hostDetail) : null }))
-    : rawData, [rawData, hostDetail]);
+    : rawData, [rawData, hostDetail, isRange]);
 
   const hasData = Array.isArray(data) && data.length > 0;
   const [isStatusExpanded, setIsStatusExpanded] = React.useState(false);
   const [hasStatusOverflow, setHasStatusOverflow] = React.useState(false);
   const [areDetailsVisible, setAreDetailsVisible] = React.useState(false);
   const statusTextRef = React.useRef(null);
+  const detailsId = React.useId();
+  React.useEffect(() => { setAreDetailsVisible(false); }, [hostDetail?.monitorIPID]);
 
   const chartHeight = fullScreen ? 'max(360px, calc(100vh - 320px))' : 'clamp(260px, 45vh, 400px)';
   const statusCollapsedHeight = 52;
   const statusExpandedMaxHeight = 220;
 
   const summary = React.useMemo(() => {
+    if (isRange && rangeResult) return { average: rangeResult.average, max: rangeResult.maximum, min: rangeResult.minimum };
     if (!hasData) {
       return { average: null, max: null, min: null };
     }
@@ -52,7 +75,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
     const min = Math.min(...validPoints.map((point) => point.response));
 
     return { average, max, min };
-  }, [data, hasData]);
+  }, [data, hasData, isRange, rangeResult]);
 
   const chunkStatus = React.useCallback((rawStatus) => {
     if (!rawStatus || typeof rawStatus !== 'string') {
@@ -77,7 +100,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
       return null;
     }
 
-    const { response, status, time } = payload[0].payload ?? {};
+    const { response, status, time, timestamp } = payload[0].payload ?? {};
     const statusLines = chunkStatus(status);
     const showResponse = typeof response === 'number';
 
@@ -94,7 +117,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
         }}
       >
         <Typography variant="caption" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
-          {time}
+          {timestamp ? new Date(timestamp).toLocaleString() : time}
         </Typography>
         {showResponse && (
           <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
@@ -262,9 +285,10 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        minWidth: 0,
         borderRadius: 4,
-        background: `linear-gradient(145deg, ${alpha(theme.palette.primary.light, 0.18)} 0%, ${alpha(theme.palette.background.paper, 0.92)} 45%, ${alpha(theme.palette.secondary?.light || theme.palette.primary.main, 0.16)} 100%)`,
+        backgroundColor: theme.palette.background.paper,
+        border: '1px solid', borderColor: 'divider',
         p: { xs: 2, sm: 3 },
         gap: fullScreen ? 3 : 2,
       }}
@@ -278,11 +302,11 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
         >
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="subtitle2" sx={{ color: alpha(theme.palette.text.primary, 0.64), letterSpacing: 0.6 }}>
-              {hostname ? `Latency for ${hostname}` : 'Latency Overview'}
+              {hostDetail?.endPointType ? `${hostDetail.endPointType} · ${unit}` : 'Measurement history'}
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary, mt: 0.25, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <span>{chipProps.label}</span>
-              {isLatestDataSet && (
+              <span style={{ overflowWrap: 'anywhere' }}>{hostname || 'Host readings'}</span>
+              {!isRange && isLatestDataSet && (
                 <Chip
                   size="small"
                   color="primary"
@@ -296,21 +320,28 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                 />
               )}
             </Typography>
+            <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mt: 1 }}>
+              <LocationOnIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">{location}</Typography>
+              {hostDetail?.monitorStatus?.isUp != null && <Chip size="small" variant="outlined" label={hostDetail.monitorStatus.isUp ? 'Online' : 'Unavailable'} color={hostDetail.monitorStatus.isUp ? 'success' : 'error'} />}
+              {hostDetail?.alertFlag && <Chip size="small" variant="outlined" label="Alert active" color="warning" />}
+            </Stack>
           </Box>
           <Stack
             direction="row"
             spacing={1.5}
             alignItems="center"
             flexWrap="wrap"
+            sx={{ width: { xs: '100%', md: 'auto' } }}
             justifyContent="flex-end"
           >
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ display: isRange ? 'none' : 'flex' }}>
               <TooltipBase title="Previous dataset">
                 <span>
                   <IconButton
                     size="small"
                     onClick={() => navigateDataSet(1)}
-                    disabled={!canGoBack}
+                    disabled={isRange || !canGoBack}
                     sx={navButtonSx}
                     aria-label="Previous dataset"
                   >
@@ -323,7 +354,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                   <IconButton
                     size="small"
                     onClick={() => navigateDataSet(-1)}
-                    disabled={!canGoForward}
+                    disabled={isRange || !canGoForward}
                     sx={navButtonSx}
                     aria-label="Next dataset"
                   >
@@ -341,7 +372,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
               </Typography>
               <Chip
                 size="small"
-                {...chipProps}
+                {...(isRange ? { label: 'Time range', variant: 'outlined' } : chipProps)}
                 sx={{
                   '& .MuiChip-icon': { marginLeft: 0.45 },
                   '& .MuiChip-label': {
@@ -366,7 +397,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                     variant={isLatestDataSet ? 'outlined' : 'contained'}
                     color={isLatestDataSet ? 'inherit' : 'primary'}
                     onClick={handleSelectLiveData}
-                    disabled={isLatestDataSet}
+                    disabled={!isRange && isLatestDataSet}
                     sx={{ textTransform: 'none', fontWeight: 600 }}
                   >
                     Back to live
@@ -376,6 +407,8 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
             </Stack>
             <Button
               size="small"
+              aria-expanded={areDetailsVisible}
+              aria-controls={detailsId}
               onClick={() => setAreDetailsVisible(prev => !prev)}
               sx={{
                 textTransform: 'none',
@@ -387,67 +420,12 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
           </Stack>
         </Stack>
 
-        <Collapse in={areDetailsVisible} timeout="auto" unmountOnExit>
-          <Stack spacing={1.5}>
-            <Stack direction="row" spacing={1.5} flexWrap="wrap">
-              <SummaryTile label="Average" value={summary.average != null ? `${formatMeasurementNumber(summary.average, hostDetail)} ${unit}` : '—'} accent={theme.palette.primary.main} />
-              <SummaryTile label="Peak" value={summary.max != null ? `${formatMeasurementNumber(summary.max, hostDetail)} ${unit}` : '—'} />
-              <SummaryTile label="Best" value={summary.min != null ? `${formatMeasurementNumber(summary.min, hostDetail)} ${unit}` : '—'} />
-            </Stack>
-
-            <Stack direction="row" spacing={1.5} flexWrap="wrap">
-              <InfoTile label="Dataset started" value={details.datasetStarted ?? '—'} />
-              <InfoTile label="Packets sent" value={formatCount(details.packetsSent)} />
-              <InfoTile label="Packets lost" value={formatCount(details.packetsLost)} />
-              <InfoTile label="Loss" value={formatPercentage(details.packetLossPercent)} />
-            </Stack>
-
-            {details.statusText && (
-              <Box
-                sx={{
-                  borderRadius: 3,
-                  backgroundColor: alpha(theme.palette.info.light ?? theme.palette.primary.light, 0.12),
-                  border: `1px solid ${alpha(theme.palette.info.main ?? theme.palette.primary.main, 0.12)}`,
-                  boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
-                  px: { xs: 1.5, sm: 2 },
-                  py: { xs: 1, sm: 1.25 },
-                }}
-              >
-                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-                  <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, color: alpha(theme.palette.text.secondary, 0.9) }}>
-                    Status details
-                  </Typography>
-                  {hasStatusOverflow && (
-                    <Button size="small" onClick={() => setIsStatusExpanded(prev => !prev)}>
-                      {isStatusExpanded ? 'Show less' : 'Show more'}
-                    </Button>
-                  )}
-                </Stack>
-                <Collapse in={isStatusExpanded} collapsedSize={statusCollapsedHeight} timeout="auto">
-                  <Box
-                    sx={{
-                      mt: 0.75,
-                      maxHeight: isStatusExpanded ? statusExpandedMaxHeight : 'none',
-                      overflowY: isStatusExpanded ? 'auto' : 'visible',
-                      pr: isStatusExpanded ? 0.5 : 0,
-                    }}
-                  >
-                    <Typography
-                      ref={statusTextRef}
-                      variant="body2"
-                      sx={{
-                        color: theme.palette.text.primary,
-                        whiteSpace: 'pre-line',
-                      }}
-                    >
-                      {details.statusText}
-                    </Typography>
-                  </Box>
-                </Collapse>
-              </Box>
-            )}
-          </Stack>
-        </Collapse>
+        <ChartTimeRange selection={timeSelection} onSelect={onTimeSelection} />
+        {isRange && <Typography variant="caption" color="text.secondary">{new Date(timeSelection.start).toLocaleString()} – {new Date(timeSelection.end).toLocaleString()} · local time</Typography>}
+        {newDataAvailable && <Alert severity="info" action={<Button onClick={onRefresh} size="small" sx={{ whiteSpace: 'nowrap' }}>Load new data</Button>}>New data available.</Alert>}
+        {loading && <LinearProgress aria-label="Loading chart data" />}
+        {error && <Alert severity="error">{error}</Alert>}
+        {isRange && rangeResult?.notices?.map(notice => <Alert key={notice} severity="info">{notice}</Alert>)}
       </Stack>
 
       <Box
@@ -455,6 +433,9 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
           position: 'relative',
           flexGrow: 1,
           width: '100%',
+          minWidth: 0,
+          flexShrink: 0,
+          overflow: 'hidden',
           height: chartHeight,
           borderRadius: 3,
           backgroundColor: alpha(theme.palette.background.paper, 0.78),
@@ -468,7 +449,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
         }}
       >
         {hasData ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart
               data={data}
               margin={{
@@ -495,18 +476,24 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
               <CartesianGrid stroke={alpha(theme.palette.divider, 0.24)} strokeDasharray="4 8" vertical={false} />
               <Tooltip content={renderTooltip} animationEasing={false} cursor={{ stroke: alpha(theme.palette.primary.main, 0.25), strokeWidth: 1 }} />
               <XAxis
-                dataKey="time"
+                dataKey={isRange ? "timestamp" : "time"}
+                type={isRange ? "number" : "category"}
+                scale={isRange ? "time" : "auto"}
+                domain={isRange ? [Date.parse(timeSelection.start), Date.parse(timeSelection.end)] : undefined}
                 stroke={theme.palette.text.secondary}
-                minTickGap={30}
+                minTickGap={isSmallScreen ? 65 : 30}
+                tickCount={isRange ? (isSmallScreen ? 3 : 6) : undefined}
+                ticks={isRange ? Array.from({ length: isSmallScreen ? 3 : 6 }, (_, i) => Date.parse(timeSelection.start) + i * (Date.parse(timeSelection.end) - Date.parse(timeSelection.start)) / (isSmallScreen ? 2 : 5)) : undefined}
                 tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
                 axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
                 tickLine={false}
-                interval={Math.ceil((data?.length || 1) / 6) - 1}
+                interval={isRange ? 'preserveStartEnd' : Math.ceil((data?.length || 1) / 6) - 1}
                 padding={{ left: 10, right: 20 }}
                 tickMargin={8}
                 allowDuplicatedCategory={false}
-                allowDataOverflow={false}
+                allowDataOverflow={isRange}
                 tickFormatter={(value, index) => {
+                  if (isRange) return new Date(value).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
                   // Only show the last label if it's not overlapping
                   if (index === data.length - 1 && data.length > 1) {
                     return ` ${value} `;
@@ -568,6 +555,77 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
           </Typography>
         )}
       </Box>
+        <Collapse id={detailsId} in={areDetailsVisible} timeout="auto" unmountOnExit>
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle1" fontWeight={700}>Reading summary</Typography>
+            <Stack direction="row" spacing={1.5} flexWrap="wrap">
+              <SummaryTile label="Average" value={summary.average != null ? `${formatMeasurementNumber(summary.average, hostDetail)} ${unit}` : '—'} accent={theme.palette.primary.main} />
+              <SummaryTile label="Maximum" value={summary.max != null ? `${formatMeasurementNumber(summary.max, hostDetail)} ${unit}` : '—'} />
+              <SummaryTile label="Minimum" value={summary.min != null ? `${formatMeasurementNumber(summary.min, hostDetail)} ${unit}` : '—'} />
+            </Stack>
+
+            <Stack direction="row" spacing={1.5} flexWrap="wrap">
+              <InfoTile label={isRange ? "Range started" : "Dataset started"} value={isRange ? new Date(timeSelection.start).toLocaleString() : details.datasetStarted ?? '—'} />
+              <InfoTile label="Packets sent" value={formatCount(isRange ? (rangeResult?.successful ?? 0) + (rangeResult?.failed ?? 0) : details.packetsSent)} />
+              <InfoTile label="Packets lost" value={formatCount(isRange ? rangeResult?.failed : details.packetsLost)} />
+              <InfoTile label="Loss" value={formatPercentage(isRange ? (rangeResult?.successful + rangeResult?.failed > 0 ? 100 * rangeResult.failed / (rangeResult.successful + rangeResult.failed) : null) : details.packetLossPercent)} />
+            </Stack>
+
+            <Accordion elevation={0} sx={{ border: '1px solid', borderColor: 'divider', '&:before': { display: 'none' } }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography fontWeight={600}>Host and alert settings</Typography></AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="caption" color="text.secondary">Available host settings. Historical readings use the currently resolved measurement definition.</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, minmax(0, 1fr))' }, gap: 1.5, mt: 2 }}>
+                  {configuration.map(([label, value]) => <InfoTile key={label} label={label} value={value ?? 'Not available'} />)}
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+            {details.statusText && (
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  backgroundColor: alpha(theme.palette.info.light ?? theme.palette.primary.light, 0.12),
+                  border: `1px solid ${alpha(theme.palette.info.main ?? theme.palette.primary.main, 0.12)}`,
+                  boxShadow: 'none',
+                  px: { xs: 1.5, sm: 2 },
+                  py: { xs: 1, sm: 1.25 },
+                }}
+              >
+                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, color: alpha(theme.palette.text.secondary, 0.9) }}>
+                    Status details
+                  </Typography>
+                  {hasStatusOverflow && (
+                    <Button size="small" onClick={() => setIsStatusExpanded(prev => !prev)}>
+                      {isStatusExpanded ? 'Show less' : 'Show more'}
+                    </Button>
+                  )}
+                </Stack>
+                <Collapse in={isStatusExpanded} collapsedSize={statusCollapsedHeight} timeout="auto">
+                  <Box
+                    sx={{
+                      mt: 0.75,
+                      maxHeight: isStatusExpanded ? statusExpandedMaxHeight : 'none',
+                      overflowY: isStatusExpanded ? 'auto' : 'visible',
+                      pr: isStatusExpanded ? 0.5 : 0,
+                    }}
+                  >
+                    <Typography
+                      ref={statusTextRef}
+                      variant="body2"
+                      sx={{
+                        color: theme.palette.text.primary,
+                        whiteSpace: 'pre-line',
+                      }}
+                    >
+                      {details.statusText}
+                    </Typography>
+                  </Box>
+                </Collapse>
+              </Box>
+            )}
+          </Stack>
+        </Collapse>
     </Box>
   );
 }
@@ -583,7 +641,7 @@ const SummaryTile = React.memo(function SummaryTile({ label, value, accent }) {
         backgroundColor: 'rgba(255,255,255,0.55)',
         backdropFilter: 'blur(18px)',
         border: '1px solid rgba(255,255,255,0.42)',
-        boxShadow: '0 10px 24px rgba(15, 23, 42, 0.10)',
+        boxShadow: 'none',
       }}
     >
       <Typography variant="caption" sx={{ color: 'text.secondary', letterSpacing: 0.6, textTransform: 'uppercase', fontWeight: 600 }}>
@@ -600,20 +658,20 @@ const InfoTile = React.memo(function InfoTile({ label, value }) {
   return (
     <Box
       sx={{
-        minWidth: 160,
+        minWidth: 0,
         px: 1.8,
         py: 1,
         borderRadius: 3,
         backgroundColor: 'rgba(255,255,255,0.45)',
         backdropFilter: 'blur(14px)',
         border: '1px solid rgba(255,255,255,0.36)',
-        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.08)',
+        boxShadow: 'none',
       }}
     >
       <Typography variant="caption" sx={{ color: 'text.secondary', letterSpacing: 0.5, textTransform: 'uppercase' }}>
         {label}
       </Typography>
-      <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600, mt: 0.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600, mt: 0.4, overflowWrap: 'anywhere' }}>
         {value ?? '—'}
       </Typography>
     </Box>
