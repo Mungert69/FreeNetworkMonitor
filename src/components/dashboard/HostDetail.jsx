@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatMeasurement } from './measurement';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import useClasses from "./useClasses";
@@ -58,12 +59,12 @@ export function HostDetail({ hostData }) {
         <span className={classes.detailValue}>{hostData.date}</span>
       </div>
       <div className={classes.detailRow}>
-        <span className={classes.detailLabel}>Round Trip Max:</span>
-        <span className={classes.detailValue}>{hostData.roundTripMaximum}</span>
+        <span className={classes.detailLabel}>Maximum:</span>
+        <span className={classes.detailValue}>{formatMeasurement(hostData.roundTripMaximum, hostData)}</span>
       </div>
       <div className={classes.detailRow}>
-        <span className={classes.detailLabel}>Round Trip Min:</span>
-        <span className={classes.detailValue}>{hostData.roundTripMinimum}</span>
+        <span className={classes.detailLabel}>Minimum:</span>
+        <span className={classes.detailValue}>{formatMeasurement(hostData.roundTripMinimum, hostData)}</span>
       </div>
       <div className={classes.detailRow}>
         <span className={classes.detailLabel}>Current Status:</span>

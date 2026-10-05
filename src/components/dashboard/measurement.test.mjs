@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { measurementMetadata, scaleMeasurement, formatMeasurement, formatMeasurementNumber } from './measurement.js';
 
 test('default durations and custom physical readings use parent result metadata', () => {
-  assert.deepEqual(measurementMetadata(), { unit: 'ms', scale: 1 });
-  assert.deepEqual(measurementMetadata(null), { unit: 'ms', scale: 1 });
+  assert.deepEqual(measurementMetadata(), { unit: 'ms', scale: 1, offset: 0 });
+  assert.deepEqual(measurementMetadata(null), { unit: 'ms', scale: 1, offset: 0 });
   assert.equal(scaleMeasurement(1367, { unit: 'V', scale: 0.01 }), 13.67);
   assert.equal(formatMeasurement(1367, { unit: 'V', scale: 0.01 }), '13.67 V');
   assert.equal(formatMeasurement(42, {}), '42 ms');
@@ -28,4 +28,11 @@ test('only general millisecond readings are capped at two decimal places', () =>
   assert.equal(formatMeasurement(1.234567, { unit: 'V' }), `${(1.234567).toLocaleString(undefined, { maximumFractionDigits: 6 })} V`);
   assert.equal(formatMeasurement(1.234567, { unit: 'raw value' }), `${(1.234567).toLocaleString(undefined, { maximumFractionDigits: 6 })} raw value`);
   assert.equal(scaleMeasurement(141.672), 141.672);
+});
+
+test('signed encodings retain negative physical values', () => {
+  const metadata = {unit: '°C', scale: .01, offset: -327.68};
+  assert.equal(scaleMeasurement(32268, metadata), -5);
+  assert.equal(formatMeasurement(32268, metadata), '-5 °C');
+  assert.equal(formatMeasurement(-1, metadata, 'average'), '—');
 });

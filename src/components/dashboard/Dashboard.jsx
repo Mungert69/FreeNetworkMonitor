@@ -111,6 +111,7 @@ export default function Dashboard() {
       if (hostData !== undefined) {
         hostData.unit = linkData.Unit ?? linkData.unit ?? 'ms';
         hostData.scale = linkData.Scale ?? linkData.scale ?? 1;
+        hostData.offset = linkData.Offset ?? linkData.offset ?? 0;
         setDefaultSearchValue(hostData.address);
         handleSetDataSetId(hostData.dataSetID, hostData.date);
         clickViewChart(hostData);

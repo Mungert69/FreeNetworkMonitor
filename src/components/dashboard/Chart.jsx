@@ -20,7 +20,10 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
   const theme = useTheme();
   const unit = measurementMetadata(hostDetail).unit;
   const data = React.useMemo(() => Array.isArray(rawData)
-    ? rawData.map(point => ({ ...point, response: scaleMeasurement(point.response, hostDetail) }))
+    ? rawData.map(point => ({ ...point,
+      valid: typeof point.response === 'number' && point.response >= 0,
+      response: typeof point.response === 'number' && point.response >= 0
+        ? scaleMeasurement(point.response, hostDetail) : null }))
     : rawData, [rawData, hostDetail]);
 
   const hasData = Array.isArray(data) && data.length > 0;
@@ -38,7 +41,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
       return { average: null, max: null, min: null };
     }
 
-    const validPoints = data.filter((point) => typeof point.response === 'number' && point.response >= 0);
+    const validPoints = data.filter((point) => point.valid && typeof point.response === 'number');
     if (!validPoints.length) {
       return { average: null, max: null, min: null };
     }
@@ -76,7 +79,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
 
     const { response, status, time } = payload[0].payload ?? {};
     const statusLines = chunkStatus(status);
-    const showResponse = typeof response === 'number' && response >= 0;
+    const showResponse = typeof response === 'number';
 
     return (
       <Box
@@ -517,7 +520,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                 width={36}
                 tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
                 allowDecimals={false}
-                domain={[0, 'auto']}
+                domain={['dataMin', 'dataMax']}
                 tickMargin={0}
                 axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
                 tickLine={false}
