@@ -1,7 +1,7 @@
 
 ---
 
-# Going Quantum-Safe with TLS: Practical Steps in 2025
+# Going Quantum-Safe with TLS: Practical Steps
 
 The race is on to prepare our infrastructure for a post-quantum world. Attackers are already “harvesting now, decrypting later”: collecting encrypted data today in hopes of breaking it with quantum computers tomorrow. The good news is that, with recent OpenSSL releases, we can start defending against this today — without custom patches or exotic providers.
 
@@ -36,7 +36,7 @@ So any software linked against **OpenSSL ≥3.5** can automatically negotiate hy
 
 * **Debian 13 “Trixie”**: Ships OpenSSL 3.5.1 by default. Any NGINX, Apache, HAProxy, or curl package built on it can negotiate PQ KEMs.
 * **Fedora (Rawhide, Fedora 43+)**: Includes OpenSSL 3.5.
-* **Rocky Linux 9.7 / 10.1 (late 2025)**: Expected to ship 3.5.
+* **Rocky Linux**: Check the OpenSSL version available for your release and enabled repositories.
 * **RHEL / AlmaLinux / SUSE**: Currently on OpenSSL 3.0; 3.5 integration expected in upcoming releases.
 
 On Windows, Microsoft is shipping PQ crypto in **Insider builds** and through the **SymCrypt-OpenSSL 1.9.0** provider, with a roadmap to make PQ default by 2033.
@@ -125,6 +125,6 @@ If you use Windows Insider Canary builds today, you can already test PQ TLS with
 3. Certificates stay classical for now; PQ signatures will come later.
 4. Microsoft and the Linux ecosystem are converging on the same ML-KEM standard, giving us a clear migration path.
 
-**Bottom line:** If you’re deploying new infrastructure in 2025, choose a distro with OpenSSL 3.5. You’ll be “ready for quantum” now, not ten years from now.
+**Bottom line:** If you’re deploying new infrastructure, choose a distro with OpenSSL 3.5. You’ll be “ready for quantum” now, not ten years from now.
 
 ---
