@@ -491,25 +491,25 @@ export default function Dashboard() {
         handleDrawerClose={handleDrawerClose}
         isMediumOrLarger={isMediumOrLarger}
       />
-      {dashboardError && (
-        <Alert
-          severity="error"
-          sx={{ mx: 2, mb: 2 }}
-          action={
-            <Button color="inherit" size="small" onClick={() => window.location.reload()}>
-              Refresh
-            </Button>
-          }
-        >
-          {dashboardError} Refresh the page and try again. If the problem persists, contact support at{' '}
-          <Link href={`mailto:${supportEmail}`} color="inherit" underline="always">
-            {supportEmail}
-          </Link>
-          .
-        </Alert>
-      )}
 
       <DashboardMainPanel
+        statusMessage={dashboardError && (
+          <Alert
+            severity="error"
+            sx={{ mb: 4 }}
+            action={
+              <Button color="inherit" size="small" onClick={() => window.location.reload()}>
+                Refresh
+              </Button>
+            }
+          >
+            {dashboardError} Refresh the page and try again. If the problem persists, contact support at{' '}
+            <Link href={`mailto:${supportEmail}`} color="inherit" underline="always">
+              {supportEmail}
+            </Link>
+            .
+          </Alert>
+        )}
         classes={classes}
         isMediumOrLarger={isMediumOrLarger}
         toggleTable={toggleTable}

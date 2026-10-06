@@ -1,3 +1,4 @@
+import AppearanceMenu from '../../theme/AppearanceMenu';
 import React from "react";
 import DOMPurify from 'dompurify';
 import clsx from 'clsx';
@@ -1019,9 +1020,9 @@ const Faq = () => {
 
     const accordionPalette = React.useMemo(
         () => ({
-            background: 'rgba(255,255,255,0.8)',
-            title: theme.palette.primary.dark,
-            content: theme.palette.primary.light,
+            background: 'background.paper',
+            title: theme.palette.primary.main,
+            content: theme.palette.text.primary,
             icon: theme.palette.error.light,
         }),
         [theme],
@@ -1061,6 +1062,7 @@ const Faq = () => {
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Quantum Network Monitor
                     </Typography>
+                    <AppearanceMenu />
                 </Toolbar>
             </AppBar>
 
@@ -1084,18 +1086,18 @@ const Faq = () => {
 
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
+                <Container maxWidth={false} className={classes.container}>
                     <Grid container spacing={6}>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
                                 <Grid align="center">
                                     <Grid container direction="column" justifyContent="space-around" alignItems="center">
-                                        <Grid item>
-                                            <Typography color="primary" variant="h2">
+                                        <Grid>
+                                            <Typography color="primary" variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' } }}>
                                                 Quantum Network Monitor
                                             </Typography>
                                         </Grid>
-                                        <Grid item>
+                                        <Grid>
                                             <Typography color="secondary" variant="h4">
                                                 FAQ
                                             </Typography>
@@ -1112,7 +1114,7 @@ const Faq = () => {
                     <hr></hr>
                     {/* Search Field */}
                     <Grid container justifyContent="center">
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 label="Search FAQs"
                                 variant="outlined"
@@ -1128,7 +1130,7 @@ const Faq = () => {
 
                     {/* Filtered FAQ List */}
                     <Grid container justifyContent="center">
-                        <Grid item xs={12} md={10}>
+                        <Grid size={{ xs: 12 }}>
                             {filteredFaqs.length === 0 ? (
                                 <Typography align="center" color="textSecondary" sx={{ py: 4 }}>
                                     No FAQs match your search yet. Try a different keyword.

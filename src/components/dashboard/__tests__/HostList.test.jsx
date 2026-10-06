@@ -156,4 +156,31 @@ describe('HostList', () => {
     expect(baseProps.handleSetDataSetId).toHaveBeenCalledWith(0, undefined);
     expect(baseProps.handleSetDataSetId).toHaveBeenCalledWith(2, '2025-01-04 08:00');
   }, TEST_TIMEOUT_MS);
+  it('shows full location text on hover', async () => {
+    renderHostList();
+    const location = await screen.findByText('New York');
+    fireEvent.mouseOver(location);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('New York');
+  }, TEST_TIMEOUT_MS);
+
+  it('restores optional measurement columns without showing them by default', async () => {
+    window.localStorage.setItem('host-list-grid-state-1', JSON.stringify({
+      columnVisibilityModel: { status: false, args: false, roundTripMinimum: true },
+    }));
+    renderHostList({ data: [{ ...baseProps.data[0], roundTripMinimum: 32757, scale: 0.1, offset: -3276.8, unit: 'A' }] });
+    expect(await screen.findByRole('columnheader', { name: 'Minimum' })).toBeInTheDocument();
+    expect(await screen.findByText('-1.1 A')).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: 'Arguments' })).not.toBeInTheDocument();
+  }, TEST_TIMEOUT_MS);
+
+  it('offers extra columns in table options without cluttering the initial table', async () => {
+    renderHostList();
+    expect(screen.queryByRole('columnheader', { name: 'Arguments' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Table options' }));
+    fireEvent.click(await screen.findByRole('button', { name: /columns/i }));
+    expect(await screen.findByRole('checkbox', { name: 'Arguments' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Low alert limit' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Maximum' })).not.toBeChecked();
+  }, TEST_TIMEOUT_MS);
+
 });

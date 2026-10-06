@@ -1,3 +1,4 @@
+import AppearanceMenu from '../../theme/AppearanceMenu';
 import React, { useState, useEffect, useRef }  from "react";
 import clsx from 'clsx';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -86,6 +87,7 @@ export default function Pricing(){
                     <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
                         Quantum Network Monitor
                     </Typography>
+                    <AppearanceMenu />
                     <AuthNav openInNewTab={openInNewTab}/>
 
                 </Toolbar>
@@ -113,7 +115,7 @@ export default function Pricing(){
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
+                <Container maxWidth={false} className={classes.container}>
                     <PricingContent noRedirect={true} apiUser={{}} />
                 </Container>
 

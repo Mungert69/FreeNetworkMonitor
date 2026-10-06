@@ -1,3 +1,4 @@
+import TableTextCell from './TableTextCell';
 import { normalizeThresholds, resetLimitsForChangedMeasurement } from './alertThresholds';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Badge, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography, useMediaQuery } from '@mui/material';
@@ -1098,13 +1099,13 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
           }
           const IconComponent = getEndpointIcon(endpointType.icon) ?? ErrorIcon;
           return (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0, width: '100%' }}>
               <IconComponent color="primary" fontSize="small" />
-              <span>{endpointType.name}</span>
+              <TableTextCell>{endpointType.name}</TableTextCell>
             </Box>
           );
         },
-        valueFormatter: ({ value }) => {
+        valueFormatter: (value) => {
           const endpointType = endpointTypeMap[`${value ?? ''}`.toLowerCase()];
           return endpointType?.name || value || '';
         },
@@ -1138,10 +1139,13 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
         editable: true,
         type: 'singleSelect',
         valueOptions: ({ row }) => processorOptionsByRow(row),
-        valueFormatter: ({ value }) => processorMap.get(String(value)) || value || '',
+        valueFormatter: (value) => processorMap.get(String(value)) || value || '',
         renderCell: ({ value }) => processorMap.get(String(value)) || value || '',
       },
-    ];
+    ].map(column => column.field === 'actions' || column.field === 'endPointType' || column.type === 'boolean' ? column : {
+      ...column,
+      renderCell: params => <TableTextCell>{column.renderCell ? column.renderCell(params) : params.formattedValue ?? params.value ?? ''}</TableTextCell>,
+    });
   }, [
     delHost,
     endpointTypeMap,
@@ -1229,7 +1233,7 @@ export const HostListEdit = ({ siteId, processorList, defaultSearchValue, llmUpd
           sx={{
             border: 'none',
             '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: theme.palette.grey[100],
+              backgroundColor: theme.palette.action.hover,
               fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
             },
             '& .MuiDataGrid-cell': {

@@ -17,7 +17,7 @@ const LogoLink = () => {
         sx={{ display: 'inline-block' }}
       >
            
-                <Card >
+                <Card sx={{ bgcolor: '#fff' }}>
                   
                     <CardMedia
                         component="img"

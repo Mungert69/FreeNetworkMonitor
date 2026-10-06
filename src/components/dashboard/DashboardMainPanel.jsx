@@ -12,6 +12,7 @@ const DashboardMainPanel = ({
   HostListEditComponent,
   hostListEditProps,
   loadingFallback,
+  statusMessage,
   isChatOpen,
   chatKey,
   siteId,
@@ -21,16 +22,18 @@ const DashboardMainPanel = ({
   <main className={classes.content}>
     <div className={classes.appBarSpacer} />
     <Container
-      className={classes.container}
+      maxWidth={false}
       disableGutters={!isMediumOrLarger}
       sx={{
-        px: isMediumOrLarger ? 3 : 1,
-        pt: isMediumOrLarger ? 4 : 1,
+        maxWidth: 'none',
+        px: { xs: 2, sm: 4, md: 6 },
+        pt: { xs: 3, md: 6 },
         pb: isMediumOrLarger ? 4 : 1,
       }}
     >
-      <Grid container spacing={isMediumOrLarger ? 4 : 2}>
-        <Grid item xs={12}>
+      {statusMessage}
+      <Grid container spacing={isMediumOrLarger ? 4 : 2} sx={{ width: '100%' }}>
+        <Grid size={{ xs: 12 }}>
           <Paper
             className={classes.paper}
             sx={{

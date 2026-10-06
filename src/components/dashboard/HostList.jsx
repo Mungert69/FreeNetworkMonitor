@@ -1,3 +1,4 @@
+import TableTextCell from './TableTextCell';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Box, Button, Chip, Collapse, IconButton, TextField, Tooltip, useMediaQuery } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -411,6 +412,29 @@ const HostListMobileToolbar = ({
   );
 };
 
+const defaultColumnVisibility = {
+  roundTripMinimum: false,
+  roundTripMaximum: false,
+  date: false,
+  status: false,
+  args: false,
+  unit: false,
+  scale: false,
+  offset: false,
+  timeout: false,
+  port: false,
+  enabled: false,
+  skipCycles: false,
+  lowThreshold: false,
+  highThreshold: false,
+  alertFlag: false,
+  predictAlertFlag: false,
+  monitorIPID: false,
+  dataSetID: false,
+  measurementBreach: false,
+  eventTime: false,
+};
+
 export const HostList = ({
   siteId,
   data,
@@ -513,6 +537,7 @@ export const HostList = ({
   const [paginationModel, setPaginationModel] = useState(() =>
     createDefaultPaginationModel(),
   );
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState(defaultColumnVisibility);
   const [density, setDensity] = useState(isSmallScreen ? 'compact' : 'standard');
 
   useEffect(() => {
@@ -526,6 +551,7 @@ export const HostList = ({
     try {
       const raw = window.localStorage.getItem(storageKey);
       if (!raw) {
+        setColumnVisibilityModel(defaultColumnVisibility);
         setFilterModel((prev) => {
           const next = sanitizeFilterModel(getDefaultFilterModel(''));
           return filterModelsEqual(prev, next) ? prev : next;
@@ -542,6 +568,7 @@ export const HostList = ({
       }
 
       const parsed = JSON.parse(raw);
+      setColumnVisibilityModel(parsed.columnVisibilityModel ?? defaultColumnVisibility);
 
       if (parsed.filterModel) {
         const nextFilter = sanitizeFilterModel(parsed.filterModel);
@@ -593,9 +620,10 @@ export const HostList = ({
       filterModel,
       sortModel,
       paginationModel,
+      columnVisibilityModel,
     };
     window.localStorage.setItem(storageKey, JSON.stringify(stateToPersist));
-  }, [filterModel, sortModel, paginationModel, storageKey]);
+  }, [filterModel, sortModel, paginationModel, columnVisibilityModel, storageKey]);
 
   const rows = useMemo(
     () => (Array.isArray(data) ? data : []),
@@ -722,7 +750,7 @@ export const HostList = ({
         headerName: 'Endpoint Type',
         align: 'center',
         headerAlign: 'center',
-        width: 130,
+        width: 160,
         sortable: true,
         renderCell: ({ value }) => {
           const internalType = `${value ?? ''}`.toLowerCase();
@@ -751,16 +779,16 @@ export const HostList = ({
         field: 'packetsSent',
         headerName: 'Data Sent',
         type: 'number',
-        width: 100,
-        valueGetter: ({ row }) => parseNumericValue(row?.packetsSent),
+        width: 120,
+        valueGetter: (value) => parseNumericValue(value),
         renderCell: ({ row }) => formatNumber(row?.packetsSent),
       },
       {
         field: 'packetsLost',
         headerName: 'Data Lost',
         type: 'number',
-        width: 100,
-        valueGetter: ({ row }) => parseNumericValue(row?.packetsLost),
+        width: 120,
+        valueGetter: (value) => parseNumericValue(value),
         renderCell: ({ row }) => formatNumber(row?.packetsLost),
       },
       {
@@ -768,7 +796,7 @@ export const HostList = ({
         headerName: '% Lost',
         width: 100,
         type: 'number',
-        valueGetter: ({ row }) => parseNumericValue(row?.percentageLost),
+        valueGetter: (value) => parseNumericValue(value),
         renderCell: ({ row }) => {
           const value = row?.percentageLost;
           if (value === null || value === undefined || value === '') {
@@ -782,7 +810,7 @@ export const HostList = ({
         headerName: 'Average',
         width: 130,
         type: 'number',
-        valueGetter: ({ row }) => scaleMeasurement(row?.roundTripAverage, row),
+        valueGetter: (value, row) => scaleMeasurement(value, row),
         renderCell: ({ row }) => formatMeasurement(row?.roundTripAverage, row),
       },
       {
@@ -799,7 +827,43 @@ export const HostList = ({
           }),
         renderCell: ({ row }) => processorMap.get(row?.appID) || row?.appID || '',
       },
-    ],
+      ...[
+        ['roundTripMinimum', 'Minimum', 130],
+        ['roundTripMaximum', 'Maximum', 130],
+        ['date', 'Dataset started', 180],
+        ['status', 'Status', 240],
+        ['args', 'Arguments', 300],
+        ['unit', 'Unit', 90],
+        ['scale', 'Scale', 110],
+        ['offset', 'Offset', 110],
+        ['timeout', 'Timeout (ms)', 140],
+        ['port', 'Port', 100],
+        ['enabled', 'Enabled', 110],
+        ['skipCycles', 'Skip cycles', 120],
+        ['lowThreshold', 'Low alert limit', 160],
+        ['highThreshold', 'High alert limit', 160],
+        ['alertFlag', 'Alert active', 120],
+        ['predictAlertFlag', 'Prediction alert', 150],
+        ['monitorIPID', 'Host ID', 100],
+        ['dataSetID', 'Dataset ID', 110],
+        ['measurementBreach', 'Limit violation', 160],
+        ['eventTime', 'Alert event time', 190],
+      ].map(([field, headerName, width]) => ({
+        field, headerName, width,
+        type: ['enabled', 'alertFlag', 'predictAlertFlag'].includes(field) ? 'boolean' : undefined,
+        ...(['roundTripMinimum', 'roundTripMaximum'].includes(field) ? {
+          type: 'number',
+          valueGetter: (value, row) => scaleMeasurement(value, row),
+          renderCell: ({ row }) => formatMeasurement(row[field], row),
+        } : ['lowThreshold', 'highThreshold'].includes(field) ? {
+          type: 'number',
+          renderCell: ({ value, row }) => value == null ? '' : `${value} ${row.unit ?? 'ms'}`,
+        } : {}),
+      })),
+    ].map(column => column.field === 'actions' || column.field === 'endPointType' || column.type === 'boolean' ? column : {
+      ...column,
+      renderCell: params => <TableTextCell>{column.renderCell ? column.renderCell(params) : params.formattedValue ?? params.value ?? ''}</TableTextCell>,
+    }),
     [
       clickViewChart,
       endpointTypeMap,
@@ -1012,7 +1076,7 @@ export const HostList = ({
                               borderRadius: 1,
                               px: 1.25,
                               py: 1,
-                              backgroundColor: theme.palette.grey[100],
+                              backgroundColor: theme.palette.action.hover,
                             }}
                           >
                             <Typography variant="caption" color="text.secondary">
@@ -1056,6 +1120,8 @@ export const HostList = ({
         <DataGrid
           rows={rows}
           columns={columns}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={setColumnVisibilityModel}
           autoHeight
           disableRowSelectionOnClick
           density={density}
@@ -1095,7 +1161,7 @@ export const HostList = ({
           sx={{
             border: 'none',
             '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: theme.palette.grey[100],
+              backgroundColor: theme.palette.action.hover,
               fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
             },
             '& .MuiDataGrid-cell': {

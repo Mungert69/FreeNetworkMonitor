@@ -13,14 +13,16 @@ function Footer() {
   const trustpilotImageStyle = {
     maxWidth: 120,
     height: 'auto',
-    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))',
+    background: '#202824',
+    padding: '8px',
+    borderRadius: '6px',
     marginRight: 12,
     verticalAlign: 'middle',
   };
 
   return (
     <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
-      <Container maxWidth="md">
+      <Container maxWidth={false} disableGutters>
         <Paper
           elevation={4}
           sx={{
@@ -28,7 +30,7 @@ function Footer() {
             p: { xs: 3, md: 5 },
             mb: 2,
             boxShadow: 6,
-            background: "rgba(255,255,255,0.98)",
+            bgcolor: 'background.paper',
           }}
         >
           <Grid
@@ -37,7 +39,7 @@ function Footer() {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'flex-start' } }}>
                 <img
                   src="https://cdn.trustpilot.net/brand-assets/4.3.0/logo-white.svg"
@@ -58,11 +60,12 @@ function Footer() {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'center', md: 'right' } }}>
+            <Grid sx={{ textAlign: { xs: 'center', md: 'right' } }} size={{ xs: 12, md: 6 }}>
               <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: { xs: 'center', md: 'flex-end' },
+                flexWrap: 'wrap',
                 gap: 2,
               }}>
                 <ByMeACoffeeLink />

@@ -53,15 +53,17 @@ const interactiveStyles = {
     }
 };
 
-const HeroSection = React.memo(() => (
+const HeroSection = React.memo(() => {
+    const theme = useTheme();
+    return (
     <Grid
         container
-        spacing={12}
+        spacing={{ xs: 4, md: 8 }}
         alignItems="center"
         justifyContent="center"
         sx={{ mb: { xs: 4, md: 8 } }}
     >
-        <Grid item xs={12} md={7} sx={{ textAlign: { xs: "center", md: "left" } }}>
+        <Grid sx={{ textAlign: { xs: "center", md: "left" } }} size={{ xs: 12, md: 7 }}>
             <Typography
                 color='primary'
                 variant="h2"
@@ -86,21 +88,26 @@ const HeroSection = React.memo(() => (
                 Are You Ready For Quantum Security?
             </Typography>
         </Grid>
-        <Grid item xs={12} md={5} sx={{ display: "flex", justifyContent: "center" }}>
+        <Grid sx={{ display: "flex", justifyContent: "center" }} size={{ xs: 12, md: 5 }}>
             <Box sx={{ width: { xs: 220, md: 320 }, height: { xs: 180, md: 260 } }}>
-                <video
-                    src="/img/monitor-screen.webm"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    style={{ width: "100%", height: "100%", borderRadius: 8, display: "block", border: "none", outline: "none" }}
-                    aria-label="AI Network Monitor main visual"
-                />
+                {theme.palette.mode === 'dark' ? (
+                    <Box component="img" src="/img/logo-large.png" alt="Quantum Network Monitor" sx={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                ) : (
+                    <video
+                        src="/img/monitor-screen.webm"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        style={{ width: "100%", height: "100%", borderRadius: 8, display: "block", border: "none", outline: "none" }}
+                        aria-label="AI Network Monitor main visual"
+                    />
+                )}
             </Box>
         </Grid>
     </Grid>
-));
+    );
+});
 
 const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) => (
     <Grid
@@ -110,9 +117,9 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
         alignItems="stretch"
         sx={{ mb: { xs: 4, md: 8 } }}
     >
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12 }}>
             <Grid container spacing={6} justifyContent="center" alignItems="stretch">
-                <Grid item xs={12} sm={6} align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Grid align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} size={{ xs: 12, sm: 6 }}>
                     <Box sx={{ mb: 1, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Grow
                             in={!isLoading}
@@ -185,7 +192,7 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={6} align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Grid align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} size={{ xs: 12, sm: 6 }}>
                     <Box sx={{ mb: 1, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Grow
                             in={!isLoading}
@@ -249,9 +256,9 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
             </Grid>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12 }}>
             <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-                <Grid item xs={12} sm={6} align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Grid align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} size={{ xs: 12, sm: 6 }}>
                     <Box sx={{ mb: 1, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Grow
                             in={!isLoading}
@@ -302,7 +309,7 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
                         </Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} sm={6} align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Grid align="center" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} size={{ xs: 12, sm: 6 }}>
                     <Box sx={{ mb: 1, minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Grow
                             in={!isLoading}
@@ -411,7 +418,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     alignItems="stretch"
                     sx={{ mb: 4 }}
                 >
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Paper className={paperClassName}>
                             <NetworkPingIcon fontSize="large" color="primary" />
                             <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>AI-Powered Network Protection</Typography>
@@ -436,7 +443,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             </Button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Paper className={paperClassName}>
                             <LanguageIcon fontSize="large" color="secondary" />
                             <Typography variant="h4" sx={{ fontSize: '1.25rem' }}>Quantum Security Check</Typography>
@@ -463,7 +470,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     </Grid>
                 </Grid>
                 <Grid container justifyContent="center" sx={{ mb: 3 }}>
-                    <Grid item xs={12} md={10}>
+                    <Grid size={{ xs: 12, md: 10 }}>
                         <FormControlLabel
                             sx={{ mt: 1 }}
                             control={
@@ -491,7 +498,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     select a local agent and target below.
                 </Typography>
                 <Grid container spacing={3} justifyContent="center">
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
                             label="Target Host or URL"
@@ -500,7 +507,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             onChange={(e) => setAdvancedTarget(e.target.value)}
                         />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             select
                             fullWidth
@@ -547,7 +554,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     Launch targeted security workflows powered by specialist AI experts.
                 </Typography>
                 <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-                    <Grid item xs={12} sm={6} md={3} align="center">
+                    <Grid align="center" size={{ xs: 12, sm: 6, md: 3 }}>
                         <Paper className={paperClassName}>
                             <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
                                 Nmap Recon
@@ -567,7 +574,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             </Button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3} align="center">
+                    <Grid align="center" size={{ xs: 12, sm: 6, md: 3 }}>
                         <Paper className={paperClassName}>
                             <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
                                 TLS Hardening
@@ -587,7 +594,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             </Button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3} align="center">
+                    <Grid align="center" size={{ xs: 12, sm: 6, md: 3 }}>
                         <Paper className={paperClassName}>
                             <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
                                 Quantum Readiness Scan
@@ -607,7 +614,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             </Button>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3} align="center">
+                    <Grid align="center" size={{ xs: 12, sm: 6, md: 3 }}>
                         <Paper className={paperClassName}>
                             <Typography variant="h4" gutterBottom sx={{ fontSize: '1.15rem' }}>
                                 Metasploit Guided Test
@@ -650,7 +657,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     or create custom connect endpoints that run on a schedule and stream monitoring data.
                 </Typography>
                 <Grid container spacing={3} justifyContent="center" sx={{ mb: 3 }}>
-                    <Grid item xs={12} md={10}>
+                    <Grid size={{ xs: 12, md: 10 }}>
                         <TextField
                             fullWidth
                             label="Custom Code Description"
@@ -662,7 +669,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                     </Grid>
                 </Grid>
                 <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-                    <Grid item xs={12} md={6} align="center">
+                    <Grid align="center" size={{ xs: 12, md: 6 }}>
                         <Paper className={paperClassName}>
                             <Typography variant="h4" gutterBottom sx={{ fontSize: '1.2rem' }}>
                                 Cmd Processor Expert
@@ -688,7 +695,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                             )}
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={6} align="center">
+                    <Grid align="center" size={{ xs: 12, md: 6 }}>
                         <Paper className={paperClassName}>
                             <Typography variant="h4" gutterBottom sx={{ fontSize: '1.2rem' }}>
                                 Connect Expert
@@ -949,11 +956,11 @@ const ProductDetail = () => {
 
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
-                <Container className={classes.container}>
+                <Container maxWidth={false} className={classes.container}>
                     {/* Hero Section */}
                     <HeroSection />
                     <Grid container justifyContent="center" sx={{ mb: 4 }}>
-                        <Grid item xs={12} md={10}>
+                        <Grid size={{ xs: 12, md: 10 }}>
                             <Alert severity="warning">
                                 Authorized use only: scanning, security testing, and monitoring may be performed only on systems you own or are explicitly authorized in writing to test. Review our{' '}
                                 <Link href="/termofservice.html">Terms & AUP</Link>.
@@ -976,7 +983,7 @@ const ProductDetail = () => {
                     />
 
                     <Grid container justifyContent="center" sx={{ mb: 4 }}>
-                        <Grid item xs={12} md={10}>
+                        <Grid size={{ xs: 12, md: 10 }}>
                             <Paper className={classes.paper}>
                                 <Typography variant="h4" gutterBottom sx={{ fontSize: '1.25rem' }}>
                                     Hugging Face GGUF model selection for TestLLM
@@ -1004,7 +1011,7 @@ const ProductDetail = () => {
                         alignItems="center"
                         sx={{ mt: 2, mb: 4 }}
                     >
-                        <Grid item>
+                        <Grid>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -1023,7 +1030,7 @@ const ProductDetail = () => {
                                 Enter Dashboard
                             </Button>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Button
                                 variant="contained"
                                 color="secondary"

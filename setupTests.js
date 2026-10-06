@@ -45,3 +45,6 @@ if (!window.ResizeObserver) {
 if (!window.gtag) {
   window.gtag = vi.fn();
 }
+
+// Match the shared appearance bootstrap that index.html loads before React.
+await import('./public/appearance.js');

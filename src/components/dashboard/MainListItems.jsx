@@ -50,22 +50,14 @@ export function MainListItems({ classes }) {
       </Tooltip>
 
       <Tooltip title="Blog" placement="right">
-        <a href="/blog" style={{
-          margin: '0rem',
-          textDecoration: 'none',
-          color: "#6239AB",
-          "&:hover": {
-            color: "#607466",
-            textDecoration: "none"
-          }
-        }}>
+        <Link className={classes.linkCompact} href="/blog">
           <ListItem button key="blog">
             <ListItemIcon>
               <BlogIcon />
             </ListItemIcon>
             <ListItemText primary="Blog" />
           </ListItem>
-        </a>
+        </Link>
       </Tooltip>
 
       <Tooltip title="Download" placement="right">

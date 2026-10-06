@@ -250,7 +250,7 @@ const EditMonitorModelConfigDialog = ({ open, host, onClose, onSave }) => {
         {useOverride ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {groupedFields.map(({ group, fields }) => (
-              <Box key={group} sx={{ border: '1px solid rgba(98, 57, 171, 0.15)', borderRadius: 1.5, p: 2 }}>
+              <Box key={group} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5, p: 2 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
                   {group}
                 </Typography>

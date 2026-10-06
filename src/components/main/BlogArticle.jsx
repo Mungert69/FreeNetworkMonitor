@@ -77,7 +77,7 @@ const BlogArticle = ({
         );
       }
       return (
-        <Box component="pre" sx={{ p: 1.5, my: 1.5, overflow: 'auto', borderRadius: 2, bgcolor: t => t.palette.grey[100] }}>
+        <Box component="pre" sx={{ p: 1.5, my: 1.5, overflow: 'auto', borderRadius: 2, bgcolor: 'action.hover' }}>
           <Box
             component="code"
             sx={{
@@ -114,7 +114,7 @@ const BlogArticle = ({
 
   return (
     <Container maxWidth="md" disableGutters>
-      <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, borderRadius: 3, background: 'rgba(255,255,255,0.98)' }}>
+      <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, borderRadius: 3, bgcolor: 'background.paper' }}>
         <Typography color={headingColor} variant="h5" fontWeight={800} gutterBottom>
           {title}
         </Typography>

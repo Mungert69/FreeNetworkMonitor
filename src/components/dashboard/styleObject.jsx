@@ -1,9 +1,11 @@
+import { alpha } from '@mui/material/styles';
 const drawerWidth = 200;
 const styleObject = (theme, imageUrl) => {
     return {
         root: {
             display: 'flex',
-            backgroundImage: `url(${imageUrl})`,
+            backgroundColor: theme.palette.background.default,
+            backgroundImage: `linear-gradient(${alpha(theme.palette.background.default, theme.palette.mode === 'dark' ? .92 : .35)}, ${alpha(theme.palette.background.default, theme.palette.mode === 'dark' ? .92 : .35)}), url(${imageUrl})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -70,15 +72,19 @@ const styleObject = (theme, imageUrl) => {
         appBarSpacer: theme.mixins.toolbar,
         content: {
             flexGrow: 1,
+            minWidth: 0,
             height: '100vh',
             overflow: 'auto',
         },
         container: {
-            paddingTop: theme.spacing(4),
-            paddingBottom: theme.spacing(4),
-            // No left/right padding here; let MUI Container handle it
+            maxWidth: '1440px',
+            padding: '24px',
+            [theme.breakpoints.down('md')]: { padding: '16px' },
+            [theme.breakpoints.down('sm')]: { padding: '12px 8px' }
         },
         paper: {
+            width: '100%',
+            minWidth: 0,
             opacity: 0.97,
             padding: theme.spacing(3),
             paddingTop: theme.spacing(4),
@@ -89,7 +95,7 @@ const styleObject = (theme, imageUrl) => {
             borderRadius: 8,
             // More natural, subtle shadow
             boxShadow: '0 4px 16px 0 rgba(98,57,171,0.10), 0 1.5px 6px 0 rgba(0,0,0,0.10)',
-            background: "rgba(255,255,255,0.98)",
+            background: alpha(theme.palette.background.paper, .98),
             [theme.breakpoints.down('sm')]: {
                 paddingLeft: theme.spacing(1),
                 paddingRight: theme.spacing(1),
@@ -110,18 +116,18 @@ const styleObject = (theme, imageUrl) => {
         link: {
             margin: '1rem',
             textDecoration: 'none',
-            color: "#6239AB",
+            color: theme.palette.secondary.main,
             "&:hover": {
-                color: "#607466",
+                color: theme.palette.primary.main,
                 textDecoration: "none"
             }
 
         },
         linkCompact: {
             textDecoration: 'none',
-            color: "#6239AB",
+            color: theme.palette.secondary.main,
             "&:hover": {
-                color: "#607466",
+                color: theme.palette.primary.main,
                 textDecoration: "none"
             }
 
@@ -156,7 +162,7 @@ const styleObject = (theme, imageUrl) => {
             bottom: 70, // 20px from the bottom edge of the viewport
             zIndex: 1100, // Ensure it's above most other items
             backgroundColor: theme.palette.primary.light, // A lighter background color for visibility
-            color: 'white', // White icon color
+            color: theme.palette.primary.contrastText,
             '&:hover': {
                 backgroundColor: theme.palette.primary.main, // Darker on hover
             },

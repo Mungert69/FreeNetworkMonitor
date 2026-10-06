@@ -1,4 +1,5 @@
 import React from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 import ChartTimeRange from './ChartTimeRange';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -22,7 +23,7 @@ import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { formatSelectedDataSetLabel, useDataSetNavigation } from './datasetNavigation';
 import { measurementMetadata, scaleMeasurement, formatMeasurementNumber } from './measurement';
 
-export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, processorList = [], fullScreen = false, timeSelection = { mode: 'dataset' }, onTimeSelection, rangeResult, loading = false, error, newDataAvailable, onRefresh }) {
+export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSets, handleSetDataSetId, hostDetail, processorList = [], fullScreen = false, timeSelection = { mode: 'dataset' }, onTimeSelection, rangeResult, loading = false, error, newDataAvailable, onRefresh, onClose }) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isRange = timeSelection.mode !== 'dataset';
@@ -43,7 +44,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
   ];
   const lowLimit = Number.isFinite(hostDetail?.lowThreshold) ? hostDetail.lowThreshold : null;
   const highLimit = Number.isFinite(hostDetail?.highThreshold) ? hostDetail.highThreshold : null;
-  const limitColors = { low: theme.palette.info.main, high: theme.palette.warning.dark };
+  const limitColors = { low: theme.palette.info.main, high: theme.palette.mode === 'dark' ? theme.palette.warning.main : theme.palette.warning.dark };
   const hasLimits = lowLimit !== null || highLimit !== null;
   const data = React.useMemo(() => Array.isArray(rawData)
     ? rawData.map(point => ({ ...point,
@@ -320,7 +321,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
           alignItems="flex-start"
           justifyContent="space-between"
         >
-          <Box sx={{ minWidth: 0 }}>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
             <Typography variant="subtitle2" sx={{ color: alpha(theme.palette.text.primary, 0.64), letterSpacing: 0.6 }}>
               {hostDetail?.endPointType ? `${hostDetail.endPointType} · ${unit}` : 'Measurement history'}
             </Typography>
@@ -333,6 +334,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
               {hostDetail?.alertFlag && <Chip size="small" variant="outlined" label="Alert active" color="warning" />}
             </Stack>
           </Box>
+          <Stack direction={{ xs: 'column-reverse', sm: 'row' }} alignItems={{ xs: 'flex-end', sm: 'center' }} spacing={1} sx={{ flexShrink: 0 }}>
             <Button
               size="small"
               aria-expanded={areDetailsVisible}
@@ -347,7 +349,12 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
             >
               {areDetailsVisible ? 'Hide details' : 'Show details'}
             </Button>
-
+            {onClose && (
+              <IconButton onClick={onClose} aria-label="Close chart" sx={{ width: 44, height: 44 }}>
+                <CloseIcon />
+              </IconButton>
+            )}
+          </Stack>
         </Stack>
 
         <Box sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 2 }}>
@@ -539,7 +546,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
           height: chartHeight,
           borderRadius: 3,
           backgroundColor: alpha(theme.palette.background.paper, 0.78),
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4)',
+          boxShadow: `inset 0 1px 0 ${alpha(theme.palette.divider, .4)}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -573,7 +580,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                   <stop offset="90%" stopColor={alpha(theme.palette.primary.main, 0.02)} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke={alpha(theme.palette.divider, 0.24)} strokeDasharray="4 8" vertical={false} />
+              <CartesianGrid stroke={alpha(theme.palette.text.secondary, theme.palette.mode === 'dark' ? .25 : .2)} strokeDasharray="4 8" vertical={false} />
               <Tooltip content={renderTooltip} animationEasing={false} cursor={{ stroke: alpha(theme.palette.primary.main, 0.25), strokeWidth: 1 }} />
               <XAxis
                 dataKey={isRange ? "timestamp" : "time"}
@@ -674,9 +681,9 @@ const SummaryTile = React.memo(function SummaryTile({ label, value, accent }) {
         px: 2,
         py: 1.1,
         borderRadius: 3,
-        backgroundColor: 'rgba(255,255,255,0.55)',
+        backgroundColor: theme => alpha(theme.palette.background.paper, .55),
         backdropFilter: 'blur(18px)',
-        border: '1px solid rgba(255,255,255,0.42)',
+        border: '1px solid', borderColor: 'divider',
         boxShadow: 'none',
       }}
     >
@@ -698,9 +705,9 @@ const InfoTile = React.memo(function InfoTile({ label, value }) {
         px: 1.8,
         py: 1,
         borderRadius: 3,
-        backgroundColor: 'rgba(255,255,255,0.45)',
+        backgroundColor: theme => alpha(theme.palette.background.paper, .45),
         backdropFilter: 'blur(14px)',
-        border: '1px solid rgba(255,255,255,0.36)',
+        border: '1px solid', borderColor: 'divider',
         boxShadow: 'none',
       }}
     >

@@ -110,7 +110,7 @@ function PricingContent({ noRedirect, apiUser }) {
   // Loading state
   if (loadingTiers) {
     return (
-      <Container component="main" sx={{ pt: 8, pb: 6, textAlign: 'center' }}>
+      <Container maxWidth={false} disableGutters component="section" sx={{ pt: 8, pb: 6, textAlign: 'center' }}>
         <Typography variant="h5" sx={{ mb: 2 }}>Loading plans…</Typography>
         <CircularProgress />
       </Container>
@@ -120,7 +120,7 @@ function PricingContent({ noRedirect, apiUser }) {
   // Error or empty state
   if (tiersError || tiers.length === 0) {
     return (
-      <Container component="main" sx={{ pt: 8, pb: 6, textAlign: 'center' }}>
+      <Container maxWidth={false} disableGutters component="section" sx={{ pt: 8, pb: 6, textAlign: 'center' }}>
         <Typography variant="h5" color="error" sx={{ mb: 1 }}>
           {tiersError || 'No plans available right now.'}
         </Typography>
@@ -133,7 +133,7 @@ function PricingContent({ noRedirect, apiUser }) {
 
   return (
     <React.Fragment>
-      <Container disableGutters component="main" sx={{ pt: 8, pb: 6 }}>
+      <Container maxWidth={false} disableGutters component="section" sx={{ pt: 8, pb: 6 }}>
         <Typography variant="h2" align="center">
           <img src="/img/logo.png" alt="Quantum Network Monitor Logo" height="96px" />
         </Typography>
@@ -147,7 +147,7 @@ function PricingContent({ noRedirect, apiUser }) {
         ) : null}
       </Container>
 
-      <Container component="main">
+      <Container maxWidth={false} disableGutters component="section">
         <Grid
           container
           spacing={5}
@@ -156,13 +156,9 @@ function PricingContent({ noRedirect, apiUser }) {
         >
           {tiers.map((tier) => (
             <Grid
-              item
               key={tier.title}
-              xs={12}
-              sm={tier.title === 'Enterprise' ? 12 : 6}
-              md={3}
               sx={{ display: 'flex', justifyContent: 'center' }}   // ⟵ center each card
-            >
+             size={{ xs: 12, sm: tier.title === 'Enterprise' ? 12 : 6, md: 3 }}>
               <Card
                 sx={{
                   width: '100%',

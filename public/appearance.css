@@ -1,0 +1,90 @@
+/* Also loaded before the application, so the first paint matches its theme. */
+html {
+  background: var(--nm-background);
+  color: var(--nm-text);
+}
+body {
+  background-color: var(--nm-background);
+  color: var(--nm-text);
+}
+.nm-document {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0 auto;
+  padding: 24px;
+  max-width: 980px;
+}
+.nm-document h1,
+.nm-document h2,
+.nm-document h3 {
+  color: var(--nm-text);
+}
+.nm-document a {
+  color: var(--nm-secondary);
+}
+.nm-document .muted {
+  color: var(--nm-muted);
+}
+.nm-document .notice,
+.nm-document .panel {
+  background: var(--nm-paper);
+  border-color: var(--nm-border);
+}
+.nm-appearance {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.nm-appearance select {
+  color: var(--nm-text);
+  background: var(--nm-paper);
+  border: 1px solid var(--nm-border);
+  border-radius: 8px;
+  padding: 8px;
+  font: inherit;
+}
+/* Generated legal documents set !important colours on every descendant. */
+.nm-document [data-custom-class],
+.nm-document [data-custom-class] * {
+  color: var(--nm-text) !important;
+}
+.nm-document [data-custom-class] a,
+.nm-document [data-custom-class] a * {
+  color: var(--nm-secondary) !important;
+}
+html[data-color-mode="dark"] .nm-document {
+  --bg-color: var(--nm-background);
+  --surface-color: var(--nm-paper);
+  --text-color: var(--nm-text);
+  --heading-color: var(--nm-text);
+  --bullet-color: var(--nm-muted);
+  --border-color: var(--nm-border);
+  --primary-color: var(--nm-primary);
+  --secondary-color: var(--nm-secondary);
+}
+html[data-color-mode="dark"] .nm-document .toc,
+html[data-color-mode="dark"] .nm-document .doc-links,
+html[data-color-mode="dark"] .nm-document .note,
+html[data-color-mode="dark"] .nm-document th,
+html[data-color-mode="dark"] .nm-document code {
+  background: var(--nm-paper);
+  color: var(--nm-text);
+}
+
+html[data-color-mode="dark"] .nm-document header {
+  background: #334a3c;
+}
+
+.nm-document header h1 {
+  color: #fff;
+}
+html[data-color-mode="dark"] .nm-document .pill {
+  color: var(--nm-secondary);
+}
+
+@media (max-width: 600px) {
+  .nm-document { padding: 16px; }
+}

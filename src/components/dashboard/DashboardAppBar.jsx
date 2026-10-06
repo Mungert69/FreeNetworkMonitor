@@ -1,3 +1,4 @@
+import AppearanceMenu from '../../theme/AppearanceMenu';
 import React from 'react';
 import clsx from 'clsx';
 import AppBar from '@mui/material/AppBar';
@@ -70,6 +71,7 @@ const DashboardAppBar = ({
         </FadeWrapper>
       )}
       <Box sx={{ flexGrow: 1 }} />
+      <AppearanceMenu />
       <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
         <ChatIcon />
       </IconButton>

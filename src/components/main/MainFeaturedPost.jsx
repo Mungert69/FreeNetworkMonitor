@@ -60,8 +60,8 @@ function MainFeaturedPost(props) {
             <Link variant="h5" color="inherit" href={post.href} sx ={{color: "#FFFFFF",
             textDecoration: "none",
                 "&:hover": {
-                    color: "#000000",
-                    textDecoration: "underline #000000"
+                    color: "#FFFFFF",
+                    textDecoration: "underline"
                 }}} >
               {post.linkText}
             </Link>

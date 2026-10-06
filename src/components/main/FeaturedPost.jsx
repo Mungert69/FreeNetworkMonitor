@@ -13,10 +13,10 @@ function FeaturedPost(props) {
 
   return (
     <Grid item xs={12} md={6}>
-      <CardActionArea component="a" href={post.href} sx ={{color: "#6239AB",
+      <CardActionArea component="a" href={post.href} sx ={{color: "secondary.main",
                 "&:hover": {
-                    color: "#607466",
-                    textDecoration: "underline #607466"
+                    color: "primary.main",
+                    textDecoration: "underline"
                 }}}>
         <Card sx={{ display: 'flex' }}>
           <CardContent sx={{ flex: 1 }}>

@@ -5,7 +5,7 @@
   justify-content: center;
   width: 100%; /* Cover the full width of the llm-feedback area */
   height: 100%; /* Cover the full height of the llm-feedback area */
-  color: #6239AB; /* Light white background */
+  color: var(--nm-secondary);
 }
 .chat-container {
   display: flex;
@@ -16,7 +16,7 @@
 .chat-window {
   width: 90%;
   max-width: 600px;
-  background-color: #f9f9f9; /* No change in background color */
+  background-color: var(--nm-paper);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -24,8 +24,8 @@
 }
 
 .chat-header {
-  background-color: #607466; /* Adjusted primary color */
-  color: white;
+  background-color: var(--nm-primary);
+  color: var(--nm-background);
   padding: 10px;
   text-align: center;
   border-top-left-radius: 8px;
@@ -99,14 +99,14 @@
 .status-message {
   margin-bottom: 10px;
   padding: 8px;
-  background-color: #e9ecef; /* No change in background color */
+  background-color: var(--nm-background);
   border-radius: 5px;
   white-space: pre-wrap; /* Ensure text wraps and respects new lines */
   word-wrap: break-word; /* Break the word to prevent overflow */
 }
 
 .status-message {
-  color: #607466; /* No change in primary color */
+  color: var(--nm-primary);
   text-align: center;
   font-style: italic;
 }
@@ -120,13 +120,15 @@
   flex-grow: 1;
   padding: 10px;
   margin-right: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--nm-border);
   border-radius: 5px;
+  background-color: var(--nm-paper);
+  color: var(--nm-text);
 }
 
 .send-button {
-  background-color: #607466; /* Existing style */
-  color: white;
+  background-color: var(--nm-primary);
+  color: var(--nm-background);
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
@@ -135,17 +137,17 @@
 }
 
 .send-button:hover {
-  background-color: #485a5f; /* Darken the primary color on hover */
+  background-color: var(--nm-secondary);
 }
 
 .send-button:disabled {
-  background-color: #9ca3af; /* Lighter or grayed-out color indicating disabled */
-  color: #6b7280;
+  background-color: var(--nm-border); /* Lighter or grayed-out color indicating disabled */
+  color: var(--nm-muted);
   cursor: not-allowed; /* Change cursor to indicate action is not allowed */
 }
 .icon-button {
-  background-color: #607466; /* Match the header background */
-  color: white;
+  background-color: var(--nm-primary); /* Match the header background */
+  color: var(--nm-background);
   border: none;
   cursor: pointer;
   padding: 10px;
@@ -157,12 +159,12 @@
 }
 
 .icon-button:hover:not(:disabled) {
-  background-color: #485a5f; /* Darken the button on hover for active buttons */
+  background-color: var(--nm-secondary);
 }
 
 .icon-button:disabled {
-  background-color: #607466; /* Keep the same background color for disabled state */
-  color: #B0BEC5; /* Lighter icon color for disabled state */
+  background-color: var(--nm-primary); /* Keep the same background color for disabled state */
+  color: var(--nm-muted); /* Lighter icon color for disabled state */
   cursor: not-allowed;
   opacity: 0.5; /* Make disabled buttons semi-transparent */
 }
@@ -171,7 +173,7 @@
 .help-message {
   margin-top: 10px;
   padding: 8px;
-  background-color: #f0f0f0; /* Light grey background */
+  background-color: var(--nm-background);
   border-radius: 5px;
   text-align: center;
   cursor: pointer; /* Change cursor to indicate interactivity */

@@ -1,3 +1,4 @@
+import AppearanceMenu from '../../theme/AppearanceMenu';
 import React, { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MainListItems from "../dashboard/MainListItems";
 import styleObject from "../dashboard/styleObject";
@@ -366,6 +368,7 @@ export default function Download() {
           <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
             Quantum Network Monitor
           </Typography>
+          <AppearanceMenu />
           <AuthNav openInNewTab={openInNewTab}/>
         </Toolbar>
       </AppBar>
@@ -381,10 +384,10 @@ export default function Download() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
+        <Container maxWidth={false} className={classes.container}>
           <Grid container spacing={6}>
-            <Grid item xs={12}>
-              <Typography color="primary" variant="h3" gutterBottom>
+            <Grid size={{ xs: 12 }}>
+              <Typography color="primary" variant="h3" gutterBottom sx={{ fontSize: { xs: '2rem', md: '3rem' } }}>
               Beta Tester Download Portal
               </Typography>
               <Typography variant="h4" gutterBottom>
@@ -396,9 +399,9 @@ export default function Download() {
             </Grid>
           </Grid>
           <hr />
-          <div>
+          <Box sx={{ maxWidth: '100ch', mx: 'auto', overflowWrap: 'anywhere', '& pre': { maxWidth: '100%', overflowX: 'auto' }, '& img': { maxWidth: '100%', height: 'auto' } }}>
             <ReactMarkdown children={markdown} />
-        </div>
+        </Box>
           <Footer />
         </Container>
       </main>
