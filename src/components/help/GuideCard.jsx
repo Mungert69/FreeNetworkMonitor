@@ -24,7 +24,7 @@ export default function GuideCard({ guide }) {
       }}
     >
       <CardActionArea
-        href={`/docs/${guide.slug}`}
+        href={`/docs/${guide.slug}/`}
         sx={{
           height: "100%",
           p: 5,

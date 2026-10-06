@@ -36,10 +36,10 @@ Archived datasets that cannot be read by this chart are noted. Their missing sam
 
 **Coloured, outlined points** indicate readings outside a configured low or high limit, with reference lines and explanatory tooltips. Colours use your current limits, including on historical data. Changing a limit changes that historical colouring. It does not change past readings or identify the exact point that caused a historical alert notification.
 
-Negative physical values remain valid points. No reading/unavailable is different from `0` and from a negative current. See [Bluetooth measurements](/docs/sensors) and [alerts](/docs/alerts).
+Negative physical values remain valid points. No reading/unavailable is different from `0` and from a negative current. See [Bluetooth measurements](/docs/sensors/) and [alerts](/docs/alerts/).
 
 ## New data without losing your place
 
 The background refresh preserves the period you are viewing. If your view includes the latest collecting dataset, a **New data available** indicator lets you load updates when you choose. A fixed historic period is not replaced by the newest data.
 
-If you see no readings, check the time range, host enablement, location, agent and any archived-coverage notice. Follow [troubleshooting](/docs/troubleshooting#a-chart-says-there-is-no-data). For summaries you can share, use [reports and downloads](/docs/reports).
+If you see no readings, check the time range, host enablement, location, agent and any archived-coverage notice. Follow [troubleshooting](/docs/troubleshooting/#a-chart-says-there-is-no-data). For summaries you can share, use [reports and downloads](/docs/reports/).

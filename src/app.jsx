@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { publicPaths } from "./site-pages.mjs";
 import { LoadingCircle } from "./loading-circle";
 import RouteChangeTracker from './route-change-tracker';
@@ -13,6 +13,12 @@ const Download = lazy(() => import('./components/main/Download'));
 const Features = lazy(() => import('./components/help/Features'));
 const Guides = lazy(() => import('./components/help/Guides'));
 const Guide = lazy(() => import('./components/help/Guide'));
+function BlogRedirect() {
+  useEffect(() => { window.location.replace("https://blog.readyforquantum.com/"); }, []);
+  return <a href="https://blog.readyforquantum.com/">Continue to the blog</a>;
+}
+
+const NotFound = lazy(() => import('./components/help/NotFound'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
 //const TRACKING_ID = "G-XXXXXXXXXX"; // Replace with your GA4 tracking ID
@@ -171,7 +177,7 @@ const App = () => {
           <Route path={publicPaths.features} element={<Suspense fallback={renderLoader()}><Features /></Suspense>} />
           <Route path={publicPaths.guides} element={<Suspense fallback={renderLoader()}><Guides /></Suspense>} />
           <Route path={`${publicPaths.guides}/:slug`} element={<Suspense fallback={renderLoader()}><Guide /></Suspense>} />
-          <Route path="/blog" element={<Navigate to="/blog/index.html" replace />} />
+          <Route path="/blog" element={<BlogRedirect />} />
           <Route exact path={publicPaths.home} element={
             <Suspense fallback={renderLoader()}>
               <ProductDetail />
@@ -198,7 +204,7 @@ const App = () => {
             </Suspense>
           } />
           <Route exact path="/start-login-proxy" element={<StartLoginProxy />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Suspense fallback={renderLoader()}><NotFound /></Suspense>} />
         </Routes>
       </div>
     </div>

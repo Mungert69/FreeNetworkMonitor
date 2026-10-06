@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
+import { canonicalPublicPath } from './src/site-pages.mjs';
 
 const isVitest = Boolean(process.env.VITEST);
 const certificateKeyPath = '/home/mahadeva/code/securefiles/dev/readyforquantum.key';
@@ -109,12 +110,23 @@ export default defineConfig({
   plugins: [react(), {
     name: 'preview-public-documents',
     configurePreviewServer(server) {
-      // Mirror Apache's slash-free public-page routing when checking a build locally.
-      server.middlewares.use((req, _res, next) => {
+      // Mirror Apache's directory redirects as well as generated HTML routing.
+      server.middlewares.use((req, res, next) => {
         const pathname = (req.url || '').split('?')[0];
-        if (/^\/(features|download|faq|subscription|docs(?:\/[a-z0-9-]+)?)$/.test(pathname)
-          && fs.existsSync(path.resolve('dist', `.${pathname}/index.html`))) {
-          req.url = req.url.replace(pathname, `${pathname}/index.html`);
+        const publicMatch = pathname.match(/^\/(features|download|faq|subscription|docs(?:\/[a-z0-9-]+)?)(?:\/index\.html|\/)?$/i);
+        const canonical = publicMatch ? canonicalPublicPath(`/${publicMatch[1]}`) : null;
+        if (canonical && fs.existsSync(path.resolve('dist', `.${canonical}index.html`))) {
+          if (canonical !== pathname) {
+            res.writeHead(301, { Location: req.url.replace(pathname, canonical) });
+            res.end();
+            return;
+          }
+          req.url = req.url.replace(pathname, `${canonical}index.html`);
+        } else if (!/^\/(?:dashboard|start-login-proxy)\/?$/i.test(pathname)
+          && pathname !== '/' && !fs.existsSync(path.resolve('dist', `.${pathname}`))) {
+          res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(fs.readFileSync('dist/404.html'));
+          return;
         }
         next();
       });

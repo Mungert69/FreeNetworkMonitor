@@ -1,7 +1,7 @@
 {
   "name": "network-monitor-react",
   "homepage": "https://readyforquantum.com/",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "private": true,
   "overrides": {
     "prismjs": "^1.30.0",
@@ -68,7 +68,7 @@
     "analyze": "source-map-explorer 'dist/assets/*.js'",
     "start": "vite",
     "startssl": "VITE_DEV_HOST=devwww.readyforquantum.com VITE_DEV_PORT=8443 VITE_DEV_CLIENT_PORT=443 npm run start",
-    "build": "vite build && node scripts/prerender-docs.mjs && node scripts/generate-sitemap.mjs",
+    "build": "vite build && node scripts/prerender-docs.mjs && node scripts/canonicalize-static-pages.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-apache-routes.mjs",
     "serve": "vite preview",
     "test": "vitest --run",
     "test:watch": "vitest",

@@ -203,10 +203,10 @@ export const guides = [
 ];
 
 export const platformLinks = {
-  linux: "/docs/linux",
-  windows: "/docs/windows",
-  android: "/docs/android",
-  esp32: "/docs/esp32",
+  linux: "/docs/linux/",
+  windows: "/docs/windows/",
+  android: "/docs/android/",
+  esp32: "/docs/esp32/",
 };
 
 export const downloads = {
@@ -351,7 +351,7 @@ const coreFaqItems = [
     question: "Which plan, host allowance and token limits apply?",
     answer:
       "The Subscription page shows the current plan allowances, prices and features. Available tools also depend on your agent and installed dependencies. We keep plan figures there so they stay current.",
-    href: "/subscription",
+    href: "/subscription/",
     linkLabel: "Compare current plans",
   },
   {

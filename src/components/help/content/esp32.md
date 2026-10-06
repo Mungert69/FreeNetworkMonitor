@@ -30,13 +30,13 @@ If the code expires, restart the board to obtain a new URL and code. If Wi-Fi se
 
 ## Assign your first host
 
-After registration, add a host in [the dashboard](/dashboard) using the board as the monitor location. Keep it powered and connected. For BLE, the board must be within range of the transmitting device; see [sensor setup](/docs/sensors).
+After registration, add a host in [the dashboard](/dashboard) using the board as the monitor location. Keep it powered and connected. For BLE, the board must be within range of the transmitting device; see [sensor setup](/docs/sensors/).
 
 ## Supported recurring checks
 
 The built-in endpoints are `icmp`, `dns`, `rawconnect`, `http`, `httphtml`, `https`, `quantum`, `quantumcert`, `nmap`, `blebroadcast` and `blebroadcastlisten`.
 
-The board uses the same measurement meaning, selected BLE metrics and actual-unit limits as other supported agents. Its network and TLS implementations have embedded limits; compare [endpoint meanings](/docs/endpoints) and [quantum checks](/docs/quantum).
+The board uses the same measurement meaning, selected BLE metrics and actual-unit limits as other supported agents. Its network and TLS implementations have embedded limits; compare [endpoint meanings](/docs/endpoints/) and [quantum checks](/docs/quantum/).
 
 ## Supported diagnostics and limits
 
@@ -48,4 +48,4 @@ Nmap supports bounded TCP scans and discovery; it does not provide NSE vulnerabi
 
 Use Profile → Device firmware on the website to select an available firmware image and request an update. Check progress and the board’s return to normal operation. Signed update and recovery/rollback handling protect the normal update path; follow the project guide if a board needs USB recovery.
 
-Do not use factory flashing as the routine update procedure for an enrolled processor. Manage registered devices from [your profile](/docs/account), and use [troubleshooting](/docs/troubleshooting) when readings stop.
+Do not use factory flashing as the routine update procedure for an enrolled processor. Manage registered devices from [your profile](/docs/account/), and use [troubleshooting](/docs/troubleshooting/) when readings stop.

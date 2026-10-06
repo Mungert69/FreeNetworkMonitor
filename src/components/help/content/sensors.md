@@ -51,7 +51,7 @@ For a plain BTHome v2 temperature device:
 --format bthome --metric temperature
 ```
 
-Encrypted BTHome needs the device’s 16-byte key and correct BLE address. Its encryption also authenticates the packet. If your device emits a different object, select it from the [metric reference](/docs/ble-metrics). Repeated fields get numbered selectors: `temperature` for the first, `temperature_2` for the second. Use `--format bthome --metric temperature_2` to record the second temperature, and confirm its physical meaning from the device’s output.
+Encrypted BTHome needs the device’s 16-byte key and correct BLE address. Its encryption also authenticates the packet. If your device emits a different object, select it from the [metric reference](/docs/ble-metrics/). Repeated fields get numbered selectors: `temperature` for the first, `temperature_2` for the second. Use `--format bthome --metric temperature_2` to record the second temperature, and confirm its physical meaning from the device’s output.
 
 ## Values and missing readings
 
@@ -59,13 +59,13 @@ Units and conversion are automatic. You do not need to enter a scale or offset f
 
 States, button events and counters are not interchangeable with continuously sampled temperature. A trigger-based sensor may only broadcast when something happens; choose a capture budget/cadence appropriate to it. A sparse event stream does not prove the device is offline.
 
-Use [high/low limits](/docs/alerts#measurement-limits) in actual units when useful. The [chart](/docs/charts) colours violations of your current limits; it does not reconstruct past alert events.
+Use [high/low limits](/docs/alerts/#measurement-limits) in actual units when useful. The [chart](/docs/charts/) colours violations of your current limits; it does not reconstruct past alert events.
 
 ## Discovery and generic payloads
 
 Listen mode can help find addresses/payloads. Decoded output is diagnostic text, not proof that all nearby devices are compatible. Raw, AES-GCM and AES-CTR payload options are available for specialist capture/decryption, but arbitrary payloads do not gain an automatic physical metric.
 
-If discovery succeeds but a targeted reading fails, check format, key, address, broadcast interval, radio range and whether that record actually contains the selected field. See [troubleshooting](/docs/troubleshooting#bluetooth-decodes-but-the-number-is-wrong).
+If discovery succeeds but a targeted reading fails, check format, key, address, broadcast interval, radio range and whether that record actually contains the selected field. See [troubleshooting](/docs/troubleshooting/#bluetooth-decodes-but-the-number-is-wrong).
 
 ## Vendor references
 
@@ -75,4 +75,4 @@ If discovery succeeds but a targeted reading fails, check format, key, address, 
 - [BTHome format reference](https://bthome.io/format/) and [encrypted broadcasts](https://bthome.io/encryption/)
 - [Shelly BLE documentation](https://shelly-api-docs.shelly.cloud/docs-ble/common/)
 
-These references describe the protocols. The [metric list](/docs/ble-metrics) describes the selection names supported here.
+These references describe the protocols. The [metric list](/docs/ble-metrics/) describes the selection names supported here.

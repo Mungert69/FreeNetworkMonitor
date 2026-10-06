@@ -9,7 +9,7 @@ Timeout is how long a check is allowed to run. Increasing it does not set a volt
 1. Open **Profile** on the [dashboard](/dashboard).
 2. Verify the account email address. Resend verification if needed and check spam.
 3. Enable email notifications using the profile control.
-4. Check that the host is enabled and assigned to a working [monitor location](/docs/platforms).
+4. Check that the host is enabled and assigned to a working [monitor location](/docs/platforms/).
 
 Unsubscribing through an email disables email notifications. An alert shown in the table and an email being delivered are separate things.
 
@@ -17,7 +17,7 @@ Unsubscribing through an email disables email notifications. An alert shown in t
 
 The processor reports failed-check state and the alert service applies its configured trigger. There is not one fixed failure count that applies to every deployment. Look at the status: failure can mean no response, a certificate condition, a scan outcome or a decoding problem rather than simply “the server is powered off”.
 
-For uptime monitoring, use an endpoint that answers the question you care about. Ping and TCP reachability may disagree because services and firewalls behave differently. See [endpoint meanings](/docs/endpoints).
+For uptime monitoring, use an endpoint that answers the question you care about. Ping and TCP reachability may disagree because services and firewalls behave differently. See [endpoint meanings](/docs/endpoints/).
 
 ## Measurement limits
 
@@ -31,7 +31,7 @@ Changing the selected endpoint/metric changes what a limit means. Review or clea
 
 ## Reset an alert
 
-An alert is notified once until reset. Use the host’s alert-reset control in the table or ask the [assistant](/docs/assistant) to reset the relevant alert. Predictive alerts have their own reset control.
+An alert is notified once until reset. Use the host’s alert-reset control in the table or ask the [assistant](/docs/assistant/) to reset the relevant alert. Predictive alerts have their own reset control.
 
 Resetting permits another notification if the condition happens again. It does not repair the target. Investigate the status and chart first; an ongoing condition can trigger again on subsequent checks.
 
@@ -45,6 +45,6 @@ The current ML pipeline is latency-oriented. Do not assume it has been calibrate
 
 ## Find the condition on a chart
 
-Red downward arrows show failed observations. Blue/amber-style violation points and reference lines show readings outside the **current** low/high limits. They show threshold violations, not a historical log of which point sent an email. Long ranges use representative points. See [chart interpretation](/docs/charts#failure-and-limit-markers).
+Red downward arrows show failed observations. Blue/amber-style violation points and reference lines show readings outside the **current** low/high limits. They show threshold violations, not a historical log of which point sent an email. Long ranges use representative points. See [chart interpretation](/docs/charts/#failure-and-limit-markers).
 
-If emails or readings are missing, follow [troubleshooting](/docs/troubleshooting) and review [account preferences](/docs/account).
+If emails or readings are missing, follow [troubleshooting](/docs/troubleshooting/) and review [account preferences](/docs/account/).

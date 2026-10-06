@@ -45,6 +45,8 @@ vi.mock('./components/start-login-proxy', () => ({
   };
 });*/
 
+vi.mock('./components/help/NotFound', () => ({ default: () => <h1>Page not found</h1> }));
+
 describe('App', () => {
   beforeEach(() => {
     window.serverLabel = { serverLabel: 'prod' };
@@ -52,6 +54,12 @@ describe('App', () => {
       window.gtag = vi.fn();
     }
     window.gtag.mockClear();
+  });
+
+  it('keeps an unknown route on a not-found view instead of redirecting home', async () => {
+    render(<MemoryRouter initialEntries={['/no-such-page']}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', {name: 'Page not found'})).toBeInTheDocument();
+    expect(screen.queryByText('Product Detail Mock')).not.toBeInTheDocument();
   });
 
   it('renders the product detail route and accepts cookie consent', async () => {

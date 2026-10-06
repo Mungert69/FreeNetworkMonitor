@@ -1,3 +1,4 @@
+import { canonicalPublicPath } from "../../site-pages.mjs";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -25,7 +26,7 @@ import AppearanceMenu from "../../theme/AppearanceMenu";
 import Seo from "../Seo";
 import { getBaseDomain } from "../dashboard/ServiceAPI";
 
-export default function PublicLayout({ title, description, children }) {
+export default function PublicLayout({ title, description, children, noIndex = false }) {
   const theme = useTheme();
   const { isLoggedIn, startLogin, startLogout } = useFusionAuth();
   const classes = useClasses(styleObject(theme, "/ping.svg"));
@@ -36,10 +37,11 @@ export default function PublicLayout({ title, description, children }) {
     setOpen(false);
     document.getElementById("public-content")?.scrollTo?.(0, 0);
   }, [pathname]);
-  const current = pathname.startsWith("/docs") ? "/docs" : pathname;
+  const current = pathname.startsWith("/docs") ? "/docs/" : canonicalPublicPath(pathname);
   return (
     <Box className={classes.root}>
       <Seo
+        noIndex={noIndex}
         title={`${title} | Quantum Network Monitor`}
         description={description}
         openGraph={{
@@ -107,10 +109,10 @@ export default function PublicLayout({ title, description, children }) {
             }}
           >
             {[
-              ["/features", "Features"],
-              ["/docs", "Guides"],
-              ["/download", "Get an agent"],
-              ["/faq", "FAQ"],
+              ["/features/", "Features"],
+              ["/docs/", "Guides"],
+              ["/download/", "Get an agent"],
+              ["/faq/", "FAQ"],
             ].map(([href, label]) => (
               <Button
                 key={href}

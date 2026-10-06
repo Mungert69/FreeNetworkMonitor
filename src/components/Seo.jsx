@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { canonicalPublicUrl } from '../site-pages.mjs';
 
 const setTag = ({ selector, create, apply, restore }) => {
   const element = document.head.querySelector(selector) || create();
@@ -82,7 +83,7 @@ const normalizeOpenGraphImages = (ogImage) => {
   return [ogImage];
 };
 
-const Seo = ({ title, description, openGraph, twitter }) => {
+const Seo = ({ title, description, openGraph, twitter, noIndex = false }) => {
   const ogConfig = useMemo(() => openGraph ?? {}, [openGraph]);
   const twitterConfig = useMemo(() => twitter ?? {}, [twitter]);
 
@@ -103,10 +104,12 @@ const Seo = ({ title, description, openGraph, twitter }) => {
       }
     };
 
+    const canonicalUrl = ogConfig.ogUrl ? canonicalPublicUrl(ogConfig.ogUrl) : undefined;
     addRestore(ensureMeta('name', 'description', description));
+    if (noIndex) addRestore(ensureMeta('name', 'robots', 'noindex, follow'));
     addRestore(ensureMeta('property', 'og:title', title));
     addRestore(ensureMeta('property', 'og:description', description));
-    addRestore(ensureMeta('property', 'og:url', ogConfig.ogUrl));
+    addRestore(ensureMeta('property', 'og:url', canonicalUrl));
     addRestore(ensureMeta('property', 'og:type', ogConfig.ogType));
     addRestore(ensureMeta('property', 'og:site_name', ogConfig.ogSiteName));
     addRestore(ensureMeta('property', 'og:locale', ogConfig.ogLocale));
@@ -119,7 +122,7 @@ const Seo = ({ title, description, openGraph, twitter }) => {
       addRestore(ensureMeta('property', 'og:image:height', primaryImage.ogImageHeight));
     }
 
-    addRestore(ensureLink('canonical', ogConfig.ogUrl));
+    addRestore(ensureLink('canonical', canonicalUrl));
 
     addRestore(ensureMeta('name', 'twitter:card', twitterConfig.cardType));
     addRestore(ensureMeta('name', 'twitter:site', twitterConfig.site));
@@ -130,7 +133,7 @@ const Seo = ({ title, description, openGraph, twitter }) => {
     return () => {
       restoreFns.reverse().forEach((restore) => restore());
     };
-  }, [description, ogConfig, title, twitterConfig]);
+  }, [description, ogConfig, title, twitterConfig, noIndex]);
 
   return null;
 };

@@ -2,7 +2,7 @@
 
 Set `--format` and `--metric` in the host’s Args. The decoder supplies units and conversion automatically. The names below come from the shared decoder catalogue; a name in this catalogue does not mean every device broadcasts that field.
 
-For example, `--format victron --metric battery_current` records current rather than the other fields in the decoded text. The [sensor setup guide](/docs/sensors) explains addresses, keys and device identification.
+For example, `--format victron --metric battery_current` records current rather than the other fields in the decoded text. The [sensor setup guide](/docs/sensors/) explains addresses, keys and device identification.
 
 ## Availability and repeated fields
 
@@ -170,4 +170,4 @@ Source: [BTHome v2 format](https://bthome.io/format/) and [encryption](https://b
 
 ## Put readings to work
 
-Use [actual-unit alert limits](/docs/alerts), review [chart violations](/docs/charts) and read [reports](/docs/reports). If a value is missing, follow [troubleshooting](/docs/troubleshooting).
+Use [actual-unit alert limits](/docs/alerts/), review [chart violations](/docs/charts/) and read [reports](/docs/reports/). If a value is missing, follow [troubleshooting](/docs/troubleshooting/).

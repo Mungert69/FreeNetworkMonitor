@@ -158,7 +158,7 @@ export default function Faq() {
               >
                 {q.answer}
               </Typography>
-              <Link href={q.guide ? `/docs/${q.guide}` : q.href}>
+              <Link href={q.guide ? `/docs/${q.guide}/` : q.href}>
                 {q.guide ? "Read the guide" : q.linkLabel}
               </Link>
               <Link
@@ -178,13 +178,13 @@ export default function Faq() {
         </Typography>
       )}
       <Stack direction="row" sx={{ gap: 3, mt: 6, flexWrap: "wrap" }}>
-        <Button href="/docs" variant="contained">
+        <Button href="/docs/" variant="contained">
           Browse all guides
         </Button>
-        <Button href="/docs/troubleshooting" variant="outlined">
+        <Button href="/docs/troubleshooting/" variant="outlined">
           Troubleshooting
         </Button>
-        <Button href="/subscription">Current plans</Button>
+        <Button href="/subscription/">Current plans</Button>
       </Stack>
     </PublicLayout>
   );

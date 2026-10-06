@@ -13,7 +13,7 @@ describe("customer documentation coverage", () => {
       const ids = [...text.matchAll(/^## (.+)$/gm)].map((m) => headingId(m[1]));
       expect(new Set(ids).size).toBe(ids.length);
       for (const [, target, anchor] of text.matchAll(
-        /\]\(\/docs\/([a-z0-9-]+)(?:#([a-z0-9-]+))?\)/g,
+        /\]\(\/docs\/([a-z0-9-]+)\/?(?:#([a-z0-9-]+))?\)/g,
       )) {
         expect(
           guides.some((g) => g.slug === target),

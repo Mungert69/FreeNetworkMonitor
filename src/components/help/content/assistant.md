@@ -2,9 +2,9 @@
 
 Open the assistant from the website or supported app. Choose an available model and, for a local task, your agent location. Say what you want to achieve, which target to use and where the task should run. The browser is your control surface; your chosen agent performs network checks.
 
-For example: “Using my home agent, add a DNS monitor for example.com. Show me the available endpoints first.” For a sensor, include its format and metric; see [Bluetooth setup](/docs/sensors).
+For example: “Using my home agent, add a DNS monitor for example.com. Show me the available endpoints first.” For a sensor, include its format and metric; see [Bluetooth setup](/docs/sensors/).
 
-Available models, experts, token allowances and commands depend on your [plan](/subscription), service configuration and [agent capabilities](/docs/platforms). The model selector can offer hosted models and a local/TestLLM route. A model name is not a guarantee that every tool is available.
+Available models, experts, token allowances and commands depend on your [plan](/subscription/), service configuration and [agent capabilities](/docs/platforms/). The model selector can offer hosted models and a local/TestLLM route. A model name is not a guarantee that every tool is available.
 
 ## Meet the experts
 
@@ -28,7 +28,7 @@ The assistant can also retrieve account and agent information, inspect operation
 
 A suggested command or example is not evidence of execution. Look for the returned function result, target and agent. If a host was added, check it in [the dashboard](/dashboard). If a diagnostic failed, ask for the returned error rather than accepting an invented explanation.
 
-For timing measurements, analysis may include the endpoint’s timing ratings. Physical measurements are interpreted using their units, measurement description and configured limits. There is no universal “excellent” voltage or temperature. See [reports](/docs/reports) and [alerts](/docs/alerts).
+For timing measurements, analysis may include the endpoint’s timing ratings. Physical measurements are interpreted using their units, measurement description and configured limits. There is no universal “excellent” voltage or temperature. See [reports](/docs/reports/) and [alerts](/docs/alerts/).
 
 ## Conversations, voice and stopping work
 
@@ -42,6 +42,6 @@ Stop generation when you no longer need a reply. For an operation already runnin
 
 Give the assistant the target, selected agent, intended outcome and relevant constraints. Review changes and generated code before use. Run security tests only on systems you own or have permission to test, following the [Acceptable Use Policy](/acceptable-use.html).
 
-Assistant interactions are logged under the service policy, and model providers may process supplied information. Avoid putting secrets into conversation text. Read [account and privacy guidance](/docs/account).
+Assistant interactions are logged under the service policy, and model providers may process supplied information. Avoid putting secrets into conversation text. Read [account and privacy guidance](/docs/account/).
 
-Next: [diagnostics](/docs/diagnostics), [quantum checks](/docs/quantum), [custom workflows](/docs/automation) or [camera snapshots](/docs/cameras).
+Next: [diagnostics](/docs/diagnostics/), [quantum checks](/docs/quantum/), [custom workflows](/docs/automation/) or [camera snapshots](/docs/cameras/).

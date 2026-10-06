@@ -68,7 +68,7 @@ export  function HelpDialog({ setOpen }) {
           Edit Host List Help
         </BootstrapDialogTitle>
         <DialogContent dividers>
-          <Typography gutterBottom>For a complete walkthrough, read the <a href="/docs/getting-started">first monitor guide</a>, <a href="/docs/endpoints">endpoint reference</a> and <a href="/docs/alerts">alert settings</a>.</Typography>
+          <Typography gutterBottom>For a complete walkthrough, read the <a href="/docs/getting-started/">first monitor guide</a>, <a href="/docs/endpoints/">endpoint reference</a> and <a href="/docs/alerts/">alert settings</a>.</Typography>
           <Typography gutterBottom>
             Click on a field to edit it. When done editing fields click on the save button <SaveIcon />.
           </Typography>

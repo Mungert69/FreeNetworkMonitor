@@ -43,11 +43,11 @@ Keep the agent running while completing the browser flow. If a code expires, use
 
 ## Assign your first host
 
-Open [the dashboard](/dashboard), add or edit a host and choose the new agent as its monitor location. Use an address reachable from the container. Enable the host and confirm fresh readings. See [your first monitor](/docs/getting-started).
+Open [the dashboard](/dashboard), add or edit a host and choose the new agent as its monitor location. Use an address reachable from the container. Enable the host and confirm fresh readings. See [your first monitor](/docs/getting-started/).
 
 ## Tools and updates
 
-Available diagnostics depend on the image and installed native dependencies. Linux supports many network and browser workflows, but live BLE advertisement scanning is not currently implemented; use [Windows, Android or ESP32](/docs/sensors) for live sensor monitoring.
+Available diagnostics depend on the image and installed native dependencies. Linux supports many network and browser workflows, but live BLE advertisement scanning is not currently implemented; use [Windows, Android or ESP32](/docs/sensors/) for live sensor monitoring.
 
 To update a container, preserve the volume and use:
 
@@ -57,4 +57,4 @@ docker compose up -d
 docker logs -f processor
 ```
 
-Confirm the registered agent reconnects and readings resume. For a missing location or a stopped upload, use [troubleshooting](/docs/troubleshooting). Compare [other platforms](/docs/platforms) before choosing a replacement.
+Confirm the registered agent reconnects and readings resume. For a missing location or a stopped upload, use [troubleshooting](/docs/troubleshooting/). Compare [other platforms](/docs/platforms/) before choosing a replacement.

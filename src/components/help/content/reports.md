@@ -2,7 +2,7 @@
 
 Scheduled reports summarise your monitored hosts with successful/failed observations, measurement summaries and graphs. The report schedule and availability follow the service/account configuration; normal service reports are presented as weekly summaries.
 
-Verify email and enable notifications in [Profile](/docs/account). If a report has no data, check whether the host had available readings during its period and whether its agent was running.
+Verify email and enable notifications in [Profile](/docs/account/). If a report has no data, check whether the host had available readings during its period and whether its agent was running.
 
 ## Understand measurements in a report
 
@@ -16,7 +16,7 @@ When AI report analysis is enabled, the assistant receives actual readings, time
 
 This lets it discuss a voltage trend differently from a latency trend. It should not invent safe battery temperatures or universal current limits when none were supplied. AI commentary is an interpretation of the observations, not proof of root cause or an equipment safety certification.
 
-You can ask the [assistant](/docs/assistant) to explain a particular host’s trend, status or limit breach and then compare it with the [chart](/docs/charts).
+You can ask the [assistant](/docs/assistant/) to explain a particular host’s trend, status or limit breach and then compare it with the [chart](/docs/charts/).
 
 ## Host and report JSON downloads
 
@@ -30,4 +30,4 @@ In **Profile**, use **Generate Data Download** to prepare the full stored-data a
 
 The archive currently preserves encoded readings and may not carry the resolved display metadata for every measurement. Use the website, reports or host measurement JSON to read physical values. Do not assume archive numbers are milliseconds or volts without the matching measurement definition.
 
-Available history depends on your [plan retention](/subscription), collection and archiving state. A download does not recover observations that were never collected while an agent was off. For missing coverage, see [troubleshooting](/docs/troubleshooting).
+Available history depends on your [plan retention](/subscription/), collection and archiving state. A download does not recover observations that were never collected while an agent was off. For missing coverage, see [troubleshooting](/docs/troubleshooting/).

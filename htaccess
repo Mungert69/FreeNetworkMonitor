@@ -1,18 +1,26 @@
 RewriteEngine On
 
-# Customer guides have their own generated HTML; keep canonical URLs slash-free.
-RewriteRule ^(features|download|faq|subscription|docs(?:/[a-z0-9-]+)?)/?$ $1/index.html [L]
+ErrorDocument 404 /404.html
 
-# Serve index.html for all URLs except /blog and existing files or directories
-RewriteCond %{REQUEST_URI} !^/blog
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule (.*) /index.html [L]
-# Rewrite image URLs to include the /blog subdirectory
-RewriteCond %{REQUEST_URI} ^/blog/(.*)\.(jpg|jpeg|png|gif|webp)$ [NC]
-RewriteRule ^(.*)$ /blog/$1 [L]
-# Don't rewrite files or directories
+# Consolidate the production www alias without affecting development hosts.
+RewriteCond %{HTTP_HOST} ^www\.readyforquantum\.com(?::[0-9]+)?$ [NC]
+RewriteRule ^ https://readyforquantum.com%{REQUEST_URI} [R=301,L,NE]
+
+# Legacy blog entry points go directly to the current blog host.
+RewriteRule ^blog(?:/index\.html)?/?$ https://blog.readyforquantum.com/ [R=301,L,NC]
+RewriteRule ^blog/((?:posts|categories|page)/.+)$ https://blog.readyforquantum.com/$1 [R=301,L]
+
+# Expanded from the shared route catalogue by scripts/generate-apache-routes.mjs.
+# GENERATED_PUBLIC_ALIASES
+
+# Existing generated documents and assets are served directly.
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
+# Only known application routes use the SPA shell. Preserve their query strings
+# (including login callbacks and dashboard deep links) without rewriting the URL.
+RewriteRule ^(?:dashboard|start-login-proxy)/?$ /index.html [L,NC]
+
+# Unknown public pages and missing assets must not look like the homepage.
+RewriteRule ^ - [R=404,L]

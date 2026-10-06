@@ -2,7 +2,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
   guides,
@@ -13,6 +13,7 @@ import {
 } from "../src/components/help/catalog.mjs";
 import { homeMetadata, plansMetadata } from "../src/public-page-metadata.mjs";
 import { featureIntro, featureHighlights } from "../src/components/help/feature-highlights.mjs";
+import { canonicalPublicPath } from "../src/site-pages.mjs";
 const h = React.createElement;
 const site = (
   process.env.PUBLIC_SITE_URL || "https://readyforquantum.com"
@@ -32,7 +33,7 @@ const esc = (s) =>
         c
       ],
   );
-const link = (url, title) => `<a href="${esc(url)}">${esc(title)}</a>`;
+const link = (url, title) => `<a href="${esc(canonicalPublicPath(url))}">${esc(title)}</a>`;
 const cards = (items) =>
   items
     .map(
@@ -56,7 +57,7 @@ const pages = [
     path: "/",
     title: homeMetadata.title,
     summary: homeMetadata.summary,
-    body: `<h2>Quantum readiness, backed by continuous monitoring</h2><p>Test post-quantum TLS and certificate support, investigate your network with security tools, and ask specialist AI experts to explain the results. Keep watching your services with monitoring, alerts and reports.</p><p>${link("/docs/quantum", "Explore quantum readiness")} · ${link("/features#security-diagnostics", "Security and AI features")}</p><h2>Monitor from the location you choose</h2><p>Use Linux, Windows, Android or ESP32 agents to monitor websites, local services and supported Bluetooth sensors. View measurements, trends and failures on the website.</p>${cards(guides.filter(g => ["endpoints", "platforms", "sensors", "charts", "alerts", "reports", "assistant", "quantum"].includes(g.slug)))}<h2>Get started</h2><p>${link("/download", "Choose and enrol an agent")} · ${link("/docs/getting-started", "Set up your first monitor")} · ${link("/subscription", "Compare plans")}</p><h2>Quantum-Safe TLS: Practical Guide &amp; Playbook</h2>${renderToStaticMarkup(h(ReactMarkdown, { remarkPlugins: [remarkGfm] }, await readFile("src/components/main/blog.md", "utf8")))}`,
+    body: `<h2>Quantum readiness, backed by continuous monitoring</h2><p>Test post-quantum TLS and certificate support, investigate your network with security tools, and ask specialist AI experts to explain the results. Keep watching your services with monitoring, alerts and reports.</p><p>${link("/docs/quantum", "Explore quantum readiness")} · ${link("/features#security-diagnostics", "Security and AI features")}</p><h2>Monitor from the location you choose</h2><p>Use Linux, Windows, Android or ESP32 agents to monitor websites, local services and supported Bluetooth sensors. View measurements, trends and failures on the website.</p>${cards(guides.filter(g => ["endpoints", "platforms", "sensors", "charts", "alerts", "reports", "assistant", "quantum"].includes(g.slug)))}<h2>Get started</h2><p>${link("/download", "Choose and enrol an agent")} · ${link("/docs/getting-started", "Set up your first monitor")} · ${link("/subscription", "Compare plans")}</p><h2>Quantum-Safe TLS: Practical Guide &amp; Playbook</h2>${renderToStaticMarkup(h(ReactMarkdown, { remarkPlugins: [remarkGfm], urlTransform: (url) => canonicalPublicPath(defaultUrlTransform(url)) }, await readFile("src/components/main/blog.md", "utf8")))}`,
   },
   {
     path: "/subscription",
@@ -115,7 +116,7 @@ for (const guide of guides) {
     h(
       ReactMarkdown,
       {
-        remarkPlugins: [remarkGfm],
+        remarkPlugins: [remarkGfm], urlTransform: (url) => canonicalPublicPath(defaultUrlTransform(url)),
         components: {
           h2: ({ children }) =>
             h("h2", { id: headingId(String(children)) }, children),
@@ -151,7 +152,7 @@ for (const page of pages) {
         headline: page.title,
         name: page.title,
         description: page.summary,
-        url: site + page.path,
+        url: site + canonicalPublicPath(page.path),
         ...(page.type === "FAQPage"
           ? {
               mainEntity: faqItems.map((q) => ({
@@ -181,7 +182,7 @@ for (const page of pages) {
                   "@type": "ListItem",
                   position: 2,
                   name: "Guides",
-                  item: site + "/docs",
+                  item: site + "/docs/",
                 },
               ]
             : []),
@@ -189,7 +190,7 @@ for (const page of pages) {
             "@type": "ListItem",
             position: page.path.startsWith("/docs/") ? 3 : 2,
             name: page.title,
-            item: site + page.path,
+            item: site + canonicalPublicPath(page.path),
           }]),
         ],
       },
@@ -197,7 +198,7 @@ for (const page of pages) {
   };
   html = html.replace(
     "</head>",
-    `<link rel="canonical" href="${esc(site + page.path)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(page.summary)}"><meta property="og:url" content="${esc(site + page.path)}"><meta property="og:type" content="${page.type === "TechArticle" ? "article" : "website"}"><script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>${style}</head>`,
+    `<link rel="canonical" href="${esc(site + canonicalPublicPath(page.path))}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(page.summary)}"><meta property="og:url" content="${esc(site + canonicalPublicPath(page.path))}"><meta property="og:type" content="${page.type === "TechArticle" ? "article" : "website"}"><script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>${style}</head>`,
   );
   html = html.replace(
     '<div id="root"></div>',
@@ -215,7 +216,7 @@ await writeFile(
   JSON.stringify(
     faqItems.map((q) => ({
       input: q.question,
-      output: `${q.answer}\n\nMore information: ${q.guide ? site + "/docs/" + q.guide : q.href.startsWith("/") ? site + q.href : q.href}\nFAQ: ${site}/faq#${q.id}`,
+      output: `${q.answer}\n\nMore information: ${q.guide ? site + "/docs/" + q.guide + "/" : q.href.startsWith("/") ? site + q.href : q.href}\nFAQ: ${site}/faq/#${q.id}`,
     })),
     null,
     2,

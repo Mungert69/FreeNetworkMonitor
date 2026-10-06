@@ -57,7 +57,7 @@ function BlogList({ title, posts, classes }) {
         }}
       >
         <Typography variant="h5" gutterBottom color='secondary'>
-          <Link display="block" className={classes.link} href={'/blog'}>
+          <Link display="block" className={classes.link} href={'https://blog.readyforquantum.com/'}>
             {title}
           </Link>
         </Typography>
@@ -109,7 +109,7 @@ function BlogList({ title, posts, classes }) {
                             </Markdown>
                           </Typography>
                           <Typography component="div" variant="h6" color="text.secondary">
-                          <Link display="block" className={classes.link} href={'/blog/posts/' + post.hash}>
+                          <Link display="block" className={classes.link} href={'https://blog.readyforquantum.com/posts/' + post.hash + '/'}>
                             Read more on blog site...
                           </Link>
                         </Typography>

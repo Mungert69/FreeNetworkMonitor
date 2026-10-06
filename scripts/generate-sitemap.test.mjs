@@ -25,7 +25,7 @@ test("build discovers new pages, removes deleted pages and keeps private routes 
     expect(await collectStaticPages(path.join(root, "public"))).toEqual(["/new-page.html"]);
     await generateSitemap({ root, site: "https://example.com" });
     const xml = await readFile(path.join(root, "dist/sitemap.xml"), "utf8");
-    expect(xml).toContain("https://example.com/docs/esp32");
+    expect(xml).toContain("https://example.com/docs/esp32/");
     expect(xml).toContain("https://example.com/new-page.html");
     for (const excluded of ["/dashboard", "/start-login-proxy", "/blog", "index-bak", "draft.html"]) expect(xml).not.toContain(excluded);
     expect(await readFile(path.join(root, "dist/robots.txt"), "utf8")).toContain("Sitemap: https://example.com/sitemap.xml");

@@ -2,7 +2,7 @@
 
 Install [Network Monitor Agent from the Microsoft Store](https://www.microsoft.com/store/apps/9P58PM1PM9TZ) for local monitoring and assistant access, or [Quantum Secure](https://www.microsoft.com/store/apps/9NXT248W9NR6) for the additional single-host checks, local network discovery and logs views.
 
-Both use your service account and can host a local agent. The [platform comparison](/docs/platforms) explains the alternatives, including Docker.
+Both use your service account and can host a local agent. The [platform comparison](/docs/platforms/) explains the alternatives, including Docker.
 
 ## Enable and authorise the agent
 
@@ -12,14 +12,14 @@ The app’s setup and configuration views help you confirm the selected account 
 
 ## Use the app and website together
 
-The Monitored Hosts view shows hosts assigned to your account, their readings and status. The assistant helps manage hosts and run available diagnostics. The website provides the fuller [charts, table and history controls](/docs/charts).
+The Monitored Hosts view shows hosts assigned to your account, their readings and status. The assistant helps manage hosts and run available diagnostics. The website provides the fuller [charts, table and history controls](/docs/charts/).
 
 Quantum Secure’s Check Host view is for a direct test; Scan Local Network helps discover devices from a selected local interface; Logs helps inspect local operation. A discovery result is not automatically proof that a recurring monitor is configured—check your host list.
 
 ## Bluetooth and diagnostic tools
 
-Live Bluetooth monitoring requires a working Bluetooth adapter and device broadcasts in range. Follow [sensor setup](/docs/sensors) for addresses, keys and metrics.
+Live Bluetooth monitoring requires a working Bluetooth adapter and device broadcasts in range. Follow [sensor setup](/docs/sensors/) for addresses, keys and metrics.
 
-Metasploit requires a separate Framework installation and a usable executable path, as well as account entitlement. Follow [Rapid7’s installation guidance](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html). Other tools depend on the app build and installed dependencies; consult [diagnostics](/docs/diagnostics).
+Metasploit requires a separate Framework installation and a usable executable path, as well as account entitlement. Follow [Rapid7’s installation guidance](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html). Other tools depend on the app build and installed dependencies; consult [diagnostics](/docs/diagnostics/).
 
-Keep the PC awake and connected for continuous checks. Update through the Store, then verify fresh observations. For missing hosts or unavailable commands, see [troubleshooting](/docs/troubleshooting).
+Keep the PC awake and connected for continuous checks. Update through the Store, then verify fresh observations. For missing hosts or unavailable commands, see [troubleshooting](/docs/troubleshooting/).

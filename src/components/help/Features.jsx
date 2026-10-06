@@ -64,10 +64,10 @@ export default function Features() {
             {featureIntro.summary}
           </Typography>
           <Stack direction="row" sx={{ gap: 3, flexWrap: "wrap", mt: 5 }}>
-            <Button href="/docs/quantum" variant="contained">
+            <Button href="/docs/quantum/" variant="contained">
               Explore quantum readiness
             </Button>
-            <Button href="/docs/platforms" variant="outlined">
+            <Button href="/docs/platforms/" variant="outlined">
               Choose an agent
             </Button>
           </Stack>
@@ -208,11 +208,11 @@ export default function Features() {
           allowances and retention.
         </Typography>
         <Stack direction="row" sx={{ gap: 3, flexWrap: "wrap" }}>
-          <Button href="/download" variant="contained">
+          <Button href="/download/" variant="contained">
             Get an agent
           </Button>
-          <Button href="/subscription">Compare plans</Button>
-          <Button href="/faq">Common questions</Button>
+          <Button href="/subscription/">Compare plans</Button>
+          <Button href="/faq/">Common questions</Button>
         </Stack>
       </Card>
     </PublicLayout>

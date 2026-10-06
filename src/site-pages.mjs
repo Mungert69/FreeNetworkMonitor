@@ -8,3 +8,18 @@ export const publicPaths = Object.freeze({
   download: "/download",
   subscription: "/subscription",
 });
+
+// Apache serves these generated pages as directories. Use the same trailing-slash
+// URL in links, static metadata, runtime metadata and the sitemap.
+export function canonicalPublicPath(value) {
+  return value.replace(
+    /^(\/(?:features|download|faq|subscription|docs(?:\/[a-z0-9-]+)?))\/?(?=[?#]|$)/i,
+    (_, path) => `${path.toLowerCase()}/`,
+  );
+}
+
+export function canonicalPublicUrl(value) {
+  const url = new URL(value);
+  url.pathname = canonicalPublicPath(url.pathname);
+  return url.href;
+}

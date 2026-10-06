@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { guides, faqItems } from "../src/components/help/catalog.mjs";
+import { canonicalPublicPath } from "../src/site-pages.mjs";
 const site = (
   process.env.PUBLIC_SITE_URL || "https://readyforquantum.com"
 ).replace(/\/$/, "");
@@ -21,18 +22,18 @@ for (const path of [
     `${path} has readable initial HTML`,
   );
   assert.ok(
-    html.includes(`<link rel="canonical" href="${site + path}">`),
+    html.includes(`<link rel="canonical" href="${site + canonicalPublicPath(path)}">`),
     `${path} canonical`,
   );
   assert.equal((html.match(/<meta name="description"/g) || []).length, 1);
   assert.ok(
-    sitemap.includes(`<loc>${site + path}</loc>`),
+    sitemap.includes(`<loc>${site + canonicalPublicPath(path)}</loc>`),
     `${path} in sitemap`,
   );
   const data = JSON.parse(
     html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1],
   );
-  assert.equal(data["@graph"][0].url, site + path);
+  assert.equal(data["@graph"][0].url, site + canonicalPublicPath(path));
   if (path.startsWith("/docs/")) {
     assert.equal(data["@graph"][0]["@type"], "TechArticle");
     assert.ok(html.includes("<article>"));
@@ -43,7 +44,7 @@ for (const path of [
 }
 const homeHtml = await readFile("dist/index.html", "utf8");
 assert.ok(homeHtml.includes("Quantum-Safe TLS"), "Home article is readable without JavaScript");
-assert.ok(homeHtml.includes('href="/docs/alerts"'), "Home links to feature guides");
+assert.ok(homeHtml.includes('href="/docs/alerts/"'), "Home links to feature guides");
 const plansHtml = await readFile("dist/subscription/index.html", "utf8");
 assert.ok(plansHtml.includes("current plan prices and allowances"), "Plans explain live pricing");
 assert.ok(plansHtml.includes('href="/dashboard?initViewSub=true"'), "Plans retain the account entry point");
@@ -63,6 +64,6 @@ assert.equal(faqExport.length, faqItems.length);
 for (const [i, q] of faqItems.entries()) {
   assert.equal(faqExport[i].input, q.question);
   assert.ok(faqExport[i].output.includes(q.answer));
-  assert.ok(faqExport[i].output.includes(`/faq#${q.id}`));
+  assert.ok(faqExport[i].output.includes(`/faq/#${q.id}`));
 }
 console.log(`Validated ${faqExport.length} index-compatible FAQ records.`);

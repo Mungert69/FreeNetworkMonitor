@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { publicPaths } from "../src/site-pages.mjs";
+import { publicPaths, canonicalPublicPath } from "../src/site-pages.mjs";
 import { guides } from "../src/components/help/catalog.mjs";
 
 const escapeXml = (value) => value.replace(/[&<>"']/g, (c) => ({
@@ -41,7 +41,7 @@ export function renderSitemap(paths, site) {
 
 export async function generateSitemap({ root = process.cwd(), site = process.env.PUBLIC_SITE_URL || "https://readyforquantum.com" } = {}) {
   const staticPages = await collectStaticPages(path.join(root, "public"));
-  const paths = [...Object.values(publicPaths), ...guides.map(({ slug }) => `${publicPaths.guides}/${slug}`), ...staticPages];
+  const paths = [...Object.values(publicPaths), ...guides.map(({ slug }) => `${publicPaths.guides}/${slug}`), ...staticPages].map(canonicalPublicPath);
   const xml = renderSitemap(paths, site);
   await writeFile(path.join(root, "dist/sitemap.xml"), xml);
   const robots = await readFile(path.join(root, "public/robots.txt"), "utf8");

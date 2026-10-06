@@ -533,7 +533,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                         {(!isLoggedIn || localAgentOptions.length === 0) && (
                             <Typography variant="body2" sx={{ mt: 1 }}>
                                 Install a local agent for intrusive checks.{" "}
-                                <Link href="https://freenetworkmonitor.click/download" target="_blank" rel="noopener">
+                                <Link href="https://freenetworkmonitor.click/download/" target="_blank" rel="noopener">
                                     Download the agent
                                 </Link>
                                 .
@@ -728,7 +728,7 @@ const AdvancedToolsSection = React.memo(({ isLoggedIn, localAgentOptions, onAssi
                 {(!isLoggedIn || localAgentOptions.length === 0) && (
                     <Typography variant="body2" align="center" sx={{ mt: 3 }}>
                         Install a local agent to unlock custom code deployments.{" "}
-                        <Link href="https://freenetworkmonitor.click/download" target="_blank" rel="noopener">
+                        <Link href="https://freenetworkmonitor.click/download/" target="_blank" rel="noopener">
                             Download the agent
                         </Link>
                         .
@@ -965,9 +965,9 @@ const ProductDetail = () => {
                     <Paper variant="outlined" sx={{ p: 5, mb: 6, borderRadius: 4 }}>
                       <Typography variant="h5" component="h2" gutterBottom>Quantum readiness, backed by continuous monitoring</Typography>
                       <Typography color="text.secondary" sx={{ mb: 3 }}>Test post-quantum TLS and certificate support, investigate your network with security tools, and ask specialist AI experts to explain the results. Keep watching your services with monitoring, alerts and reports.</Typography>
-                      <Button href="/docs/quantum" variant="contained" sx={{ mr: 3, mb: 2 }}>Explore quantum readiness</Button>
-                      <Button href="/features#security-diagnostics" variant="outlined" sx={{ mr: 3, mb: 2 }}>Security and AI features</Button>
-                      <Button href="/docs/platforms" sx={{ mb: 2 }}>Choose an agent</Button>
+                      <Button href="/docs/quantum/" variant="contained" sx={{ mr: 3, mb: 2 }}>Explore quantum readiness</Button>
+                      <Button href="/features/#security-diagnostics" variant="outlined" sx={{ mr: 3, mb: 2 }}>Security and AI features</Button>
+                      <Button href="/docs/platforms/" sx={{ mb: 2 }}>Choose an agent</Button>
                     </Paper>
                     <Grid container justifyContent="center" sx={{ mb: 4 }}>
                         <Grid size={{ xs: 12, md: 10 }}>

@@ -88,13 +88,13 @@ export default function Download() {
           account on the dashboard.
         </Typography>
         <Button
-          href="/docs/linux#enrol-the-agent-through-its-logs"
+          href="/docs/linux/#enrol-the-agent-through-its-logs"
           sx={{ mt: 3, mr: 3 }}
         >
           Linux / Docker log instructions
         </Button>
         <Button
-          href="/docs/esp32#enrol-the-board-through-its-serial-log"
+          href="/docs/esp32/#enrol-the-board-through-its-serial-log"
           sx={{ mt: 3 }}
         >
           ESP32 serial instructions
@@ -139,7 +139,7 @@ export default function Download() {
                     {label}
                   </Button>
                 ))}
-                <Button href={`/docs/${p.guide}`} variant="contained">
+                <Button href={`/docs/${p.guide}/`} variant="contained">
                   Setup guide
                 </Button>
               </Stack>
@@ -155,10 +155,10 @@ export default function Download() {
           Agents have different capabilities. Check the platform comparison for
           Bluetooth, browser checks, native diagnostics and embedded limits.
         </Typography>
-        <Button href="/docs/platforms" sx={{ mt: 3 }}>
+        <Button href="/docs/platforms/" sx={{ mt: 3 }}>
           Compare agents
         </Button>
-        <Button href="/docs/getting-started" sx={{ mt: 3 }}>
+        <Button href="/docs/getting-started/" sx={{ mt: 3 }}>
           Your first monitor
         </Button>
       </Box>

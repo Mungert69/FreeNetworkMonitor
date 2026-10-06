@@ -23,7 +23,8 @@ const contentFiles = import.meta.glob("./content/*.md", {
   eager: true,
 });
 export default function Guide() {
-  const { slug } = useParams();
+  const { slug: requestedSlug } = useParams();
+  const slug = requestedSlug?.toLowerCase();
   const { hash } = useLocation();
   const guide = guides.find((item) => item.slug === slug);
   const content = contentFiles[`./content/${slug}.md`] ?? "";
@@ -43,13 +44,14 @@ export default function Guide() {
   if (!guide || !content)
     return (
       <PublicLayout
+        noIndex
         title="Guide not found"
         description="Find help for Network Monitor."
       >
         <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
           We couldn’t find that guide.
         </Typography>
-        <Button href="/docs" variant="contained">
+        <Button href="/docs/" variant="contained">
           Browse all guides
         </Button>
       </PublicLayout>
@@ -65,7 +67,7 @@ export default function Guide() {
   return (
     <PublicLayout title={guide.title} description={guide.summary}>
       <Breadcrumbs sx={{ mb: 4 }}>
-        <Link href="/docs" underline="hover">
+        <Link href="/docs/" underline="hover">
           Guides
         </Link>
         <Typography color="text.secondary">{group.title}</Typography>
@@ -173,7 +175,7 @@ export default function Guide() {
               ))}
             </Stack>
             <Divider sx={{ my: 5 }} />
-            <Button href="/docs" size="small">
+            <Button href="/docs/" size="small">
               All guides
             </Button>
           </Box>

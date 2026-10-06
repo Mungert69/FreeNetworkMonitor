@@ -34,7 +34,7 @@ describe("help navigation", () => {
     ).toBeVisible();
     expect(
       screen.getByRole("link", { name: "Read the guide" }),
-    ).toHaveAttribute("href", "/docs/sensors");
+    ).toHaveAttribute("href", "/docs/sensors/");
   });
   it("matches multiword FAQ searches and filters by topic", () => {
     render(<Faq />);
@@ -88,6 +88,6 @@ describe("help navigation", () => {
     );
     expect(
       screen.getByRole("link", { name: "Browse all guides" }),
-    ).toHaveAttribute("href", "/docs");
+    ).toHaveAttribute("href", "/docs/");
   });
 });
