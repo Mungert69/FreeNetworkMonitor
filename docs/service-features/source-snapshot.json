@@ -1,0 +1,203 @@
+{
+  "audit_date": "2026-10-06",
+  "scope": "Working source and logged-out live public presentation; no deployment or runtime feature validation",
+  "repositories": [
+    {
+      "name": "FreeNetworkMonitor",
+      "head": "eae044336c5e3b2201e12bc914ef5604e43cb90e",
+      "branch": "NewAuth",
+      "working_tree_changes": true,
+      "role_note": null
+    },
+    {
+      "name": "FreeNetworkMonitorBlog",
+      "head": "81feaf8ddf24856f7c1f70a9c83c1995ff1cc9e3",
+      "branch": "master",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitor",
+      "head": "5ed586b6a169130e9523a1f6f9f937ab2c05043a",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorAdmin",
+      "head": "55170cc14e793c121cde5ddd1b3f971533779d64",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorAgent",
+      "head": "d58e46dfaa774e367980a83bf4b1fa2fa697b7c8",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorAlert",
+      "head": "eaf62be27044d4462773db32c5d76e688618f292",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorApi",
+      "head": "07afaf2d3fd27a9a47e697bf069a83564bcad3a7",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorBackup",
+      "head": "44e7b1db67494171eaedc959d724e2db5042eb1e",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorBlazor",
+      "head": "ef0ac8dec2f2b0e4783d40789800e13cd3527c80",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorCacheHttp",
+      "head": "139e9c0f7af3bada41019c6d247c683b5c729406",
+      "branch": "master",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorChatRazorLib",
+      "head": "d5ea7a4cac9f5633b3b9cb153b48f6fe9c12d4da",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorData",
+      "head": "027763becee6dd240f26eea18e05c201ec7fb0fc",
+      "branch": "master",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorDataInjest",
+      "head": null,
+      "branch": null,
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorKokoro",
+      "head": "ebd27f7afbb666b9e3fbaddaed1d826e93a37c98",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorLLM",
+      "head": "59fc25de893ce33e68cb8eaa2ee8e7ddb296d632",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorLib",
+      "head": "849d8b7f0dec2ded44e09daf78cbc690cee24fb2",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorML",
+      "head": "7e72f69888f544f2290d60d024cdcbea8e46b37f",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorMaui",
+      "head": "9bdf19424fb83880db87148c160f27d6b25e80bb",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorPayment",
+      "head": "53d64c3049f234cb5cf849bce0df87daa4bbe088",
+      "branch": "master",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorProcessorAgent",
+      "head": "79e7db25188d791d821b1c962d700cdd53fdeb3f",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorProcessorAgentESP32",
+      "head": "00cc7b58d56c9e84678810d04eadd2ede0fc2914",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorProcessorAgentESP32-copy",
+      "head": null,
+      "branch": null,
+      "working_tree_changes": false,
+      "role_note": "Duplicate checkout, excluded as separate product"
+    },
+    {
+      "name": "NetworkMonitorProcessorAgentMQTT",
+      "head": "48b0923732e98f53ce3874d23d1028a85e9b995a",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorScheduler",
+      "head": "f9f5961415a8dd02c3ee29f6a87ab9e738a859f2",
+      "branch": "master",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorSearch",
+      "head": "8a7f13763646ba86352ff978404c8d2def22a5b5",
+      "branch": "master",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "NetworkMonitorService",
+      "head": "59049ff38663665f8068c5956dfe5e8caac6cc64",
+      "branch": "NewAuth",
+      "working_tree_changes": false,
+      "role_note": null
+    },
+    {
+      "name": "QuantumSecure",
+      "head": "495a6698bf53e97ed9c07bb8473d332839bbc2b9",
+      "branch": "main",
+      "working_tree_changes": false,
+      "role_note": null
+    }
+  ],
+  "catalogues": {
+    "builtin_endpoints": 20,
+    "builtin_dotnet_command_processors": 19,
+    "esp32_endpoints": 11,
+    "esp32_command_processors": 6,
+    "ble_v2_definitions": 135,
+    "victron_record_layouts": 13
+  }
+}

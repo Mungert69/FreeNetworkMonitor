@@ -1,0 +1,930 @@
+{
+  "observations": [
+    {
+      "path": "/features",
+      "mode": "light",
+      "mobile": false,
+      "h1": "One place to watch your network and understand what changed.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Monitoring, diagnostics and AI features | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Make your monitoring work for you.",
+      "overflow": false,
+      "article": false,
+      "headings": 0,
+      "title": "Guides | Quantum Network Monitor"
+    },
+    {
+      "path": "/download",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Bring monitoring to your network.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Download and set up your agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/faq",
+      "mode": "light",
+      "mobile": false,
+      "h1": "A little help, right when you need it.",
+      "overflow": false,
+      "article": false,
+      "headings": 24,
+      "title": "Frequently asked questions | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/getting-started",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Your first monitor",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Your first monitor | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/endpoints",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Choose a monitoring check",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Choose a monitoring check | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/platforms",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Choose an agent",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Choose an agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/sensors",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Monitor Bluetooth sensors",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Monitor Bluetooth sensors | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/ble-metrics",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Bluetooth metric reference",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Bluetooth metric reference | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/alerts",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Set up alerts",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Set up alerts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/charts",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Explore hosts and charts",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Explore hosts and charts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/reports",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Reports and downloads",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Reports and downloads | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/assistant",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Use the AI assistant",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Use the AI assistant | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/diagnostics",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Run diagnostic checks",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Run diagnostic checks | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/quantum",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Check quantum readiness",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Check quantum readiness | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/automation",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Custom checks and workflows",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Custom checks and workflows | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/cameras",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Inspect a camera snapshot",
+      "overflow": false,
+      "article": true,
+      "headings": 4,
+      "title": "Inspect a camera snapshot | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/linux",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Install the Linux / Docker agent",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Linux / Docker agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/windows",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Install the Windows apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Windows apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/android",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Install the Android apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Android apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/esp32",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Set up an ESP32-S3",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Set up an ESP32-S3 | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/account",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Account and agent management",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Account and agent management | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/troubleshooting",
+      "mode": "light",
+      "mobile": false,
+      "h1": "Troubleshoot your setup",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Troubleshoot your setup | Quantum Network Monitor"
+    },
+    {
+      "path": "/features",
+      "mode": "light",
+      "mobile": true,
+      "h1": "One place to watch your network and understand what changed.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Monitoring, diagnostics and AI features | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Make your monitoring work for you.",
+      "overflow": false,
+      "article": false,
+      "headings": 0,
+      "title": "Guides | Quantum Network Monitor"
+    },
+    {
+      "path": "/download",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Bring monitoring to your network.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Download and set up your agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/faq",
+      "mode": "light",
+      "mobile": true,
+      "h1": "A little help, right when you need it.",
+      "overflow": false,
+      "article": false,
+      "headings": 24,
+      "title": "Frequently asked questions | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/getting-started",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Your first monitor",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Your first monitor | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/endpoints",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Choose a monitoring check",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Choose a monitoring check | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/platforms",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Choose an agent",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Choose an agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/sensors",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Monitor Bluetooth sensors",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Monitor Bluetooth sensors | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/ble-metrics",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Bluetooth metric reference",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Bluetooth metric reference | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/alerts",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Set up alerts",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Set up alerts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/charts",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Explore hosts and charts",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Explore hosts and charts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/reports",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Reports and downloads",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Reports and downloads | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/assistant",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Use the AI assistant",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Use the AI assistant | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/diagnostics",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Run diagnostic checks",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Run diagnostic checks | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/quantum",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Check quantum readiness",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Check quantum readiness | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/automation",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Custom checks and workflows",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Custom checks and workflows | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/cameras",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Inspect a camera snapshot",
+      "overflow": false,
+      "article": true,
+      "headings": 4,
+      "title": "Inspect a camera snapshot | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/linux",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Install the Linux / Docker agent",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Linux / Docker agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/windows",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Install the Windows apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Windows apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/android",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Install the Android apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Android apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/esp32",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Set up an ESP32-S3",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Set up an ESP32-S3 | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/account",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Account and agent management",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Account and agent management | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/troubleshooting",
+      "mode": "light",
+      "mobile": true,
+      "h1": "Troubleshoot your setup",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Troubleshoot your setup | Quantum Network Monitor"
+    },
+    {
+      "path": "/features",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "One place to watch your network and understand what changed.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Monitoring, diagnostics and AI features | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Make your monitoring work for you.",
+      "overflow": false,
+      "article": false,
+      "headings": 0,
+      "title": "Guides | Quantum Network Monitor"
+    },
+    {
+      "path": "/download",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Bring monitoring to your network.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Download and set up your agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/faq",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "A little help, right when you need it.",
+      "overflow": false,
+      "article": false,
+      "headings": 24,
+      "title": "Frequently asked questions | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/getting-started",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Your first monitor",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Your first monitor | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/endpoints",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Choose a monitoring check",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Choose a monitoring check | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/platforms",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Choose an agent",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Choose an agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/sensors",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Monitor Bluetooth sensors",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Monitor Bluetooth sensors | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/ble-metrics",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Bluetooth metric reference",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Bluetooth metric reference | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/alerts",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Set up alerts",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Set up alerts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/charts",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Explore hosts and charts",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Explore hosts and charts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/reports",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Reports and downloads",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Reports and downloads | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/assistant",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Use the AI assistant",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Use the AI assistant | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/diagnostics",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Run diagnostic checks",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Run diagnostic checks | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/quantum",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Check quantum readiness",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Check quantum readiness | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/automation",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Custom checks and workflows",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Custom checks and workflows | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/cameras",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Inspect a camera snapshot",
+      "overflow": false,
+      "article": true,
+      "headings": 4,
+      "title": "Inspect a camera snapshot | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/linux",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Install the Linux / Docker agent",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Linux / Docker agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/windows",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Install the Windows apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Windows apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/android",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Install the Android apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Android apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/esp32",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Set up an ESP32-S3",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Set up an ESP32-S3 | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/account",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Account and agent management",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Account and agent management | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/troubleshooting",
+      "mode": "dark",
+      "mobile": false,
+      "h1": "Troubleshoot your setup",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Troubleshoot your setup | Quantum Network Monitor"
+    },
+    {
+      "path": "/features",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "One place to watch your network and understand what changed.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Monitoring, diagnostics and AI features | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Make your monitoring work for you.",
+      "overflow": false,
+      "article": false,
+      "headings": 0,
+      "title": "Guides | Quantum Network Monitor"
+    },
+    {
+      "path": "/download",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Bring monitoring to your network.",
+      "overflow": false,
+      "article": false,
+      "headings": 5,
+      "title": "Download and set up your agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/faq",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "A little help, right when you need it.",
+      "overflow": false,
+      "article": false,
+      "headings": 24,
+      "title": "Frequently asked questions | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/getting-started",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Your first monitor",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Your first monitor | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/endpoints",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Choose a monitoring check",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Choose a monitoring check | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/platforms",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Choose an agent",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Choose an agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/sensors",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Monitor Bluetooth sensors",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Monitor Bluetooth sensors | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/ble-metrics",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Bluetooth metric reference",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Bluetooth metric reference | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/alerts",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Set up alerts",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Set up alerts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/charts",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Explore hosts and charts",
+      "overflow": false,
+      "article": true,
+      "headings": 7,
+      "title": "Explore hosts and charts | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/reports",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Reports and downloads",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Reports and downloads | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/assistant",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Use the AI assistant",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Use the AI assistant | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/diagnostics",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Run diagnostic checks",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Run diagnostic checks | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/quantum",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Check quantum readiness",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Check quantum readiness | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/automation",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Custom checks and workflows",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Custom checks and workflows | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/cameras",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Inspect a camera snapshot",
+      "overflow": false,
+      "article": true,
+      "headings": 4,
+      "title": "Inspect a camera snapshot | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/linux",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Install the Linux / Docker agent",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Linux / Docker agent | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/windows",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Install the Windows apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Windows apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/android",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Install the Android apps",
+      "overflow": false,
+      "article": true,
+      "headings": 5,
+      "title": "Install the Android apps | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/esp32",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Set up an ESP32-S3",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Set up an ESP32-S3 | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/account",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Account and agent management",
+      "overflow": false,
+      "article": true,
+      "headings": 6,
+      "title": "Account and agent management | Quantum Network Monitor"
+    },
+    {
+      "path": "/docs/troubleshooting",
+      "mode": "dark",
+      "mobile": true,
+      "h1": "Troubleshoot your setup",
+      "overflow": false,
+      "article": true,
+      "headings": 8,
+      "title": "Troubleshoot your setup | Quantum Network Monitor"
+    }
+  ],
+  "errors": [],
+  "noJs": {
+    "h1": "Monitor Bluetooth sensors",
+    "text": "Home · Features · Guides · Get an agent · FAQ · Plans · Dashboard\nMonitor Bluetooth sensors\n\nRead Victron, Ruuvi and BTHome broadcasts with automatic units and selectable metrics.\n\nWhat Bluetooth monitoring does · Supported devices and protocols · Add a Victron monitor · Add a Ruuvi or BTHome monitor · Values and missing readings · Discovery and generic payloads · Vendor references\nWhat Bluetooth monitoring does\n\nRead compatible device broadcasts without connecting to their GATT services or controlling the device. Your agent needs a Bluetooth adapter, scanning permission and radio range. Use Windows, Android or BLE-enabled ESP32 firmware. Linux live scanning is not currently implemented.\n\nChoose blebroadcast to record a specific metric from a device. blebroadcastlisten discovers nearby broadcasts during a capped window and returns diagnostics; it does not automatically make a monitor for every value it sees.\n\nSupported devices and protocols\nFormat in Args\tSupported broadcasts\tKey\nvictron\tVictron Instant Readout records\tDevice advertisement encryption key\nruuvi\tRuuviTag RAWv2 / format 5\tNo key\nbthome\tBTHome v2 broadcasts, including compatible Shelly BLU devices\tNo key for plain packets; AES key for encrypted packets\n\nVictron record support includes solar chargers, battery monitors, inverters, DC/DC converters, SmartLithium, Inverter RS, AC chargers, Smart Battery Protect, Lynx Smart BMS, Multi RS, VE.Bus, DC energy meters and Orion XS. The packet’s record type selects the decoder. Available readings depend on the device and firmware.\n\nBTHome is a protocol used by different manufacturers. Support does not mean every Shelly or other vendor device broadcasts BTHome v2. Check the device’s documentation.\n\nAdd a Victron monitor\nEnable the device’s supported broadcast/readout feature and obtain its advertisement key using the vendor’s device tools. This is not the short Bluetooth pairing PIN.\nOn the dashboard, add a host using blebroadcast and an agent near the device.\nEnter the BLE address and put the advertisement key in Password / Key.\nSet Args to the format and exact metric name:\n--format victron --metric battery_voltage\n\nEnable and save. Confirm that the latest status identifies the selected metric and that the value uses V.\n\nTo monitor current too, add another host with the same address/key/location and:\n\n--format victron --metric battery_current\n\n\nDifferent Args distinguish the monitors. One broadcast may contain several readings, but each host records its selected metric. Keep the explicit metric even when a device has a familiar default.\n\nAdd a Ruuvi or BTHome monitor\n\nFor a RuuviTag temperature monitor, leave Password / Key empty and use:\n\n--format ruuvi --metric temperature\n\n\nFor a plain BTHome v2 temperature device:\n\n--format bthome --metric temperature\n\n\nEncrypted BTHome needs the device’s 16-byte key and correct BLE address. Its encryption also authenticates the packet. If your device emits a different object, select it from the metric reference. Repeated fields get numbered selectors: temperature for the first, temperature_2 for the second. Use --format bthome --metric temperature_2 to record the second temperature, and confirm its physical meaning from the device’s output.\n\nValues and missing readings\n\nUnits and conversion are automatic. You do not need to enter a scale or offset for a supported metric. A value such as -1.1 A can be valid current, not a timeout. A missing field, unsupported record or unavailable value should be shown as an unavailable reading.\n\nStates, button events and counters are not interchangeable with continuously sampled temperature. A trigger-based sensor may only broadcast when something happens; choose a capture budget/cadence appropriate to it. A sparse event stream does not prove the device is offline.\n\nUse high/low limits in actual units when useful. The chart colours violations of your current limits; it does not reconstruct past alert events.\n\nDiscovery and generic payloads\n\nListen mode can help find addresses/payloads. Decoded output is diagnostic text, not proof that all nearby devices are compatible. Raw, AES-GCM and AES-CTR payload options are available for specialist capture/decryption, but arbitrary payloads do not gain an automatic physical metric.\n\nIf discovery succeeds but a targeted reading fails, check format, key, address, broadcast interval, radio range and whether that record actually contains the selected field. See troubleshooting.\n\nVendor references\nVictron Extra Manufacturer Data specification (PDF)\nVictron Orion XS layout discussion\nRuuvi RAWv2 / format 5\nBTHome format reference and encrypted broadcasts\nShelly BLE documentation\n\nThese references describe the protocols. The metric list describes the selection names supported here.\n\nKeep exploring\nBluetooth metric reference\n\nFind the exact metric names and units for supported sensor broadcasts.\n\nSet up alerts\n\nUnderstand failed checks, optional high and low limits, email delivery and resetting alerts.\n\nExplore hosts and charts\n\nUse table options, time ranges, status markers and expandable chart details.\n\nHome · Features · Guides · Get an agent · FAQ · Plans · Dashboard\n\nPrivacy · Security & Compliance",
+    "canonical": "https://readyforquantum.com/docs/sensors"
+  }
+}

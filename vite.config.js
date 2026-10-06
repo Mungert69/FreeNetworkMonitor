@@ -106,7 +106,20 @@ const parseDockerBaseImage = (filePath) => {
 const dockerBase = parseDockerBaseImage(dockerfilePath);
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), {
+    name: 'preview-public-documents',
+    configurePreviewServer(server) {
+      // Mirror Apache's slash-free public-page routing when checking a build locally.
+      server.middlewares.use((req, _res, next) => {
+        const pathname = (req.url || '').split('?')[0];
+        if (/^\/(features|download|faq|subscription|docs(?:\/[a-z0-9-]+)?)$/.test(pathname)
+          && fs.existsSync(path.resolve('dist', `.${pathname}/index.html`))) {
+          req.url = req.url.replace(pathname, `${pathname}/index.html`);
+        }
+        next();
+      });
+    },
+  }],
   ...(isVitest
     ? {}
     : {

@@ -1,3 +1,4 @@
+import { plansMetadata } from '../../public-page-metadata.mjs';
 import AppearanceMenu from '../../theme/AppearanceMenu';
 import React, { useState, useEffect, useRef }  from "react";
 import clsx from 'clsx';
@@ -11,6 +12,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MainListItems from '../dashboard/MainListItems';
 //import PingImage from '../../img/ping.svg';
@@ -21,6 +23,7 @@ import useClasses from "../dashboard/useClasses";
 import { useTheme } from '@mui/material/styles';
 import AuthNav from '../auth-nav';
 import LogoLink from './LogoLink';
+import HeaderBrand from './HeaderBrand';
 import PricingContent from './PricingContent';
 import pingImage from '/ping.svg';
 import { useMediaQuery } from '@mui/material';
@@ -57,8 +60,8 @@ export default function Pricing(){
         <div className={classes.root}>
             <CssBaseline />
             <Seo
-                title="Quantum Network Monitor Online Website Monitoring"
-                description="This website provides a Quantum Network Monitor online service. Providing realtime monitoring, charts and alerts for all your websites and network hosts. Setup is easy and simple. It is free to use."
+                title={plansMetadata.title + " | Quantum Network Monitor"}
+                description={plansMetadata.summary}
                 openGraph={{
                     ogImage: {
                         ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
@@ -84,9 +87,8 @@ export default function Pricing(){
                         <MenuIcon />
                     </IconButton>
                     <LogoLink />
-                    <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-                        Quantum Network Monitor
-                    </Typography>
+                    <HeaderBrand className={classes.title} sx={{ paddingLeft: { xs: 1, sm: 4 }, display: { xs: 'none', sm: 'block' } }} />
+                    <Box sx={{ flexGrow: 1, display: { xs: 'block', sm: 'none' } }} />
                     <AppearanceMenu />
                     <AuthNav openInNewTab={openInNewTab}/>
 
@@ -116,6 +118,8 @@ export default function Pricing(){
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth={false} className={classes.container}>
+                    <Typography component="h1" variant="h4" sx={{ mt: 3, textAlign: "left" }}>{plansMetadata.title}</Typography>
+                    <Typography sx={{ mt: 1 }}>{plansMetadata.summary}</Typography>
                     <PricingContent noRedirect={true} apiUser={{}} />
                 </Container>
 

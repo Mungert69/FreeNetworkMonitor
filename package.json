@@ -68,11 +68,13 @@
     "analyze": "source-map-explorer 'dist/assets/*.js'",
     "start": "vite",
     "startssl": "VITE_DEV_HOST=devwww.readyforquantum.com VITE_DEV_PORT=8443 VITE_DEV_CLIENT_PORT=443 npm run start",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender-docs.mjs && node scripts/generate-sitemap.mjs",
     "serve": "vite preview",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "check:docs": "node scripts/check-docs.mjs"
   },
   "browserslist": {
     "production": [

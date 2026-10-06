@@ -11,6 +11,8 @@ import BlogIcon from '@mui/icons-material/Book';
 import DownloadIcon from '@mui/icons-material/GetApp';
 import GavelIcon from '@mui/icons-material/Gavel';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import Tooltip from '@mui/material/Tooltip';
 
 export function MainListItems({ classes }) {
@@ -28,7 +30,7 @@ export function MainListItems({ classes }) {
       </Tooltip>
 
       <Tooltip title="Dashboard" placement="right">
-        <Link className={classes.linkCompact} href="/Dashboard">
+        <Link className={classes.linkCompact} href="/dashboard">
           <ListItem button key="dashboard">
             <ListItemIcon>
               <DashboardIcon />
@@ -38,8 +40,9 @@ export function MainListItems({ classes }) {
         </Link>
       </Tooltip>
 
+      {[['/features', 'Features'], ['/docs', 'Guides']].map(([href, label]) => <Tooltip title={label} placement="right" key={href}><Link className={classes.linkCompact} href={href}><ListItem><ListItemIcon>{href === '/features' ? <WidgetsOutlinedIcon /> : <MenuBookOutlinedIcon />}</ListItemIcon><ListItemText primary={label} /></ListItem></Link></Tooltip>)}
       <Tooltip title="FAQ" placement="right">
-        <Link className={classes.linkCompact} href="/Faq">
+        <Link className={classes.linkCompact} href="/faq">
           <ListItem button key="faq">
             <ListItemIcon>
               <FaqIcon />
@@ -61,7 +64,7 @@ export function MainListItems({ classes }) {
       </Tooltip>
 
       <Tooltip title="Download" placement="right">
-        <Link className={classes.linkCompact} href="/Download">
+        <Link className={classes.linkCompact} href="/download">
           <ListItem button key="download">
             <ListItemIcon>
               <DownloadIcon />
@@ -72,7 +75,7 @@ export function MainListItems({ classes }) {
       </Tooltip>
 
       <Tooltip title="Subscription" placement="right">
-        <Link className={classes.linkCompact} href="/Subscription">
+        <Link className={classes.linkCompact} href="/subscription">
           <ListItem button key="subscription">
             <ListItemIcon>
               <LoyaltyIcon />

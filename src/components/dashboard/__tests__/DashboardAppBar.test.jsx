@@ -94,7 +94,8 @@ describe('DashboardAppBar', () => {
   it('renders primary controls, honours handlers, and displays user context when logged in', () => {
     const { handleDrawerOpen, toggleChatView, editIconClick, hostListIconText } = renderAppBar();
 
-    expect(screen.getByText('Network Monitor Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Ready for Quantum')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
     expect(screen.getByTestId('logo-link')).toBeInTheDocument();
     expect(authNavMock).toHaveBeenCalledWith(expect.objectContaining({ openInNewTab: true }));
 

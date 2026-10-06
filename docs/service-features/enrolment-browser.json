@@ -1,0 +1,62 @@
+[
+  {
+    "name": "enrol-light-desktop-download",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nBring monitoring to your network.\n\nChoose an agent that can reach your devices. Authorise it with your website account, then select its location when adding a host. Public targets can also use available service-provided locations.\n\nHow to enrol your agent\n\nWindows and Android apps offer setup controls. Linux/Docker and ESP32 have no graphical setup interf",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-light-desktop-enrol-the-agent-through-its-logs",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nLinux\nDocker\nInstall the Linux / Docker agent\n\nRun the agent in a persistent container, authorise it and assign your first local host.\n\nRun a persistent Linux agent\n\nThe Docker agent is suitable for an always-on Linux host. Docker Desktop can also run the Linux container on Windows or macOS; container networking differs from n",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-light-desktop-enrol-the-board-through-its-serial-log",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nESP32\nSet up an ESP32-S3\n\nInstall Live firmware, join Wi-Fi, authorise your board and manage firmware updates.\n\nA dedicated small monitor\n\nThe firmware targets an ESP32-S3 N16R8 board with 16 MB flash, 8 MB octal PSRAM and 2.4 GHz Wi-Fi. Use a USB data cable and a compatible board; firmware for a different memory layout is not",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-light-desktop-first-installation-and-wi-fi-setup",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nESP32\nSet up an ESP32-S3\n\nInstall Live firmware, join Wi-Fi, authorise your board and manage firmware updates.\n\nA dedicated small monitor\n\nThe firmware targets an ESP32-S3 N16R8 board with 16 MB flash, 8 MB octal PSRAM and 2.4 GHz Wi-Fi. Use a USB data cable and a compatible board; firmware for a different memory layout is not",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-light-desktop-faq-esp32-authorise",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nA little help, right when you need it.\n\nFind a quick answer here, or follow a guide for the full walkthrough.\n\nSearch questions\n​\nSearch questions\nAll questions\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n174 questions\n\nTopic\nAll topics\nTopic\nHow do I add a website or a local device?\nDo I need to install an agent?\n",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-dark-mobile-download",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nBring monitoring to your network.\n\nChoose an agent that can reach your devices. Authorise it with your website account, then select its location when adding a host. Public targets can also use available service-provided locations.\n\nHow to enrol your agent\n\nWindows and Android apps offer setup controls. Linux/Docker and ESP32 have no graphical setup interf",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-dark-mobile-enrol-the-agent-through-its-logs",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nLinux\nDocker\nInstall the Linux / Docker agent\n\nRun the agent in a persistent container, authorise it and assign your first local host.\n\nRun a persistent Linux agent\n\nThe Docker agent is suitable for an always-on Linux host. Docker Desktop can also run the Linux container on Windows or macOS; container networking differs from n",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-dark-mobile-enrol-the-board-through-its-serial-log",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nESP32\nSet up an ESP32-S3\n\nInstall Live firmware, join Wi-Fi, authorise your board and manage firmware updates.\n\nA dedicated small monitor\n\nThe firmware targets an ESP32-S3 N16R8 board with 16 MB flash, 8 MB octal PSRAM and 2.4 GHz Wi-Fi. Use a USB data cable and a compatible board; firmware for a different memory layout is not",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-dark-mobile-first-installation-and-wi-fi-setup",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nESP32\nSet up an ESP32-S3\n\nInstall Live firmware, join Wi-Fi, authorise your board and manage firmware updates.\n\nA dedicated small monitor\n\nThe firmware targets an ESP32-S3 N16R8 board with 16 MB flash, 8 MB octal PSRAM and 2.4 GHz Wi-Fi. Use a USB data cable and a compatible board; firmware for a different memory layout is not",
+    "openDetails": false
+  },
+  {
+    "name": "enrol-dark-mobile-faq-esp32-authorise",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nA little help, right when you need it.\n\nFind a quick answer here, or follow a guide for the full walkthrough.\n\nSearch questions\n​\nSearch questions\nAll questions\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n174 questions\n\nTopic\nAll topics\nTopic\nHow do I add a website or a local device?\nDo I need to install an agent?\n",
+    "openDetails": false
+  }
+]

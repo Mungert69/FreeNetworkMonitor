@@ -68,6 +68,7 @@ export  function HelpDialog({ setOpen }) {
           Edit Host List Help
         </BootstrapDialogTitle>
         <DialogContent dividers>
+          <Typography gutterBottom>For a complete walkthrough, read the <a href="/docs/getting-started">first monitor guide</a>, <a href="/docs/endpoints">endpoint reference</a> and <a href="/docs/alerts">alert settings</a>.</Typography>
           <Typography gutterBottom>
             Click on a field to edit it. When done editing fields click on the save button <SaveIcon />.
           </Typography>
@@ -94,7 +95,7 @@ export  function HelpDialog({ setOpen }) {
             For example http://www.google.com , https://www.google.com or 8.8.8.8
           </Typography>
           <Typography gutterBottom>
-            Endpoint : Valid values are http for website monitoring and icmp for ping monitoring.
+            Endpoint: Choose from the checks available for your selected monitor location. See the endpoint guide for their meanings and platform limits.
           </Typography>
           <Typography gutterBottom>
             Timeout : Valid values are integers. The value is in milliseconds.

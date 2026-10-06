@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# Customer guides have their own generated HTML; keep canonical URLs slash-free.
+RewriteRule ^(features|download|faq|subscription|docs(?:/[a-z0-9-]+)?)/?$ $1/index.html [L]
+
 # Serve index.html for all URLs except /blog and existing files or directories
 RewriteCond %{REQUEST_URI} !^/blog
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import { publicPaths } from "./site-pages.mjs";
 import { LoadingCircle } from "./loading-circle";
 import RouteChangeTracker from './route-change-tracker';
 //import ReactGA4 from 'react-ga4';
@@ -9,6 +10,9 @@ const Pricing = lazy(() => import('./components/main/Pricing'));
 const Faq = lazy(() => import('./components/main/Faq'));
 const ProductDetail = lazy(() => import('./components/main/ProductDetail'));
 const Download = lazy(() => import('./components/main/Download'));
+const Features = lazy(() => import('./components/help/Features'));
+const Guides = lazy(() => import('./components/help/Guides'));
+const Guide = lazy(() => import('./components/help/Guide'));
 const StartLoginProxy = lazy(() => import('./components/start-login-proxy'));
 
 //const TRACKING_ID = "G-XXXXXXXXXX"; // Replace with your GA4 tracking ID
@@ -164,8 +168,11 @@ const App = () => {
         {consentGiven && <RouteChangeTracker />}
 
         <Routes>
+          <Route path={publicPaths.features} element={<Suspense fallback={renderLoader()}><Features /></Suspense>} />
+          <Route path={publicPaths.guides} element={<Suspense fallback={renderLoader()}><Guides /></Suspense>} />
+          <Route path={`${publicPaths.guides}/:slug`} element={<Suspense fallback={renderLoader()}><Guide /></Suspense>} />
           <Route path="/blog" element={<Navigate to="/blog/index.html" replace />} />
-          <Route exact path="/" element={
+          <Route exact path={publicPaths.home} element={
             <Suspense fallback={renderLoader()}>
               <ProductDetail />
             </Suspense>
@@ -175,17 +182,17 @@ const App = () => {
               <Dashboard />
             </Suspense>
           } />
-          <Route exact path="/faq" element={
+          <Route exact path={publicPaths.faq} element={
             <Suspense fallback={renderLoader()}>
               <Faq />
             </Suspense>
           } />
-          <Route exact path="/subscription" element={
+          <Route exact path={publicPaths.subscription} element={
             <Suspense fallback={renderLoader()}>
               <Pricing />
             </Suspense>
           } />
-          <Route exact path="/download" element={
+          <Route exact path={publicPaths.download} element={
             <Suspense fallback={renderLoader()}>
               <Download />
             </Suspense>

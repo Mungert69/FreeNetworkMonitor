@@ -1,410 +1,167 @@
-import AppearanceMenu from '../../theme/AppearanceMenu';
-import React, { useState, useEffect, useRef } from "react";
-import clsx from "clsx";
-import CssBaseline from "@mui/material/CssBaseline";
-import Drawer from "@mui/material/Drawer";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import MainListItems from "../dashboard/MainListItems";
-import styleObject from "../dashboard/styleObject";
-import Loading from "../../loading-circle";
-import Seo from '../Seo';
-import Footer from "./Footer";
-import useClasses from "../dashboard/useClasses";
-import { useTheme } from '@mui/material/styles';
-import LogoLink from "./LogoLink";
-import AuthNav from '../auth-nav';
-import ReactMarkdown from 'react-markdown';
-import { useMediaQuery } from '@mui/material';
-import { getBaseDomain, getSupportEmail } from '../dashboard/ServiceAPI';
-
-const AGENT_OPENSSL_VERSION = import.meta.env.VITE_AGENT_OPENSSL_VERSION || "unknown";
-const AGENT_LIBOQS_VERSION = import.meta.env.VITE_AGENT_LIBOQS_VERSION || "unknown";
-const AGENT_OQS_PROVIDER_VERSION = import.meta.env.VITE_AGENT_OQS_PROVIDER_VERSION || "unknown";
-const AGENT_DOTNET_SDK_VERSION = import.meta.env.VITE_AGENT_DOTNET_SDK_VERSION || "unknown";
-const AGENT_DOCKER_BASE_IMAGE = import.meta.env.VITE_AGENT_DOCKER_BASE_IMAGE || "unknown";
-const AGENT_DOCKER_OS_NAME = import.meta.env.VITE_AGENT_DOCKER_OS_NAME || "unknown";
-const AGENT_DOCKER_OS_VERSION = import.meta.env.VITE_AGENT_DOCKER_OS_VERSION || "unknown";
-
-const buildVersionRows = [
-  [".NET SDK", AGENT_DOTNET_SDK_VERSION],
-  ["OpenSSL", AGENT_OPENSSL_VERSION],
-  ["liboqs", AGENT_LIBOQS_VERSION],
-  ["oqs-provider", AGENT_OQS_PROVIDER_VERSION],
-  ["Docker base image", AGENT_DOCKER_BASE_IMAGE],
-  ["Docker OS", AGENT_DOCKER_OS_NAME],
-  ["Docker OS tag", AGENT_DOCKER_OS_VERSION],
-].filter(([, value]) => value && value !== "unknown");
-
-const buildVersionSection =
-  buildVersionRows.length > 0
-    ? `
-## Current Agent Build Versions
-
-${buildVersionRows.map(([label, value]) => `- ${label}: ${value}`).join("\n")}
-
-These versions reflect the current agent builds and Docker environment used in our release process.
-We keep them up to date as part of our security-first approach, helping reduce exposure to known issues and giving you confidence in the agent you install.
-`
-    : "";
-
-const markdown = `
-
-Welcome to the Beta Tester Download Portal for the Quantum Network Monitor Agent, a robust and comprehensive tool for real-time network monitoring. Whether you're a seasoned network administrator or exploring network monitoring for the first time, our Agent provides seamless, efficient, and detailed insights into your network's health.
-
-${buildVersionSection}
-
-## Key Features of the Quantum Network Monitor Agent
-
-### Comprehensive Monitoring:
-- Track the performance and availability of any device on your local or remote network using ICMP (ping), HTTP(S), and other protocols.
-- Get real-time insights into your network performance, such as response times, downtime, and latency for each monitored host.
-- Monitor local network devices, even those behind firewalls or on private IP ranges (like 192.168.x.x), by utilizing the Agent installed on your local machine.
-
-### Multi-Platform Support:
-- Available for Android (via Google Play Store) and Windows (via Windows Store), enabling network monitoring across different platforms.
-- The Docker version offers full functionality on Linux, macOS, and Windows, providing a containerized solution for secure and robust monitoring without platform-specific limitations.
-- An ESP32-S3 processor is also available as a hardware preview for dedicated monitoring. It requires a compatible ESP32-S3 board and currently supports a smaller set of monitoring endpoints; see the ESP32-S3 setup details below.
-
-### AI-Powered Integration:
-- The Agent acts as a proxy for the AI-powered Network Monitor Assistant, executing commands such as Nmap scans, Metasploit modules, and OpenSSL security checks. This seamless integration allows you to manage hosts, investigate network anomalies, and perform in-depth network security audits directly from the dashboard.
-- Whether you're optimizing performance or securing your infrastructure, the assistant works with the Agent to provide proactive and real-time network management, ensuring you stay ahead of potential threats.
-- If you use Hugging Face GGUF models with TestLLM, use our [GGUF model selection guide](https://${getBaseDomain()}/huggingface_gguf_selection_guide.html) to choose practical quantization formats for your hardware.
-
-### Advanced Security Tools Integration:
-- The Agent supports advanced security diagnostics with integrated tools such as Nmap for network scanning and Metasploit for vulnerability testing. Use these powerful tools to scan for vulnerabilities, detect open ports, or run exploitation modules for real-world security audits.
-- Easily search for and run specific Metasploit modules using our intuitive web-based Network Monitor Assistant, targeting vulnerabilities or exploring possible attack vectors on your network. The Agent performs the scans and tests at your command, ensuring comprehensive coverage and real-time results.
-
-### Email Alerts and Reports:
-- Receive automatic email notifications if a monitored host goes down, ensuring you're informed of critical network issues as soon as they happen.
-- Weekly performance reports delivered to your inbox provide an overview of how your monitored devices have performed over time.
-
-### Simple Authorization and Setup:
-- Authorize the Agent using OAuth authentication to securely link it with your Quantum Network Monitor account.
-- Effortlessly add hosts to monitor from the Quantum Network Monitor dashboard, and select whether to use predefined remote agents or your local Agent for monitoring. You can also use the Network Monitor Assistant, on the dashboard [Quantum Network Monitor Dashboard](https://${getBaseDomain()}/dashboard), to add and manage hosts.
-
-### Real-Time Data and Historical Analysis:
-- View detailed monitoring data directly from the Agent app or the [Quantum Network Monitor Dashboard](https://${getBaseDomain()}/dashboard).
-- Use visual indicators such as pulsing circles and color-coded status icons to quickly assess the health and performance of monitored devices.
-
-## Choose your platform:
-
-### ESP32-S3 Network Monitor
-
-Run the processor on a dedicated ESP32-S3 board. The current firmware targets
-an ESP32-S3 with 16 MB flash and 8 MB octal PSRAM, such as the
-ESP32-S3-DevKitC-1-N16R8. You will also need a USB data cable and a 2.4 GHz
-Wi-Fi network.
-
-The ESP32 version supports ICMP ping, DNS, TCP connections, HTTP/HTTPS, and
-passive Bluetooth LE broadcast monitoring. It does not yet support command
-processors or every endpoint available in the Windows and Docker agents.
-
-**First installation:** Open the [latest Live factory firmware release](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/releases/latest),
-download its versioned factory image and SHA256SUMS.txt from **Assets**,
-and follow the [step-by-step setup guide](https://github.com/Mungert69/NetworkMonitorProcessorAgentEmbedded/blob/main/docs/first-physical-board.md).
-The image includes the Live service settings; setup asks for Wi-Fi over USB
-serial, then prints an OAuth URL and code to authorize in your browser. You do
-not need to build firmware or handle signing keys.
-
-For a new board, the first-install procedure erases its flash. Do not use it
-for an already registered processor. After registration, request upgrades or
-downgrades from **Profile → Device firmware**; OTA preserves Wi-Fi and account
-settings.
-
-### Android Download Instructions
-
-**Exclusive Beta Testing Invitation**
-
-As a beta tester, you will have exclusive access to download the Quantum Network Monitor Agent app from the Google Play Store.
-
-**How to Download:**
-
-1. **Access the Google Play Store**: Use the link provided below to navigate to our app on the Google Play Store.
-   
-   [Quantum Network Monitor Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.networkmonitormaui) 
- 
-   [Quantum Secure Agent on Google Play Store](https://play.google.com/store/apps/details?id=click.freenetworkmonitor.quantumsecure)
-
-2. **Installation**: Upon successful redirection to the Google Play Store, proceed to download and install the Agent app on your device. Follow the Post-Installation Instructions below to complete the setup process.
-
-
-
-**Beta Tester Rewards:**
-
-In appreciation of your valuable feedback and participation, all testers involved in the beta phase will receive an upgrade to a **Standard Subscription** at no cost. This upgrade is our way of saying thank you for helping us enhance the Quantum Network Monitor Agent app. Your insights are instrumental in ensuring the highest quality and performance of our network monitoring solutions.
-
-> **Note:** Android version has a limitaion: Android's battery saving features may affect pollng frequency when not connected to a charger. The Metasploit framework is not available for Android. Android 14+ has extra security restrictions that mean executables like chrome headless, busybox, curl etc can not run; this limits many features. If you don't want these limitations in your agent then use the fully featured Windows or docker versions below.  
-
-## Windows Install Instructions
-
-To install the Local Network Monitor Agent App from the Windows Store, click the link below.
-
-[Local Network Monitor Agent Install for Windows](https://www.microsoft.com/store/apps/9P58PM1PM9TZ )
-
-To install the Quantum Secure Agent App from the Windows Store, click the link below.
-
-[Quantum Secure Agent Install for Windows](https://www.microsoft.com/store/apps/9NXT248W9NR6)
-
-> **Note:** To use Metasploit for penetration testing with your Windows agent, you need to install the Metasploit framework for Windows. You can download the Metasploit Framework from the official Rapid7 site. The installer comes with all the necessary dependencies, including msfconsole.  
-> 1. Visit the [Metasploit download page](https://www.metasploit.com/download).  
-> 2. Download the Windows installer.  
-> 3. Run the installer as an Administrator and follow the on-screen instructions.  
-> 
-> After installation, ensure that the msfconsole command is accessible from the system’s PATH.
-
-## Post-Installation Instructions
-
-After installing the app:
-
-1. **Enable Agent**: Toggle the "Enable Agent" slider to the on position. Three task buttons will appear below. Complete each task to ensure full functionality of your device as an agent.
-
-2. **Authorization**: Your device needs authorization to function as an agent. Click the 'Authorize' button on the main page, which redirects you to the OAuth authentication site. Follow the on-screen instructions to log in to your account. If you do not have an account, you can create one during this process. Close the browser window once you receive a message confirming your agent is authenticated.
-
-3. **Login to Quantum Network Monitor**: Click this task to be redirected to the [Quantum Network Monitor Dashboard](https://${getBaseDomain()}/dashboard). Login with the same email address you used for agent authorization. This is where you'll manage your network monitoring.
-
-4. **Adding Hosts**: After logging into the Quantum Network Monitor site, navigate to the dashboard. To add a host for monitoring, click the flashing edit icon. For instance, to monitor a local router, input its IP address (e.g., 192.168.1.1) and select 'icmp' as the endpoint type. This action enables you to ping the router, monitoring its availability.
-
-    You can also add hosts using the **Network Monitor Assistant** on the dashboard. Simply type in the host information (e.g., IP address and endpoint type), and the assistant will handle the command execution for you.
-
-5. **Select Monitor Location**: You have the option to choose between predefined remote agents or your local agent for monitoring purposes. For local devices like a router at 192.168.1.1, select 'your email address - agent id' as the monitor location.
-
-6. **View and Edit Mode**: Utilize the edit icon to switch between view and edit modes. In view mode, monitoring data for hosts will appear after about 2 minutes. Click the chart icon next to a host for more detailed response data.
-
-7. **Alerts and Reports**: Receive email alerts if a host is detected as down, along with weekly reports that analyze your hosts' performance. It's necessary to verify your email address to receive these alerts and reports. If the verification email doesn't arrive, make sure to whitelist ${getBaseDomain()} in your spam filter.
-
-8. **Account Management**: Manage your account by clicking the profile icon.
-
-**View Monitoring Data**: You have three options for viewing detailed monitoring data. You can use the Quantum Network Monitor Dashboard, the Agent App, or the Network Monitor Assistant to access current monitoring data for each dataset (6-hour set of response data).
-
-- **Using the Quantum Network Monitor Dashboard**: Access the dashboard to view comprehensive monitoring data and analyses.
-
-- **Using the Agent App**: To view data in the app, return to the Agent App and navigate to the Data tab. Here, monitoring data is visually represented:
-    - **Indicator Circles**: Each host is indicated by a circle, which will appear green or red based on the host's current status.
-    - **Click on the Circle**: For more detailed monitoring information, click on the circle representing a host.
-    - **Pulsing Circles**: A pulsing circle indicates that the host is up. The rate of pulsing reflects the response time - faster pulsing signifies quicker response times.
-    - **The Purple Beacon Effect**: This effect shows the percentage of successful responses. A smaller circle indicates a lower success rate, visually representing the reliability of each host.
-
-- **Using the Network Monitor Assistant**: You can ask the **Network Monitor Assistant** questions about your monitoring data. The assistant will not only display the requested data but will also automatically switch views on the web page to show you the relevant information. This option provides a more interactive way of accessing your monitoring data, using natural language queries to get insights quickly.
-
-### Using the Network Monitor Assistant with your agent for Security, Penetration Testing, BusyBox Commands, and Internet Search
-
-The **Network Monitor Assistant** allows you to conduct advanced security tests, penetration assessments, execute **BusyBox** commands, and even search the internet directly from the dashboard. It acts as an intermediary, running various security tools and commands, while also providing helpful internet search functionality to assist in troubleshooting or gathering information. The assistant supports the following:
-
-- **Nmap Scans**: You can initiate network scans using Nmap to discover open ports, detect devices, and assess potential vulnerabilities. Simply ask the assistant to run a scan on a specific host, and it will display the scan results, including details on open ports and running services.
-
-- **Metasploit Modules**: The assistant enables you to perform targeted penetration testing by running specific Metasploit modules. This allows you to exploit vulnerabilities on your network and test your security defenses. By requesting the assistant to execute a Metasploit module, you can simulate real-world attacks and get a detailed report of the vulnerabilities identified.
-
-- **OpenSSL Checks**: For SSL/TLS configuration audits, the assistant can run OpenSSL checks on your network, helping ensure your encryption settings are up to date and secure. This is essential for verifying the strength of SSL/TLS certificates and protecting data in transit.
-
-- **BusyBox Commands**: The assistant supports **BusyBox**, a lightweight set of UNIX tools commonly used in embedded systems. You can ask the assistant to run various **BusyBox** commands like file management, networking, and process control. Commands such as ls, ifconfig, ping, and more can be executed through the assistant, simplifying the process of managing and troubleshooting network devices.
-
-- **Internet Search Capabilities**: The assistant can also search the internet to help you find answers to technical questions, solutions to errors, or additional documentation. Simply ask the assistant to search for the  answer to a question, and it will return relevant search results or articles directly to your dashboard. This is particularly useful when troubleshooting complex issues or looking for further insights on specific commands, configurations, or vulnerabilities.
-
-By leveraging the assistant’s capabilities, you can perform these tasks without needing to manually configure or run the tools yourself. The assistant will automatically execute the commands, display the results, search the web, and guide you through interpreting the findings.
-
-> **Important:** Before running any penetration tests, security scans, **BusyBox** commands, or using the internet search functionality, ensure you have explicit authorization for the systems being tested. Unauthorized testing can lead to legal consequences.
-
-
-# Docker Setup Instructions
-
-## Installing Docker Compose
-
-Docker Compose is included when you install Docker Desktop. This is the easiest and recommended method to get Docker Compose, which also installs Docker Engine and Docker CLI, necessary for running Compose. Docker Desktop is available for:
-
-- Linux
-- MacOS
-- Windows
-
-For detailed instructions on installing Docker Desktop, refer to the [official Docker documentation](https://docs.docker.com/get-docker/).
-
-To set up the Quantum Network Monitor Agent within Docker, follow these steps:
-
-**Image architecture support:** The Docker image \`mungert/networkmonitorprocessor:latest\` is multi-architecture and supports both **x64/amd64** and **arm64** hosts.
-**Container platform note:** This is a **Linux container image**. It runs on Docker Desktop for **Windows/macOS** and on Docker Engine/Desktop for **Linux**.
-
-1. **Create a Docker Compose File**: Create a \`docker-compose.yml\` file with the following content:
-
-\`\`\`yaml
-
-services:
-  networkmonitorprocessor:
-    image: mungert/networkmonitorprocessor:latest
-    container_name: processor
-    user: root
-    restart: always
-    volumes:
-      - ~/state/:/app/state/
-
-\`\`\`
-
-**Notes on compose file** For linux host create the folder ~/state. From shell type  mkdir ~/state (this is a linux folder path, adjust acordingly for windows).  
-
-
-2. **Run Docker Compose**: In the directory where your \`docker-compose.yml\` file is located, run:
-
-\`\`\`bash
-docker-compose up -d
-\`\`\`
-
-## Authorizing the Agent
-
-Unlike the app version, the Docker version of the Quantum Network Monitor Agent requires manual authorization:
-
-1. **Start the Authorization Process**: After starting the Docker container, use the following command to view the logs:
-
-\`\`\`bash
-docker logs processor -f
-\`\`\`
-
-2. **Retrieve the Authorization URL**: Look for a log entry similar to the following:
-
-\`\`\`
-https://authnew.${getBaseDomain()}:2096/oauth2/device?client_id=de064977-4bde-4426-81f7-4354041fe58b&tenantId=a4d7499b-557c-d132-7d6f-0a575402a781&user_code=2PBLYP
-\`\`\`
-
-Copy and paste this URL into a web browser to start the authentication process.
-
-3. **Complete the Authentication**: Follow the on-screen instructions to log in to your account or create a new one.
-
-4. **Verify Successful Authorization**: Check the Docker logs for a success message like the following:
-
-\`\`\`
-MessageAPI : SetAuthKey :  SetAuthKey :  Success : Set AuthKey and saved NetConnectConfig to appsettings.json
-\`\`\`
-
-## Adding Hosts for Monitoring
-
-Once the agent is authorized, you can start adding hosts to monitor:
-
-1. **Monitor Hosts**: Add hosts to monitor via the Quantum Network Monitor Service dashboard at [https://${getBaseDomain()}/dashboard](https://${getBaseDomain()}/dashboard). Login with the same email address you used to authorize the agent.
-
-2. **Adding Hosts**: Once logged into the Quantum Network Monitor site, go to the dashboard and add a host that you want to monitor, click the flashing edit icon. You might wish to monitor a local router at the IP address 192.168.1.1 using the endpoint type 'icmp' to ping the local router, thereby monitoring its availability.
-
-3. **Select Monitor Location**: You can choose either predefined remote agents or your local agent. However, for monitoring local devices like a router at 192.168.1.1, you would need to choose 'your email address - agent id' when selecting a monitor location.
-
-4. **View and Edit Mode**: Click the edit icon to toggle between view and edit modes. In view mode, after about 2 minutes, host monitoring data should start appearing. For detailed response data, click the chart icon next to the host.
-
-5. **Alerts and Reports**: Alerts will be sent to your email address if the host is detected as down. Weekly reports are also sent to your email address with an analysis of your hosts' performance. Note that you must verify your email address to receive email alerts and reports. If you don't receive the verification email, exclude ${getBaseDomain()} from your spam filter.
-
-6. **Account Management**: You can manage your account by clicking the profile icon.
-
-
-
-**View Log Entries**: To verify that hosts are being added successfully, check the Docker logs for entries like:
-
-\`\`\`
-MessageAPI : ProcessorQueueDic :  AddMonitorIPsToQueueDic :  Success : Added 1 MonitorIPs Queue .
-\`\`\`
-
-## Support
-
-If you encounter any issues or have questions, please feel free to reach out to us at ${getBaseDomain()}. We're here to help and would love to hear your feedback!
-`;
-
+import React from "react";
+import {
+  Box,
+  Button,
+  Card,
+  Chip,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
+import PublicLayout from "../help/PublicLayout";
+import { downloads } from "../help/catalog.mjs";
+const platforms = [
+  {
+    name: "Linux / Docker",
+    tag: "Always-on monitoring",
+    text: "A persistent container for local network checks and supported diagnostics. Docker Desktop also runs the Linux image on Windows or macOS.",
+    guide: "linux",
+    actions: [],
+  },
+  {
+    name: "Windows",
+    tag: "Desktop apps",
+    text: "Use your PC as a local agent. Network Monitor provides monitoring and chat; Quantum Secure adds dedicated checks, discovery and logs.",
+    guide: "windows",
+    actions: [
+      ["Network Monitor", downloads.windowsAgent],
+      ["Quantum Secure", downloads.windowsQuantum],
+    ],
+  },
+  {
+    name: "Android",
+    tag: "Phone or tablet",
+    text: "Monitor local devices and Bluetooth broadcasts with a supported app. Background and battery settings affect continuous operation.",
+    guide: "android",
+    actions: [
+      ["Network Monitor", downloads.androidAgent],
+      ["Quantum Secure", downloads.androidQuantum],
+    ],
+  },
+  {
+    name: "ESP32-S3",
+    tag: "Dedicated hardware",
+    text: "A compact Wi-Fi and BLE monitor for compatible N16R8 boards. Install Live firmware, authorise your board and manage updates from your profile.",
+    guide: "esp32",
+    actions: [["Live firmware releases", downloads.firmware]],
+  },
+];
 export default function Download() {
-  const publicUrl = import.meta.env.VITE_PUBLIC_URL;
-
-  const theme = useTheme();
-  const classes = useClasses(styleObject(theme, publicUrl+ "/ping.svg"));
-  const isMediumOrLarger = useMediaQuery(theme.breakpoints.up('md'));
-  const [open, setOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
- const [openInNewTab, setOpenInNewTab] = React.useState(false);
-  const handleDrawerOpen = () => setOpen(true);
-  const handleDrawerClose = () => setOpen(false);
-
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const hash = window.location.hash.slice(1); // Remove the '#'
-    const hashParams = new URLSearchParams(hash); // Parse the hash as query-like parameters
-        
-   
-    // Check for 'openInNewTab' in either query or hash
-    if (query.has('openInNewTab') || hashParams.has('openInNewTab')) {
-        setOpenInNewTab(true);
-        console.log("Setting openInNewTab");
-    }
-
-
-  }, []);
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <Seo
-        title="Download Quantum Network Monitor Agent - Beta Tester Portal"
-        description="Join the exclusive beta testing program for the Quantum Network Monitor Agent. Download the app for Android, Windows, or Docker, and gain access to real-time network monitoring, advanced security tools, and AI-powered insights. Help shape the future of network monitoring!"
-        openGraph={{
-          ogImage: {
-            ogImage: `${publicUrl}/ping.svg`, // Add your OpenGraph image
-            ogImageAlt: "Quantum Network Monitor Logo", // Add alt text for the image
-          },
-          ogUrl: `https://${getBaseDomain()}/download`, // Canonical URL
-          ogType: "website", // Type of content
-          ogSiteName: "Quantum Network Monitor", // Site name
-          ogLocale: "en_US", // Language and locale
+    <PublicLayout
+      title="Download and set up your agent"
+      description="Install Network Monitor or Quantum Secure for Windows and Android, run the Linux Docker agent, or set up a compatible ESP32-S3 board."
+    >
+      <Typography
+        component="h1"
+        variant="h3"
+        sx={{ fontWeight: 750, fontSize: { xs: "2rem", md: "2.6rem" } }}
+      >
+        Bring monitoring to your network.
+      </Typography>
+      <Typography
+        color="text.secondary"
+        sx={{ mt: 4, mb: 7, maxWidth: 800, lineHeight: 1.8 }}
+      >
+        Choose an agent that can reach your devices. Authorise it with your
+        website account, then select its location when adding a host. Public
+        targets can also use available service-provided locations.
+      </Typography>
+      <Box
+        sx={{
+          mb: 6,
+          p: 5,
+          border: 1,
+          borderColor: "divider",
+          borderRadius: 3,
+          bgcolor: "background.paper",
         }}
-        twitter={{
-          cardType: 'summary_large_image',
-          site: '@freenetworkmonitor',
-        }}
-      />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-        <Toolbar className={classes.toolbar}>
-          {isLoading && <Loading small={true} />}
-          <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} className={clsx(classes.menuButton, open && classes.menuButtonHidden)} size="large">
-            <MenuIcon />
-          </IconButton>
-          <LogoLink />
-          <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-            Quantum Network Monitor
-          </Typography>
-          <AppearanceMenu />
-          <AuthNav openInNewTab={openInNewTab}/>
-        </Toolbar>
-      </AppBar>
-      <Drawer  variant={isMediumOrLarger ? "permanent" : "temporary"} classes={{ paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose) }} open={open}>
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose} size="large">
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List><MainListItems classes={classes} /></List>
-        <Divider />
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth={false} className={classes.container}>
-          <Grid container spacing={6}>
-            <Grid size={{ xs: 12 }}>
-              <Typography color="primary" variant="h3" gutterBottom sx={{ fontSize: { xs: '2rem', md: '3rem' } }}>
-              Beta Tester Download Portal
+      >
+        <Typography component="h2" variant="h5" gutterBottom>
+          How to enrol your agent
+        </Typography>
+        <Typography color="text.secondary" sx={{ lineHeight: 1.8 }}>
+          Windows and Android apps offer setup controls. Linux/Docker and ESP32
+          have no graphical setup interface: read the log output, copy the
+          printed authorisation URL into a browser, sign in and approve the
+          device, then return to the log to confirm registration. Use that same
+          account on the dashboard.
+        </Typography>
+        <Button
+          href="/docs/linux#enrol-the-agent-through-its-logs"
+          sx={{ mt: 3, mr: 3 }}
+        >
+          Linux / Docker log instructions
+        </Button>
+        <Button
+          href="/docs/esp32#enrol-the-board-through-its-serial-log"
+          sx={{ mt: 3 }}
+        >
+          ESP32 serial instructions
+        </Button>
+      </Box>
+      <Grid container spacing={5}>
+        {platforms.map((p) => (
+          <Grid key={p.guide} size={{ xs: 12, md: 6 }}>
+            <Card
+              variant="outlined"
+              sx={{
+                height: "100%",
+                p: 6,
+                borderRadius: 4,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Chip
+                label={p.tag}
+                size="small"
+                sx={{ alignSelf: "flex-start", mb: 4 }}
+              />
+              <Typography component="h2" variant="h5" fontWeight={700}>
+                {p.name}
               </Typography>
-              <Typography variant="h4" gutterBottom>
-                Welcome Beta Testers!
+              <Typography
+                color="text.secondary"
+                sx={{ mt: 3, mb: 5, lineHeight: 1.8, flex: 1 }}
+              >
+                {p.text}
               </Typography>
-              <Typography variant="h6" color="textSecondary" gutterBottom>
-                You've been selected to participate in our exclusive beta testing program. Follow the steps below to get started.
-              </Typography>
-            </Grid>
+              <Stack direction="row" sx={{ flexWrap: "wrap", gap: 3 }}>
+                {p.actions.map(([label, href]) => (
+                  <Button
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="outlined"
+                  >
+                    {label}
+                  </Button>
+                ))}
+                <Button href={`/docs/${p.guide}`} variant="contained">
+                  Setup guide
+                </Button>
+              </Stack>
+            </Card>
           </Grid>
-          <hr />
-          <Box sx={{ maxWidth: '100ch', mx: 'auto', overflowWrap: 'anywhere', '& pre': { maxWidth: '100%', overflowX: 'auto' }, '& img': { maxWidth: '100%', height: 'auto' } }}>
-            <ReactMarkdown children={markdown} />
-        </Box>
-          <Footer />
-        </Container>
-      </main>
-    </div>
+        ))}
+      </Grid>
+      <Box sx={{ mt: 8, p: 5, borderLeft: 3, borderColor: "primary.main" }}>
+        <Typography component="h2" variant="h5" gutterBottom>
+          Not sure which one to choose?
+        </Typography>
+        <Typography color="text.secondary">
+          Agents have different capabilities. Check the platform comparison for
+          Bluetooth, browser checks, native diagnostics and embedded limits.
+        </Typography>
+        <Button href="/docs/platforms" sx={{ mt: 3 }}>
+          Compare agents
+        </Button>
+        <Button href="/docs/getting-started" sx={{ mt: 3 }}>
+          Your first monitor
+        </Button>
+      </Box>
+    </PublicLayout>
   );
-};
+}

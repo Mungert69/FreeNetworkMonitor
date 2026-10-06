@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import HeaderBrand from '../main/HeaderBrand';
 import Badge from '@mui/material/Badge';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
@@ -55,9 +55,7 @@ const DashboardAppBar = ({
       </IconButton>
       <LogoLink />
       {isMediumOrLarger && (
-        <Typography sx={{ paddingLeft: 4 }} component="h1" color="inherit" noWrap className={classes.title}>
-          Network Monitor Dashboard
-        </Typography>
+        <HeaderBrand sx={{ paddingLeft: 4 }} className={classes.title} />
       )}
       {isLoggedIn && (
         <FadeWrapper toggle={toggleTable && listDataLength === 0}>

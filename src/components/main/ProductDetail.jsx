@@ -12,12 +12,13 @@ import { useMediaQuery } from '@mui/material';
 import styleObject from '../dashboard/styleObject';
 import Loading from '../../loading';
 import Seo from '../Seo';
-import Blog from './Blog';
+
 import Footer from './Footer';
 import useClasses from "../dashboard/useClasses";
 import { FaDiscord } from "react-icons/fa";
 import Button from '@mui/material/Button';
-import BlogArticle from './BlogArticle';
+import DeferredArticle from './DeferredArticle';
+import { homeMetadata } from '../../public-page-metadata.mjs';
 import DashboardAppBar from '../dashboard/DashboardAppBar';
 import DashboardDrawer from '../dashboard/DashboardDrawer';
 import Message from '../dashboard/Message';
@@ -67,8 +68,10 @@ const HeroSection = React.memo(() => {
             <Typography
                 color='primary'
                 variant="h2"
+                component="h1"
                 sx={{
                     fontWeight: 800,
+                    textAlign: 'inherit',
                     mb: 2,
                     fontSize: { xs: "2.2rem", md: "3.2rem" },
                     letterSpacing: "-1px",
@@ -187,7 +190,7 @@ const FeaturesSection = React.memo(({ isLoading, onAssistant, paperClassName }) 
                             </li>
                         </ul>
                         <Typography variant="body2" sx={{ mt: 1 }}>
-                            No configuration needed - the AI learns your network's normal behavior.
+                            Configure your hosts and notification preferences, then use predictive alerts alongside ordinary failure and measurement limits.
                         </Typography>
                     </Paper>
                 </Grid>
@@ -922,8 +925,8 @@ const ProductDetail = () => {
         <div className={classes.root}>
             <CssBaseline />
             <Seo
-                title="AI Network Monitor: Quantum-Ready Security & Continuous Monitoring"
-                description="Helps teams protect their infrastructure with continuous monitoring and streamlined, approved security diagnostics. Start free with clear controls and plain-English alerts."
+                title={homeMetadata.title}
+                description={homeMetadata.summary}
                 openGraph={{
                     ogImage: {
                         ogImage: `${publicUrl}/ping.svg`,
@@ -959,6 +962,13 @@ const ProductDetail = () => {
                 <Container maxWidth={false} className={classes.container}>
                     {/* Hero Section */}
                     <HeroSection />
+                    <Paper variant="outlined" sx={{ p: 5, mb: 6, borderRadius: 4 }}>
+                      <Typography variant="h5" component="h2" gutterBottom>Quantum readiness, backed by continuous monitoring</Typography>
+                      <Typography color="text.secondary" sx={{ mb: 3 }}>Test post-quantum TLS and certificate support, investigate your network with security tools, and ask specialist AI experts to explain the results. Keep watching your services with monitoring, alerts and reports.</Typography>
+                      <Button href="/docs/quantum" variant="contained" sx={{ mr: 3, mb: 2 }}>Explore quantum readiness</Button>
+                      <Button href="/features#security-diagnostics" variant="outlined" sx={{ mr: 3, mb: 2 }}>Security and AI features</Button>
+                      <Button href="/docs/platforms" sx={{ mb: 2 }}>Choose an agent</Button>
+                    </Paper>
                     <Grid container justifyContent="center" sx={{ mb: 4 }}>
                         <Grid size={{ xs: 12, md: 10 }}>
                             <Alert severity="warning">
@@ -1060,7 +1070,7 @@ const ProductDetail = () => {
                     </Grid>
                     <Divider sx={{ my: 6 }} />
                     <Box sx={{ mt: 6 }}>
-                        <BlogArticle title="Quantum-Safe TLS: Practical Guide & Playbook" />
+                        <DeferredArticle />
                     </Box>
                     <Divider sx={{ my: 6 }} />
                     <Footer />

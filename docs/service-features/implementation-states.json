@@ -1,0 +1,163 @@
+[
+  {
+    "name": "light-desktop-guides-search",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n2 guides matching “victron”\n\nWindows\nAndroi",
+    "openDetails": false
+  },
+  {
+    "name": "light-desktop-guides-empty",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n0 guides matching “no-matching-result-zz”\n\n",
+    "openDetails": false
+  },
+  {
+    "name": "light-desktop-faq-expanded",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nA little help, right when you need it.\n\nFind a quick answer here, or follow a guide for the full walkthrough.\n\nSearch questions\n​\nSearch questions\nAll questions\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n24 questions\n\nHow do I contact support?\nHow do I add a website or a local device?\nDo I need to install an agent",
+    "openDetails": false
+  },
+  {
+    "name": "light-desktop-guide-contents",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nUnderstand your readings\n\nWindows\nAndroid\nESP32\nMonitor Bluetooth sensors\n\nRead Victron, Ruuvi and BTHome broadcasts with automatic units and selectable metrics.\n\nWhat Bluetooth monitoring does\n\nRead compatible device broadcasts without connecting to their GATT services or controlling the device. Your agent needs a Bluetooth adapter, scanning pe",
+    "openDetails": false
+  },
+  {
+    "name": "light-desktop-linux-code",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nLinux\nDocker\nInstall the Linux / Docker agent\n\nRun the agent in a persistent container, authorise it and assign your first local host.\n\nRun a persistent Linux agent\n\nThe Docker agent is suitable for an always-on Linux host. Docker Desktop can also run the Linux container on Windows or macOS; container networking differs from n",
+    "openDetails": false
+  },
+  {
+    "name": "light-desktop-platform-table",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nStart monitoring\n\nAll agents\nChoose an agent\n\nCompare Linux, Windows, Android and ESP32, and decide where your checks should run.\n\nWebsite or local agent\n\nThe website manages your monitors, displays history and runs the assistant. An agent performs checks from its network location. A public website can use an available service-provided location;",
+    "openDetails": false
+  },
+  {
+    "name": "light-mobile-guides-search",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n2 guides matching “victron”\n\nWindows\nAndroi",
+    "openDetails": false
+  },
+  {
+    "name": "light-mobile-guides-empty",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n0 guides matching “no-matching-result-zz”\n\n",
+    "openDetails": false
+  },
+  {
+    "name": "light-mobile-faq-expanded",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nA little help, right when you need it.\n\nFind a quick answer here, or follow a guide for the full walkthrough.\n\nSearch questions\n​\nSearch questions\nAll questions\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n24 questions\n\nHow do I contact support?\nHow do I add a website or a local device?\nDo I need to install an agent",
+    "openDetails": false
+  },
+  {
+    "name": "light-mobile-guide-contents",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nUnderstand your readings\n\nWindows\nAndroid\nESP32\nMonitor Bluetooth sensors\n\nRead Victron, Ruuvi and BTHome broadcasts with automatic units and selectable metrics.\n\nWhat Bluetooth monitoring does\n\nRead compatible device broadcasts without connecting to their GATT services or controlling the device. Your agent needs a Bluetooth adapter, scanning pe",
+    "openDetails": true
+  },
+  {
+    "name": "light-mobile-linux-code",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nLinux\nDocker\nInstall the Linux / Docker agent\n\nRun the agent in a persistent container, authorise it and assign your first local host.\n\nRun a persistent Linux agent\n\nThe Docker agent is suitable for an always-on Linux host. Docker Desktop can also run the Linux container on Windows or macOS; container networking differs from n",
+    "openDetails": false
+  },
+  {
+    "name": "light-mobile-platform-table",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nStart monitoring\n\nAll agents\nChoose an agent\n\nCompare Linux, Windows, Android and ESP32, and decide where your checks should run.\n\nWebsite or local agent\n\nThe website manages your monitors, displays history and runs the assistant. An agent performs checks from its network location. A public website can use an available service-provided location;",
+    "openDetails": false
+  },
+  {
+    "name": "light-mobile-navigation",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n19 guides\n\nWebsite\nYour first monitor\n\nAdd ",
+    "openDetails": false
+  },
+  {
+    "name": "dark-desktop-guides-search",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n2 guides matching “victron”\n\nWindows\nAndroi",
+    "openDetails": false
+  },
+  {
+    "name": "dark-desktop-guides-empty",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n0 guides matching “no-matching-result-zz”\n\n",
+    "openDetails": false
+  },
+  {
+    "name": "dark-desktop-faq-expanded",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nA little help, right when you need it.\n\nFind a quick answer here, or follow a guide for the full walkthrough.\n\nSearch questions\n​\nSearch questions\nAll questions\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n24 questions\n\nHow do I contact support?\nHow do I add a website or a local device?\nDo I need to install an agent",
+    "openDetails": false
+  },
+  {
+    "name": "dark-desktop-guide-contents",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nUnderstand your readings\n\nWindows\nAndroid\nESP32\nMonitor Bluetooth sensors\n\nRead Victron, Ruuvi and BTHome broadcasts with automatic units and selectable metrics.\n\nWhat Bluetooth monitoring does\n\nRead compatible device broadcasts without connecting to their GATT services or controlling the device. Your agent needs a Bluetooth adapter, scanning pe",
+    "openDetails": false
+  },
+  {
+    "name": "dark-desktop-linux-code",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nLinux\nDocker\nInstall the Linux / Docker agent\n\nRun the agent in a persistent container, authorise it and assign your first local host.\n\nRun a persistent Linux agent\n\nThe Docker agent is suitable for an always-on Linux host. Docker Desktop can also run the Linux container on Windows or macOS; container networking differs from n",
+    "openDetails": false
+  },
+  {
+    "name": "dark-desktop-platform-table",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nStart monitoring\n\nAll agents\nChoose an agent\n\nCompare Linux, Windows, Android and ESP32, and decide where your checks should run.\n\nWebsite or local agent\n\nThe website manages your monitors, displays history and runs the assistant. An agent performs checks from its network location. A public website can use an available service-provided location;",
+    "openDetails": false
+  },
+  {
+    "name": "dark-mobile-guides-search",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n2 guides matching “victron”\n\nWindows\nAndroi",
+    "openDetails": false
+  },
+  {
+    "name": "dark-mobile-guides-empty",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n0 guides matching “no-matching-result-zz”\n\n",
+    "openDetails": false
+  },
+  {
+    "name": "dark-mobile-faq-expanded",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nA little help, right when you need it.\n\nFind a quick answer here, or follow a guide for the full walkthrough.\n\nSearch questions\n​\nSearch questions\nAll questions\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n24 questions\n\nHow do I contact support?\nHow do I add a website or a local device?\nDo I need to install an agent",
+    "openDetails": false
+  },
+  {
+    "name": "dark-mobile-guide-contents",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nUnderstand your readings\n\nWindows\nAndroid\nESP32\nMonitor Bluetooth sensors\n\nRead Victron, Ruuvi and BTHome broadcasts with automatic units and selectable metrics.\n\nWhat Bluetooth monitoring does\n\nRead compatible device broadcasts without connecting to their GATT services or controlling the device. Your agent needs a Bluetooth adapter, scanning pe",
+    "openDetails": true
+  },
+  {
+    "name": "dark-mobile-linux-code",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nManage your setup\n\nLinux\nDocker\nInstall the Linux / Docker agent\n\nRun the agent in a persistent container, authorise it and assign your first local host.\n\nRun a persistent Linux agent\n\nThe Docker agent is suitable for an always-on Linux host. Docker Desktop can also run the Linux container on Windows or macOS; container networking differs from n",
+    "openDetails": false
+  },
+  {
+    "name": "dark-mobile-platform-table",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nGuides\n/\n\nStart monitoring\n\nAll agents\nChoose an agent\n\nCompare Linux, Windows, Android and ESP32, and decide where your checks should run.\n\nWebsite or local agent\n\nThe website manages your monitors, displays history and runs the assistant. An agent performs checks from its network location. A public website can use an available service-provided location;",
+    "openDetails": false
+  },
+  {
+    "name": "dark-mobile-navigation",
+    "overflow": false,
+    "text": "Features\nGuides\nGet an agent\nFAQ\nDashboard\nHELP FOR YOUR NEXT STEP\nMake your monitoring work for you.\n\nSet up a check, understand a reading or ask the assistant to investigate. Choose a guide for the website or the agent you use.\n\nSearch guides\n​\nSearch guides\nAll guides\nStart monitoring\nUnderstand your readings\nWork with the assistant\nManage your setup\n\n19 guides\n\nWebsite\nYour first monitor\n\nAdd ",
+    "openDetails": false
+  },
+  {
+    "name": "light-desktop-home-links",
+    "overflow": false,
+    "openDetails": false
+  }
+]

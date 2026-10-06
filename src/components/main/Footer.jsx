@@ -23,6 +23,7 @@ function Footer() {
   return (
     <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
       <Container maxWidth={false} disableGutters>
+        <Box component="nav" aria-label="Explore the service" sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 5, mb: 5 }}>{[['/features', 'Features'], ['/docs', 'Guides'], ['/download', 'Get an agent'], ['/faq', 'FAQ'], ['/subscription', 'Plans']].map(([href, label]) => <Link key={href} href={href} underline="hover">{label}</Link>)}</Box>
         <Paper
           elevation={4}
           sx={{
