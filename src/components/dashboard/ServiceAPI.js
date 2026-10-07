@@ -325,9 +325,9 @@ export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, set
 
     if (result && result.data && result.data.success) {
         console.log('Setting message:', { info: true, text: 'Download ready. Click below to start the download.' });
-        setOpen(true); 
+        setOpen(true);
         setDownloadLink(result.data.data);
-        setMessage({ info: true, text: 'Download ready. Click the link below to start the download.' });
+        setMessage({ info: true, text: 'Download ready. The archive streams as you download, so large exports may take a while.' });
     } else if (result && result.data) {
         console.log('Error:', { info: true, text: 'Error: ' + result.data.message });
 
