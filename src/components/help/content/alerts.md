@@ -43,6 +43,43 @@ Advanced monitor-model configuration includes confidence, pretraining/window siz
 
 The current ML pipeline is latency-oriented. Do not assume it has been calibrated for every BLE sensor unit or that it guarantees advance prediction of outages. Use explicit measurement limits for a clear voltage/temperature boundary.
 
+### Edit host model configuration
+
+Keep **Use custom model configuration for this host** off to use the deployment defaults. With it enabled, blank numeric fields and **Inherit** logging selections still use defaults. Detector-specific settings take precedence over shared host settings. The editor retains the full set of tuning and developer diagnostic controls.
+
+Saved changes are refreshed before the next prediction run; larger observation windows load available historical data or wait for enough new usable readings. An already-sent predictive alert keeps its detection results latched: reset the predictive alert to resume evaluation. Prediction runs follow the deployment schedule, not the Save button.
+
+| Setting | Meaning |
+| --- | --- |
+| Change / Spike Confidence | Enter percentages, such as `60`, rather than `0.6`. Higher confidence is more conservative in ML.NET. TimesFM uses available central bands of 20%, 40%, 60%, and 80%, rounding down between them and capping above 80%. Values below 20% use a median band widened by the noise/minimum-width settings. Thus 90 and 99 differ in ML.NET but both use TimesFM’s 80% band. Historical fractional confidence values below 1 are read as percentages. |
+| Change / Spike Pre-Train | History length for ML.NET. Initial unscored context length for TimesFM, not retraining its model. Use fewer observations than Predict Window. |
+| Predict Window | Target historical usable observations for evaluation, not a future horizon. TimesFM forecasts one observation from each historical prefix and compares it with the observed reading. |
+| Spike Detection Threshold | Minimum number of flagged observations in the evaluated batch required for a spike issue; not necessarily consecutive. |
+| Run Length | TimesFM consecutive outside-band observations needed for persistence. |
+| K of N (K/N) | TimesFM alternative persistence rule: at least K outside-band observations among the most recent N. Either this OR Run Length can satisfy persistence. K must not exceed N. |
+| MAD Alpha | TimesFM background-noise multiplier added to each edge of the expected band. Larger values widen tolerance. |
+| Min Band Abs / Rel | Minimum total expected-band width in raw measurement units (milliseconds for latency), or as a fraction of the forecast. `0.15` means 15%. |
+| Roll Sigma Window | TimesFM prior observations used to estimate background noise. |
+| Baseline Window | TimesFM prior observations used to calculate the median baseline. |
+| Sigma Cooldown | TimesFM observation count for holding the noise estimate after confirmation. It is not a notification cooldown. |
+| Min Relative Shift | TimesFM minimum change from the baseline, as a fraction: `0.20` means 20%. Increases and decreases can qualify. |
+
+TimesFM settings have no effect in an ML.NET-only deployment. In hybrid mode, ML.NET must detect both a change and a spike, then TimesFM must confirm a change or spike. Outside hybrid mode, both primary detectors must report an issue for the final predictive alert. Adjusting a spike setting alone does not guarantee an alert.
+
+### Developer diagnostics
+
+These controls write to the prediction service logs at **Information** level. They do not download data to the browser. Use them to understand why observations were accepted, rejected, or close to an anomaly threshold.
+
+| Control | Use |
+| --- | --- |
+| Sample Rows | Maximum diagnostic sample rows per detector and batch, spread across the batch including its ends. `1` logs the last scored observation; `0` disables samples while retaining the summary. Increase for more detail, subject to available scored observations. |
+| Near Miss Fraction | Counts observations inside but close to a band edge. Distance to the edge is divided by the total band width; `0.10` means 10%. Useful for spotting borderline behaviour before changing sensitivity. Does not affect anomaly flags. |
+| Log JSON | Choose JSON for structured analysis or Text for reading logs. Inherit preserves shared/server formatting. Does not enable detection or alter anomaly flags. |
+
+The summary reports requested confidence, effective quantile band, outside-band count, confirmed flags, near misses, largest residual, minimum margin, cooldown and accumulated evidence. Sample rows expose observed and forecast values, band edges, noise estimate, persistence counts, baseline shift, gate decisions, and diagnostic scores. JSON records are suitable for extracting these fields with log-processing tools. Reported diagnostic p-values/evidence are algorithm outputs, not a guaranteed probability of a future outage.
+
+Absolute widths and baseline shifts operate on the current latency-oriented input; they are not automatically calibrated for BLE sensor units. Notes describe a configuration; ID and update metadata do not affect detection.
+
 ## Find the condition on a chart
 
 Red downward arrows show failed observations. Blue/amber-style violation points and reference lines show readings outside the **current** low/high limits. They show threshold violations, not a historical log of which point sent an email. Long ranges use representative points. See [chart interpretation](/docs/charts/#failure-and-limit-markers).
