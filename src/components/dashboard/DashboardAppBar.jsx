@@ -41,7 +41,7 @@ const DashboardAppBar = ({
   showLoading = true,
   loadingProps = {},
 }) => (
-  <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+  <AppBar position="absolute" className={clsx(classes.appBar, open && isMediumOrLarger && classes.appBarShift)}>
     <Toolbar className={classes.toolbar}>
       <IconButton
         edge="start"
@@ -49,7 +49,7 @@ const DashboardAppBar = ({
         aria-label="open drawer"
         onClick={handleDrawerOpen}
         className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-        size="large"
+        size="medium"
       >
         <MenuIcon />
       </IconButton>
@@ -70,10 +70,22 @@ const DashboardAppBar = ({
       )}
       <Box sx={{ flexGrow: 1 }} />
       <AppearanceMenu />
-      <IconButton onClick={toggleChatView} className={clsx(classes.chatToggle, { [classes.chatToggleShift]: isChatOpen })}>
+      <IconButton onClick={toggleChatView} className={classes.chatToggle} aria-label="Toggle assistant" aria-expanded={isChatOpen}>
         <ChatIcon />
       </IconButton>
-      <Box sx={{ ml: 2, display: 'inline-flex', alignItems: 'center' }}>
+      <Box sx={{
+        ml: { xs: 0, sm: 2 }, display: 'inline-flex', alignItems: 'center', flexShrink: 0,
+        '& .MuiButton-root': {
+          height: 40, boxShadow: 'none', bgcolor: 'transparent', color: 'inherit',
+          '&:hover': { boxShadow: 'none', bgcolor: 'action.hover' },
+          '& .MuiSvgIcon-root': { fontSize: 22 },
+          '@media (max-width: 599.95px)': {
+            minWidth: 40, width: 40, p: 0, fontSize: 0,
+            '& .MuiButton-endIcon': { m: 0 },
+          },
+        },
+        // Keep the accessible button text, with an icon-only presentation on phones.
+      }}>
         <AuthNav openInNewTab={openInNewTab} />
       </Box>
       <IconButton color="inherit">

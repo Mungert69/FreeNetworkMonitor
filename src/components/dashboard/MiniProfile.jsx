@@ -18,14 +18,16 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUs
         }, [initViewSub]);
      if (apiUser!==undefined ) {
           return (
-               <div>
+               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0 }}>
                     {openProfile ? <ProfileDialog apiUser={apiUser} siteId={siteId} setOpen={setOpenProfile} initViewSub={initViewSub} setInitViewSub={setInitViewSub} getUserInfo={ getUserInfo} /> : null}
                     <Tooltip title="View Profile Info" TransitionComponent={Zoom}>
                          <Box
                               component="img"
                               sx={{
-                                   height: 35,
-                                   width: 35,
+                                   height: 32,
+                                   width: 32,
+                                   display: 'block',
+                                   cursor: 'pointer',
                                    borderRadius: "50%",  // Add this
                               }}
                               src={decodeURIComponent(apiUser.picture)}
@@ -33,7 +35,7 @@ export  function MiniProfile({apiUser,siteId, initViewSub, setInitViewSub, getUs
                               onClick={() => updateUserInfo()}
                          />
                     </Tooltip>
-               </div>
+               </Box>
           );
      }
      else { return ; }

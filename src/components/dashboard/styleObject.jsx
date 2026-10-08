@@ -11,8 +11,22 @@ const styleObject = (theme, imageUrl) => {
             backgroundPosition: 'center',
         },
         toolbar: {
+            minHeight: 56,
             paddingRight: 24, // keep right padding when drawer closed
-
+            '& > .MuiIconButton-root:not([aria-label="Toggle assistant"])': {
+                width: 40,
+                height: 40,
+                padding: 8,
+                flexShrink: 0,
+            },
+            '& > .MuiIconButton-root:not([aria-label="Toggle assistant"]) .MuiSvgIcon-root': { fontSize: 22 },
+            [theme.breakpoints.up('sm')]: { minHeight: 56 },
+            [theme.breakpoints.down('sm')]: {
+                minHeight: 52,
+                paddingLeft: 8,
+                paddingRight: 8,
+                columnGap: 0,
+            },
         },
         dataSetList: {
             padding: '0px',
@@ -41,6 +55,7 @@ const styleObject = (theme, imageUrl) => {
         },
         menuButton: {
             marginRight: 36,
+            [theme.breakpoints.down('sm')]: { marginRight: 0 },
         },
         menuButtonHidden: {
             display: 'none',
@@ -69,7 +84,10 @@ const styleObject = (theme, imageUrl) => {
                 width: theme.spacing(14),
             },
         },
-        appBarSpacer: theme.mixins.toolbar,
+        appBarSpacer: {
+            minHeight: 52,
+            [theme.breakpoints.up('sm')]: { minHeight: 56 },
+        },
         content: {
             flexGrow: 1,
             minWidth: 0,
@@ -151,10 +169,6 @@ const styleObject = (theme, imageUrl) => {
             transition: 'max-height 0.3s ease-out',
         },
 
-
-        chatToggleShift: {
-            transform: 'translateX(300px)', // Adjust this value based on your layout
-        },
 
         chatToggle: {
             position: 'fixed', // Fix position relative to the viewport

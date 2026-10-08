@@ -135,4 +135,13 @@ describe('DashboardAppBar', () => {
     expect(screen.queryByTestId('mini-profile')).not.toBeInTheDocument();
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
   });
+
+  it('keeps the assistant inside the viewport when open and leaves the mobile bar full width', () => {
+    const { container } = renderAppBar({ isMediumOrLarger: false, open: true, isChatOpen: true });
+    expect(container.querySelector('header')).not.toHaveClass('appBarShift');
+    const assistant = screen.getByRole('button', { name: 'Toggle assistant' });
+    expect(assistant).toHaveAttribute('aria-expanded', 'true');
+    expect(assistant).not.toHaveClass('chatToggleShift');
+    expect(screen.getByTestId('mini-profile')).toBeInTheDocument();
+  });
 });
