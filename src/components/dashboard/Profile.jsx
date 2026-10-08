@@ -100,7 +100,7 @@ const Profile = ({ apiUser, siteId, getUserInfo }) => {
         <DialogTitle>Download Ready</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Your host data archive is ready. It contains host summaries (settings, status and statistics) but not per-ping history. Click the link below to start the download — large archives stream from the server and may take a while.
+            Your host data archive is ready. It contains your monitored hosts (settings, status, statistics and per-ping history). Click the link below to start the download — large archives stream from the server and may take a while.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

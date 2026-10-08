@@ -320,18 +320,21 @@ export const handleDownload = async (baseUrlId, setMessage, setDownloadLink, set
         },
     }).catch(function (error) {
         console.log('ServiceAPI.handleDownload Axios Error was : ' + error);
-        setMessage({ info: false, text: 'Failed to generate download link: ' + error.message });
+        const responseData = error?.response?.data;
+        const detail = responseData?.message
+            ?? (typeof responseData === 'string' && responseData ? responseData : null)
+            ?? error?.message
+            ?? String(error);
+        setMessage({ success: false, text: 'Failed to generate download link: ' + detail });
     });
 
     if (result && result.data && result.data.success) {
-        console.log('Setting message:', { info: true, text: 'Download ready. Click below to start the download.' });
+        console.log('ServiceAPI.handleDownload download link ready');
         setOpen(true);
         setDownloadLink(result.data.data);
-        setMessage({ info: true, text: 'Download ready. The archive streams as you download, so large exports may take a while.' });
     } else if (result && result.data) {
-        console.log('Error:', { info: true, text: 'Error: ' + result.data.message });
-
-        setMessage({ info: false, text: 'Error: ' + result.data.message });
+        console.log('ServiceAPI.handleDownload error: ' + result.data.message);
+        setMessage({ success: false, text: result.data.message || 'Error: could not generate data download.' });
     }
     setIsLoading(false);
 };
