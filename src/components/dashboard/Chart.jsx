@@ -64,6 +64,17 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
 
   const hasData = Array.isArray(data) && data.length > 0;
   const hasNegativeReading = hasData && data.some(point => point.valid && Number.isFinite(point.response) && point.response < 0);
+  const signedTicks = React.useMemo(() => {
+    if (!hasNegativeReading) return undefined;
+    const { minimum, maximum } = data.reduce((bounds, point) => {
+      if (point.valid && Number.isFinite(point.response)) {
+        bounds.minimum = Math.min(bounds.minimum, point.response);
+        bounds.maximum = Math.max(bounds.maximum, point.response);
+      }
+      return bounds;
+    }, { minimum: 0, maximum: 0 });
+    return maximum > 0 ? [minimum, minimum / 2, 0, maximum / 2, maximum] : [minimum, minimum / 2, 0];
+  }, [data, hasNegativeReading]);
   const [isStatusExpanded, setIsStatusExpanded] = React.useState(false);
   const [hasStatusOverflow, setHasStatusOverflow] = React.useState(false);
   const [areDetailsVisible, setAreDetailsVisible] = React.useState(false);
@@ -616,6 +627,8 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                 allowDecimals
                 tickFormatter={(value) => formatMeasurementNumber(value, hostDetail)}
                 domain={hasNegativeReading ? [minimum => Math.min(minimum, 0), maximum => Math.max(maximum, 0)] : ['dataMin', 'dataMax']}
+                ticks={signedTicks}
+                interval={hasNegativeReading ? 0 : undefined}
                 tickMargin={0}
                 axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
                 tickLine={false}
@@ -629,7 +642,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                 </Label>
               </YAxis>
               <YAxis yAxisId="failures" hide domain={[0, 1]} />
-              {hasNegativeReading && <ReferenceLine y={0} stroke={alpha(theme.palette.text.secondary, .65)} strokeWidth={1.5} ifOverflow="extendDomain" />}
+              {hasNegativeReading && <ReferenceLine y={0} stroke={alpha(theme.palette.info.main, .7)} strokeWidth={1} strokeDasharray="12 7" ifOverflow="extendDomain" />}
               {[[lowLimit, 'low'], [highLimit, 'high']].filter(([limit]) => limit !== null).map(([limit, direction]) => (
                 <ReferenceLine key={direction} y={limit} stroke={limitColors[direction]} strokeDasharray="5 5" strokeOpacity={.7} ifOverflow="discard" />
               ))}

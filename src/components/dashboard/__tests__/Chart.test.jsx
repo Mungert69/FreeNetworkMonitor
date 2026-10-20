@@ -23,12 +23,12 @@ vi.mock('recharts', () => ({
   LineChart: ({ children, data }) => <div data-testid="line-chart" data-points={JSON.stringify(data)}>{children}</div>,
   Line: () => null,
   XAxis: () => null,
-  YAxis: ({ children, domain, yAxisId }) => <div data-testid={yAxisId ? 'failures-axis' : 'response-axis'} data-includes-zero={typeof domain?.[1] === 'function' ? domain[1](-2) === 0 : false}>{children}</div>,
+  YAxis: ({ children, domain, ticks, yAxisId }) => <div data-testid={yAxisId ? 'failures-axis' : 'response-axis'} data-includes-zero={typeof domain?.[1] === 'function' ? domain[1](-2) === 0 : false} data-ticks={JSON.stringify(ticks)}>{children}</div>,
   Label: () => null,
   CartesianGrid: () => null,
   Tooltip: () => null,
   Area: () => null,
-  ReferenceLine: ({ y }) => <div data-testid="reference-line" data-value={y} />,
+  ReferenceLine: ({ y, strokeWidth, strokeDasharray }) => <div data-testid="reference-line" data-value={y} data-stroke-width={strokeWidth} data-dash-array={strokeDasharray} />,
 }));
 
 const mockedUseDataSetNavigation = useDataSetNavigation;
@@ -76,7 +76,10 @@ describe('Chart', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Show details' }));
     expect(screen.getByText('-1.25 A')).toBeInTheDocument();
     expect(screen.getByTestId('response-axis')).toHaveAttribute('data-includes-zero', 'true');
+    expect(JSON.parse(screen.getByTestId('response-axis').dataset.ticks)).toContain(0);
     expect(screen.getByTestId('reference-line')).toHaveAttribute('data-value', '0');
+    expect(screen.getByTestId('reference-line')).toHaveAttribute('data-stroke-width', '1');
+    expect(screen.getByTestId('reference-line')).toHaveAttribute('data-dash-array', '12 7');
     expect(screen.getByText('Archived data unavailable.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Load new data' }));
     expect(refresh).toHaveBeenCalledOnce();
