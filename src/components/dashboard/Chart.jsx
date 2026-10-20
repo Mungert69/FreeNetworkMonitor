@@ -63,6 +63,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
     : rawData, [rawData, hostDetail, isRange, lowLimit, highLimit]);
 
   const hasData = Array.isArray(data) && data.length > 0;
+  const hasNegativeReading = hasData && data.some(point => point.valid && Number.isFinite(point.response) && point.response < 0);
   const [isStatusExpanded, setIsStatusExpanded] = React.useState(false);
   const [hasStatusOverflow, setHasStatusOverflow] = React.useState(false);
   const [areDetailsVisible, setAreDetailsVisible] = React.useState(false);
@@ -614,7 +615,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                 tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
                 allowDecimals
                 tickFormatter={(value) => formatMeasurementNumber(value, hostDetail)}
-                domain={['dataMin', 'dataMax']}
+                domain={hasNegativeReading ? [minimum => Math.min(minimum, 0), maximum => Math.max(maximum, 0)] : ['dataMin', 'dataMax']}
                 tickMargin={0}
                 axisLine={{ stroke: alpha(theme.palette.divider, 0.6) }}
                 tickLine={false}
@@ -628,6 +629,7 @@ export function Chart({ data: rawData, selectedDate, hostname, dataSetId, dataSe
                 </Label>
               </YAxis>
               <YAxis yAxisId="failures" hide domain={[0, 1]} />
+              {hasNegativeReading && <ReferenceLine y={0} stroke={alpha(theme.palette.text.secondary, .65)} strokeWidth={1.5} ifOverflow="extendDomain" />}
               {[[lowLimit, 'low'], [highLimit, 'high']].filter(([limit]) => limit !== null).map(([limit, direction]) => (
                 <ReferenceLine key={direction} y={limit} stroke={limitColors[direction]} strokeDasharray="5 5" strokeOpacity={.7} ifOverflow="discard" />
               ))}

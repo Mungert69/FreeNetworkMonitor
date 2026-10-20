@@ -23,12 +23,12 @@ vi.mock('recharts', () => ({
   LineChart: ({ children, data }) => <div data-testid="line-chart" data-points={JSON.stringify(data)}>{children}</div>,
   Line: () => null,
   XAxis: () => null,
-  YAxis: ({ children }) => <>{children}</>,
+  YAxis: ({ children, domain, yAxisId }) => <div data-testid={yAxisId ? 'failures-axis' : 'response-axis'} data-includes-zero={typeof domain?.[1] === 'function' ? domain[1](-2) === 0 : false}>{children}</div>,
   Label: () => null,
   CartesianGrid: () => null,
   Tooltip: () => null,
   Area: () => null,
-  ReferenceLine: () => null,
+  ReferenceLine: ({ y }) => <div data-testid="reference-line" data-value={y} />,
 }));
 
 const mockedUseDataSetNavigation = useDataSetNavigation;
@@ -75,9 +75,17 @@ describe('Chart', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Show details' }));
     expect(screen.getByText('-1.25 A')).toBeInTheDocument();
+    expect(screen.getByTestId('response-axis')).toHaveAttribute('data-includes-zero', 'true');
+    expect(screen.getByTestId('reference-line')).toHaveAttribute('data-value', '0');
     expect(screen.getByText('Archived data unavailable.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Load new data' }));
     expect(refresh).toHaveBeenCalledOnce();
+  });
+
+  it('does not show a zero line for positive readings or failed dataset readings', () => {
+    renderChart({ data: [{ response: 10 }, { response: -1 }] });
+    expect(screen.getByTestId('response-axis')).toHaveAttribute('data-includes-zero', 'false');
+    expect(screen.queryByTestId('reference-line')).not.toBeInTheDocument();
   });
 
   it('marks violations against physical current limits and preserves failures and equality', () => {
