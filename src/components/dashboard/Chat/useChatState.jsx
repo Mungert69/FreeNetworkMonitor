@@ -65,7 +65,7 @@ export const useChatState = (initialCurrentMessage = '') => {
     return newSessionId;
   };
 
-  const [sessionId, setSessionId] = useState(getSessionId());
+  const [sessionId, setSessionId] = useState(() => getSessionId());
 
   // Important refs
   const llmRunnerTypeRef = useRef('TurboLLM');

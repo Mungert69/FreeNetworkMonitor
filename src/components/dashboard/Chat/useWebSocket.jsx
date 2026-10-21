@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getLLMServerUrl } from '../ServiceAPI';
-import { v4 as uuidv4 } from 'uuid';
+import { createConversationId, isHalSession, storeConversationId } from './sessionRole';
 
 export const useWebSocket = ({
   siteId,
@@ -188,17 +188,15 @@ export const useWebSocket = ({
     console.log('Message sent: <|STOP_LLM|>');
   };
 
-  const resetSessionId = async () => {
+  const resetSessionId = async ({ halEnabled = isHalSession(chatState.sessionId) } = {}) => {
     await waitForWebSocket(webSocketRef.current);
     webSocketRef.current.send('<|REMOVE_SESSION|>');
     console.log('Message sent: <|REMOVE_SESSION|>');
 
-    localStorage.removeItem('sessionId');
-    localStorage.removeItem('sessionTimestamp');
-
-    const newSessionId = uuidv4();
-    localStorage.setItem('sessionId', newSessionId);
-    localStorage.setItem('sessionTimestamp', new Date().getTime().toString());
+    audioPlayerRef.current?.clearQueue?.();
+    chatState.openMessage.current = null;
+    const newSessionId = createConversationId(chatState.llmRunnerTypeRef.current, halEnabled);
+    storeConversationId(newSessionId);
     chatState.setSessionId(newSessionId);
   };
 

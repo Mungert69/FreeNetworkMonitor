@@ -6,6 +6,7 @@ import ChatContent from './ChatContent';
 import React, { useEffect, useRef, useState } from 'react';
 import { useChatState } from './useChatState';
 import { useWebSocket } from './useWebSocket';
+import { createConversationId, halRoleForRunner, isHalSession, storeConversationId } from './sessionRole';
 
 const VOICE_MODE = {
   PUSH_TO_TALK: 'push_to_talk',
@@ -66,6 +67,7 @@ function Chat({
   } = chatState;
 
 
+  const halEnabled = isHalSession(sessionId);
   const audioPlayerRef = useRef(AudioPlayer());
   const outputContainerRef = useRef(null);
   const [voiceMode, setVoiceMode] = useState(VOICE_MODE.PUSH_TO_TALK);
@@ -633,6 +635,7 @@ function Chat({
   };
 
   const handleSelectSession = (selectedSessionId) => {
+    storeConversationId(selectedSessionId);
     setSessionId(selectedSessionId);
     openMessage.current = "<|REPLAY_HISTORY|>";
     resetLLM(); // Reset the LLM session with the new session ID
@@ -645,25 +648,37 @@ function Chat({
 
 
 
+  const toggleHal = async () => {
+    if (isToggleDisabled || !isReady) return;
+    setIsToggleDisabled(true);
+    try {
+      await resetSessionId({ halEnabled: !halEnabled });
+    } catch (error) {
+      console.error('Unable to switch HAL mode:', error);
+      setIsToggleDisabled(false);
+    }
+  };
+
   const toggleLlmRunnerType = () => {
     if (isToggleDisabled) return;
-    openMessage.current = "<|REPLAY_HISTORY|>";
-    setIsToggleDisabled(true);
-
-    // Define the type sequence
     const types = getLlmTypes();
+    if (!types.length) return;
+    setIsToggleDisabled(true);
+    const nextType = types[(types.indexOf(llmRunnerTypeRef.current) + 1) % types.length];
+    const changeHalRole = halEnabled &&
+      halRoleForRunner(llmRunnerTypeRef.current) !== halRoleForRunner(nextType);
 
-    // Update the ref
-    const currentRefIndex = types.indexOf(llmRunnerTypeRef.current);
-    const nextRefIndex = (currentRefIndex + 1) % types.length;
-    llmRunnerTypeRef.current = types[nextRefIndex];
-
-    // Update the state
-    setLlmRunnerType(prevType => {
-      const currentStateIndex = types.indexOf(prevType);
-      const nextStateIndex = (currentStateIndex + 1) % types.length;
-      return types[nextStateIndex];
-    });
+    if (changeHalRole) {
+      audioPlayerRef.current?.clearQueue?.();
+      openMessage.current = null;
+      const newSessionId = createConversationId(nextType, true);
+      storeConversationId(newSessionId);
+      setSessionId(newSessionId);
+    } else {
+      openMessage.current = "<|REPLAY_HISTORY|>";
+    }
+    llmRunnerTypeRef.current = nextType;
+    setLlmRunnerType(nextType);
   };
 
   const toggleExpand = () => {
@@ -796,6 +811,8 @@ function Chat({
       handleVoiceButton={handleVoiceButton}
       saveFeedback={saveFeedback}
       toggleLlmRunnerType={toggleLlmRunnerType}
+      halEnabled={halEnabled}
+      toggleHal={toggleHal}
       toggleVoiceMode={toggleVoiceMode}
       closeExpand={closeExpand}
       onHostLinkClick={onHostLinkClick}

@@ -40,7 +40,7 @@ const ChatContent = ({
   isLLMBusy, thinkingDots, isCallingFunction, callingFunctionMessage, showHelpMessage, isDashboard,
   helpMessage, histories, handleSelectSession, handleDeleteSession, currentMessage, setCurrentMessage,
   isRecording, handleStartRecording, handleStopRecording, handleVoiceButton, stopLLM, message, linkData, saveFeedback,
-  toggleLlmRunnerType, toggleVoiceMode, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
+  toggleLlmRunnerType, halEnabled = false, toggleHal, toggleVoiceMode, llmFeedback, closeExpand, onHostLinkClick, sendMessage, sessionId, setIsHoveringMessages,
   setIsInputFocused, arePopupsEnabled, togglePopupsEnabled, isChartDialogOpen = false, scrollToBottom = () => {}, isAtBottom = true,
   setAutoScrollEnabled, voiceMode = 'push_to_talk', isContinuousActive = false,
   initialPrompt = '', autoSendInitialPrompt = false, clearInitialPrompt, clearInitialPromptAutoSend,
@@ -411,6 +411,21 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
+                <Tooltip title="Switch HAL mode and start a new chat" TransitionComponent={Zoom}>
+                  <span>
+                    <Button
+                      onClick={toggleHal}
+                      disabled={!isReady || isToggleDisabled}
+                      aria-label="Toggle HAL mode"
+                      aria-pressed={halEnabled}
+                      color="inherit"
+                      size="small"
+                      sx={{ minWidth: 0, px: 0.75 }}
+                    >
+                      HAL {halEnabled ? 'On' : 'Off'}
+                    </Button>
+                  </span>
+                </Tooltip>
                 <IconButton
                   onClick={() => resetSessionId()}
                   color="inherit"
