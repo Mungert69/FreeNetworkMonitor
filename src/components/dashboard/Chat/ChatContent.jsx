@@ -433,10 +433,10 @@ const ChatContent = ({
                       size="small"
                       sx={{
                         p: 0.5,
-                        color: halEnabled ? 'error.main' : 'inherit',
+                        color: halEnabled ? '#e0190b' : 'inherit',
                       }}
                     >
-                      <HalEyeIcon sx={{ filter: halEnabled ? 'drop-shadow(0 0 4px rgba(244,67,54,0.7))' : 'none' }} />
+                      <HalEyeIcon sx={{ filter: halEnabled ? 'drop-shadow(0 0 3px rgba(255,55,10,0.85)) drop-shadow(0 0 6px rgba(180,0,0,0.55))' : 'none' }} />
                     </IconButton>
                   </span>
                 </Tooltip>
