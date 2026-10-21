@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import PersonIcon from '@mui/icons-material/Person';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import HalEyeIcon from '@mui/icons-material/RadioButtonChecked';
 import CodeIcon from '@mui/icons-material/Code';
 import ReplyIcon from '@mui/icons-material/Reply';
 import HistoryIcon from '@mui/icons-material/History';
@@ -411,19 +412,32 @@ const ChatContent = ({
                     </Tooltip>
                   </Badge>
                 </IconButton>
-                <Tooltip title="Switch HAL mode and start a new chat" TransitionComponent={Zoom}>
+                <Tooltip
+                  title={
+                    <Box>
+                      <Typography variant="subtitle2">HAL 9000 mode: {halEnabled ? 'On' : 'Off'}</Typography>
+                      <Typography variant="body2">Switches the assistant’s personality and voice. Starts a new chat.</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 0.5 }}>Use with caution.</Typography>
+                    </Box>
+                  }
+                  TransitionComponent={Zoom}
+                  arrow
+                >
                   <span>
-                    <Button
+                    <IconButton
                       onClick={toggleHal}
                       disabled={!isReady || isToggleDisabled}
-                      aria-label="Toggle HAL mode"
+                      aria-label={halEnabled ? 'Disable HAL mode' : 'Enable HAL mode'}
                       aria-pressed={halEnabled}
                       color="inherit"
                       size="small"
-                      sx={{ minWidth: 0, px: 0.75 }}
+                      sx={{
+                        p: 0.5,
+                        color: halEnabled ? 'error.main' : 'inherit',
+                      }}
                     >
-                      HAL {halEnabled ? 'On' : 'Off'}
-                    </Button>
+                      <HalEyeIcon sx={{ filter: halEnabled ? 'drop-shadow(0 0 4px rgba(244,67,54,0.7))' : 'none' }} />
+                    </IconButton>
                   </span>
                 </Tooltip>
                 <IconButton
