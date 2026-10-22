@@ -382,7 +382,7 @@ not another product/platform to advertise.
 | NetworkMonitorLLM | Expert/tool orchestration, API/local runners, history, retrieval and response streaming | Users/operators/developers |
 | NetworkMonitorSearch | Embeddings, vector/hybrid OpenSearch retrieval, document/MITRE/book/blog indexes, conversation-memory retrieval and snapshots | Operators/developers |
 | NetworkMonitorDataInjest | PDF/document extraction manifests, semantic splitting/classification/summaries and ingest export pipeline | Operators/developers |
-| NetworkMonitorKokoro | Speech synthesis/transcription: Kokoro/Piper-compatible ONNX, CTC/Whisper paths | Users via chat; operators configure models |
+| NetworkMonitorKokoro | Speech synthesis/transcription: Kokoro/Piper-compatible ONNX, Moonshine Voice default ASR, optional Wav2Vec2 ONNX, and VAD speech detection | Users via chat; operators configure models |
 | NetworkMonitorCacheHttp | Authenticated static prompt-cache file support | Operators |
 | NetworkMonitorApi | Separate one-off check API and secret-authenticated MCP tools | Integrators |
 | NetworkMonitorPayment | Stripe endpoints/webhooks and subscription/entitlement updates | Users/operators |

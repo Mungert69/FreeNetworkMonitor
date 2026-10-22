@@ -1283,14 +1283,30 @@ export const transcribeAudioApi = async (audioBlob) => {
                 },
             }).catch((error) => {
                 console.error('ServiceAPI.transcribeAudioApi Axios Error:', error);
-                return null;
+                if (error.response?.data && typeof error.response.data === 'object') {
+                    return {
+                        ...error.response.data,
+                        status: 'error',
+                    };
+                }
+                return {
+                    status: 'error',
+                    code: 'transcription_request_failed',
+                    message: error.message || 'The speech transcription service could not be reached.',
+                };
             })
         );
 
-        return response?.data;
+        // Successful Axios responses wrap the payload in `data`. The Axios
+        // error handler above returns the normalized payload directly.
+        return response?.data ?? response;
     } catch (error) {
         console.error('ServiceAPI.transcribeAudioApi Error:', error);
-        return null;
+        return {
+            status: 'error',
+            code: 'transcription_request_failed',
+            message: error.message || 'The speech transcription service could not be reached.',
+        };
     }
 };
 

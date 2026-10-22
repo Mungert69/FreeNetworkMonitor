@@ -141,12 +141,15 @@ function Chat({
       setIsProcessing(true); // Show loading indicator
 
       const data = await transcribeAudioApi(audioBlob);
+      const transcription = typeof data?.transcription === 'string'
+        ? data.transcription.trim()
+        : '';
 
-      if (data?.transcription) {
-        console.log('Transcription:', data.transcription);
-        sendTranscription(data.transcription);
+      if (data?.status === 'success' && transcription) {
+        console.log('Transcription:', transcription);
+        sendTranscription(transcription);
       } else {
-        alert('Failed to transcribe audio.');
+        alert(data?.message || 'No speech transcription was returned. Please try again.');
       }
     } catch (error) {
       console.error('Error processing audio blob:', error);
